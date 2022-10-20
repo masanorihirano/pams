@@ -40,7 +40,7 @@ class Order:
         placed_at: Optional[int] = None,
         price: Optional[float] = None,
         order_id: Optional[int] = None,
-        ttl: Optional[int] = 0,
+        ttl: Optional[int] = None,
     ):
         if kind == MARKET_ORDER and price is not None:
             raise ValueError("price have to be None when kind is MARKET_ORDER")
@@ -88,6 +88,47 @@ class Order:
             + f"agent={self.agent_id}, market={self.market_id}, placed_at={self.placed_at}, ttl={self.ttl}, "
             + f"is_canceled={self.is_canceled}"
         )
+
+    def __gt__(self, other: object) -> bool:
+        if self.__class__ != other.__class__:
+            raise NotImplementedError(
+                f"not supporting the comparison between Order and {other.__class__}"
+            )
+        other = cast(Order, other)
+        if self.is_buy != other.is_buy:
+            raise ValueError(
+                "not supporting the comparison between sell and buy orders"
+            )
+
+        def _compare_placed_at(a: Order, b: Order) -> bool:
+            if a.placed_at is None and b.placed_at is None:
+                raise ValueError("orders still not placed cannot be compared")
+            elif a.placed_at is None:
+                return True
+            elif b.placed_at is None:
+                return False
+            else:
+                return a.placed_at > b.placed_at
+
+        if self.kind == MARKET_ORDER and other.kind == MARKET_ORDER:
+            return _compare_placed_at(a=self, b=other)
+        elif self.kind == MARKET_ORDER:
+            return False
+        elif other.kind == MARKET_ORDER:
+            return True
+        else:
+            if self.kind != LIMIT_ORDER or other.kind != LIMIT_ORDER:
+                raise NotImplementedError
+            else:
+                if self.price is None or other.price is None:
+                    raise AssertionError
+                if self.price != other.price:
+                    if self.is_buy:
+                        return self.price < other.price
+                    else:
+                        return self.price > other.price
+                else:
+                    return _compare_placed_at(a=self, b=other)
 
 
 class Cancel:
