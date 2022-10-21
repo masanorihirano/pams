@@ -27,6 +27,7 @@ class OrderBook:
 
     def cancel(self, cancel: Cancel) -> None:
         cancel.order.is_canceled = True
+        cancel.placed_at = self.time
         self.remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
@@ -47,7 +48,9 @@ class OrderBook:
         delete_orders = [
             order
             for order in self.priority_queue.queue
-            if order.is_canceled or order.is_expired(time=self.time)
+            if order.is_canceled
+            or order.is_expired(time=self.time)
+            or order.volume == 0
         ]
         for delete_order in delete_orders:
             self.priority_queue.queue.remove(delete_order)

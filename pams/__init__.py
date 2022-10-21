@@ -1,3 +1,4 @@
+from .market import Market
 from .order import LIMIT_ORDER
 from .order import MARKET_ORDER
 from .order import Cancel
