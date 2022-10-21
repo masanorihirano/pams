@@ -1,5 +1,10 @@
 from queue import PriorityQueue
+from typing import Dict
+from typing import Iterable
+from typing import List
 from typing import Optional
+from typing import Set
+from typing import Tuple
 
 from .order import Cancel
 from .order import Order
@@ -56,3 +61,30 @@ class OrderBook:
     def __len__(self) -> int:
         self.pop_until()
         return len(self.priority_queue.queue)
+
+    def get_price_volume(self) -> Dict[Optional[float], int]:
+        self.pop_until()
+        keys: List[Optional[float]] = list(
+            set(map(lambda x: x.price, self.priority_queue.queue))
+        )
+        has_market_order: bool = None in keys
+        keys.remove(None)
+        keys.sort(reverse=self.is_buy)
+        if has_market_order:
+            keys.insert(0, None)
+        result: Dict[Optional[float], int] = dict(
+            [
+                (
+                    key,
+                    sum(
+                        [
+                            order.volume
+                            for order in self.priority_queue.queue
+                            if order.price == key
+                        ]
+                    ),
+                )
+                for key in keys
+            ]
+        )
+        return result

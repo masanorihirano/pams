@@ -1,5 +1,6 @@
 import pytest
 
+from pams import LIMIT_ORDER
 from pams import MARKET_ORDER
 from pams import Cancel
 from pams import Order
@@ -37,3 +38,37 @@ class TestOrderBook:
         assert ob.time == 10
         ob.update_time()
         assert ob.time == 11
+
+    def test_get_price_volume(self) -> None:
+        ob = OrderBook(is_buy=True)
+        o = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.0
+        )
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        ob.add(o)
+        assert ob.get_price_volume() == {None: 1, 1.1: 2, 1.0: 1}
+        ob = OrderBook(is_buy=False)
+        o = Order(agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=1)
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.0
+        )
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        ob.add(o)
+        o = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        ob.add(o)
+        assert ob.get_price_volume() == {None: 1, 1.0: 1, 1.1: 2}
