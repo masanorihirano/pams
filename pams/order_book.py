@@ -25,7 +25,7 @@ class OrderBook:
                 self.expire_time_list[expiration_time] = []
             self.expire_time_list[expiration_time].append(order)
 
-    def remove(self, order: Order) -> None:
+    def _remove(self, order: Order) -> None:
         self.priority_queue.queue.remove(order)
         if order.placed_at is None:
             raise AssertionError("the order is not yet placed")
@@ -36,7 +36,7 @@ class OrderBook:
     def cancel(self, cancel: Cancel) -> None:
         cancel.order.is_canceled = True
         cancel.placed_at = self.time
-        self.remove(cancel.order)
+        self._remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
         if len(self.priority_queue.queue) > 0:
@@ -53,7 +53,7 @@ class OrderBook:
     def change_order_volume(self, order: Order, delta: int) -> None:
         order.volume += delta
         if order.volume == 0:
-            self.remove(order=order)
+            self._remove(order=order)
 
     def _check_expired_orders(self) -> None:
         delete_orders: List[Order] = sum(
@@ -68,11 +68,11 @@ class OrderBook:
         for key in delete_keys:
             self.expire_time_list.pop(key)
 
-    def set_time(self, time: int) -> None:
+    def _set_time(self, time: int) -> None:
         self.time = time
         self._check_expired_orders()
 
-    def update_time(self) -> None:
+    def _update_time(self) -> None:
         self.time += 1
         self._check_expired_orders()
 

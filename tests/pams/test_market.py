@@ -132,6 +132,8 @@ class TestMarket:
             market._update_time(1.0)
         market._is_running = True
         logs = market._execution()
+        if len(logs) == 0:
+            raise AssertionError
         start_time = time.time()
         for _ in range(10000):
             kind = LIMIT_ORDER if random.random() < 0.1 else MARKET_ORDER

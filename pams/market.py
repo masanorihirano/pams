@@ -244,14 +244,14 @@ class Market:
 
     def _set_time(self, time: int) -> None:
         self.time = time
-        self.buy_order_book.set_time(time)
-        self.sell_order_book.set_time(time)
+        self.buy_order_book._set_time(time)
+        self.sell_order_book._set_time(time)
         self._fill_until(time=time)
 
     def _update_time(self, next_fundamental_price: Optional[float]) -> None:
         self.time += 1
-        self.buy_order_book.set_time(self.time)
-        self.sell_order_book.set_time(self.time)
+        self.buy_order_book._set_time(self.time)
+        self.sell_order_book._set_time(self.time)
         self._fill_until(time=self.time)
         if next_fundamental_price is not None:
             self._fundamental_prices[self.time] = next_fundamental_price
