@@ -45,7 +45,7 @@ class Market:
     def _extract_sequential_data_by_time(
         self,
         times: Union[Iterable[int], None],
-        parameters: Union[List[Optional[T]], List[T]],
+        parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> List[Optional[T]]:
         if times is None:
@@ -60,7 +60,7 @@ class Market:
     def _extract_data_by_time(
         self,
         time: Union[int, None],
-        parameters: Union[List[Optional[T]], List[T]],
+        parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> Optional[T]:
         if time is None:
@@ -396,10 +396,14 @@ class Market:
                 raise AssertionError
             if buy_order_volume_tmp == 0:
                 buy_order_id_tmp += 1
+                if buy_order_id_tmp >= len(self.buy_order_book.priority_queue.queue):
+                    break
                 buy_order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
                 buy_order_volume_tmp = buy_order.volume
             if sell_order_volume_tmp == 0:
                 sell_order_id_tmp += 1
+                if sell_order_id_tmp >= len(self.sell_order_book.priority_queue.queue):
+                    break
                 sell_order = self.sell_order_book.priority_queue.queue[
                     sell_order_id_tmp
                 ]
