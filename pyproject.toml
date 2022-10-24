@@ -1,13 +1,14 @@
 [tool.poetry]
 name = "pams"
-version = "0.0.1"
+version = "0.0.2"
 description = "PAMS: Platform for Artificial Market Simulations"
 authors = ["Masanori HIRANO <masa.hirano.1996@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
+tqdm = "^4.64.1"
 
 
 [tool.poetry.group.dev.dependencies]
