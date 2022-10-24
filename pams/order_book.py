@@ -27,6 +27,8 @@ class OrderBook:
 
     def remove(self, order: Order) -> None:
         self.priority_queue.queue.remove(order)
+        if order.placed_at is None:
+            raise AssertionError("the order is not yet placed")
         if order.ttl is not None:
             expiration_time = order.placed_at + order.ttl
             self.expire_time_list[expiration_time].remove(order)
