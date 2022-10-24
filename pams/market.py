@@ -45,7 +45,7 @@ class Market:
     def _extract_sequential_data_by_time(
         self,
         times: Union[Iterable[int], None],
-        parameters: Union[List[Optional[T]], List[T]],
+        parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> List[Optional[T]]:
         if times is None:
@@ -60,7 +60,7 @@ class Market:
     def _extract_data_by_time(
         self,
         time: Union[int, None],
-        parameters: Union[List[Optional[T]], List[T]],
+        parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> Optional[T]:
         if time is None:
@@ -111,40 +111,68 @@ class Market:
     ) -> List[int]:
         return cast(
             List[int],
-            self._extract_sequential_data_by_time(times, self._executed_volumes),
+            self._extract_sequential_data_by_time(
+                times, cast(List[Optional[int]], self._executed_volumes)
+            ),
         )
 
     def get_executed_volume(self, time: Union[int, None] = None) -> int:
-        return cast(int, self._extract_data_by_time(time, self._executed_volumes))
+        return cast(
+            int,
+            self._extract_data_by_time(
+                time, cast(List[Optional[int]], self._executed_volumes)
+            ),
+        )
 
     def get_executed_total_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
         return cast(
             List[float],
-            self._extract_sequential_data_by_time(times, self._executed_total_prices),
+            self._extract_sequential_data_by_time(
+                times, cast(List[Optional[int]], self._executed_total_prices)
+            ),
         )
 
     def get_executed_total_price(self, time: Union[int, None] = None) -> float:
         return cast(
-            float, self._extract_data_by_time(time, self._executed_total_prices)
+            float,
+            self._extract_data_by_time(
+                time, cast(List[Optional[int]], self._executed_total_prices)
+            ),
         )
 
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
         return cast(
-            List[int], self._extract_sequential_data_by_time(times, self._n_buy_orders)
+            List[int],
+            self._extract_sequential_data_by_time(
+                times, cast(List[Optional[int]], self._n_buy_orders)
+            ),
         )
 
     def get_n_buy_order(self, time: Union[int, None] = None) -> int:
-        return cast(int, self._extract_data_by_time(time, self._n_buy_orders))
+        return cast(
+            int,
+            self._extract_data_by_time(
+                time, cast(List[Optional[int]], self._n_buy_orders)
+            ),
+        )
 
     def get_n_sell_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
         return cast(
-            List[int], self._extract_sequential_data_by_time(times, self._n_sell_orders)
+            List[int],
+            self._extract_sequential_data_by_time(
+                times, cast(List[Optional[int]], self._n_sell_orders)
+            ),
         )
 
     def get_n_sell_order(self, time: Union[int, None] = None) -> int:
-        return cast(int, self._extract_data_by_time(time, self._n_sell_orders))
+        return cast(
+            int,
+            self._extract_data_by_time(
+                time, cast(List[Optional[int]], self._n_sell_orders)
+            ),
+        )
 
     def _fill_until(self, time: int) -> None:
         if len(self._market_prices) >= time + 1:
@@ -299,8 +327,8 @@ class Market:
             time=self.time,
             buy_agent_id=buy_order.agent_id,
             sell_agent_id=sell_order.agent_id,
-            buy_order_id=buy_order.order_id,
-            sell_order_id=sell_order.order_id,
+            buy_order_id=cast(int, buy_order.order_id),
+            sell_order_id=cast(int, sell_order.order_id),
             price=price,
             volume=volume,
         )
@@ -390,16 +418,20 @@ class Market:
         sell_order: Order
         buy_order_volume_tmp: int = buy_order.volume
         sell_order_volume_tmp: int = 0
-        price: Optional[None] = None
+        price: Optional[float] = None
         while True:
             if buy_order_volume_tmp != 0 and sell_order_volume_tmp != 0:
                 raise AssertionError
             if buy_order_volume_tmp == 0:
                 buy_order_id_tmp += 1
+                if buy_order_id_tmp >= len(self.buy_order_book.priority_queue.queue):
+                    break
                 buy_order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
                 buy_order_volume_tmp = buy_order.volume
             if sell_order_volume_tmp == 0:
                 sell_order_id_tmp += 1
+                if sell_order_id_tmp >= len(self.sell_order_book.priority_queue.queue):
+                    break
                 sell_order = self.sell_order_book.priority_queue.queue[
                     sell_order_id_tmp
                 ]
@@ -440,7 +472,10 @@ class Market:
         logs = list(
             map(
                 lambda x: self._execute_orders(
-                    price=price, volume=x[0], buy_order=x[1], sell_order=x[2]
+                    price=cast(float, price),
+                    volume=x[0],
+                    buy_order=x[1],
+                    sell_order=x[2],
                 ),
                 pending,
             )
