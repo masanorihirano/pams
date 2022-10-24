@@ -333,8 +333,8 @@ class Market:
             volume=volume,
         )
 
-        buy_order.volume -= volume
-        sell_order.volume -= volume
+        self.buy_order_book.change_order_volume(order=buy_order, delta=-volume)
+        self.sell_order_book.change_order_volume(order=sell_order, delta=-volume)
 
         self._last_executed_prices[self.time] = price
         self._executed_volumes[self.time] += volume
