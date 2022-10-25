@@ -23,7 +23,7 @@ T = TypeVar("T")
 
 class Market:
     def __init__(
-        self, market_id: int, logger: Optional[Logger] = None, tick_size: float = 1.0
+        self, market_id: int, simulator: "Simulator", logger: Optional[Logger] = None, tick_size: float = 1.0  # type: ignore
     ) -> None:
         self.market_id: int = market_id
         self.logger: Optional[Logger] = logger
@@ -41,6 +41,7 @@ class Market:
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
+        self._simulator: "Simulator" = simulator  # type: ignore
 
     def _extract_sequential_data_by_time(
         self,
