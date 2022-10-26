@@ -6,7 +6,6 @@ from typing import Tuple
 
 import numpy as np
 from scipy.linalg import cholesky
-from scipy.stats import norm
 
 
 class Fundamentals:
