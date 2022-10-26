@@ -1,5 +1,6 @@
 import math
-from typing import Callable
+import random
+from typing import Any
 from typing import Dict
 from typing import Final
 from typing import Iterable
@@ -23,9 +24,10 @@ T = TypeVar("T")
 
 class Market:
     def __init__(
-        self, market_id: int, simulator: "Simulator", logger: Optional[Logger] = None, tick_size: float = 1.0  # type: ignore
+        self, market_id: int, prng: random.Random, simulator: "Simulator", logger: Optional[Logger] = None, tick_size: float = 1.0  # type: ignore
     ) -> None:
         self.market_id: int = market_id
+        self._prng = prng
         self.logger: Optional[Logger] = logger
         self._is_running: bool = False
         self.tick_size: float = tick_size
@@ -42,6 +44,9 @@ class Market:
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
         self._simulator: "Simulator" = simulator  # type: ignore
+
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+        pass
 
     def _extract_sequential_data_by_time(
         self,
@@ -73,15 +78,22 @@ class Market:
             raise AssertionError
         return result
 
+    def get_time(self) -> int:
+        return self.time
+
     def get_market_prices(
         self, times: Union[Iterable[int], None] = None
-    ) -> List[Optional[float]]:
-        return self._extract_sequential_data_by_time(
-            times, self._market_prices, allow_none=True
+    ) -> List[float]:
+        return cast(
+            List[float],
+            self._extract_sequential_data_by_time(times, self._market_prices),
         )
 
-    def get_market_price(self, time: Union[int, None] = None) -> Optional[float]:
-        return self._extract_data_by_time(time, self._market_prices, allow_none=True)
+    def get_market_price(self, time: Union[int, None] = None) -> float:
+        return cast(
+            float,
+            self._extract_data_by_time(time, self._market_prices, allow_none=True),
+        )
 
     def get_last_executed_prices(
         self, times: Union[Iterable[int], None] = None
@@ -97,15 +109,14 @@ class Market:
 
     def get_fundamental_prices(
         self, times: Union[Iterable[int], None] = None
-    ) -> List[Optional[float]]:
-        return self._extract_sequential_data_by_time(
-            times, self._fundamental_prices, allow_none=True
+    ) -> List[float]:
+        return cast(
+            List[float],
+            self._extract_sequential_data_by_time(times, self._fundamental_prices),
         )
 
-    def get_fundamental_price(self, time: Union[int, None] = None) -> Optional[float]:
-        return self._extract_data_by_time(
-            time, self._fundamental_prices, allow_none=True
-        )
+    def get_fundamental_price(self, time: Union[int, None] = None) -> float:
+        return cast(float, self._extract_data_by_time(time, self._fundamental_prices))
 
     def get_executed_volumes(
         self, times: Union[Iterable[int], None] = None
@@ -248,18 +259,22 @@ class Market:
         self.buy_order_book._set_time(time)
         self.sell_order_book._set_time(time)
         self._fill_until(time=time)
+        # ToDo set fundamental price
 
-    def _update_time(self, next_fundamental_price: Optional[float]) -> None:
+    def _update_time(self, next_fundamental_price: float) -> None:
         self.time += 1
         self.buy_order_book._set_time(self.time)
         self.sell_order_book._set_time(self.time)
         self._fill_until(time=self.time)
-        if next_fundamental_price is not None:
-            self._fundamental_prices[self.time] = next_fundamental_price
+        self._fundamental_prices[self.time] = next_fundamental_price
         self._last_executed_prices[self.time] = self._last_executed_prices[
             self.time - 1
         ]
-        self._market_prices[self.time] = self._market_prices[self.time - 1]
+        self._market_prices[self.time] = (
+            self._market_prices[self.time - 1]
+            if self._market_prices[self.time - 1] is not None
+            else self._fundamental_prices[self.time]
+        )
         # ToDo: logging
 
     def _cancel_order(self, cancel: Cancel) -> CancelLog:
