@@ -6,7 +6,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from .logs import ExecutionLog
+from .logs import ExecutionLog, Logger
 from .logs import OrderLog
 from .market import Market
 from .order import Order
@@ -19,14 +19,16 @@ class Agent(ABC):
         agent_id: int,
         prng: random.Random,
         simulator: "Simulator",  # type: ignore
-        name: Optional[str] = None,
+        name: str,
+        logger: Optional[Logger] = None,
     ) -> None:
         self.agent_id: int = agent_id
-        self.name: Optional[str] = name
+        self.name: str = name
         self.asset_volumes: Dict[int, int] = {}
         self.cash_amount: float = 0
         self.prng: random.Random = prng
         self.sim: "Simulator" = simulator  # type: ignore
+        self.logger: Optional[Logger] = logger
 
     def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore
         if "cashAmount" not in settings:

@@ -2,7 +2,11 @@ from typing import Type
 
 
 def find_class(name: str) -> Type:
-    _ = __import__("pams", globals(), locals())
+    # ToDo check more import
+    _1 = __import__("pams", globals(), locals())
+    _2 = __import__("pams.agents", globals(), locals(), ["*"])
+    _3 = __import__("pams.events", globals(), locals(), ["*"])
+
     object_class_candidates = [
         getattr(m, name)
         for m in [*globals().values(), *locals().values()]

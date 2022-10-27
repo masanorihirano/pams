@@ -18,8 +18,8 @@
 		],
 		"fundamentalCorrelations": {
             "pairwise": [
-                ["SpotMarket-1", "SpotMarket-2",  0.9],
-                ["SpotMarket-1", "SpotMarket-3", -0.1]
+                ["SpotMarket-0", "SpotMarket-1",  0.9],
+                ["SpotMarket-0", "SpotMarket-2", -0.1]
             ]
         }
 	},

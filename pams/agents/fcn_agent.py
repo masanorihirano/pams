@@ -6,6 +6,7 @@ from typing import List
 from typing import Optional
 
 from .. import LIMIT_ORDER
+from .. import Logger
 from .. import Market
 from .. import Order
 from ..agent import Agent
@@ -32,9 +33,10 @@ class FCNAgent(Agent):
         agent_id: int,
         prng: random.Random,
         simulator: Simulator,
-        name: Optional[str] = None,
+        name: str,
+        logger: Optional[Logger] = None,
     ):
-        super().__init__(agent_id, prng, simulator, name)
+        super().__init__(agent_id, prng, simulator, name, logger)
 
     def is_finite(self, x: float) -> bool:
         return not math.isnan(x) and not math.isinf(x)

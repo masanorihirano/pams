@@ -38,12 +38,12 @@ class EventABC(ABC):
         event_id: int,
         prng: random.Random,
         simulator: "Simulator",  # type: ignore
-        name: Optional[str] = None,
+        name: str,
     ) -> None:
         self.event_id: int = event_id
         self.prng: random.Random = prng
         self.simulator = simulator
-        self.name: Optional[str] = name
+        self.name: str = name
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         pass

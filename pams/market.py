@@ -24,7 +24,7 @@ T = TypeVar("T")
 
 class Market:
     def __init__(
-        self, market_id: int, prng: random.Random, simulator: "Simulator", logger: Optional[Logger] = None, name: Optional[str] = None  # type: ignore
+        self, market_id: int, prng: random.Random, simulator: "Simulator", name: str, logger: Optional[Logger] = None  # type: ignore
     ) -> None:
         self.market_id: int = market_id
         self._prng = prng
@@ -44,7 +44,7 @@ class Market:
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
         self._simulator: "Simulator" = simulator  # type: ignore
-        self.name: Optional[str] = name
+        self.name: str = name
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         if "tickSize" not in settings:
