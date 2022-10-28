@@ -19,6 +19,7 @@ class TestMarket:
             prng=random.Random(42),
             logger=Logger(),
             simulator=Simulator(prng=random.Random(42)),
+            name="test",
         )
         m._update_time(next_fundamental_price=1.0)
         assert m._market_prices == [1.0] + [None for _ in range(m.chunk_size - 1)]
@@ -124,6 +125,7 @@ class TestMarket:
             prng=random.Random(42),
             logger=Logger(),
             simulator=Simulator(prng=random.Random(42)),
+            name="test",
         )
         market._update_time(1.0)
         for _ in range(1000):
