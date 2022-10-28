@@ -12,6 +12,7 @@ from .fundamentals import Fundamentals
 from .high_frequency_agent import HighFrequencyAgent
 from .logs import Logger
 from .market import Market
+from .session import Session
 
 
 class Simulator:
@@ -23,6 +24,8 @@ class Simulator:
     ) -> None:
         self._prng = prng
         self.logger: Optional[Logger] = logger
+
+        # ToDo: move to session?
         self.n_events: int = 0
         self.events: List[EventABC] = []
         self.id2event: Dict[int, EventABC] = {}
@@ -54,6 +57,11 @@ class Simulator:
         self.fundamentals = fundamental_class(
             prng=random.Random(self._prng.randint(0, 2**31))
         )
+
+        self.n_sessions: int = 0
+        self.sessions: List[Session] = []
+        self.id2session: Dict[int, Session] = {}
+        self.name2session: Dict[str, Session] = {}
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
         if market in self.markets:
@@ -90,6 +98,18 @@ class Simulator:
             if group_name not in self.agents_group_name2agent:
                 self.agents_group_name2agent[group_name] = []
             self.agents_group_name2agent[group_name].append(agent)
+
+    def _add_session(self, session: Session) -> None:
+        if session in self.sessions:
+            raise ValueError("session is already registered")
+        if session.session_id in self.id2session:
+            raise ValueError(f"session_id {session.session_id} is duplicated")
+        if session.name in self.name2session:
+            raise ValueError(f"session name {session.name} is duplicate")
+        self.sessions.append(session)
+        self.n_sessions += 1
+        self.id2session[session.session_id] = session
+        self.name2session[session.name] = session
 
     def _update_time_on_market(self, market: Market) -> None:
         market._update_time(

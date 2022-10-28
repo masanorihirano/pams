@@ -7,7 +7,8 @@
 				"iterationSteps": 100,
 				"withOrderPlacement": true,
 				"withOrderExecution": false,
-				"withPrint": true
+				"withPrint": true,
+				"hifreqSubmitRate": 1.0
 			},
 			{	"sessionName": 1,
 				"iterationSteps": 500,

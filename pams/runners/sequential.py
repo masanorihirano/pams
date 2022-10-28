@@ -13,6 +13,7 @@ from typing import Union
 from ..agent import Agent
 from ..logs import Logger
 from ..market import Market
+from ..session import Session
 from ..simulator import Simulator
 from ..utils.class_finder import find_class
 from ..utils.json_extends import json_extends
@@ -205,6 +206,27 @@ class SequentialRunner(Runner):
                         f"{key} for simulation.fundamentalCorrelations is not supported"
                     )
 
+    def _generate_sessions(self) -> None:
+        session_settings: Dict = self.settings["simulation"]["sessions"]
+        if not isinstance(session_settings, list):
+            raise ValueError("simulation.sessions must be list[dict]")
+        i_session = 0
+        for session_setting in session_settings:
+            if "sessionName" not in session_setting:
+                raise ValueError(
+                    "for each element in simulation.sessions must have sessionName"
+                )
+            session = Session(
+                session_id=i_session,
+                prng=random.Random(self._prng.randint(0, 2**31)),
+                simulator=self.simulator,
+                name=session_setting["sessionName"],
+                logger=self.logger,
+            )
+            i_session += 1
+            self.simulator._add_session(session=session)
+            self._pending_setups.append((session.setup, {"settings": session_setting}))
+
     def _setup(self) -> None:
         if "simulation" not in self.settings:
             raise ValueError("simulation is required in json file")
@@ -238,8 +260,9 @@ class SequentialRunner(Runner):
             or sum([not isinstance(m, dict) for m in session_settings]) > 0
         ):
             raise ValueError("simulation.sessions in json file have to be List[Dict]")
+        self._generate_sessions()
 
-        # ToDo session processing
+        # ToDo event
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
