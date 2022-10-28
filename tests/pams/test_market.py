@@ -165,6 +165,6 @@ class TestMarket:
             assert len(log) <= volume
             market._update_time(1.0)
         end_time = time.time()
-        time_per_step = (end_time - start_time) / 1000
+        time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
         assert time_per_step < 0.002

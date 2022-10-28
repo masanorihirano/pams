@@ -11,8 +11,11 @@ from typing import Type
 from typing import Union
 
 from ..agent import Agent
+from ..high_frequency_agent import HighFrequencyAgent
 from ..logs import Logger
+from ..logs import OrderLog
 from ..market import Market
+from ..order import Order
 from ..session import Session
 from ..simulator import Simulator
 from ..utils.class_finder import find_class
@@ -30,6 +33,10 @@ class SequentialRunner(Runner):
     ):
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
+
+    @staticmethod
+    def judge_hft_or_not(agent: Agent) -> bool:
+        return isinstance(agent, HighFrequencyAgent)
 
     def _generate_markets(self, market_type_names: List[str]) -> None:
         i_market = 0
@@ -265,6 +272,24 @@ class SequentialRunner(Runner):
         # ToDo event
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
+
+    def collect_orders(self, session: Session) -> List[Order]:
+        agents = self.simulator.normal_frequency_agents
+        agents = self._prng.sample(agents, len(agents))
+        n_orders = 0
+        all_orders: List[Order] = []
+        for agent in agents:
+            if n_orders >= session.max_normal_orders:
+                break
+            orders = agent.submit_orders(markets=self.simulator.markets)
+            if len(orders) > 0:
+                if sum([order.agent_id != agent.agent_id for order in orders]) > 0:
+                    raise ValueError(
+                        "spoofing order is not allowed. please check agent_id in order"
+                    )
+                all_orders.extend(orders)
+                n_orders += 1
+        return all_orders
 
     def _run(self) -> None:
         pass

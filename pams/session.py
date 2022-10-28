@@ -41,16 +41,22 @@ class Session:
             raise ValueError(
                 "for each element in simulation.sessions must have withOrderPlacement"
             )
+        if not isinstance(settings["withOrderPlacement"], bool):
+            raise ValueError("withOrderPlacement must be boolean")
         self.with_order_placement = settings["withOrderPlacement"]
         if "withOrderExecution" not in settings:
             raise ValueError(
                 "for each element in simulation.sessions must have withOrderExecution"
             )
+        if not isinstance(settings["withOrderExecution"], bool):
+            raise ValueError("withOrderExecution must be boolean")
         self.with_order_placement = settings["withOrderExecution"]
         if "withPrint" not in settings:
             raise ValueError(
                 "for each element in simulation.sessions must have withPrint"
             )
+        if not isinstance(settings["withPrint"], bool):
+            raise ValueError("withPrint must be boolean")
         self.with_print = settings["withPrint"]
         if "maxNormalOrders" in settings:
             self.max_normal_orders = settings["maxNormalOrders"]

@@ -62,20 +62,46 @@ class Fundamentals:
     def _generate_log_return(
         self, generate_target_ids: List[int], length: int
     ) -> np.ndarray:
-        corr_matrix = np.eye(len(generate_target_ids))
+        generate_target_ids_cholesky = list(
+            filter(lambda x: self.volatilities[x] != 0.0, generate_target_ids)
+        )
+        generate_target_ids_other = list(
+            filter(lambda x: self.volatilities[x] == 0.0, generate_target_ids)
+        )
+        corr_matrix = np.eye(len(generate_target_ids_cholesky))
         for (id1, id2), corr in self.correlation.items():
+            if id1 not in generate_target_ids_cholesky:
+                continue
+            if id2 not in generate_target_ids_cholesky:
+                continue
             if id1 == id2:
                 raise AssertionError
             corr_matrix[id1, id2] = corr
             corr_matrix[id2, id1] = corr
-        vol = np.asarray([self.volatilities[x] for x in generate_target_ids])
-        drifts = np.asarray([self.drifts[x] for x in generate_target_ids])
+        vol = np.asarray([self.volatilities[x] for x in generate_target_ids_cholesky])
         cov_matrix = vol * corr_matrix * vol
         cholesky_matrix = cholesky(cov_matrix, lower=True)
 
-        dw = self._np_prng.standard_normal(size=(len(generate_target_ids), length))
-        result = np.dot(cholesky_matrix, dw) + drifts.T.reshape(-1, 1)
-        return result
+        dw_cholesky = self._np_prng.standard_normal(
+            size=(len(generate_target_ids_cholesky), length)
+        )
+        drifts_cholesky = np.asarray(
+            [self.drifts[x] for x in generate_target_ids_cholesky]
+        )
+        result_cholesky = np.dot(
+            cholesky_matrix, dw_cholesky
+        ) + drifts_cholesky.T.reshape(-1, 1)
+
+        drifts_others = np.asarray([self.drifts[x] for x in generate_target_ids_other])
+
+        return np.stack(
+            [
+                result_cholesky[generate_target_ids_cholesky.index(x)]
+                if x in generate_target_ids_cholesky
+                else drifts_others[generate_target_ids_other.index(x)]
+                for x in generate_target_ids
+            ]
+        )
 
     def _generate_next(self) -> None:
         setting_change_points: List[int] = [
