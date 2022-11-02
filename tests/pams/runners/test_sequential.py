@@ -20,7 +20,7 @@ class TestSequentialRunner:
         runner.simulator._update_times_on_markets(markets=runner.simulator.markets)
         start_time = time.time()
         for _ in range(10000):
-            orders = runner._collect_orders(session=runner.simulator.sessions[0])
+            _ = runner._collect_orders(session=runner.simulator.sessions[0])
         end_time = time.time()
         time_per_step = (end_time - start_time) / 1000
         print("time/step", time_per_step)
