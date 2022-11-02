@@ -24,4 +24,4 @@ class TestSequentialRunner:
         end_time = time.time()
         time_per_step = (end_time - start_time) / 1000
         print("time/step", time_per_step)
-        assert time_per_step < 0.002
+        assert time_per_step < 0.003
