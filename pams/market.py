@@ -13,6 +13,7 @@ from typing import cast
 
 from .logs import CancelLog
 from .logs import ExecutionLog
+from .logs import Log
 from .logs import Logger
 from .logs import OrderLog
 from .order import Cancel
@@ -489,7 +490,7 @@ class Market:
                 pending.append((volume, buy_order, sell_order))
         if price is None:
             raise AssertionError
-        logs = list(
+        logs: List[ExecutionLog] = list(
             map(
                 lambda x: self._execute_orders(
                     price=cast(float, price),
@@ -500,4 +501,6 @@ class Market:
                 pending,
             )
         )
+        if self.logger is not None:
+            self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs

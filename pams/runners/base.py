@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import time
 from abc import ABC
 from abc import abstractmethod
 from io import TextIOWrapper
@@ -35,8 +36,15 @@ class Runner(ABC):
         )
 
     def main(self) -> None:
+        setup_start_time_ns = time.time_ns()
         self._setup()
+        start_time_ns = time.time_ns()
         self._run()
+        end_time_ns = time.time_ns()
+        print(
+            "# INITIALIZATION TIME " + str((start_time_ns - setup_start_time_ns) / 1e9)
+        )
+        print("# EXECUTION TIME " + str((end_time_ns - start_time_ns) / 1e9))
 
     @abstractmethod
     def _setup(self) -> None:

@@ -50,7 +50,7 @@ class Session:
             )
         if not isinstance(settings["withOrderExecution"], bool):
             raise ValueError("withOrderExecution must be boolean")
-        self.with_order_placement = settings["withOrderExecution"]
+        self.with_order_execution = settings["withOrderExecution"]
         if "withPrint" not in settings:
             raise ValueError(
                 "for each element in simulation.sessions must have withPrint"

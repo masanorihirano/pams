@@ -1,5 +1,6 @@
 import os
 import random
+import time
 from io import TextIOWrapper
 from typing import Any
 from typing import Callable
@@ -12,8 +13,16 @@ from typing import Union
 
 from ..agent import Agent
 from ..high_frequency_agent import HighFrequencyAgent
+from ..logs import ExecutionLog
+from ..logs import Log
 from ..logs import Logger
+from ..logs import MarketStepBeginLog
+from ..logs import MarketStepEndLog
 from ..logs import OrderLog
+from ..logs import SessionBeginLog
+from ..logs import SessionEndLog
+from ..logs import SimulationBeginLog
+from ..logs import SimulationEndLog
 from ..market import Market
 from ..order import Order
 from ..session import Session
@@ -273,23 +282,147 @@ class SequentialRunner(Runner):
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
-    def collect_orders(self, session: Session) -> List[Order]:
+    def _collect_orders(self, session: Session) -> List[List[Order]]:
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         n_orders = 0
-        all_orders: List[Order] = []
+        all_orders: List[List[Order]] = []
         for agent in agents:
             if n_orders >= session.max_normal_orders:
                 break
             orders = agent.submit_orders(markets=self.simulator.markets)
             if len(orders) > 0:
+                if not session.with_order_placement:
+                    raise AssertionError("currently order is not accepted")
                 if sum([order.agent_id != agent.agent_id for order in orders]) > 0:
                     raise ValueError(
                         "spoofing order is not allowed. please check agent_id in order"
                     )
-                all_orders.extend(orders)
+                all_orders.append(orders)
                 n_orders += 1
         return all_orders
 
+    def _handle_orders(
+        self, session: Session, local_orders: List[List[Order]]
+    ) -> List[List[Order]]:
+        agents = self.simulator.high_frequency_agents
+        agents = self._prng.sample(agents, len(agents))
+        sequential_orders = self._prng.sample(local_orders, len(local_orders))
+        all_orders: List[List[Order]] = []
+        for orders in sequential_orders:
+            for order in orders:
+                if not session.with_order_placement:
+                    raise AssertionError("currently order is not accepted")
+                market: Market = self.simulator.id2market[order.market_id]
+                self.simulator.trigger_event_before_order(order=order)
+                log: OrderLog = market._add_order(order=order)
+                agent: Agent = self.simulator.id2agent[order.agent_id]
+                agent.submitted_order(log=log)
+                self.simulator.trigger_event_after_order(order_log=log)
+                if session.with_order_execution:
+                    logs: List[ExecutionLog] = market._execution()
+                    for execution_log in logs:
+                        agent.executed_order(log=execution_log)
+                        self.simulator.trigger_event_after_execution(
+                            execution_log=execution_log
+                        )
+
+            if session.high_frequency_submission_rate < self._prng.random():
+                continue
+
+            n_high_freq_orders = 0
+            for agent in agents:
+                if n_high_freq_orders >= session.max_high_frequency_orders:
+                    break
+
+                high_freq_orders: List[Order] = agent.submit_orders(
+                    markets=self.simulator.markets
+                )
+                if len(high_freq_orders) > 0:
+                    if not session.with_order_placement:
+                        raise AssertionError("currently order is not accepted")
+                    if (
+                        sum(
+                            [
+                                order.agent_id != agent.agent_id
+                                for order in high_freq_orders
+                            ]
+                        )
+                        > 0
+                    ):
+                        raise ValueError(
+                            "spoofing order is not allowed. please check agent_id in order"
+                        )
+                    all_orders.append(high_freq_orders)
+                    n_high_freq_orders += 1
+                    for order in high_freq_orders:
+                        market = self.simulator.id2market[order.market_id]
+                        self.simulator.trigger_event_before_order(order=order)
+                        log = market._add_order(order=order)
+                        agent = self.simulator.id2agent[order.agent_id]
+                        agent.submitted_order(log=log)
+                        self.simulator.trigger_event_after_order(order_log=log)
+                        if session.with_order_execution:
+                            logs = market._execution()
+                            for execution_log in logs:
+                                agent.executed_order(log=execution_log)
+                                self.simulator.trigger_event_after_execution(
+                                    execution_log=execution_log
+                                )
+        return all_orders
+
+    def _update_markets(self, session: Session) -> None:
+        local_orders: List[List[Order]] = self._collect_orders(session=session)
+        self._handle_orders(session=session, local_orders=local_orders)
+
+    def _iterate_market_updates(self, session: Session) -> None:
+        markets: List[Market] = self.simulator.markets
+        for market in markets:
+            market._is_running = session.with_order_execution
+        for market in markets:
+            market._execution()
+
+        self.simulator._update_times_on_markets(self.simulator.markets)  # t: -1 -> 0
+
+        for _ in range(session.iteration_steps):
+            for market in markets:
+                self.simulator.trigger_event_before_step_for_market(market=market)
+                if self.logger is not None:
+                    log: Log = MarketStepBeginLog(
+                        market=market, simulator=self.simulator
+                    )
+                    log.read_and_write_with_direct_process(logger=self.logger)
+            if session.with_order_placement:
+                self._update_markets(session=session)
+            for market in markets:
+                if self.logger is not None:
+                    log = MarketStepEndLog(market=market, simulator=self.simulator)
+                    log.read_and_write_with_direct_process(logger=self.logger)
+                self.simulator.trigger_event_after_step_for_market(market=market)
+            self.simulator._update_times_on_markets(self.simulator.markets)  # t++
+
     def _run(self) -> None:
-        pass
+        if self.logger is not None:
+            log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
+            log.read_and_write(logger=self.logger)
+            self.logger._process()
+        for session in self.simulator.sessions:
+            self.simulator.trigger_event_before_session(session=session)
+            if self.logger is not None:
+                log = SessionBeginLog(
+                    session=session, simulator=self.simulator
+                )  # must be blocking
+                log.read_and_write(logger=self.logger)
+                self.logger._process()
+            self._iterate_market_updates(session=session)
+            self.simulator.trigger_event_after_session(session=session)
+            if self.logger is not None:
+                log = SessionEndLog(
+                    session=session, simulator=self.simulator
+                )  # must be blocking
+                log.read_and_write(logger=self.logger)
+                self.logger._process()
+        if self.logger is not None:
+            log = SimulationEndLog(simulator=self.simulator)  # must be blocking
+            log.read_and_write(logger=self.logger)
+            self.logger._process()

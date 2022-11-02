@@ -7,16 +7,35 @@ from pams.order import OrderKind
 
 
 class Logger:
+    def __init__(self) -> None:
+        self.pending_logs: List[Log] = []
+
     def write(self, log: "Log") -> None:
-        pass
+        self.pending_logs.append(log)
 
     def bulk_write(self, logs: List["Log"]) -> None:
+        self.pending_logs.extend(logs)
+
+    def write_and_direct_process(self, log: "Log") -> None:
+        self.process(logs=[log])
+
+    def bulk_write_and_direct_process(self, logs: List["Log"]) -> None:
+        self.process(logs=logs)
+
+    def _process(self) -> None:
+        self.process(logs=self.pending_logs)
+        self.pending_logs = []
+
+    def process(self, logs: List["Log"]) -> None:
         pass
 
 
 class Log:
     def read_and_write(self, logger: Logger) -> None:
         logger.write(log=self)
+
+    def read_and_write_with_direct_process(self, logger: Logger) -> None:
+        logger.write_and_direct_process(log=self)
 
 
 class OrderLog(Log):
@@ -89,3 +108,32 @@ class ExecutionLog(Log):
         self.sell_order_id: int = sell_order_id
         self.price: float = price
         self.volume: int = volume
+
+
+class SimulationBeginLog(Log):
+    def __init__(self, simulator: "Simulator"):  # type: ignore
+        self.simulator = simulator
+
+
+class SimulationEndLog(SimulationBeginLog):
+    pass
+
+
+class SessionBeginLog(Log):
+    def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore
+        self.simulator = simulator
+        self.session = session
+
+
+class SessionEndLog(SessionBeginLog):
+    pass
+
+
+class MarketStepBeginLog(Log):
+    def __init__(self, market: "Market", simulator: "Simulator"):  # type: ignore
+        self.market = market
+        self.simulator = simulator
+
+
+class MarketStepEndLog(MarketStepBeginLog):
+    pass

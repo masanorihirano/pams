@@ -17,8 +17,8 @@ class EventHook:
         time: Optional[List[int]] = None,
         specific_class: Optional[Type] = None,
     ):
-        if hook_type not in ["simulator", "market", "agent"]:
-            raise ValueError("hook type have to be simulator, market or agent")
+        if hook_type not in ["simulator", "market", "agent", "order"]:
+            raise ValueError("hook type have to be simulator, market, agent, or order")
         if hook_type == "simulator" and specific_class is not None:
             raise ValueError(
                 "specific_class is not allowed to set if hook_type is simulator"
@@ -50,6 +50,12 @@ class EventABC(ABC):
 
     @abstractmethod
     def hook_registration(self) -> List[EventHook]:
+        pass
+
+    def hooked_by_time_and_order_before(self, order: "Order", time: int) -> None:  # type: ignore
+        pass
+
+    def hooked_by_time_and_order_after(self, order: "Order", time: int) -> None:  # type: ignore
         pass
 
     def hooked_by_time_and_simulator_before(self, simulator: "Simulator", time: int) -> None:  # type: ignore

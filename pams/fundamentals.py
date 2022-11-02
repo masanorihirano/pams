@@ -92,7 +92,9 @@ class Fundamentals:
             cholesky_matrix, dw_cholesky
         ) + drifts_cholesky.T.reshape(-1, 1)
 
-        drifts_others = np.asarray([self.drifts[x] for x in generate_target_ids_other])
+        drifts_others = np.asarray(
+            [[self.drifts[x] for _ in range(length)] for x in generate_target_ids_other]
+        )
 
         return np.stack(
             [

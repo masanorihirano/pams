@@ -122,4 +122,32 @@ class Simulator:
         for market in markets:
             self._update_time_on_market(market=market)
 
+    def trigger_event_before_order(self, order: "Order") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_before_session(self, session: "Session") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_after_session(self, session: "Session") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_before_step_for_market(self, market: "Market") -> None:  # type: ignore
+        # ToDO
+        pass
+
+    def trigger_event_after_step_for_market(self, market: "Market") -> None:  # type: ignore
+        # ToDO
+        pass
+
     # ToDo get_xxx_by_name
