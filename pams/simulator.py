@@ -24,21 +24,25 @@ class Simulator:
     ) -> None:
         self._prng = prng
         self.logger: Optional[Logger] = logger
+        if self.logger is not None:
+            self.logger._set_simulator(simulator=self)
 
         # ToDo: move to session?
         self.n_events: int = 0
         self.events: List[EventABC] = []
         self.id2event: Dict[int, EventABC] = {}
         self.event_hooks: List[EventHook] = []
-        self.events_dict: Dict[str, Dict[int, List[EventHook]]] = {
-            "simulator_before": {},
-            "simulator_after": {},
+        self.events_dict: Dict[str, Dict[Optional[int], List[EventHook]]] = {
+            "order_before": {},
+            "order_after": {},
+            "execution_before": {},
+            "execution_after": {},
+            "session_before": {},
+            "session_after": {},
             "market_before": {},
             "market_after": {},
-            "agent_before": {},
-            "agent_after": {},
         }
-        self.name2event: Dict[str, EventHook] = {}
+        self.name2event: Dict[str, EventABC] = {}
 
         self.n_agents: int = 0
         self.agents: List[Agent] = []
@@ -62,6 +66,31 @@ class Simulator:
         self.sessions: List[Session] = []
         self.id2session: Dict[int, Session] = {}
         self.name2session: Dict[str, Session] = {}
+        self.current_session: Optional[Session] = None
+
+    def _add_event(self, event_hook: EventHook) -> None:
+        if event_hook in self.event_hooks:
+            raise ValueError("event_hook is already registered")
+        if event_hook.event in self.events:
+            raise ValueError("event is already registered")
+        if event_hook.event.event_id in self.id2event:
+            raise ValueError(f"event_id {event_hook.event.event_id} is duplicated")
+        if event_hook.event.name in self.name2event:
+            raise ValueError(f"event name {event_hook.event.name} is duplicate")
+        event = event_hook.event
+        self.events.append(event)
+        self.n_events += 1
+        self.id2event[event.event_id] = event
+        self.name2event[event.name] = event
+        self.event_hooks.append(event_hook)
+        register_name: str = event_hook.hook_type + (
+            "_before" if event_hook.is_before else "_after"
+        )
+        times = event_hook.time if event_hook.time is not None else [None]
+        for time_ in times:
+            if time_ not in self.events_dict[register_name]:
+                self.events_dict[register_name] = []
+            self.events_dict[register_name][time_].append(event_hook)
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
         if market in self.markets:

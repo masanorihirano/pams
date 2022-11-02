@@ -17,12 +17,12 @@ class EventHook:
         time: Optional[List[int]] = None,
         specific_class: Optional[Type] = None,
     ):
-        if hook_type not in ["simulator", "market", "agent", "order"]:
-            raise ValueError("hook type have to be simulator, market, agent, or order")
-        if hook_type == "simulator" and specific_class is not None:
+        if hook_type not in ["order", "execution", "session", "market"]:
             raise ValueError(
-                "specific_class is not allowed to set if hook_type is simulator"
+                "hook type have to be order, execution, session, or market"
             )
+        if hook_type == "execution" and is_before:
+            raise ValueError("execution can be hooked only after it")
         self.event = event
         self.hook_type = hook_type
         self.is_before = is_before
@@ -52,26 +52,23 @@ class EventABC(ABC):
     def hook_registration(self) -> List[EventHook]:
         pass
 
-    def hooked_by_time_and_order_before(self, order: "Order", time: int) -> None:  # type: ignore
+    def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_order_after(self, order: "Order", time: int) -> None:  # type: ignore
+    def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_simulator_before(self, simulator: "Simulator", time: int) -> None:  # type: ignore
+    def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_simulator_after(self, simulator: "Simulator", time: int) -> None:  # type: ignore
+    def hooked_before_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_market_before(self, market: "Market", time: int) -> None:  # type: ignore
+    def hooked_after_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_market_after(self, market: "Market", time: int) -> None:  # type: ignore
+    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
         pass
 
-    def hooked_by_time_and_agent_before(self, agent: "Agent", time: int) -> None:  # type: ignore
-        pass
-
-    def hooked_by_time_and_agent_after(self, agent: "Agent", time: int) -> None:  # type: ignore
+    def hooked_after_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
         pass

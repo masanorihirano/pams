@@ -89,12 +89,14 @@ class Market:
     def get_market_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
+        # ToDo split it to market prices and mid prices
         return cast(
             List[float],
             self._extract_sequential_data_by_time(times, self._market_prices),
         )
 
     def get_market_price(self, time: Union[int, None] = None) -> float:
+        # ToDo split it to market price and mid price
         return cast(
             float,
             self._extract_data_by_time(time, self._market_prices, allow_none=True),

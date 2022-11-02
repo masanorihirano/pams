@@ -379,24 +379,22 @@ class SequentialRunner(Runner):
         markets: List[Market] = self.simulator.markets
         for market in markets:
             market._is_running = session.with_order_execution
-        for market in markets:
-            market._execution()
-
-        self.simulator._update_times_on_markets(self.simulator.markets)  # t: -1 -> 0
 
         for _ in range(session.iteration_steps):
             for market in markets:
                 self.simulator.trigger_event_before_step_for_market(market=market)
                 if self.logger is not None:
                     log: Log = MarketStepBeginLog(
-                        market=market, simulator=self.simulator
+                        session=session, market=market, simulator=self.simulator
                     )
                     log.read_and_write_with_direct_process(logger=self.logger)
             if session.with_order_placement:
                 self._update_markets(session=session)
             for market in markets:
                 if self.logger is not None:
-                    log = MarketStepEndLog(market=market, simulator=self.simulator)
+                    log = MarketStepEndLog(
+                        session=session, market=market, simulator=self.simulator
+                    )
                     log.read_and_write_with_direct_process(logger=self.logger)
                 self.simulator.trigger_event_after_step_for_market(market=market)
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
@@ -406,7 +404,10 @@ class SequentialRunner(Runner):
             log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
             log.read_and_write(logger=self.logger)
             self.logger._process()
+        self.simulator._update_times_on_markets(self.simulator.markets)  # t: -1 -> 0
+
         for session in self.simulator.sessions:
+            self.simulator.current_session = session
             self.simulator.trigger_event_before_session(session=session)
             if self.logger is not None:
                 log = SessionBeginLog(
