@@ -6,7 +6,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from .logs import ExecutionLog, Logger
+from .logs import ExecutionLog
+from .logs import Logger
 from .logs import OrderLog
 from .market import Market
 from .order import Order

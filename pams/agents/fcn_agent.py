@@ -45,8 +45,8 @@ class FCNAgent(Agent):
         self,
         settings: Dict[str, Any],
         accessible_markets_ids: List[int],
-        *args,
-        **kwargs,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         json_random: JsonRandom = JsonRandom(prng=self.prng)

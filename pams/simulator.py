@@ -4,6 +4,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Type
+from typing import cast
 
 from .agent import Agent
 from .events.base import EventABC
@@ -86,10 +87,14 @@ class Simulator:
         register_name: str = event_hook.hook_type + (
             "_before" if event_hook.is_before else "_after"
         )
-        times = event_hook.time if event_hook.time is not None else [None]
+        times: List[Optional[int]] = (
+            cast(List[Optional[int]], event_hook.time)
+            if event_hook.time is not None
+            else cast(List[Optional[int]], [None])
+        )
         for time_ in times:
             if time_ not in self.events_dict[register_name]:
-                self.events_dict[register_name] = []
+                self.events_dict[register_name][time_] = []
             self.events_dict[register_name][time_].append(event_hook)
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
