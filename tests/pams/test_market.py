@@ -9,21 +9,28 @@ from pams import MARKET_ORDER
 from pams import Market
 from pams import Order
 from pams.logs import Logger
+from pams.simulator import Simulator
 
 
 class TestMarket:
     def test_init__(self) -> None:
-        m = Market(market_id=0, logger=Logger())
+        m = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
         m._update_time(next_fundamental_price=1.0)
-        assert m._market_prices == [None for _ in range(m.chunk_size)]
+        assert m._market_prices == [1.0] + [None for _ in range(m.chunk_size - 1)]
         assert m._last_executed_prices == [None for _ in range(m.chunk_size)]
         assert m._fundamental_prices == [1.0] + [None for _ in range(m.chunk_size - 1)]
         assert m._executed_volumes == [0 for _ in range(m.chunk_size)]
         assert m._executed_total_prices == [0.0 for _ in range(m.chunk_size)]
         assert m._n_buy_orders == [0 for _ in range(m.chunk_size)]
         assert m._n_sell_orders == [0 for _ in range(m.chunk_size)]
-        assert m.get_market_price() is None
-        assert m.get_market_prices() == [None]
+        assert m.get_market_price() == 1.0
+        assert m.get_market_prices() == [1.0]
         assert m.get_last_executed_prices() == [None]
         assert m.get_last_executed_price() is None
         assert m.get_fundamental_prices() == [1.0]
@@ -113,7 +120,13 @@ class TestMarket:
 
     def test_execution(self) -> None:
         random.seed(42)
-        market = Market(market_id=0, logger=Logger())
+        market = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
         market._update_time(1.0)
         for _ in range(1000):
             kind = LIMIT_ORDER if random.random() < 0.1 else MARKET_ORDER
@@ -132,8 +145,10 @@ class TestMarket:
             market._update_time(1.0)
         market._is_running = True
         logs = market._execution()
+        if len(logs) == 0:
+            raise AssertionError
         start_time = time.time()
-        for _ in range(1000):
+        for _ in range(10000):
             kind = LIMIT_ORDER if random.random() < 0.1 else MARKET_ORDER
             price = random.random() * 10 if kind == LIMIT_ORDER else None
             ttl = random.randint(1, 100) if bool(random.getrandbits(1)) else None
@@ -152,6 +167,6 @@ class TestMarket:
             assert len(log) <= volume
             market._update_time(1.0)
         end_time = time.time()
-        time_per_step = (end_time - start_time) / 1000
+        time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
         assert time_per_step < 0.002

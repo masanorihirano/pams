@@ -1,0 +1,429 @@
+import os
+import random
+import time
+from io import TextIOWrapper
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Type
+from typing import Union
+
+from ..agent import Agent
+from ..high_frequency_agent import HighFrequencyAgent
+from ..logs import ExecutionLog
+from ..logs import Log
+from ..logs import Logger
+from ..logs import MarketStepBeginLog
+from ..logs import MarketStepEndLog
+from ..logs import OrderLog
+from ..logs import SessionBeginLog
+from ..logs import SessionEndLog
+from ..logs import SimulationBeginLog
+from ..logs import SimulationEndLog
+from ..market import Market
+from ..order import Order
+from ..session import Session
+from ..simulator import Simulator
+from ..utils.class_finder import find_class
+from ..utils.json_extends import json_extends
+from .base import Runner
+
+
+class SequentialRunner(Runner):
+    def __init__(
+        self,
+        settings: Union[Dict, TextIOWrapper, os.PathLike, str],
+        prng: Optional[random.Random] = None,
+        logger: Optional[Logger] = None,
+        simulator_class: Type[Simulator] = Simulator,
+    ):
+        super().__init__(settings, prng, logger, simulator_class)
+        self._pending_setups: List[Tuple[Callable, Dict]] = []
+
+    @staticmethod
+    def judge_hft_or_not(agent: Agent) -> bool:
+        return isinstance(agent, HighFrequencyAgent)
+
+    def _generate_markets(self, market_type_names: List[str]) -> None:
+        i_market = 0
+        for name in market_type_names:
+            market_settings: Dict = self.settings[name]
+            n_markets = 1
+            id_from = 0
+            id_to = 0
+            if "numMarkets" in market_settings:
+                n_markets = int(market_settings["numMarkets"])
+                id_to = n_markets - 1
+            if "from" in market_settings or "to" in market_settings:
+                if "from" not in market_settings or "to" not in market_settings:
+                    raise ValueError(
+                        f"both {name}.from and {name}.to are required in json file if you use"
+                    )
+                if "numMarkets" in market_settings:
+                    raise ValueError(
+                        f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
+                    )
+                n_markets = market_settings["to"] - market_settings["from"]
+                id_from = market_settings["from"]
+                id_to = market_settings["to"]
+            prefix: str
+            if "prefix" in market_settings:
+                prefix = market_settings["prefix"]
+            else:
+                prefix = name + ("-" if n_markets > 1 else "")
+            market_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=market_settings,
+                excludes_fields=["numMarkets", "from", "to", "prefix"],
+            )
+            if "class" not in market_settings:
+                raise ValueError(f"class is not defined for {name}")
+            market_class: Type[Market] = find_class(name=market_settings["class"])
+            if not issubclass(market_class, Market):
+                raise ValueError(
+                    f"market class for {name} does not inherit Market class"
+                )
+            if "fundamentalPrice" in market_settings:
+                fundamental_price = float(market_settings["fundamentalPrice"])
+            elif "marketPrice" in market_settings:
+                fundamental_price = float(market_settings["marketPrice"])
+            else:
+                raise ValueError(
+                    f"fundamentalPrice or marketPrice is required for {name}"
+                )
+            fundamental_drift: float = 0.0
+            if "fundamentalDrift" in market_settings:
+                fundamental_price = float(market_settings["fundamentalDrift"])
+            fundamental_volatility: float = 0.0
+            if "fundamentalVolatility" in market_settings:
+                fundamental_volatility = float(market_settings["fundamentalVolatility"])
+
+            for i in range(id_from, id_to + 1):
+                market = market_class(
+                    market_id=i_market,
+                    prng=random.Random(self._prng.randint(0, 2**31)),
+                    simulator=self.simulator,
+                    logger=self.logger,
+                    name=prefix + (str(i) if n_markets != 1 else ""),
+                )
+                i_market += 1
+                self.simulator._add_market(market=market, group_name=name)
+                self.simulator.fundamentals.add_market(
+                    market_id=market.market_id,
+                    initial=fundamental_price,
+                    drift=fundamental_drift,
+                    volatility=fundamental_volatility,
+                )
+                self._pending_setups.append(
+                    (market.setup, {"settings": market_settings})
+                )
+
+    def _generate_agents(self, agent_type_names: List[str]) -> None:
+        i_agent = 0
+        for name in agent_type_names:
+            agent_settings: Dict = self.settings[name]
+            n_agents = 1
+            id_from = 0
+            id_to = 0
+            if "numAgents" in agent_settings:
+                n_agents = int(agent_settings["numAgents"])
+                id_to = n_agents - 1
+            if "from" in agent_settings or "to" in agent_settings:
+                if "from" not in agent_settings or "to" not in agent_settings:
+                    raise ValueError(
+                        f"both {name}.from and {name}.to are required in json file if you use"
+                    )
+                if "numAgents" in agent_settings:
+                    raise ValueError(
+                        f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
+                    )
+                n_agents = agent_settings["to"] - agent_settings["from"]
+                id_from = agent_settings["from"]
+                id_to = agent_settings["to"]
+            prefix: str
+            if "prefix" in agent_settings:
+                prefix = agent_settings["prefix"]
+            else:
+                prefix = name + ("-" if n_agents > 1 else "")
+            agent_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=agent_settings,
+                excludes_fields=["numAgents", "from", "to", "prefix"],
+            )
+            if "class" not in agent_settings:
+                raise ValueError(f"class is not defined for {name}")
+            agent_class: Type[Agent] = find_class(name=agent_settings["class"])
+            if not issubclass(agent_class, Agent):
+                raise ValueError(
+                    f"market class for {name} does not inherit Market class"
+                )
+            if "markets" not in agent_settings:
+                raise ValueError(f"markets is required in {name}")
+            accessible_market_names: List[str] = agent_settings["markets"]
+            accessible_market_ids: List[int] = sum(
+                [
+                    list(
+                        map(
+                            lambda m: m.market_id,
+                            self.simulator.markets_group_name2market[x],
+                        )
+                    )
+                    for x in accessible_market_names
+                ],
+                [],
+            )
+            for i in range(id_from, id_to + 1):
+                agent = agent_class(
+                    agent_id=i_agent,
+                    prng=random.Random(self._prng.randint(0, 2**31)),
+                    simulator=self.simulator,
+                    logger=self.logger,
+                    name=prefix + (str(i) if n_agents != 1 else ""),
+                )
+                i_agent += 1
+                self.simulator._add_agent(agent=agent, group_name=name)
+                self._pending_setups.append(
+                    (
+                        agent.setup,
+                        {
+                            "settings": agent_settings,
+                            "accessible_markets_ids": accessible_market_ids,
+                        },
+                    )
+                )
+
+    def _set_fundamental_correlation(self) -> None:
+        if "fundamentalCorrelations" in self.settings["simulation"]:
+            corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
+            for key, value in corr_settings.items():
+                if key == "pairwise":
+                    if (
+                        not isinstance(value, list)
+                        or sum([len(x) != 3 for x in value]) > 0
+                    ):
+                        raise ValueError(
+                            "simulation.fundamentalCorrelations.pairwise has invalid format data"
+                        )
+                    for (market1_name, market2_name, corr) in value:
+                        market1 = self.simulator.name2market[market1_name]
+                        market2 = self.simulator.name2market[market2_name]
+                        self.simulator.fundamentals.set_correlation(
+                            market_id1=market1.market_id,
+                            market_id2=market2.market_id,
+                            corr=float(corr),
+                        )
+                else:
+                    raise NotImplementedError(
+                        f"{key} for simulation.fundamentalCorrelations is not supported"
+                    )
+
+    def _generate_sessions(self) -> None:
+        session_settings: Dict = self.settings["simulation"]["sessions"]
+        if not isinstance(session_settings, list):
+            raise ValueError("simulation.sessions must be list[dict]")
+        i_session = 0
+        for session_setting in session_settings:
+            if "sessionName" not in session_setting:
+                raise ValueError(
+                    "for each element in simulation.sessions must have sessionName"
+                )
+            session = Session(
+                session_id=i_session,
+                prng=random.Random(self._prng.randint(0, 2**31)),
+                simulator=self.simulator,
+                name=session_setting["sessionName"],
+                logger=self.logger,
+            )
+            i_session += 1
+            self.simulator._add_session(session=session)
+            self._pending_setups.append((session.setup, {"settings": session_setting}))
+
+    def _setup(self) -> None:
+        if "simulation" not in self.settings:
+            raise ValueError("simulation is required in json file")
+
+        if "markets" not in self.settings["simulation"]:
+            raise ValueError("simulation.markets is required in json file")
+        market_type_names: List[str] = self.settings["simulation"]["markets"]
+        if (
+            not isinstance(market_type_names, list)
+            or sum([not isinstance(m, str) for m in market_type_names]) > 0
+        ):
+            raise ValueError("simulation.markets in json file have to be list[str]")
+        self._generate_markets(market_type_names=market_type_names)
+        self._set_fundamental_correlation()
+
+        if "agents" not in self.settings["simulation"]:
+            raise ValueError("agents.markets is required in json file")
+        agent_type_names: List[str] = self.settings["simulation"]["agents"]
+        if (
+            not isinstance(agent_type_names, list)
+            or sum([not isinstance(m, str) for m in agent_type_names]) > 0
+        ):
+            raise ValueError("simulation.agents in json file have to be list[str]")
+        self._generate_agents(agent_type_names=agent_type_names)
+
+        if "sessions" not in self.settings["simulation"]:
+            raise ValueError("simulation.sessions is required in json file")
+        session_settings: List[Dict[str, Any]] = self.settings["simulation"]["sessions"]
+        if (
+            not isinstance(session_settings, list)
+            or sum([not isinstance(m, dict) for m in session_settings]) > 0
+        ):
+            raise ValueError("simulation.sessions in json file have to be List[Dict]")
+        self._generate_sessions()
+
+        # ToDo event
+
+        _ = [func(**kwargs) for func, kwargs in self._pending_setups]
+
+    def _collect_orders(self, session: Session) -> List[List[Order]]:
+        agents = self.simulator.normal_frequency_agents
+        agents = self._prng.sample(agents, len(agents))
+        n_orders = 0
+        all_orders: List[List[Order]] = []
+        for agent in agents:
+            if n_orders >= session.max_normal_orders:
+                break
+            orders = agent.submit_orders(markets=self.simulator.markets)
+            if len(orders) > 0:
+                if not session.with_order_placement:
+                    raise AssertionError("currently order is not accepted")
+                if sum([order.agent_id != agent.agent_id for order in orders]) > 0:
+                    raise ValueError(
+                        "spoofing order is not allowed. please check agent_id in order"
+                    )
+                all_orders.append(orders)
+                n_orders += 1
+        return all_orders
+
+    def _handle_orders(
+        self, session: Session, local_orders: List[List[Order]]
+    ) -> List[List[Order]]:
+        agents = self.simulator.high_frequency_agents
+        agents = self._prng.sample(agents, len(agents))
+        sequential_orders = self._prng.sample(local_orders, len(local_orders))
+        all_orders: List[List[Order]] = []
+        for orders in sequential_orders:
+            for order in orders:
+                if not session.with_order_placement:
+                    raise AssertionError("currently order is not accepted")
+                market: Market = self.simulator.id2market[order.market_id]
+                self.simulator.trigger_event_before_order(order=order)
+                log: OrderLog = market._add_order(order=order)
+                agent: Agent = self.simulator.id2agent[order.agent_id]
+                agent.submitted_order(log=log)
+                self.simulator.trigger_event_after_order(order_log=log)
+                if session.with_order_execution:
+                    logs: List[ExecutionLog] = market._execution()
+                    for execution_log in logs:
+                        agent.executed_order(log=execution_log)
+                        self.simulator.trigger_event_after_execution(
+                            execution_log=execution_log
+                        )
+
+            if session.high_frequency_submission_rate < self._prng.random():
+                continue
+
+            n_high_freq_orders = 0
+            for agent in agents:
+                if n_high_freq_orders >= session.max_high_frequency_orders:
+                    break
+
+                high_freq_orders: List[Order] = agent.submit_orders(
+                    markets=self.simulator.markets
+                )
+                if len(high_freq_orders) > 0:
+                    if not session.with_order_placement:
+                        raise AssertionError("currently order is not accepted")
+                    if (
+                        sum(
+                            [
+                                order.agent_id != agent.agent_id
+                                for order in high_freq_orders
+                            ]
+                        )
+                        > 0
+                    ):
+                        raise ValueError(
+                            "spoofing order is not allowed. please check agent_id in order"
+                        )
+                    all_orders.append(high_freq_orders)
+                    n_high_freq_orders += 1
+                    for order in high_freq_orders:
+                        market = self.simulator.id2market[order.market_id]
+                        self.simulator.trigger_event_before_order(order=order)
+                        log = market._add_order(order=order)
+                        agent = self.simulator.id2agent[order.agent_id]
+                        agent.submitted_order(log=log)
+                        self.simulator.trigger_event_after_order(order_log=log)
+                        if session.with_order_execution:
+                            logs = market._execution()
+                            for execution_log in logs:
+                                agent.executed_order(log=execution_log)
+                                self.simulator.trigger_event_after_execution(
+                                    execution_log=execution_log
+                                )
+        return all_orders
+
+    def _update_markets(self, session: Session) -> None:
+        local_orders: List[List[Order]] = self._collect_orders(session=session)
+        self._handle_orders(session=session, local_orders=local_orders)
+
+    def _iterate_market_updates(self, session: Session) -> None:
+        markets: List[Market] = self.simulator.markets
+        for market in markets:
+            market._is_running = session.with_order_execution
+
+        for _ in range(session.iteration_steps):
+            for market in markets:
+                self.simulator.trigger_event_before_step_for_market(market=market)
+                if self.logger is not None:
+                    log: Log = MarketStepBeginLog(
+                        session=session, market=market, simulator=self.simulator
+                    )
+                    log.read_and_write_with_direct_process(logger=self.logger)
+            if session.with_order_placement:
+                self._update_markets(session=session)
+            for market in markets:
+                if self.logger is not None:
+                    log = MarketStepEndLog(
+                        session=session, market=market, simulator=self.simulator
+                    )
+                    log.read_and_write_with_direct_process(logger=self.logger)
+                self.simulator.trigger_event_after_step_for_market(market=market)
+            self.simulator._update_times_on_markets(self.simulator.markets)  # t++
+
+    def _run(self) -> None:
+        if self.logger is not None:
+            log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
+            log.read_and_write(logger=self.logger)
+            self.logger._process()
+        self.simulator._update_times_on_markets(self.simulator.markets)  # t: -1 -> 0
+
+        for session in self.simulator.sessions:
+            self.simulator.current_session = session
+            self.simulator.trigger_event_before_session(session=session)
+            if self.logger is not None:
+                log = SessionBeginLog(
+                    session=session, simulator=self.simulator
+                )  # must be blocking
+                log.read_and_write(logger=self.logger)
+                self.logger._process()
+            self._iterate_market_updates(session=session)
+            self.simulator.trigger_event_after_session(session=session)
+            if self.logger is not None:
+                log = SessionEndLog(
+                    session=session, simulator=self.simulator
+                )  # must be blocking
+                log.read_and_write(logger=self.logger)
+                self.logger._process()
+        if self.logger is not None:
+            log = SimulationEndLog(simulator=self.simulator)  # must be blocking
+            log.read_and_write(logger=self.logger)
+            self.logger._process()

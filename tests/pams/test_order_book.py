@@ -34,9 +34,9 @@ class TestOrderBook:
     def test_time(self) -> None:
         ob = OrderBook(is_buy=True)
         assert ob.time == 0
-        ob.set_time(time=10)
+        ob._set_time(time=10)
         assert ob.time == 10
-        ob.update_time()
+        ob._update_time()
         assert ob.time == 11
 
     def test_get_price_volume(self) -> None:
