@@ -31,7 +31,7 @@ class Simulator:
         self.events: List[EventABC] = []
         self.id2event: Dict[int, EventABC] = {}
         self.event_hooks: List[EventHook] = []
-        self.events_dict: Dict[str, Dict[Optional[int], List[EventABC]]] = {
+        self.events_dict: Dict[str, Dict[Optional[int], List[EventHook]]] = {
             "order_before": {},
             "order_after": {},
             "cancel_before": {},
@@ -94,7 +94,7 @@ class Simulator:
         for time_ in times:
             if time_ not in self.events_dict[register_name]:
                 self.events_dict[register_name][time_] = []
-            self.events_dict[register_name][time_].append(event)
+            self.events_dict[register_name][time_].append(event_hook)
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
         if market in self.markets:
@@ -155,103 +155,133 @@ class Simulator:
         for market in markets:
             self._update_time_on_market(market=market)
 
+    def _check_event_class_and_instance(
+        self,
+        check_object: object,
+        class_requirement: Optional[Type] = None,
+        instance_requirement: Optional[object] = None,
+    ) -> bool:
+        if class_requirement is not None:
+            if not isinstance(check_object, class_requirement):
+                return False
+        if instance_requirement is not None:
+            if instance_requirement != check_object:
+                return False
+        return True
+
     def _trigger_event_before_order(self, order: "Order") -> None:  # type: ignore
         time: int = order.placed_at
-        events = self.events_dict["order_before"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_before_order(simulator=self, order=order)
+        event_hooks = self.events_dict["order_before"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_before_order(simulator=self, order=order)
 
     def _trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore
         time: int = order_log.time
-        events = self.events_dict["order_after"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_after_order(simulator=self, order_log=order_log)
+        event_hooks = self.events_dict["order_after"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_after_order(simulator=self, order_log=order_log)
 
     def _trigger_event_before_cancel(self, cancel: "Cancel") -> None:  # type: ignore
         time: int = cancel.placed_at
-        events = self.events_dict["cancel_before"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_before_cancel(simulator=self, cancel=cancel)
+        event_hooks = self.events_dict["cancel_before"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_before_cancel(simulator=self, cancel=cancel)
 
     def _trigger_event_after_cancel(self, cancel_log: "CancelLog") -> None:  # type: ignore
         time: int = cancel_log.time
-        events = self.events_dict["cancel_after"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_after_cancel(simulator=self, cancel_log=cancel_log)
+        event_hooks = self.events_dict["cancel_after"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_after_cancel(simulator=self, cancel_log=cancel_log)
 
     def _trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore
         time: int = execution_log.time
-        events = self.events_dict["execution_after"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_after_execution(simulator=self, execution_log=execution_log)
+        event_hooks = self.events_dict["execution_after"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_after_execution(
+                simulator=self, execution_log=execution_log
+            )
 
     def _trigger_event_before_session(self, session: "Session") -> None:  # type: ignore
         time: int = session.session_start_time
-        events = self.events_dict["session_before"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_before_session(simulator=self, session=session)
+        event_hooks = self.events_dict["session_before"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_before_session(simulator=self, session=session)
 
     def _trigger_event_after_session(self, session: "Session") -> None:  # type: ignore
         time: int = session.session_start_time + session.iteration_steps - 1
-        events = self.events_dict["session_after"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_after_session(simulator=self, session=session)
+        event_hooks = self.events_dict["session_after"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            event_hook.event.hooked_after_session(simulator=self, session=session)
 
     def _trigger_event_before_step_for_market(self, market: "Market") -> None:  # type: ignore
         time: int = market.get_time()
-        events = self.events_dict["market_before"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_before_step_for_market(simulator=self, market=market)
+        event_hooks = self.events_dict["market_before"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            if self._check_event_class_and_instance(
+                check_object=market,
+                class_requirement=event_hook.specific_class,
+                instance_requirement=event_hook.specific_instance,
+            ):
+                event_hook.event.hooked_before_step_for_market(
+                    simulator=self, market=market
+                )
 
     def _trigger_event_after_step_for_market(self, market: "Market") -> None:  # type: ignore
         time: int = market.get_time()
-        events = self.events_dict["market_after"]
-        target_events: List[EventABC] = []
-        if None in events:
-            target_events.extend(events[None])
-        if time in events:
-            target_events.extend(events[time])
-        for event in target_events:
-            event.hooked_after_step_for_market(simulator=self, market=market)
+        event_hooks = self.events_dict["market_after"]
+        target_event_hooks: List[EventHook] = []
+        if None in event_hooks:
+            target_event_hooks.extend(event_hooks[None])
+        if time in event_hooks:
+            target_event_hooks.extend(event_hooks[time])
+        for event_hook in target_event_hooks:
+            if self._check_event_class_and_instance(
+                check_object=market,
+                class_requirement=event_hook.specific_class,
+                instance_requirement=event_hook.specific_instance,
+            ):
+                event_hook.event.hooked_after_step_for_market(
+                    simulator=self, market=market
+                )
 
     # ToDo get_xxx_by_name

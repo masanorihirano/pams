@@ -254,8 +254,8 @@ class SequentialRunner(Runner):
             session_start_time += session_setting["iterationSteps"]
             self.simulator._add_session(session=session)
             self._pending_setups.append((session.setup, {"settings": session_setting}))
-            if "events" in session_settings:
-                event_names: List[str] = session_settings["events"]
+            if "events" in session_setting:
+                event_names: List[str] = session_setting["events"]
                 for event_name in event_names:
                     event_setting = self.settings[event_name]
                     event_setting = json_extends(
@@ -266,8 +266,8 @@ class SequentialRunner(Runner):
                     )
                     if "class" not in event_setting:
                         raise ValueError(f"class is required in {event_name}")
-                    event_class_name = self.settings["class"]
-                    event_class = Type[EventABC] = find_class(name=event_class_name)
+                    event_class_name = event_setting["class"]
+                    event_class: Type[EventABC] = find_class(name=event_class_name)
                     event = event_class(
                         event_id=i_event,
                         prng=random.Random(self._prng.randint(0, 2**31)),
@@ -276,12 +276,16 @@ class SequentialRunner(Runner):
                         name=event_name,
                     )
                     i_event += 1
-                    event_hooks: List[EventHook] = event.hook_registration()
-                    self._pending_setups.append(event.setup, event_setting)
-                    for event_hook in event_hooks:
-                        self._pending_setups.append(
-                            self.simulator._add_event, event_hook
-                        )
+                    self._pending_setups.append(
+                        (event.setup, {"settings": event_setting})
+                    )
+
+                    def event_hook_setup(_event: EventABC):
+                        event_hooks: List[EventHook] = _event.hook_registration()
+                        for event_hook in event_hooks:
+                            self.simulator._add_event(event_hook)
+
+                    self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
         if "simulation" not in self.settings:

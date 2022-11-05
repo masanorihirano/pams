@@ -282,7 +282,6 @@ class Market:
             if self._market_prices[self.time - 1] is not None
             else self._fundamental_prices[self.time]
         )
-        # ToDo: logging
 
     def _cancel_order(self, cancel: Cancel) -> CancelLog:
         if self.market_id != cancel.order.market_id:
@@ -506,3 +505,11 @@ class Market:
         if self.logger is not None:
             self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs
+
+    def change_fundamental_price(self, scale: float) -> None:
+        time: int = self.time
+        current_fundamental: float = self.get_fundamental_price(time=time)
+        new_fundamental: float = current_fundamental * scale
+        self._fundamental_prices[time] = new_fundamental
+        self._simulator.fundamentals.prices[self.market_id][time] = new_fundamental
+        self._simulator.fundamentals._generated_until = time

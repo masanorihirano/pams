@@ -16,6 +16,7 @@ class EventHook:
         is_before: bool,
         time: Optional[List[int]] = None,
         specific_class: Optional[Type] = None,
+        specific_instance: Optional[object] = None,
     ):
         if hook_type not in ["order", "cancel", "execution", "session", "market"]:
             raise ValueError(
@@ -27,9 +28,15 @@ class EventHook:
         self.hook_type = hook_type
         self.is_before = is_before
         self.time = time
+        if specific_class is not None or specific_instance is not None:
+            if hook_type not in ["market"]:
+                raise ValueError(
+                    "specific_class and specific_instance are not supported except for market"
+                )
         self.specific_class: Optional[Type] = (
             specific_class.__class__ if specific_class is not None else None
         )
+        self.specific_instance: Optional[object] = specific_instance
 
 
 class EventABC(ABC):
