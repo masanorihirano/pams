@@ -11,8 +11,6 @@ def test_all() -> None:
         if not os.path.isdir(sample_dir):
             continue
         cmd = [
-            "poetry",
-            "run",
             "python",
             f"{sample_dir}/main.py",
             "--config",
