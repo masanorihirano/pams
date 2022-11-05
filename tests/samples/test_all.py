@@ -19,7 +19,7 @@ def test_all() -> None:
             "1",
         ]
         env = os.environ.copy()
-        env["PYTHONPATH"] += f";{root_dir}"
+        env["PYTHONPATH"] = root_dir
         run = subprocess.run(
             cmd, cwd=root_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
         )
