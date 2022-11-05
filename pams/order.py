@@ -136,6 +136,14 @@ class Cancel:
         self.order: Order = order
         self.placed_at: Optional[int] = placed_at
 
+    @property
+    def agent_id(self) -> int:
+        return self.order.agent_id
+
+    @property
+    def market_id(self) -> int:
+        return self.order.market_id
+
     def check_system_acceptable(self, agent_id: int) -> None:
         if agent_id != self.order.agent_id:
             raise AttributeError("canceling other's order")

@@ -324,7 +324,7 @@ class SequentialRunner(Runner):
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         n_orders = 0
-        all_orders: List[List[Order]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = []
         for agent in agents:
             if n_orders >= session.max_normal_orders:
                 break
@@ -342,11 +342,11 @@ class SequentialRunner(Runner):
 
     def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
-    ) -> List[List[Order]]:
+    ) -> List[List[Union[Order, Cancel]]]:
         agents = self.simulator.high_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
-        all_orders: List[List[Order]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = []
         for orders in sequential_orders:
             for order in orders:
                 if not session.with_order_placement:
@@ -382,7 +382,7 @@ class SequentialRunner(Runner):
                 if n_high_freq_orders >= session.max_high_frequency_orders:
                     break
 
-                high_freq_orders: List[Order] = agent.submit_orders(
+                high_freq_orders: List[Union[Order, Cancel]] = agent.submit_orders(
                     markets=self.simulator.markets
                 )
                 if len(high_freq_orders) > 0:
@@ -404,11 +404,20 @@ class SequentialRunner(Runner):
                     n_high_freq_orders += 1
                     for order in high_freq_orders:
                         market = self.simulator.id2market[order.market_id]
-                        self.simulator._trigger_event_before_order(order=order)
-                        log = market._add_order(order=order)
-                        agent = self.simulator.id2agent[order.agent_id]
-                        agent.submitted_order(log=log)
-                        self.simulator._trigger_event_after_order(order_log=log)
+                        if isinstance(order, Order):
+                            self.simulator._trigger_event_before_order(order=order)
+                            log = market._add_order(order=order)
+                            agent = self.simulator.id2agent[order.agent_id]
+                            agent.submitted_order(log=log)
+                            self.simulator._trigger_event_after_order(order_log=log)
+                        elif isinstance(order, Cancel):
+                            self.simulator._trigger_event_before_cancel(cancel=order)
+                            log_ = market._cancel_order(cancel=order)
+                            agent = self.simulator.id2agent[order.order.agent_id]
+                            agent.canceled_order(log=log_)
+                            self.simulator._trigger_event_after_cancel(cancel_log=order)
+                        else:
+                            raise NotImplementedError
                         if session.with_order_execution:
                             logs = market._execution()
                             for execution_log in logs:

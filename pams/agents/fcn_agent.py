@@ -73,13 +73,13 @@ class FCNAgent(Agent):
             self.mean_reversion_time = self.time_window_size
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        orders: List[Order] = sum(
+        orders: List[Union[Order, Cancel]] = sum(
             [self.submit_orders_by_market(market=market) for market in markets], []
         )
         return orders
 
-    def submit_orders_by_market(self, market: Market) -> List[Order]:
-        orders: List[Order] = []
+    def submit_orders_by_market(self, market: Market) -> List[Union[Order, Cancel]]:
+        orders: List[Union[Order, Cancel]] = []
         if not self.is_market_accessible(market_id=market.market_id):
             return orders
 
