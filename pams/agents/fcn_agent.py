@@ -4,14 +4,15 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
-from .. import LIMIT_ORDER
-from .. import Logger
-from .. import Market
-from .. import Order
-from ..agent import Agent
-from ..simulator import Simulator
+from ..logs import Logger
+from ..market import Market
+from ..order import LIMIT_ORDER
+from ..order import Cancel
+from ..order import Order
 from ..utils.json_random import JsonRandom
+from .base import Agent
 
 MARGIN_FIXED = 0
 MARGIN_NORMAL = 1
@@ -32,7 +33,7 @@ class FCNAgent(Agent):
         self,
         agent_id: int,
         prng: random.Random,
-        simulator: Simulator,
+        simulator: "Simulator",  # type: ignore
         name: str,
         logger: Optional[Logger] = None,
     ):
@@ -71,7 +72,7 @@ class FCNAgent(Agent):
         else:
             self.mean_reversion_time = self.time_window_size
 
-    def submit_orders(self, markets: List[Market]) -> List[Order]:
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         orders: List[Order] = sum(
             [self.submit_orders_by_market(market=market) for market in markets], []
         )

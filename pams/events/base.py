@@ -17,7 +17,7 @@ class EventHook:
         time: Optional[List[int]] = None,
         specific_class: Optional[Type] = None,
     ):
-        if hook_type not in ["order", "execution", "session", "market"]:
+        if hook_type not in ["order", "cancel", "execution", "session", "market"]:
             raise ValueError(
                 "hook type have to be order, execution, session, or market"
             )
@@ -37,6 +37,7 @@ class EventABC(ABC):
         self,
         event_id: int,
         prng: random.Random,
+        session: "Session",  # type: ignore
         simulator: "Simulator",  # type: ignore
         name: str,
     ) -> None:
@@ -44,6 +45,7 @@ class EventABC(ABC):
         self.prng: random.Random = prng
         self.simulator = simulator
         self.name: str = name
+        self.session = session
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         pass
@@ -56,6 +58,12 @@ class EventABC(ABC):
         pass
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore
+        pass
+
+    def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore
+        pass
+
+    def hooked_after_cancel(self, simulator: "Simulator", cancel_log: "CancelLog") -> None:  # type: ignore
         pass
 
     def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore
