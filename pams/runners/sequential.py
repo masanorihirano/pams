@@ -11,8 +11,11 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from ..agent import Agent
-from ..high_frequency_agent import HighFrequencyAgent
+from ..agents.base import Agent
+from ..agents.high_frequency_agent import HighFrequencyAgent
+from ..events import EventABC
+from ..events import EventHook
+from ..logs import CancelLog
 from ..logs import ExecutionLog
 from ..logs import Log
 from ..logs import Logger
@@ -24,6 +27,7 @@ from ..logs import SessionEndLog
 from ..logs import SimulationBeginLog
 from ..logs import SimulationEndLog
 from ..market import Market
+from ..order import Cancel
 from ..order import Order
 from ..session import Session
 from ..simulator import Simulator
@@ -227,6 +231,8 @@ class SequentialRunner(Runner):
         if not isinstance(session_settings, list):
             raise ValueError("simulation.sessions must be list[dict]")
         i_session = 0
+        i_event = 0
+        session_start_time: int = 0
         for session_setting in session_settings:
             if "sessionName" not in session_setting:
                 raise ValueError(
@@ -235,13 +241,51 @@ class SequentialRunner(Runner):
             session = Session(
                 session_id=i_session,
                 prng=random.Random(self._prng.randint(0, 2**31)),
+                session_start_time=session_start_time,
                 simulator=self.simulator,
                 name=session_setting["sessionName"],
                 logger=self.logger,
             )
             i_session += 1
+            if "iterationSteps" not in session_setting:
+                raise ValueError(
+                    "iterationSteps is required in each element of simulation.sessions"
+                )
+            session_start_time += session_setting["iterationSteps"]
             self.simulator._add_session(session=session)
             self._pending_setups.append((session.setup, {"settings": session_setting}))
+            if "events" in session_setting:
+                event_names: List[str] = session_setting["events"]
+                for event_name in event_names:
+                    event_setting = self.settings[event_name]
+                    event_setting = json_extends(
+                        whole_json=self.settings,
+                        parent_name=event_name,
+                        target_json=event_setting,
+                        excludes_fields=["numMarkets", "from", "to", "prefix"],
+                    )
+                    if "class" not in event_setting:
+                        raise ValueError(f"class is required in {event_name}")
+                    event_class_name = event_setting["class"]
+                    event_class: Type[EventABC] = find_class(name=event_class_name)
+                    event = event_class(
+                        event_id=i_event,
+                        prng=random.Random(self._prng.randint(0, 2**31)),
+                        session=session,
+                        simulator=self.simulator,
+                        name=event_name,
+                    )
+                    i_event += 1
+                    self._pending_setups.append(
+                        (event.setup, {"settings": event_setting})
+                    )
+
+                    def event_hook_setup(_event: EventABC):
+                        event_hooks: List[EventHook] = _event.hook_registration()
+                        for event_hook in event_hooks:
+                            self.simulator._add_event(event_hook)
+
+                    self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
         if "simulation" not in self.settings:
@@ -278,15 +322,13 @@ class SequentialRunner(Runner):
             raise ValueError("simulation.sessions in json file have to be List[Dict]")
         self._generate_sessions()
 
-        # ToDo event
-
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
-    def _collect_orders(self, session: Session) -> List[List[Order]]:
+    def _collect_orders(self, session: Session) -> List[List[Union[Order, Cancel]]]:
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         n_orders = 0
-        all_orders: List[List[Order]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = []
         for agent in agents:
             if n_orders >= session.max_normal_orders:
                 break
@@ -303,27 +345,36 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _handle_orders(
-        self, session: Session, local_orders: List[List[Order]]
-    ) -> List[List[Order]]:
+        self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
+    ) -> List[List[Union[Order, Cancel]]]:
         agents = self.simulator.high_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
-        all_orders: List[List[Order]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = []
         for orders in sequential_orders:
             for order in orders:
                 if not session.with_order_placement:
                     raise AssertionError("currently order is not accepted")
                 market: Market = self.simulator.id2market[order.market_id]
-                self.simulator.trigger_event_before_order(order=order)
-                log: OrderLog = market._add_order(order=order)
-                agent: Agent = self.simulator.id2agent[order.agent_id]
-                agent.submitted_order(log=log)
-                self.simulator.trigger_event_after_order(order_log=log)
+                if isinstance(order, Order):
+                    self.simulator._trigger_event_before_order(order=order)
+                    log: OrderLog = market._add_order(order=order)
+                    agent: Agent = self.simulator.id2agent[order.agent_id]
+                    agent.submitted_order(log=log)
+                    self.simulator._trigger_event_after_order(order_log=log)
+                elif isinstance(order, Cancel):
+                    self.simulator._trigger_event_before_cancel(cancel=order)
+                    log_: CancelLog = market._cancel_order(cancel=order)
+                    agent = self.simulator.id2agent[order.order.agent_id]
+                    agent.canceled_order(log=log_)
+                    self.simulator._trigger_event_after_cancel(cancel_log=order)
+                else:
+                    raise NotImplementedError
                 if session.with_order_execution:
                     logs: List[ExecutionLog] = market._execution()
                     for execution_log in logs:
                         agent.executed_order(log=execution_log)
-                        self.simulator.trigger_event_after_execution(
+                        self.simulator._trigger_event_after_execution(
                             execution_log=execution_log
                         )
 
@@ -335,7 +386,7 @@ class SequentialRunner(Runner):
                 if n_high_freq_orders >= session.max_high_frequency_orders:
                     break
 
-                high_freq_orders: List[Order] = agent.submit_orders(
+                high_freq_orders: List[Union[Order, Cancel]] = agent.submit_orders(
                     markets=self.simulator.markets
                 )
                 if len(high_freq_orders) > 0:
@@ -357,22 +408,33 @@ class SequentialRunner(Runner):
                     n_high_freq_orders += 1
                     for order in high_freq_orders:
                         market = self.simulator.id2market[order.market_id]
-                        self.simulator.trigger_event_before_order(order=order)
-                        log = market._add_order(order=order)
-                        agent = self.simulator.id2agent[order.agent_id]
-                        agent.submitted_order(log=log)
-                        self.simulator.trigger_event_after_order(order_log=log)
+                        if isinstance(order, Order):
+                            self.simulator._trigger_event_before_order(order=order)
+                            log = market._add_order(order=order)
+                            agent = self.simulator.id2agent[order.agent_id]
+                            agent.submitted_order(log=log)
+                            self.simulator._trigger_event_after_order(order_log=log)
+                        elif isinstance(order, Cancel):
+                            self.simulator._trigger_event_before_cancel(cancel=order)
+                            log_ = market._cancel_order(cancel=order)
+                            agent = self.simulator.id2agent[order.order.agent_id]
+                            agent.canceled_order(log=log_)
+                            self.simulator._trigger_event_after_cancel(cancel_log=order)
+                        else:
+                            raise NotImplementedError
                         if session.with_order_execution:
                             logs = market._execution()
                             for execution_log in logs:
                                 agent.executed_order(log=execution_log)
-                                self.simulator.trigger_event_after_execution(
+                                self.simulator._trigger_event_after_execution(
                                     execution_log=execution_log
                                 )
         return all_orders
 
     def _update_markets(self, session: Session) -> None:
-        local_orders: List[List[Order]] = self._collect_orders(session=session)
+        local_orders: List[List[Union[Order, Cancel]]] = self._collect_orders(
+            session=session
+        )
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
@@ -382,7 +444,7 @@ class SequentialRunner(Runner):
 
         for _ in range(session.iteration_steps):
             for market in markets:
-                self.simulator.trigger_event_before_step_for_market(market=market)
+                self.simulator._trigger_event_before_step_for_market(market=market)
                 if self.logger is not None:
                     log: Log = MarketStepBeginLog(
                         session=session, market=market, simulator=self.simulator
@@ -396,7 +458,7 @@ class SequentialRunner(Runner):
                         session=session, market=market, simulator=self.simulator
                     )
                     log.read_and_write_with_direct_process(logger=self.logger)
-                self.simulator.trigger_event_after_step_for_market(market=market)
+                self.simulator._trigger_event_after_step_for_market(market=market)
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
 
     def _run(self) -> None:
@@ -408,7 +470,7 @@ class SequentialRunner(Runner):
 
         for session in self.simulator.sessions:
             self.simulator.current_session = session
-            self.simulator.trigger_event_before_session(session=session)
+            self.simulator._trigger_event_before_session(session=session)
             if self.logger is not None:
                 log = SessionBeginLog(
                     session=session, simulator=self.simulator
@@ -416,7 +478,7 @@ class SequentialRunner(Runner):
                 log.read_and_write(logger=self.logger)
                 self.logger._process()
             self._iterate_market_updates(session=session)
-            self.simulator.trigger_event_after_session(session=session)
+            self.simulator._trigger_event_after_session(session=session)
             if self.logger is not None:
                 log = SessionEndLog(
                     session=session, simulator=self.simulator

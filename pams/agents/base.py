@@ -5,13 +5,16 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
-from .logs import ExecutionLog
-from .logs import Logger
-from .logs import OrderLog
-from .market import Market
-from .order import Order
-from .utils.json_random import JsonRandom
+from ..logs import CancelLog
+from ..logs import ExecutionLog
+from ..logs import Logger
+from ..logs import OrderLog
+from ..market import Market
+from ..order import Cancel
+from ..order import Order
+from ..utils.json_random import JsonRandom
 
 
 class Agent(ABC):
@@ -65,7 +68,7 @@ class Agent(ABC):
     def executed_order(self, log: ExecutionLog) -> None:
         pass
 
-    def canceled_order(self, log: ExecutionLog) -> None:
+    def canceled_order(self, log: CancelLog) -> None:
         pass
 
     def set_asset_volume(self, market_id: int, volume: int) -> None:
@@ -80,7 +83,7 @@ class Agent(ABC):
         self.asset_volumes[market_id] = 0
 
     @abstractmethod
-    def submit_orders(self, markets: List[Market]) -> List[Order]:
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         pass
 
     def update_asset_volume(self, market_id: int, delta: int) -> None:
