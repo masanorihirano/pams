@@ -46,11 +46,14 @@ class Market:
         self._next_order_id: int = 0
         self._simulator: "Simulator" = simulator  # type: ignore
         self.name: str = name
+        self.outstanding_shares: Optional[int] = None
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         if "tickSize" not in settings:
             raise AssertionError("tickSize is required")
         self.tick_size = settings["tickSize"]
+        if "outstandingShares" in settings:
+            self.outstanding_shares = settings["outstandingShares"]
         # ToDo: market price handling
 
     def _extract_sequential_data_by_time(
