@@ -24,7 +24,12 @@ def test_all() -> None:
         else:
             env["PYTHONPATH"] = root_dir
         run = subprocess.run(
-            cmd, cwd=root_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+            cmd,
+            cwd=root_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+            shell=True,
         )
         if run.returncode != 0:
             raise RuntimeError(
