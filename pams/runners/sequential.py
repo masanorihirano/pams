@@ -15,6 +15,7 @@ from ..agents.base import Agent
 from ..agents.high_frequency_agent import HighFrequencyAgent
 from ..events import EventABC
 from ..events import EventHook
+from ..index_market import IndexMarket
 from ..logs import CancelLog
 from ..logs import ExecutionLog
 from ..logs import Log
@@ -116,12 +117,13 @@ class SequentialRunner(Runner):
                 )
                 i_market += 1
                 self.simulator._add_market(market=market, group_name=name)
-                self.simulator.fundamentals.add_market(
-                    market_id=market.market_id,
-                    initial=fundamental_price,
-                    drift=fundamental_drift,
-                    volatility=fundamental_volatility,
-                )
+                if not isinstance(market, IndexMarket):
+                    self.simulator.fundamentals.add_market(
+                        market_id=market.market_id,
+                        initial=fundamental_price,
+                        drift=fundamental_drift,
+                        volatility=fundamental_volatility,
+                    )
                 self._pending_setups.append(
                     (market.setup, {"settings": market_settings})
                 )

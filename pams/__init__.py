@@ -1,4 +1,5 @@
 from .fundamentals import Fundamentals
+from .index_market import IndexMarket
 from .logs import CancelLog
 from .logs import ExecutionLog
 from .logs import Log
