@@ -11,8 +11,6 @@ def test_all() -> None:
         if not os.path.isdir(sample_dir):
             continue
         cmd = [
-            "poetry",
-            "run",
             "python",
             f"{sample_dir}/main.py",
             "--config",
@@ -21,9 +19,17 @@ def test_all() -> None:
             "1",
         ]
         env = os.environ.copy()
-        env["PYTHONPATH"] = root_dir
+        if "PYTHONPATH" in env:
+            env["PYTHONPATH"] += f";root_dir"
+        else:
+            env["PYTHONPATH"] = root_dir
         run = subprocess.run(
-            cmd, cwd=root_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+            cmd,
+            cwd=root_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+            shell=True,
         )
         if run.returncode != 0:
             raise RuntimeError(
