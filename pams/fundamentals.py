@@ -34,6 +34,10 @@ class Fundamentals:
     ) -> None:
         if market_id in self.market_ids:
             raise ValueError(f"market {market_id} is already registered")
+        if volatility < 0.0:
+            raise ValueError("volatility must be non-negative")
+        if initial <= 0.0:
+            raise ValueError("initial value must be positive")
         self.market_ids.append(market_id)
         self.drifts[market_id] = drift
         self.volatilities[market_id] = volatility
@@ -44,20 +48,47 @@ class Fundamentals:
 
     def remove_market(self, market_id: int) -> None:
         self.market_ids.remove(market_id)
+        self.drifts.pop(market_id)
+        self.volatilities.pop(market_id)
+        self.initials.pop(market_id)
+        self.start_at.pop(market_id)
+        self.prices.pop(market_id)
 
-    def change_volatility(self, market_id: int, volatility: float) -> None:
+    def change_volatility(
+        self, market_id: int, volatility: float, time: int = 0
+    ) -> None:
+        if volatility < 0.0:
+            raise ValueError("volatility must be non-negative")
         self.volatilities[market_id] = volatility
+        self._generated_until = time
 
-    def change_drift(self, market_id: int, drift: float) -> None:
+    def change_drift(self, market_id: int, drift: float, time: int = 0) -> None:
         self.drifts[market_id] = drift
+        self._generated_until = time
 
-    def set_correlation(self, market_id1: int, market_id2: int, corr: float) -> None:
-        if not (-1.0 <= corr <= 1.0):
+    def set_correlation(
+        self, market_id1: int, market_id2: int, corr: float, time: int = 0
+    ) -> None:
+        if not (-1.0 < corr < 1.0):
             raise ValueError("corr must be between 0.0 and 1.0")
-        self.correlation[(market_id1, market_id2)] = corr
+        if market_id1 == market_id2:
+            raise ValueError("market_id1 and market_id2 must be different")
+        if (market_id2, market_id1) in self.correlation:
+            self.correlation[(market_id2, market_id1)] = corr
+        else:
+            self.correlation[(market_id1, market_id2)] = corr
+        self._generated_until = time
 
-    def remove_correlation(self, market_id1: int, market_id2: int) -> None:
-        self.correlation.pop((market_id1, market_id2))
+    def remove_correlation(
+        self, market_id1: int, market_id2: int, time: int = 0
+    ) -> None:
+        if market_id1 == market_id2:
+            raise ValueError("market_id1 and market_id2 must be different")
+        if (market_id2, market_id1) in self.correlation:
+            self.correlation.pop((market_id2, market_id1))
+        else:
+            self.correlation.pop((market_id1, market_id2))
+        self._generated_until = time
 
     def _generate_log_return(
         self, generate_target_ids: List[int], length: int
@@ -76,10 +107,16 @@ class Fundamentals:
                 continue
             if id1 == id2:
                 raise AssertionError
-            corr_matrix[id1, id2] = corr
-            corr_matrix[id2, id1] = corr
+            corr_matrix[
+                generate_target_ids_cholesky.index(id1),
+                generate_target_ids_cholesky.index(id2),
+            ] = corr
+            corr_matrix[
+                generate_target_ids_cholesky.index(id2),
+                generate_target_ids_cholesky.index(id1),
+            ] = corr
         vol = np.asarray([self.volatilities[x] for x in generate_target_ids_cholesky])
-        cov_matrix = vol * corr_matrix * vol
+        cov_matrix = vol * corr_matrix * vol.reshape(-1, 1)
         cholesky_matrix = cholesky(cov_matrix, lower=True)
 
         dw_cholesky = self._np_prng.standard_normal(
