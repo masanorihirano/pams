@@ -38,9 +38,11 @@ class TestFundamentals:
     ) -> None:
         f = Fundamentals(prng=random.Random(42))
         if start_at is not None:
-            with pytest.raises(
-                ValueError
-            ) if volatility < 0 or initial <= 0.0 else contextlib.nullcontext():
+            with (
+                pytest.raises(ValueError)  # type: ignore
+                if volatility < 0 or initial <= 0.0
+                else contextlib.nullcontext()
+            ):
                 f.add_market(
                     market_id=market_id,
                     initial=initial,
@@ -49,9 +51,11 @@ class TestFundamentals:
                     start_at=start_at,
                 )
         else:
-            with pytest.raises(
-                ValueError
-            ) if volatility < 0 or initial <= 0.0 else contextlib.nullcontext():
+            with (
+                pytest.raises(ValueError)  # type: ignore
+                if volatility < 0 or initial <= 0.0
+                else contextlib.nullcontext()
+            ):
                 f.add_market(
                     market_id=market_id,
                     initial=initial,
