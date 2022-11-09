@@ -53,6 +53,16 @@ publish:
 test-publish:
 	@poetry publish --build -r testpypi
 
+.PHONY: doc-intl
+doc-intl:
+	@cd docs && make gettext && sphinx-intl update -p build/gettext -l ja && \
+	 echo "please check and modify docs/source/locale/ja/LC_MESSAGES/index.po"
+
 .PHONY: doc
 doc:
-	@cd docs && make html
+	@cd docs && rm -rf build/html/ build/html-ja/ build/html-en/ && \
+	 rm -r source/reference/generated && git checkout source/reference/generated/.gitignore && \
+	 make -e SPHINXOPTS="-a" html && mv build/html/ build/html-en/ && \
+	 make -e SPHINXOPTS="-D language='ja' -a" html &&  mv build/html/ build/html-ja && \
+	 mkdir -p build/html/ && mv build/html-en/ build/html/en/ &&  mv build/html-ja/ build/html/ja/ && \
+	 cp source/_index.html build/html/index.html

@@ -11,11 +11,11 @@ from typing import TypeVar
 from typing import Union
 from typing import cast
 
-from .logs import CancelLog
-from .logs import ExecutionLog
-from .logs import Log
-from .logs import Logger
-from .logs import OrderLog
+from .logs.base import CancelLog
+from .logs.base import ExecutionLog
+from .logs.base import Log
+from .logs.base import Logger
+from .logs.base import OrderLog
 from .order import Cancel
 from .order import Order
 from .order_book import OrderBook
@@ -38,6 +38,7 @@ class Market:
         self.time: int = -1
         self._market_prices: List[Optional[float]] = []
         self._last_executed_prices: List[Optional[float]] = []
+        self._mid_prices: List[Optional[float]] = []
         self._fundamental_prices: List[Optional[float]] = []
         self._executed_volumes: List[int] = []
         self._executed_total_prices: List[float] = []
@@ -46,12 +47,20 @@ class Market:
         self._next_order_id: int = 0
         self._simulator: "Simulator" = simulator  # type: ignore
         self.name: str = name
+        self.outstanding_shares: Optional[int] = None
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         if "tickSize" not in settings:
             raise AssertionError("tickSize is required")
         self.tick_size = settings["tickSize"]
-        # ToDo: market price handling
+        if "outstandingShares" in settings:
+            self.outstanding_shares = settings["outstandingShares"]
+        if "marketPrice" in settings:
+            self._market_prices = [float(settings["marketPrice"])]
+        elif "fundamentalPrice" in settings:
+            self._market_prices = [float(settings["fundamentalPrice"])]
+        else:
+            raise ValueError(f"fundamentalPrice or marketPrice is required for market")
 
     def _extract_sequential_data_by_time(
         self,
@@ -89,18 +98,29 @@ class Market:
     def get_market_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
-        # ToDo split it to market prices and mid prices
+        """last executed, midprice, fundamental"""
         return cast(
             List[float],
-            self._extract_sequential_data_by_time(times, self._market_prices),
+            self._extract_sequential_data_by_time(
+                times, self._market_prices, allow_none=False
+            ),
         )
 
     def get_market_price(self, time: Union[int, None] = None) -> float:
-        # ToDo split it to market price and mid price
         return cast(
             float,
-            self._extract_data_by_time(time, self._market_prices, allow_none=True),
+            self._extract_data_by_time(time, self._market_prices, allow_none=False),
         )
+
+    def get_mid_prices(
+        self, times: Union[Iterable[int], None] = None
+    ) -> List[Optional[float]]:
+        return self._extract_sequential_data_by_time(
+            times, self._mid_prices, allow_none=True
+        )
+
+    def get_mid_price(self, time: Union[int, None] = None) -> Optional[float]:
+        return self._extract_data_by_time(time, self._mid_prices, allow_none=False)
 
     def get_last_executed_prices(
         self, times: Union[Iterable[int], None] = None
@@ -194,11 +214,14 @@ class Market:
         )
 
     def _fill_until(self, time: int) -> None:
-        if len(self._market_prices) >= time + 1:
+        if len(self._mid_prices) >= time + 1:
             return
         length = (time // self.chunk_size + 1) * self.chunk_size
         self._market_prices = self._market_prices + [
             None for _ in range(length - len(self._market_prices))
+        ]
+        self._mid_prices = self._mid_prices + [
+            None for _ in range(length - len(self._mid_prices))
         ]
         self._last_executed_prices = self._last_executed_prices + [
             None for _ in range(length - len(self._last_executed_prices))
@@ -261,12 +284,45 @@ class Market:
     def convert_to_price(self, tick_level: int) -> float:
         return self.tick_size * tick_level
 
-    def _set_time(self, time: int) -> None:
+    def _set_time(self, time: int, next_fundamental_price: float) -> None:
         self.time = time
         self.buy_order_book._set_time(time)
         self.sell_order_book._set_time(time)
         self._fill_until(time=time)
-        # ToDo set fundamental price
+        self._fundamental_prices[self.time] = next_fundamental_price
+        if self.time > 0:
+            executed_prices: List[float] = cast(
+                List[float],
+                list(
+                    filter(
+                        lambda x: x is not None, self._last_executed_prices[: self.time]
+                    )
+                ),
+            )
+            self._last_executed_prices[self.time] = (
+                executed_prices[-1] if sum(executed_prices) > 0 else None
+            )
+            mid_prices: List[float] = cast(
+                List[float],
+                list(filter(lambda x: x is not None, self._mid_prices[: self.time])),
+            )
+            self._mid_prices[self.time] = (
+                mid_prices[-1] if sum(mid_prices) > 0 else None
+            )
+            market_prices: List[float] = cast(
+                List[float],
+                list(filter(lambda x: x is not None, self._market_prices[: self.time])),
+            )
+            self._market_prices[self.time] = (
+                market_prices[-1] if sum(market_prices) > 0 else None
+            )
+            if self.is_running:
+                if self._last_executed_prices[self.time - 1] is not None:
+                    self._market_prices[self.time] = self._last_executed_prices[
+                        self.time
+                    ]
+                elif self._mid_prices[self.time - 1] is not None:
+                    self._market_prices[self.time] = self._mid_prices[self.time]
 
     def _update_time(self, next_fundamental_price: float) -> None:
         self.time += 1
@@ -274,14 +330,22 @@ class Market:
         self.sell_order_book._set_time(self.time)
         self._fill_until(time=self.time)
         self._fundamental_prices[self.time] = next_fundamental_price
-        self._last_executed_prices[self.time] = self._last_executed_prices[
-            self.time - 1
-        ]
-        self._market_prices[self.time] = (
-            self._market_prices[self.time - 1]
-            if self._market_prices[self.time - 1] is not None
-            else self._fundamental_prices[self.time]
-        )
+        if self.time > 0:
+            self._last_executed_prices[self.time] = self._last_executed_prices[
+                self.time - 1
+            ]
+            self._mid_prices[self.time] = self._mid_prices[self.time - 1]
+            self._market_prices[self.time] = self._market_prices[self.time - 1]
+            if self.is_running:
+                if self._last_executed_prices[self.time - 1] is not None:
+                    self._market_prices[self.time] = self._last_executed_prices[
+                        self.time - 1
+                    ]
+                elif self._mid_prices[self.time - 1] is not None:
+                    self._market_prices[self.time] = self._mid_prices[self.time - 1]
+        else:
+            if self._market_prices[self.time] is None:
+                self._market_prices[self.time] = next_fundamental_price
 
     def _cancel_order(self, cancel: Cancel) -> CancelLog:
         if self.market_id != cancel.order.market_id:
@@ -315,16 +379,18 @@ class Market:
         best_buy_price: Optional[float] = self.get_best_buy_price()
         best_sell_price: Optional[float] = self.get_best_sell_price()
         if best_buy_price is None or best_sell_price is None:
-            if best_buy_price is None and best_sell_price is None:
-                return
-            else:
-                self._market_prices[self.time] = best_sell_price or best_buy_price
+            pass
         else:
-            self._market_prices[self.time] = (
+            self._mid_prices[self.time] = (
                 (best_sell_price + best_buy_price) / 2.0
                 if best_sell_price is not None and best_buy_price is not None
                 else None
             )
+        if self.is_running:
+            if self._last_executed_prices[self.time] is not None:
+                self._market_prices[self.time] = self._last_executed_prices[self.time]
+            elif self._mid_prices[self.time] is not None:
+                self._market_prices[self.time] = self._mid_prices[self.time]
 
     def _execute_orders(
         self, price: float, volume: int, buy_order: Order, sell_order: Order

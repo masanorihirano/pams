@@ -10,7 +10,8 @@ from .agents.high_frequency_agent import HighFrequencyAgent
 from .events.base import EventABC
 from .events.base import EventHook
 from .fundamentals import Fundamentals
-from .logs import Logger
+from .index_market import IndexMarket
+from .logs.base import Logger
 from .market import Market
 from .session import Session
 
@@ -145,14 +146,24 @@ class Simulator:
         self.name2session[session.name] = session
 
     def _update_time_on_market(self, market: Market) -> None:
-        market._update_time(
-            next_fundamental_price=self.fundamentals.get_fundamental_price(
-                market_id=market.market_id, time=market.get_time() + 1
+        """be careful index matket have to be update after component markets, Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage"""
+        if not isinstance(market, IndexMarket):
+            market._update_time(
+                next_fundamental_price=self.fundamentals.get_fundamental_price(
+                    market_id=market.market_id, time=market.get_time() + 1
+                )
             )
-        )
+        else:
+            market._update_time(
+                next_fundamental_price=market.compute_fundamental_index(
+                    time=market.get_time() + 1
+                )
+            )
 
     def _update_times_on_markets(self, markets: List[Market]) -> None:
-        for market in markets:
+        for market in filter(lambda x: not isinstance(x, IndexMarket), markets):
+            self._update_time_on_market(market=market)
+        for market in filter(lambda x: isinstance(x, IndexMarket), markets):
             self._update_time_on_market(market=market)
 
     def _check_event_class_and_instance(

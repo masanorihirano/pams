@@ -8,7 +8,7 @@ from pams import LIMIT_ORDER
 from pams import MARKET_ORDER
 from pams import Market
 from pams import Order
-from pams.logs import Logger
+from pams.logs.base import Logger
 from pams.simulator import Simulator
 
 

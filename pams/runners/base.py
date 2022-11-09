@@ -10,7 +10,7 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
-from ..logs import Logger
+from ..logs.base import Logger
 from ..simulator import Simulator
 
 
