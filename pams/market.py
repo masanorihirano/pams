@@ -2,7 +2,6 @@ import math
 import random
 from typing import Any
 from typing import Dict
-from typing import Final
 from typing import Iterable
 from typing import List
 from typing import Optional
@@ -359,7 +358,7 @@ class Market:
             raise AssertionError
         self._update_market_price()
 
-        log: Final[CancelLog] = CancelLog(
+        log: CancelLog = CancelLog(
             order_id=cancel.order.order_id,
             market_id=cancel.order.market_id,
             cancel_time=cancel.placed_at,
@@ -410,7 +409,7 @@ class Market:
         if volume <= 0:
             raise AssertionError
 
-        log: Final[ExecutionLog] = ExecutionLog(
+        log: ExecutionLog = ExecutionLog(
             market_id=self.market_id,
             time=self.time,
             buy_agent_id=buy_order.agent_id,
@@ -450,7 +449,7 @@ class Market:
         else:
             self._n_sell_orders[self.time] += 1
 
-        log: Final[OrderLog] = OrderLog(
+        log: OrderLog = OrderLog(
             order_id=order.order_id,
             market_id=order.market_id,
             time=order.placed_at,

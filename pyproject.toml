@@ -1,16 +1,22 @@
 [tool.poetry]
 name = "pams"
-version = "0.0.6"
+version = "0.0.7"
 description = "PAMS: Platform for Artificial Market Simulations"
 authors = ["Masanori HIRANO <masa.hirano.1996@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 tqdm = "^4.64.1"
-numpy = "^1.23.4"
-scipy = "^1.9.3"
+numpy = [
+    {version = "^1.23.4", python = ">=3.8,<4.0"},
+    {version = "^1.21.0", python = ">=3.7,<3.8"}
+]
+scipy = [
+    {version = "^1.9.2", python = ">=3.8,<4.0"},
+    {version = "^1.7.0", python = ">=3.7,<3.8"}
+]
 
 
 [tool.poetry.group.dev.dependencies]
@@ -22,7 +28,7 @@ pytest-cov = "^4.0.0"
 Sphinx = "^5.3.0"
 furo = "^2022.9.29"
 jupyter = "^1.0.0"
-matplotlib = "^3.6.2"
+matplotlib = "^3.4.2"
 sphinx-intl = "^2.0.1"
 sphinx-copybutton = "^0.5.0"
 sphinx-autodoc-typehints = "^1.19.5"
