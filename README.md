@@ -21,11 +21,20 @@ $ python
 >> import pams
 ```
 
+## Citation
+Currently, no publication related to this repository. Therefore, please cite this repository directly if you want.
+```bibtex
+@misc{hirano2022-pams
+    title={{PAMS: Platform for Artificial Market Simulations}},
+    autors={Masanori HIRANO},
+    year={2022},
+    url = {https://github.com/masanorihirano/pams}
+}
+```
 
 ## Issues and Contribution
 About issues (bugs):
 -   You can report issues [here](https://github.com/masanorihirano/slack_transfer/issues).
--   日本語でissueを立てて構いません．
 -   There are no guarantee to support or fix those issues.
 
 Contributions:
