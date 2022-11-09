@@ -3,18 +3,45 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pams's documentation!
-================================
+:github_url: https://github.com/masanorihirano/pams
+
+pams
+==========================================
+pams is a platform for artificial market simulations
+
+Install:
+
+.. code-block:: none
+
+   pip install pams
+   python
+   >> import pams
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: User Guide
+   :maxdepth: 1
+
+   user_guide/index
 
 
+.. toctree::
+   :caption: API reference
+   :maxdepth: 1
 
-Indices and tables
-==================
+   reference/runners
+   reference/simulators
+   reference/sessions
+   reference/markets
+   reference/orders
+   reference/events
+   reference/logs
+   reference/logger
+   reference/agents
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+
+:ref:`genindex`
+
+:ref:`modindex`
+
+:ref:`search`

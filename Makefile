@@ -61,6 +61,7 @@ doc-intl:
 .PHONY: doc
 doc:
 	@cd docs && rm -rf build/html/ build/html-ja/ build/html-en/ && \
+	 rm -r source/reference/generated && git checkout source/reference/generated/.gitignore && \
 	 make -e SPHINXOPTS="-a" html && mv build/html/ build/html-en/ && \
 	 make -e SPHINXOPTS="-D language='ja' -a" html &&  mv build/html/ build/html-ja && \
 	 mkdir -p build/html/ && mv build/html-en/ build/html/en/ &&  mv build/html-ja/ build/html/ja/ && \
