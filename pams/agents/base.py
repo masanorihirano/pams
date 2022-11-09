@@ -7,10 +7,10 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from ..logs import CancelLog
-from ..logs import ExecutionLog
-from ..logs import Logger
-from ..logs import OrderLog
+from ..logs.base import CancelLog
+from ..logs.base import ExecutionLog
+from ..logs.base import Logger
+from ..logs.base import OrderLog
 from ..market import Market
 from ..order import Cancel
 from ..order import Order

@@ -6,7 +6,7 @@ from typing import List
 from typing import Optional
 from typing import Union
 
-from ..logs import Logger
+from ..logs.base import Logger
 from ..market import Market
 from ..order import LIMIT_ORDER
 from ..order import Cancel

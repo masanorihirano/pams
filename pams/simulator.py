@@ -11,7 +11,7 @@ from .events.base import EventABC
 from .events.base import EventHook
 from .fundamentals import Fundamentals
 from .index_market import IndexMarket
-from .logs import Logger
+from .logs.base import Logger
 from .market import Market
 from .session import Session
 

@@ -11,11 +11,11 @@ from typing import TypeVar
 from typing import Union
 from typing import cast
 
-from .logs import CancelLog
-from .logs import ExecutionLog
-from .logs import Log
-from .logs import Logger
-from .logs import OrderLog
+from .logs.base import CancelLog
+from .logs.base import ExecutionLog
+from .logs.base import Log
+from .logs.base import Logger
+from .logs.base import OrderLog
 from .order import Cancel
 from .order import Order
 from .order_book import OrderBook

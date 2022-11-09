@@ -2,7 +2,7 @@ import argparse
 import random
 from typing import Optional
 
-from pams.logs import MarketStepPrintLogger
+from pams.logs.market_step_loggers import MarketStepPrintLogger
 from pams.runners.sequential import SequentialRunner
 
 
