@@ -252,7 +252,6 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Final</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
@@ -609,7 +608,7 @@
             <span class="k">raise</span> <span class="ne">AssertionError</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_market_price</span><span class="p">()</span>
 
-        <span class="n">log</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">CancelLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">CancelLog</span><span class="p">(</span>
+        <span class="n">log</span><span class="p">:</span> <span class="n">CancelLog</span> <span class="o">=</span> <span class="n">CancelLog</span><span class="p">(</span>
             <span class="n">order_id</span><span class="o">=</span><span class="n">cancel</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">order_id</span><span class="p">,</span>
             <span class="n">market_id</span><span class="o">=</span><span class="n">cancel</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
             <span class="n">cancel_time</span><span class="o">=</span><span class="n">cancel</span><span class="o">.</span><span class="n">placed_at</span><span class="p">,</span>
@@ -660,7 +659,7 @@
         <span class="k">if</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
 
-        <span class="n">log</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExecutionLog</span><span class="p">(</span>
+        <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span> <span class="o">=</span> <span class="n">ExecutionLog</span><span class="p">(</span>
             <span class="n">market_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
             <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
             <span class="n">buy_agent_id</span><span class="o">=</span><span class="n">buy_order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">,</span>
@@ -700,7 +699,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_sell_orders</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">log</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="n">OrderLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderLog</span><span class="p">(</span>
+        <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span> <span class="o">=</span> <span class="n">OrderLog</span><span class="p">(</span>
             <span class="n">order_id</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">order_id</span><span class="p">,</span>
             <span class="n">market_id</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
             <span class="n">time</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">,</span>
