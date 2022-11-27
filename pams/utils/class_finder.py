@@ -1,10 +1,9 @@
-from typing import Callable
 from typing import List
 from typing import Optional
 from typing import Type
 
 
-def find_class(name: str, optional_class_list: Optional[List[Callable]] = None) -> Type:
+def find_class(name: str, optional_class_list: Optional[List[Type]] = None) -> Type:
     _1 = __import__("pams", globals(), locals())
     _2 = __import__("pams.agents", globals(), locals(), ["*"])
     _3 = __import__("pams.events", globals(), locals(), ["*"])
