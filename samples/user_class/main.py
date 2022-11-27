@@ -7,7 +7,7 @@ from pams.logs.market_step_loggers import MarketStepPrintLogger
 from pams.runners.sequential import SequentialRunner
 
 
-class UserDefinedFCNAGent(FCNAgent):
+class UserDefinedFCNAgent(FCNAgent):
     pass
 
 
@@ -28,6 +28,7 @@ def main() -> None:
         prng=random.Random(seed) if seed is not None else None,
         logger=MarketStepPrintLogger(),
     )
+    runner.class_register(cls=UserDefinedFCNAgent)
     runner.main()
 
 
