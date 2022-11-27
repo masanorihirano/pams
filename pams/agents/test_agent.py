@@ -16,7 +16,7 @@ class TestAgent(Agent):
         buy_chance: float = 0.4
         sell_chance: float = 0.4
 
-        orders: List[Order] = []
+        orders: List[Union[Order, Cancel]] = []
         for market in markets:
             if self.is_market_accessible(market_id=market.market_id):
                 price: float = market.get_market_price() + (
