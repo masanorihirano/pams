@@ -19,7 +19,6 @@ class TestAgent(Agent):
         orders: List[Order] = []
         for market in markets:
             if self.is_market_accessible(market_id=market.market_id):
-                market_time: int = market.get_time()
                 price: float = market.get_market_price() + (
                     self.prng.random() * 2 * margin_scale - margin_scale
                 )
