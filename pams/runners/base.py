@@ -5,6 +5,7 @@ import time
 from abc import ABC
 from abc import abstractmethod
 from io import TextIOWrapper
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -35,7 +36,7 @@ class Runner(ABC):
         self.simulator: Simulator = simulator_class(
             prng=random.Random(self._prng.randint(0, 2**31))
         )
-        self.registered_class: List[object] = []
+        self.registered_class: List[Callable] = []
 
     def main(self) -> None:
         setup_start_time_ns = time.time_ns()
@@ -48,7 +49,7 @@ class Runner(ABC):
         )
         print("# EXECUTION TIME " + str((end_time_ns - start_time_ns) / 1e9))
 
-    def class_register(self, cls: object):
+    def class_register(self, cls: Callable) -> None:
         self.registered_class.append(cls)
 
     @abstractmethod
