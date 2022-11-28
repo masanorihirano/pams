@@ -87,7 +87,9 @@ class SequentialRunner(Runner):
             )
             if "class" not in market_settings:
                 raise ValueError(f"class is not defined for {name}")
-            market_class: Type[Market] = find_class(name=market_settings["class"])
+            market_class: Type[Market] = find_class(
+                name=market_settings["class"], optional_class_list=self.registered_class
+            )
             if not issubclass(market_class, Market):
                 raise ValueError(
                     f"market class for {name} does not inherit Market class"
@@ -163,7 +165,9 @@ class SequentialRunner(Runner):
             )
             if "class" not in agent_settings:
                 raise ValueError(f"class is not defined for {name}")
-            agent_class: Type[Agent] = find_class(name=agent_settings["class"])
+            agent_class: Type[Agent] = find_class(
+                name=agent_settings["class"], optional_class_list=self.registered_class
+            )
             if not issubclass(agent_class, Agent):
                 raise ValueError(
                     f"market class for {name} does not inherit Market class"
@@ -269,7 +273,9 @@ class SequentialRunner(Runner):
                     if "class" not in event_setting:
                         raise ValueError(f"class is required in {event_name}")
                     event_class_name = event_setting["class"]
-                    event_class: Type[EventABC] = find_class(name=event_class_name)
+                    event_class: Type[EventABC] = find_class(
+                        name=event_class_name, optional_class_list=self.registered_class
+                    )
                     event = event_class(
                         event_id=i_event,
                         prng=random.Random(self._prng.randint(0, 2**31)),
