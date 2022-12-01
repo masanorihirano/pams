@@ -19,6 +19,16 @@ MARGIN_NORMAL = 1
 
 
 class FCNAgent(Agent):
+    """FCN (Fundamental, Chartist, Noise) Agent class
+
+    This class inherits from the :class:`pams.agents.Agent` class.
+
+    An order decision mechanism proposed in Chiarella & Iori (2004).
+    It employs two simple margin-based random tradings. Given an expected future price p, submit an order of price
+    - "fixed" : p (1 ± k) where 0 ≦ k ≦ 1
+    - "normal" : p + N(0, k) where k > 0
+    """
+
     fundamental_weight: float
     chart_weight: float
     is_chart_following: bool = True
@@ -40,6 +50,14 @@ class FCNAgent(Agent):
         super().__init__(agent_id, prng, simulator, name, logger)
 
     def is_finite(self, x: float) -> bool:
+        """determine if it is a valid value.
+
+        Args:
+            x (float): value.
+
+        Return:
+            bool: whether or not it is a valid (not NaN, finite) value.
+        """
         return not math.isnan(x) and not math.isinf(x)
 
     def setup(
@@ -49,6 +67,15 @@ class FCNAgent(Agent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
+        """agent setup.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight", "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType", and "meanReversionTime".
+            accessible_markets_ids (List[int]): list of market IDs.
+
+        Returns:
+            None
+        """
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         json_random: JsonRandom = JsonRandom(prng=self.prng)
         self.fundamental_weight = json_random.random(
@@ -73,12 +100,28 @@ class FCNAgent(Agent):
             self.mean_reversion_time = self.time_window_size
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        """submit orders.
+
+        Args:
+            markets (List[Market]): markets to order.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
+        """
         orders: List[Union[Order, Cancel]] = sum(
             [self.submit_orders_by_market(market=market) for market in markets], []
         )
         return orders
 
     def submit_orders_by_market(self, market: Market) -> List[Union[Order, Cancel]]:
+        """submit orders by market.
+
+        Args:
+            market (Market): market to order.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
+        """
         orders: List[Union[Order, Cancel]] = []
         if not self.is_market_accessible(market_id=market.market_id):
             return orders
@@ -189,6 +232,14 @@ class FCNAgent(Agent):
         return orders
 
     def __str__(self) -> str:
+        """string representation of FCN agent class.
+
+        Args:
+            None
+
+        Returns:
+            str: string representation of this class.
+        """
         return (
             f"Agent:{self.agent_id}[rnd:{self.prng},cw:{self.chart_weight},fw:{self.fundamental_weight},"
             + f"following:{self.is_chart_following},mtypr:{self.margin_type},mrt:{self.mean_reversion_time},"
