@@ -9,6 +9,9 @@ from typing import Type
 
 
 class EventHook:
+    """Event Hook class.
+    """
+
     def __init__(
         self,
         event: "EventABC",
@@ -18,6 +21,19 @@ class EventHook:
         specific_class: Optional[Type] = None,
         specific_instance: Optional[object] = None,
     ):
+        """Event Hook initialization.
+
+        Args:
+            event (:class:`pams.events.EventABC`): event instance.
+            hook_type (str): hook type. This must be "order", "cancel", "execution", "session", or "market".
+            is_before (bool): flag whether to run before or not. If hook_type is "execution", this must be set to False.
+            time (List[int], Optional): event execution time.
+            specific_class (Type, Optional): specific class. If this is specified, the hook_type must be different from "market".
+            specific_instance (object, Optional): specific instance. If this is specified, the hook_type must be different from "market".
+
+        Returns:
+            None
+        """
         if hook_type not in ["order", "cancel", "execution", "session", "market"]:
             raise ValueError(
                 "hook type have to be order, execution, session, or market"
@@ -40,6 +56,12 @@ class EventHook:
 
 
 class EventABC(ABC):
+    """event base class.
+
+    Note:
+        Please also see :class:`pams.events.FundamentalPriceShock`
+    """
+
     def __init__(
         self,
         event_id: int,
@@ -48,6 +70,18 @@ class EventABC(ABC):
         simulator: "Simulator",  # type: ignore
         name: str,
     ) -> None:
+        """event initialization.
+
+        Args:
+            event_id (int): event ID.
+            prng (random.Random): pseudo random number generator for this event.
+            session (:class:`pams.Session`): session to execute this event.
+            simulator (:class:`pams.Simulator`): simulator that executes this event.
+            name (str): event name.
+
+        Returns:
+            None
+        """
         self.event_id: int = event_id
         self.prng: random.Random = prng
         self.simulator = simulator
