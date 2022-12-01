@@ -7,6 +7,9 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
+    """This suddently changes the fundamental price (just changing it).
+    """
+
     target_market_name: str
     target_market: "Market"  # type: ignore
     trigger_time: int
@@ -15,6 +18,16 @@ class FundamentalPriceShock(EventABC):
     shock_time_length: int = 1
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+        """event setup.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration.
+                                       This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".
+                                       This can include the parameters "enabled" and "shockTimeLength".
+
+        Returns:
+            None
+        """
         if "triggerDays" in settings:
             raise ValueError("triggerDays and numStepsOneDay are obsoleted.")
         if "target" not in settings:
@@ -33,6 +46,14 @@ class FundamentalPriceShock(EventABC):
         self.target_market = self.simulator.name2market[self.target_market_name]
 
     def hook_registration(self) -> List[EventHook]:
+        """set for the event hook.
+
+        Args:
+            None
+
+        Returns:
+            List[EventHook]: list of the event hook.
+        """
         event_hook = EventHook(
             event=self,
             hook_type="market",
@@ -43,6 +64,15 @@ class FundamentalPriceShock(EventABC):
         return [event_hook]
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
+        """
+
+        Args:
+            simulator (:class:`pams.Simulator`): simulator instance.
+            market (:class:`pams.Market`): market instance.
+
+        Returns:
+            None
+        """
         time: int = market.get_time()
         if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
             raise AssertionError
