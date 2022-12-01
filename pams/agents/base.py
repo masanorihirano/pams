@@ -55,7 +55,6 @@ class Agent(ABC):
         Note:
              `prng` should not be shared with other classed and be used only in this class.
              It is because sometimes agent process runs one of parallelized threads.
-
         """
         self.agent_id: int = agent_id
         self.name: str = name
@@ -66,6 +65,15 @@ class Agent(ABC):
         self.logger: Optional[Logger] = logger
 
     def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore
+        """agent setup.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration. this must include the parameters "cashAmount" and "assetVolume".
+            accessible_markets_ids (List[int]): list of market IDs.
+
+        Returns:
+            None
+        """
         if "cashAmount" not in settings:
             raise ValueError("cashAmount is required property of agent settings")
         self.cash_amount = settings["cashAmount"]
@@ -80,17 +88,49 @@ class Agent(ABC):
             self.set_asset_volume(market_id=market_id, volume=volume)
 
     def get_asset_volume(self, market_id: int) -> int:
+        """getter of the asset volume held by the agent.
+
+        Args:
+            market_id (int): market ID.
+
+        Returns:
+            int: asset volume for the specified market ID.
+        """
         if not self.is_market_accessible(market_id=market_id):
             raise AssertionError(f"market {market_id} is not accessible")
         return self.asset_volumes[market_id]
 
     def get_cash_amount(self) -> float:
+        """getter of the cash amount held by the agent.
+
+        Args:
+            None
+
+        Returns:
+            float: cash amount held by this agent.
+        """
         return self.cash_amount
 
     def get_prng(self) -> random.Random:
+        """getter of the pseudo random number generator.
+
+        Args:
+            None
+
+        Returns:
+            random.Random: pseudo random number generator for this agent.
+        """
         return self.prng
 
     def is_market_accessible(self, market_id: int) -> bool:
+        """determine if the market ID is included in the asset volume
+
+        Args:
+            market_id (int): market ID.
+
+        Returns:
+            bool: whether the asset volume held by the agent contains the specified market or not.
+        """
         return market_id in self.asset_volumes
 
     def submitted_order(self, log: OrderLog) -> None:
@@ -103,14 +143,39 @@ class Agent(ABC):
         pass
 
     def set_asset_volume(self, market_id: int, volume: int) -> None:
+        """setter of the asset volume held by agent.
+
+        Args:
+            market_id (int): market ID.
+            volume (int): volume to be set for the market
+
+        Returns:
+            None
+        """
         if not self.is_market_accessible(market_id=market_id):
             raise AssertionError(f"market {market_id} is not accessible")
         self.asset_volumes[market_id] = volume
 
     def set_cash_amount(self, cash_amount: float) -> None:
+        """setter of the cash amount held by agent.
+
+        Args:
+            cash_amount (float): cash amount held by this agent.
+
+        Returns:
+            None
+        """
         self.cash_amount = cash_amount
 
     def set_market_accessible(self, market_id: int) -> None:
+        """set the specified market volume to 0.
+
+        Args:
+            market_id (int): market ID.
+
+        Returns:
+            None
+        """
         self.asset_volumes[market_id] = 0
 
     @abstractmethod
@@ -118,14 +183,39 @@ class Agent(ABC):
         pass
 
     def update_asset_volume(self, market_id: int, delta: int) -> None:
+        """increasing or decreasing the asset volume.
+
+        Args:
+            market_id (int): market ID.
+            delta (int): amount of change in the asset volume.
+
+        Returns:
+            None
+        """
         if not self.is_market_accessible(market_id=market_id):
             raise AssertionError(f"market {market_id} is not accessible")
         self.asset_volumes[market_id] += delta
 
     def update_cash_amount(self, delta: float) -> None:
+        """increasing or decreasing the cash amount.
+
+        Args:
+            delta (float): amount of change in the cash amount.
+
+        Returns:
+            None
+        """
         self.cash_amount += delta
 
     def __repr__(self) -> str:
+        """string representation of agent class.
+
+        Args:
+            None
+
+        Returns:
+            str: string representation of this class.
+        """
         return (
             self.__class__.__name__
             + str(id)
