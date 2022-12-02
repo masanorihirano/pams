@@ -25,8 +25,13 @@ class FCNAgent(Agent):
 
     An order decision mechanism proposed in Chiarella & Iori (2004).
     It employs two simple margin-based random tradings. Given an expected future price p, submit an order of price
-    - "fixed" : p (1 ± k) where 0 ≦ k ≦ 1
-    - "normal" : p + N(0, k) where k > 0
+
+    - "fixed" : :math:`p (1 ± k)` where :math:`0 \leq k \leq 1`
+    - "normal" : :math:`p + N(0, k)` where :math:`k > 0`
+
+    References:
+        - Chiarella, C., & Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.
+          Quantitative Finance, 2(5), 346–353. https://doi.org/10.1088/1469-7688/2/5/303
     """
 
     fundamental_weight: float
@@ -67,10 +72,12 @@ class FCNAgent(Agent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup.
+        """agent setup.  Usually be called from simulator/runner automatically.
 
         Args:
-            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight", "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType", and "meanReversionTime".
+            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight",
+                                       "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType",
+                                       and "meanReversionTime".
             accessible_markets_ids (List[int]): list of market IDs.
 
         Returns:
@@ -100,13 +107,10 @@ class FCNAgent(Agent):
             self.mean_reversion_time = self.time_window_size
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders.
+        """submit orders based on FCN-based calculation.
 
-        Args:
-            markets (List[Market]): markets to order.
-
-        Returns:
-            List[Union[Order, Cancel]]: order list.
+        .. seealso::
+            - :func:`pams.agents.Agent.submit_orders`
         """
         orders: List[Union[Order, Cancel]] = sum(
             [self.submit_orders_by_market(market=market) for market in markets], []
@@ -114,7 +118,7 @@ class FCNAgent(Agent):
         return orders
 
     def submit_orders_by_market(self, market: Market) -> List[Union[Order, Cancel]]:
-        """submit orders by market.
+        """submit orders by market (internal usage).
 
         Args:
             market (Market): market to order.
@@ -233,9 +237,6 @@ class FCNAgent(Agent):
 
     def __str__(self) -> str:
         """string representation of FCN agent class.
-
-        Args:
-            None
 
         Returns:
             str: string representation of this class.

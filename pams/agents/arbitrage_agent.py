@@ -16,9 +16,10 @@ class ArbitrageAgent(HighFrequencyAgent):
     """Arbitrage Agent class.
 
     This class inherits from the HighFrequencyAgent class.
+    Arbitrage agent mainly aimed to take arbitrage chance between spot markets and its index market.
 
     Note:
-        Please also see :class:`pams.agents.ArbitrageAgent`
+        Currently, index markets must have the same weight for each constitutional stock.
     """
 
     order_volume: int = 1
@@ -32,10 +33,10 @@ class ArbitrageAgent(HighFrequencyAgent):
         *args,
         **kwargs
     ) -> None:
-        """agent setup.
+        """agent setup. Usually be called from simulator/runner automatically.
 
         Args:
-            settings (Dict[str, Any]): agent configuration.
+            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameters "orderVolume", "orderThresholdPrice".
                                        This can include the parameter "orderTimeLength".
             accessible_markets_ids (List[int]): list of market IDs.
@@ -56,7 +57,7 @@ class ArbitrageAgent(HighFrequencyAgent):
             self.order_time_length = settings["orderTimeLength"]
 
     def _submit_orders(self, market: Market) -> List[Union[Order, Cancel]]:
-        """submit orders by market.
+        """internal sub routine for submitting orders by market.
 
         Args:
             market (List[Market]): markets to order.
@@ -140,13 +141,10 @@ class ArbitrageAgent(HighFrequencyAgent):
         return orders
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders.
+        """submit orders to take arbitrage chance.
 
-        Args:
-            markets (List[Market]): markets to order.
-
-        Returns:
-            List[Union[Order, Cancel]]: order list.
+        .. seealso::
+            - :func:`pams.agents.Agent.submit_orders`
         """
         orders: List[Union[Order, Cancel]] = []
         for market in markets:
