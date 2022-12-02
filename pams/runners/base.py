@@ -6,6 +6,7 @@ from abc import ABC
 from abc import abstractmethod
 from io import TextIOWrapper
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Type
 from typing import Union
@@ -34,6 +35,7 @@ class Runner(ABC):
         self.simulator: Simulator = simulator_class(
             prng=random.Random(self._prng.randint(0, 2**31))
         )
+        self.registered_class: List[Type] = []
 
     def main(self) -> None:
         setup_start_time_ns = time.time_ns()
@@ -45,6 +47,9 @@ class Runner(ABC):
             "# INITIALIZATION TIME " + str((start_time_ns - setup_start_time_ns) / 1e9)
         )
         print("# EXECUTION TIME " + str((end_time_ns - start_time_ns) / 1e9))
+
+    def class_register(self, cls: Type) -> None:
+        self.registered_class.append(cls)
 
     @abstractmethod
     def _setup(self) -> None:
