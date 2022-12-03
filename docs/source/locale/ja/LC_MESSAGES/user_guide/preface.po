@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-03 21:49+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: ../../source/user_guide/preface.rst:2
+msgid "Preface"
+msgstr ""
+
+#: ../../source/user_guide/preface.rst:4
+msgid ""
+"PAMS is a python-based Platform for Artificial Market Simulations. This "
+"package inherit the concept of `plham <https://plham.github.io/>`_ . But,"
+" corresponding to the usage of deep learning, this package decide to "
+"employ python-based one for more extended usages."
+msgstr "PAMSは，pythonベースの人工市場シミュレーション向けプラットフォームです．"
+"このパッケージは `plham <https://plham.github.io/>`_ のコンセプトを継承しています．"
+"深層学習の利用などの需要に対応して，本パッケージではPythonを採用しました．"
+
+#: ../../source/user_guide/preface.rst:8
+msgid ""
+"This document consist of user guide and api references. Moreover, the "
+"original repository also has many examples to implement many of "
+"artificial market simulation models."
+msgstr "このドキュメントはユーザーガイドとAPI referenceから構成されます．"
+"加えて，レポジトリでは，人工市場シミュレーションの様々な実装例が提供されています．"
+
+#: ../../source/user_guide/preface.rst:11
+msgid ""
+"Inquiries for this package could be sent to the following e-mail or issue"
+" page on github.com."
+msgstr "お問い合わせは，下記メールアドレスか，githubのissueにてお知らせください．"
+
+#: ../../source/user_guide/preface.rst:13
+msgid "pams@mhirano.jp"
+msgstr ""
+
