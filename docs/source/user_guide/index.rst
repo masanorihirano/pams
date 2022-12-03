@@ -5,6 +5,8 @@ User Guide
    :maxdepth: 2
 
    preface
+   about
+   install
 
 
 
