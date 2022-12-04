@@ -7,6 +7,8 @@ User Guide
    preface
    about
    install
+   platform
+   tutorials/index
 
 
 
