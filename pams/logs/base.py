@@ -5,7 +5,7 @@ from pams.order import OrderKind
 
 
 class Log:
-    """Log Class"""
+    """Log class."""
 
     def read_and_write(self, logger: "Logger") -> None:
         """writing a log.
@@ -31,6 +31,8 @@ class Log:
 
 
 class OrderLog(Log):
+    """Order type log class."""
+
     def __init__(
         self,
         order_id: int,
@@ -43,6 +45,19 @@ class OrderLog(Log):
         price: Optional[float] = None,
         ttl: Optional[int] = None,
     ):
+        """initialize.
+
+        Args:
+            order_id (int): order ID.
+            market_id (int): market ID.
+            time (int): time.
+            agent_id (int): agent ID.
+            is_buy (bool): whether it is a buy order or not.
+            kind (:class:`pams.order.OrderKind`): kind of order.
+            volume (int): order volume.
+            price (float, Optional): order price.
+            ttl (int, Optional): time to order expiration.
+        """
         self.order_id: int = order_id
         self.market_id: int = market_id
         self.time: int = time
@@ -55,6 +70,8 @@ class OrderLog(Log):
 
 
 class CancelLog(Log):
+    """Cancel type log class."""
+
     def __init__(
         self,
         order_id: int,
@@ -68,6 +85,20 @@ class CancelLog(Log):
         price: Optional[float] = None,
         ttl: Optional[int] = None,
     ):
+        """initialize.
+
+        Args:
+            order_id (int): order ID.
+            market_id (int): market ID.
+            cancel_time (int): time to cancel.
+            order_time (int): time to order.
+            agent_id (int): agent ID.
+            is_buy (bool): whether it is a buy order or not.
+            kind (:class:`pams.order.OrderKind`): kind of order.
+            volume (int): order volume.
+            price (float, Optional): order price.
+            ttl (int, Optional): time to cancel expiration.
+        """
         self.order_id: int = order_id
         self.market_id: int = market_id
         self.cancel_time: int = cancel_time
@@ -81,6 +112,8 @@ class CancelLog(Log):
 
 
 class ExecutionLog(Log):
+    """Execution type log class."""
+
     def __init__(
         self,
         market_id: int,
@@ -92,6 +125,18 @@ class ExecutionLog(Log):
         price: float,
         volume: int,
     ):
+        """initialize.
+
+        Args:
+            market_id (int): market ID.
+            time (int): time to execute.
+            buy_agent_id (int): buyer agent ID.
+            sell_agent_id (int): seller agent ID.
+            buy_order_id (int): buy order ID.
+            sell_order_id (int): sell order ID.
+            price (float): order price.
+            volume (int): order volume.
+        """
         self.market_id: int = market_id
         self.time: int = time
         self.buy_agent_id: int = buy_agent_id
@@ -103,36 +148,84 @@ class ExecutionLog(Log):
 
 
 class SimulationBeginLog(Log):
+    """Simulation beginning log class."""
+
     def __init__(self, simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.simulator = simulator
 
 
 class SimulationEndLog(Log):
+    """Simulation ending log class."""
+
     def __init__(self, simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.simulator = simulator
 
 
 class SessionBeginLog(Log):
+    """Session beginning log class."""
+
     def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            session (:class:`pams.Session`): session.
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.simulator = simulator
         self.session = session
 
 
 class SessionEndLog(Log):
+    """Session ending log class."""
+
     def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            session (:class:`pams.Session`): session.
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.simulator = simulator
         self.session = session
 
 
 class MarketStepBeginLog(Log):
+    """Market step beginning log class."""
+
     def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            session (:class:`pams.Session`): session.
+            market (:class:`pams.Market`): market.
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.session = session
         self.market = market
         self.simulator = simulator
 
 
 class MarketStepEndLog(Log):
+    """Market step ending log class."""
+
     def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore
+        """initialize.
+
+        Args:
+            session (:class:`pams.Session`): session.
+            market (:class:`pams.Market`): market.
+            simulator (:class:`pams.Simulator`): simulator.
+        """
         self.session = session
         self.market = market
         self.simulator = simulator
