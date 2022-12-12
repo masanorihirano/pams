@@ -9,8 +9,7 @@ from typing import Type
 
 
 class EventHook:
-    """Event Hook class.
-    """
+    """Event Hook class."""
 
     def __init__(
         self,

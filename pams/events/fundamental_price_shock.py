@@ -7,8 +7,7 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
-    """This suddently changes the fundamental price (just changing it).
-    """
+    """This suddently changes the fundamental price (just changing it)."""
 
     target_market_name: str
     target_market: "Market"  # type: ignore
