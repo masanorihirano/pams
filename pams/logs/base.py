@@ -5,10 +5,28 @@ from pams.order import OrderKind
 
 
 class Log:
+    """Log Class"""
+
     def read_and_write(self, logger: "Logger") -> None:
+        """writing a log.
+
+        Args:
+            logger (:class:`pams.logs.Logger`): logger.
+
+        Returns:
+            None
+        """
         logger.write(log=self)
 
     def read_and_write_with_direct_process(self, logger: "Logger") -> None:
+        """direct writing some logs.
+
+        Args:
+            logger (:class:`pams.logs.Logger`): logger.
+
+        Returns:
+            None
+        """
         logger.write_and_direct_process(log=self)
 
 
@@ -121,31 +139,87 @@ class MarketStepEndLog(Log):
 
 
 class Logger:
+    """Logger class."""
+
     simulator: "Simulator"  # type: ignore
 
     def __init__(self) -> None:
+        """initialize logger. Set the pending list to empty."""
         self.pending_logs: List[Log] = []
 
     def _set_simulator(self, simulator: "Simulator") -> None:  # type: ignore
+        """set simulator.
+
+        Args:
+            simulator (:class:`pams.Simulator`): simulator.
+
+        Returns:
+            None
+        """
         self.simulator = simulator
 
     def write(self, log: "Log") -> None:
+        """set a log to pending list.
+
+        Args:
+            log (:class:`pams.logs.Log`): log.
+
+        Returns:
+            None
+        """
         self.pending_logs.append(log)
 
     def bulk_write(self, logs: List["Log"]) -> None:
+        """set some logs to pending list.
+
+        Args:
+            logs (List[:class:`pams.logs.Log`]): log list.
+
+        Returns:
+            None
+        """
         self.pending_logs.extend(logs)
 
     def write_and_direct_process(self, log: "Log") -> None:
+        """direct writing a log.
+
+        Args:
+            log (:class:`pams.logs.Log`): log.
+
+        Returns:
+            None
+        """
         self.process(logs=[log])
 
     def bulk_write_and_direct_process(self, logs: List["Log"]) -> None:
+        """direct writing some logs.
+
+        Args:
+            logs (List[:class:`pams.logs.Log`]): log list.
+
+        Returns:
+            None
+        """
         self.process(logs=logs)
 
     def _process(self) -> None:
+        """process wrapper.
+
+        .. seealso::
+            - :func:`pams.logs.Logger.process`
+        """
         self.process(logs=self.pending_logs)
         self.pending_logs = []
 
     def process(self, logs: List["Log"]) -> None:
+        """logging execution.
+
+        Args:
+            logs (List[:class:`pams.logs.Log`]): log list.
+
+        Returns:
+            None
+        """
         for log in logs:
             if isinstance(log, OrderLog):
                 self.process_order_log(log=log)
