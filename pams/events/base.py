@@ -121,9 +121,29 @@ class EventABC(ABC):
         pass
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore
+        """This method is hooked before order placements if you set the event hook.
+        Please be careful that the order haven't yet been accepted by markets and it could be leakage of order information.
+
+        .. seealso:
+            - ToDo: simulation flow
+
+        Args:
+            simulator (Simulator): simulator for reference.
+            order (Order): order accepting now.
+        """
         pass
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore
+        """This method is hooked after order placements if you set the event hook.
+        Please be careful that the order haven't yet been executed if it could be executed immediately.
+
+        .. seealso:
+            - ToDo: simulation flow
+
+        Args:
+            simulator (Simulator): simulator for reference.
+            order_log (OrderLog): order accepted.
+        """
         pass
 
     def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore
