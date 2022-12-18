@@ -7,7 +7,7 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
-    """This suddently changes the fundamental price (just changing it)."""
+    """This suddenly changes the fundamental price (just changing it)."""
 
     target_market_name: str
     target_market: "Market"  # type: ignore
@@ -17,10 +17,10 @@ class FundamentalPriceShock(EventABC):
     shock_time_length: int = 1
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
-        """event setup.
+        """event setup. Usually be called from simulator/runner automatically.
 
         Args:
-            settings (Dict[str, Any]): agent configuration.
+            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".
                                        This can include the parameters "enabled" and "shockTimeLength".
 

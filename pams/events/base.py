@@ -9,7 +9,13 @@ from typing import Type
 
 
 class EventHook:
-    """Event Hook class."""
+    """Event Hook class.
+
+    Event hook define when and what events are hooked from simulator.
+    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook using the evnet.
+    Event can be hooked before and after order placements, order cancellations, order executions, each session, and each step mor markets.
+    You can also filter hooking point by market time, classes, instances of markets. (Currently, only market class and instances are supported.)
+    """
 
     def __init__(
         self,
@@ -27,8 +33,10 @@ class EventHook:
             hook_type (str): hook type. This must be "order", "cancel", "execution", "session", or "market".
             is_before (bool): flag whether to run before or not. If hook_type is "execution", this must be set to False.
             time (List[int], Optional): event execution time.
-            specific_class (Type, Optional): specific class. If this is specified, the hook_type must be different from "market".
-            specific_instance (object, Optional): specific instance. If this is specified, the hook_type must be different from "market".
+            specific_class (Type, Optional): specific class. If this is specified, the hook_type must be "market".
+                                             (In future, it could be expanded to other types.)
+            specific_instance (object, Optional): specific instance. If this is specified, the hook_type must be "market".
+                                                  (In future, it could be expanded to other types.)
 
         Returns:
             None
@@ -55,10 +63,13 @@ class EventHook:
 
 
 class EventABC(ABC):
-    """event base class.
+    """event base class (ABC class).
 
-    Note:
-        Please also see :class:`pams.events.FundamentalPriceShock`
+    It defines what the event is.
+    All events should inherit this class.
+
+    .. seealso::
+        - :class:`pams.events.FundamentalPriceShock`
     """
 
     def __init__(
@@ -69,7 +80,7 @@ class EventABC(ABC):
         simulator: "Simulator",  # type: ignore
         name: str,
     ) -> None:
-        """event initialization.
+        """event initialization. Usually be called from simulator/runner automatically.
 
         Args:
             event_id (int): event ID.
@@ -87,11 +98,26 @@ class EventABC(ABC):
         self.name: str = name
         self.session = session
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type:
+        """event setup. Usually be called from simulator/runner automatically.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
+
+        Returns:
+            None
+        """
         pass
 
     @abstractmethod
     def hook_registration(self) -> List[EventHook]:
+        """Define when this event should be hooked by simulator.
+        This method is automatically hooked by simulator at the beginning of simulation.
+        You must implement this.
+
+        Returns:
+            List[EventHook]: The list of event hook ( :class:`EventHook` )
+        """
         pass
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore
