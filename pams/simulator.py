@@ -167,7 +167,7 @@ class Simulator:
             self._update_time_on_market(market=market)
 
     def _update_agents_for_execution(
-        self, execution_logs: List["ExecutionLog"]  # Type: Ignore
+        self, execution_logs: List["ExecutionLog"]  # type: ignore
     ) -> None:
         for log in execution_logs:
             buy_agent: Agent = self.id2agent[log.buy_agent_id]
