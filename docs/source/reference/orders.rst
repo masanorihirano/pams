@@ -4,6 +4,7 @@ Order
 ~~~~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/order/
+    :template: classtemplate.rst
 
     Order
     Cancel

@@ -4,6 +4,7 @@ Agents
 ~~~~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/agents/
+    :template: classtemplate.rst
 
     agents.Agent
     agents.HighFrequencyAgent
