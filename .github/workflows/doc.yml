@@ -10,7 +10,7 @@ jobs:
   doc:
     runs-on:  ${{ matrix.platform }}
     strategy:
-      max-parallel: 15
+      max-parallel: 5
       matrix:
         platform: [ubuntu-latest]
         python-version: [3.9]
