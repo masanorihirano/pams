@@ -7,7 +7,10 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
-    """This suddenly changes the fundamental price (just changing it)."""
+    """This suddenly changes the fundamental price (just changing it).
+
+    This event is only called via :func:`hooked_before_step_for_market` at designated step.
+    """
 
     target_market_name: str
     target_market: "Market"  # type: ignore
@@ -45,14 +48,6 @@ class FundamentalPriceShock(EventABC):
         self.target_market = self.simulator.name2market[self.target_market_name]
 
     def hook_registration(self) -> List[EventHook]:
-        """set for the event hook.
-
-        Args:
-            None
-
-        Returns:
-            List[EventHook]: list of the event hook.
-        """
         event_hook = EventHook(
             event=self,
             hook_type="market",
@@ -63,18 +58,15 @@ class FundamentalPriceShock(EventABC):
         return [event_hook]
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
-        """
-
-        Args:
-            simulator (:class:`pams.Simulator`): simulator instance.
-            market (:class:`pams.Market`): market instance.
-
-        Returns:
-            None
-        """
         time: int = market.get_time()
         if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
             raise AssertionError
         if market != self.target_market:
             raise AssertionError
         market.change_fundamental_price(scale=1 + self.price_change_rate)
+
+
+FundamentalPriceShock.hook_registration.__doc__ = EventABC.hook_registration.__doc__
+FundamentalPriceShock.hooked_before_step_for_market.__doc__ = (
+    EventABC.hooked_before_step_for_market.__doc__
+)
