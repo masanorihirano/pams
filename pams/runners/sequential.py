@@ -380,6 +380,7 @@ class SequentialRunner(Runner):
                     raise NotImplementedError
                 if session.with_order_execution:
                     logs: List[ExecutionLog] = market._execution()
+                    self.simulator._update_agents_for_execution(execution_logs=logs)
                     for execution_log in logs:
                         agent.executed_order(log=execution_log)
                         self.simulator._trigger_event_after_execution(
