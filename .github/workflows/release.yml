@@ -34,7 +34,7 @@ jobs:
     runs-on:  ${{ matrix.platform }}
     needs: tagging
     strategy:
-      max-parallel: 10
+      max-parallel: 5
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
