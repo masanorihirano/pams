@@ -13,6 +13,15 @@ from .high_frequency_agent import HighFrequencyAgent
 
 
 class ArbitrageAgent(HighFrequencyAgent):
+    """Arbitrage Agent class.
+
+    This class inherits from the HighFrequencyAgent class.
+    Arbitrage agent mainly aimed to take arbitrage chance between spot markets and its index market.
+
+    Note:
+        Currently, index markets must have the same weight for each constitutional stock.
+    """
+
     order_volume: int = 1
     order_threshold_price: float = 1.0
     order_time_length: int = 1
@@ -24,6 +33,17 @@ class ArbitrageAgent(HighFrequencyAgent):
         *args,
         **kwargs
     ) -> None:
+        """agent setup. Usually be called from simulator/runner automatically.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
+                                       This must include the parameters "orderVolume", "orderThresholdPrice".
+                                       This can include the parameter "orderTimeLength".
+            accessible_markets_ids (List[int]): list of market IDs.
+
+        Returns:
+            None
+        """
         super(ArbitrageAgent, self).setup(
             settings, accessible_markets_ids, *args, **kwargs
         )
@@ -37,6 +57,14 @@ class ArbitrageAgent(HighFrequencyAgent):
             self.order_time_length = settings["orderTimeLength"]
 
     def _submit_orders(self, market: Market) -> List[Union[Order, Cancel]]:
+        """internal sub routine for submitting orders by market.
+
+        Args:
+            market (List[Market]): markets to order.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
+        """
         orders: List[Union[Order, Cancel]] = []
         if not isinstance(market, IndexMarket):
             return orders
@@ -113,6 +141,11 @@ class ArbitrageAgent(HighFrequencyAgent):
         return orders
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        """submit orders to take arbitrage chance.
+
+        .. seealso::
+            - :func:`pams.agents.Agent.submit_orders`
+        """
         orders: List[Union[Order, Cancel]] = []
         for market in markets:
             orders.extend(self._submit_orders(market=market))

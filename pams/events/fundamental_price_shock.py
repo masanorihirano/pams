@@ -7,6 +7,11 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
+    """This suddenly changes the fundamental price (just changing it).
+
+    This event is only called via :func:`hooked_before_step_for_market` at designated step.
+    """
+
     target_market_name: str
     target_market: "Market"  # type: ignore
     trigger_time: int
@@ -15,6 +20,16 @@ class FundamentalPriceShock(EventABC):
     shock_time_length: int = 1
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+        """event setup. Usually be called from simulator/runner automatically.
+
+        Args:
+            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
+                                       This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".
+                                       This can include the parameters "enabled" and "shockTimeLength".
+
+        Returns:
+            None
+        """
         if "triggerDays" in settings:
             raise ValueError("triggerDays and numStepsOneDay are obsoleted.")
         if "target" not in settings:
@@ -49,3 +64,9 @@ class FundamentalPriceShock(EventABC):
         if market != self.target_market:
             raise AssertionError
         market.change_fundamental_price(scale=1 + self.price_change_rate)
+
+
+FundamentalPriceShock.hook_registration.__doc__ = EventABC.hook_registration.__doc__
+FundamentalPriceShock.hooked_before_step_for_market.__doc__ = (
+    EventABC.hooked_before_step_for_market.__doc__
+)
