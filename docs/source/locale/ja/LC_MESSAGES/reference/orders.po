@@ -1,0 +1,49 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-03 21:49+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.11.0\n"
+
+#: ../../source/reference/orders.rst:4
+msgid "Order"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid ""
+":py:obj:`Order <pams.Order>`\\ \\(agent\\_id\\, market\\_id\\, "
+"is\\_buy\\, kind\\, volume\\)"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid ":py:obj:`Cancel <pams.Cancel>`\\ \\(order\\[\\, placed\\_at\\]\\)"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid ":py:obj:`OrderKind <pams.OrderKind>`\\ \\(kind\\_id\\, name\\)"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid ":py:obj:`MARKET_ORDER <pams.MARKET_ORDER>`\\"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid "str)"
+msgstr ""
+
+#: ../../source/reference/orders.rst:12:<autosummary>:1
+msgid ":py:obj:`LIMIT_ORDER <pams.LIMIT_ORDER>`\\"
+msgstr ""
+
