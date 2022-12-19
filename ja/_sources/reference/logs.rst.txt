@@ -4,6 +4,7 @@ Logs
 ~~~~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/logs/
+    :template: classtemplate.rst
 
     logs.Log
     logs.OrderLog

@@ -3,12 +3,12 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="pams.logs.SimulationEndLog" href="pams.logs.SimulationEndLog.html" /><link rel="prev" title="pams.logs.ExecutionLog" href="pams.logs.ExecutionLog.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="SimulationEndLog" href="pams.logs.SimulationEndLog.html" /><link rel="prev" title="ExecutionLog" href="pams.logs.ExecutionLog.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>pams.logs.SimulationBeginLog - pams documentation</title>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>SimulationBeginLog - pams documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -149,70 +149,77 @@
   <span class="sidebar-brand-text">pams  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/preface.html">Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">About this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/platform.html">Platform</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../user_guide/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/tutorials/outline.html">Outline</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">pams.runners.Runner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">pams.runners.SequentialRunner</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../simulator/pams.Simulator.html">pams.Simulator</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../simulator/pams.Simulator.html">Simulator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../sessions.html">Session</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../session/pams.Session.html">pams.Session</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../sessions.html">Session</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session/pams.Session.html">Session</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../markets.html">Market</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.Market.html">pams.Market</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.IndexMarket.html">pams.IndexMarket</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.Fundamentals.html">pams.Fundamentals</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../markets.html">Market</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.IndexMarket.html">IndexMarket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.Fundamentals.html">Fundamentals</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../orders.html">Order</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.Order.html">pams.Order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.Cancel.html">pams.Cancel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.OrderKind.html">pams.OrderKind</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.MARKET_ORDER.html">pams.MARKET_ORDER</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.LIMIT_ORDER.html">pams.LIMIT_ORDER</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../orders.html">Order</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../events.html">Events</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventABC.html">pams.events.EventABC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventHook.html">pams.events.EventHook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.FundamentalPriceShock.html">pams.events.FundamentalPriceShock</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../events.html">Events</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventABC.html">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../logs.html">Logs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.Log.html">pams.logs.Log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.OrderLog.html">pams.logs.OrderLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.CancelLog.html">pams.logs.CancelLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.ExecutionLog.html">pams.logs.ExecutionLog</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pams.logs.SimulationBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationEndLog.html">pams.logs.SimulationEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionBeginLog.html">pams.logs.SessionBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionEndLog.html">pams.logs.SessionEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepBeginLog.html">pams.logs.MarketStepBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepEndLog.html">pams.logs.MarketStepEndLog</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../logs.html">Logs</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">pams.agents.Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">pams.agents.HighFrequencyAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">pams.agents.FCNAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">pams.agents.ArbitrageAgent</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
 </ul>
 </li>
 </ul>
@@ -249,42 +256,12 @@
           </label>
         </div>
         <article role="main">
-          <section id="pams-logs-simulationbeginlog">
-<h1>pams.logs.SimulationBeginLog<a class="headerlink" href="#pams-logs-simulationbeginlog" title="Permalink to this heading">#</a></h1>
+          <section id="simulationbeginlog">
+<h1>SimulationBeginLog<a class="headerlink" href="#simulationbeginlog" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.logs.SimulationBeginLog">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.logs.</span></span><span class="sig-name descname"><span class="pre">SimulationBeginLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#SimulationBeginLog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.SimulationBeginLog" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.SimulationBeginLog.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#SimulationBeginLog.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.SimulationBeginLog.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pams.logs.SimulationBeginLog.__init__" title="pams.logs.SimulationBeginLog.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(simulator)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_write</span></code>(logger)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_and_write_with_direct_process</span></code>(logger)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<dd><p>Simulation beginning log class.</p>
 </dd></dl>
 
 </section>
@@ -299,7 +276,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">pams.logs.SimulationEndLog</div>
+                <div class="title">SimulationEndLog</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -310,7 +287,7 @@
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">pams.logs.ExecutionLog</div>
+                <div class="title">ExecutionLog</div>
                 
               </div>
             </a>
@@ -326,9 +303,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -346,11 +321,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">pams.logs.SimulationBeginLog</a><ul>
-<li><a class="reference internal" href="#pams.logs.SimulationBeginLog"><code class="docutils literal notranslate"><span class="pre">SimulationBeginLog</span></code></a><ul>
-<li><a class="reference internal" href="#pams.logs.SimulationBeginLog.__init__"><code class="docutils literal notranslate"><span class="pre">SimulationBeginLog.__init__()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">SimulationBeginLog</a><ul>
+<li><a class="reference internal" href="#pams.logs.SimulationBeginLog"><code class="docutils literal notranslate"><span class="pre">SimulationBeginLog</span></code></a></li>
 </ul>
 </li>
 </ul>

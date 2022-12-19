@@ -19,7 +19,6 @@ Install:
 
 
 .. toctree::
-   :caption: User Guide
    :maxdepth: 1
 
    user_guide/index

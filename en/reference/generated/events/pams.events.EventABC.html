@@ -3,12 +3,12 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="pams.events.EventHook" href="pams.events.EventHook.html" /><link rel="prev" title="Events" href="../../events.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="EventHook" href="pams.events.EventHook.html" /><link rel="prev" title="Events" href="../../events.html" />
 
-    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
-        <title>pams.events.EventABC - pams documentation</title>
+    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>EventABC - pams documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -149,70 +149,77 @@
   <span class="sidebar-brand-text">pams  documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
-<ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="simple">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/preface.html">Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">About this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/platform.html">Platform</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../user_guide/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/tutorials/outline.html">Outline</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">pams.runners.Runner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">pams.runners.SequentialRunner</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../simulator/pams.Simulator.html">pams.Simulator</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../simulator/pams.Simulator.html">Simulator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../sessions.html">Session</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../session/pams.Session.html">pams.Session</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../sessions.html">Session</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session/pams.Session.html">Session</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../markets.html">Market</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.Market.html">pams.Market</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.IndexMarket.html">pams.IndexMarket</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../market/pams.Fundamentals.html">pams.Fundamentals</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../markets.html">Market</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.IndexMarket.html">IndexMarket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.Fundamentals.html">Fundamentals</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../orders.html">Order</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.Order.html">pams.Order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.Cancel.html">pams.Cancel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.OrderKind.html">pams.OrderKind</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.MARKET_ORDER.html">pams.MARKET_ORDER</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../order/pams.LIMIT_ORDER.html">pams.LIMIT_ORDER</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../orders.html">Order</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../events.html">Events</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">pams.events.EventABC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.events.EventHook.html">pams.events.EventHook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.events.FundamentalPriceShock.html">pams.events.FundamentalPriceShock</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../events.html">Events</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.Log.html">pams.logs.Log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.OrderLog.html">pams.logs.OrderLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.CancelLog.html">pams.logs.CancelLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.ExecutionLog.html">pams.logs.ExecutionLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html">pams.logs.SimulationBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html">pams.logs.SimulationEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html">pams.logs.SessionBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionEndLog.html">pams.logs.SessionEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html">pams.logs.MarketStepBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html">pams.logs.MarketStepEndLog</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">pams.agents.Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">pams.agents.HighFrequencyAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">pams.agents.FCNAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">pams.agents.ArbitrageAgent</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
 </ul>
 </li>
 </ul>
@@ -249,114 +256,209 @@
           </label>
         </div>
         <article role="main">
-          <section id="pams-events-eventabc">
-<h1>pams.events.EventABC<a class="headerlink" href="#pams-events-eventabc" title="Permalink to this heading">#</a></h1>
+          <section id="eventabc">
+<h1>EventABC<a class="headerlink" href="#eventabc" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.events.EventABC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.events.</span></span><span class="sig-name descname"><span class="pre">EventABC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py method">
-<dt class="sig sig-object py" id="pams.events.EventABC.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<p class="rubric">Methods</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pams.events.EventABC.__init__" title="pams.events.EventABC.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(event_id, prng, session, simulator, ...)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hook_registration</span></code>()</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="pams.events.EventHook.html#pams.events.EventHook" title="pams.events.base.EventHook"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventHook</span></code></a>]</p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_after_cancel</span></code>(simulator, cancel_log)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_after_execution</span></code>(simulator, execution_log)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_after_order</span></code>(simulator, order_log)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_after_session</span></code>(simulator, session)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_after_step_for_market</span></code>(simulator, market)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_before_cancel</span></code>(simulator, cancel)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_before_order</span></code>(simulator, order)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_before_session</span></code>(simulator, session)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hooked_before_step_for_market</span></code>(simulator, market)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code>(settings, *args, **kwargs)</p></td>
-<td><p><dl class="field-list simple">
-<dt class="field-odd">rtype<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</p></td>
-</tr>
-</tbody>
-</table>
+<dd><p>event base class (ABC class).</p>
+<p>It defines what the event is.
+All events should inherit this class.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock" title="pams.events.FundamentalPriceShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.FundamentalPriceShock</span></code></a></p></li>
+</ul>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hook_registration">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hook_registration" title="Permalink to this definition">#</a></dt>
+<dd><p>Define when this event should be hooked by simulator.
+This method is automatically hooked by simulator at the beginning of simulation.
+You must implement this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of event hook ( <a class="reference internal" href="pams.events.EventHook.html#pams.events.EventHook" title="pams.events.EventHook"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventHook</span></code></a> )</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="pams.events.EventHook.html#pams.events.EventHook" title="pams.events.EventHook">EventHook</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_cancel">
+<span class="sig-name descname"><span class="pre">hooked_after_cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_cancel" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked after order cancellations if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>cancel_log</strong> (<a class="reference internal" href="../logs/pams.logs.CancelLog.html#pams.logs.CancelLog" title="pams.logs.CancelLog"><em>CancelLog</em></a>) – cancel order submitted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_execution">
+<span class="sig-name descname"><span class="pre">hooked_after_execution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_execution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_execution" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked after order executions if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>execution_log</strong> (<a class="reference internal" href="../logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog" title="pams.logs.ExecutionLog"><em>ExecutionLog</em></a>) – execution log.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_order">
+<span class="sig-name descname"><span class="pre">hooked_after_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_order" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked after order placements if you set the event hook.
+Please be careful that the order haven’t yet been executed if it could be executed immediately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>order_log</strong> (<a class="reference internal" href="../logs/pams.logs.OrderLog.html#pams.logs.OrderLog" title="pams.logs.OrderLog"><em>OrderLog</em></a>) – order accepted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_session">
+<span class="sig-name descname"><span class="pre">hooked_after_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_session" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked after session ends if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="../session/pams.Session.html#pams.Session" title="pams.Session"><em>Session</em></a>) – session to be ended.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_step_for_market">
+<span class="sig-name descname"><span class="pre">hooked_after_step_for_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_step_for_market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_step_for_market" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked at each step after market processing if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>market</strong> (<a class="reference internal" href="../market/pams.Market.html#pams.Market" title="pams.Market"><em>Market</em></a>) – market processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_cancel">
+<span class="sig-name descname"><span class="pre">hooked_before_cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_cancel" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked before order cancellations if you set the event hook.
+Please be careful that the cancel order haven’t yet been executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>cancel</strong> (<a class="reference internal" href="../order/pams.Cancel.html#pams.Cancel" title="pams.Cancel"><em>Cancel</em></a>) – cancel order submitted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_order">
+<span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_order" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked before order placements if you set the event hook.
+Please be careful that the order haven’t yet been accepted by markets and it could be leakage of order information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>order</strong> (<a class="reference internal" href="../order/pams.Order.html#pams.Order" title="pams.Order"><em>Order</em></a>) – order accepting now.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_session">
+<span class="sig-name descname"><span class="pre">hooked_before_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_session" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked before session beginnings if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>session</strong> (<a class="reference internal" href="../session/pams.Session.html#pams.Session" title="pams.Session"><em>Session</em></a>) – session to be started.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_step_for_market">
+<span class="sig-name descname"><span class="pre">hooked_before_step_for_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_step_for_market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_step_for_market" title="Permalink to this definition">#</a></dt>
+<dd><p>This method is hooked at each step before market processing if you set the event hook.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulator</strong> (<a class="reference internal" href="../simulator/pams.Simulator.html#pams.Simulator" title="pams.Simulator"><em>Simulator</em></a>) – simulator for reference.</p></li>
+<li><p><strong>market</strong> (<a class="reference internal" href="../market/pams.Market.html#pams.Market" title="pams.Market"><em>Market</em></a>) – market to be processed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.events.EventABC.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.setup" title="Permalink to this definition">#</a></dt>
+<dd><p>event setup. Usually be called from simulator/runner automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration. Usually, automatically set from json config of simulator.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -371,7 +473,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">pams.events.EventHook</div>
+                <div class="title">EventHook</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -398,9 +500,7 @@
             
           </div>
           <div class="right-details">
-            <div class="icons">
-              
-            </div>
+            
           </div>
         </div>
         
@@ -418,9 +518,19 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">pams.events.EventABC</a><ul>
+<li><a class="reference internal" href="#">EventABC</a><ul>
 <li><a class="reference internal" href="#pams.events.EventABC"><code class="docutils literal notranslate"><span class="pre">EventABC</span></code></a><ul>
-<li><a class="reference internal" href="#pams.events.EventABC.__init__"><code class="docutils literal notranslate"><span class="pre">EventABC.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hook_registration"><code class="docutils literal notranslate"><span class="pre">EventABC.hook_registration()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_after_cancel"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_after_cancel()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_after_execution"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_after_execution()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_after_order"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_after_order()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_after_session"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_after_session()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_after_step_for_market"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_after_step_for_market()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_before_cancel"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_before_cancel()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_before_order"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_before_order()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_before_session"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_before_session()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.hooked_before_step_for_market"><code class="docutils literal notranslate"><span class="pre">EventABC.hooked_before_step_for_market()</span></code></a></li>
+<li><a class="reference internal" href="#pams.events.EventABC.setup"><code class="docutils literal notranslate"><span class="pre">EventABC.setup()</span></code></a></li>
 </ul>
 </li>
 </ul>
