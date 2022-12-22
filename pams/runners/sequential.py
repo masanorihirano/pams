@@ -104,7 +104,7 @@ class SequentialRunner(Runner):
                 )
             fundamental_drift: float = 0.0
             if "fundamentalDrift" in market_settings:
-                fundamental_price = float(market_settings["fundamentalDrift"])
+                fundamental_drift = float(market_settings["fundamentalDrift"])
             fundamental_volatility: float = 0.0
             if "fundamentalVolatility" in market_settings:
                 fundamental_volatility = float(market_settings["fundamentalVolatility"])
