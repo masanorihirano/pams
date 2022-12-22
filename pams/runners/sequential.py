@@ -382,6 +382,9 @@ class SequentialRunner(Runner):
                     logs: List[ExecutionLog] = market._execution()
                     self.simulator._update_agents_for_execution(execution_logs=logs)
                     for execution_log in logs:
+                        agent = self.simulator.id2agent[execution_log.buy_agent_id]
+                        agent.executed_order(log=execution_log)
+                        agent = self.simulator.id2agent[execution_log.buy_agent_id]
                         agent.executed_order(log=execution_log)
                         self.simulator._trigger_event_after_execution(
                             execution_log=execution_log
