@@ -446,8 +446,9 @@ class Market:
             warnings.warn(
                 "order price does not accord to the tick size. price will be modified"
             )
-            order.price = self.convert_to_tick_level(
-                price=order.price, is_buy=order.is_buy
+            order.price = (
+                self.convert_to_tick_level(price=order.price, is_buy=order.is_buy)
+                * self.tick_size
             )
         order.order_id = self._next_order_id
         self._next_order_id += 1
