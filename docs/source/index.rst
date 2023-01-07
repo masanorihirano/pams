@@ -35,7 +35,7 @@ Install:
    reference/orders
    reference/events
    reference/logs
-   reference/logger
+   reference/loggers
    reference/agents
 
 
