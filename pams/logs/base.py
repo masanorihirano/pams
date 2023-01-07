@@ -245,10 +245,13 @@ class Logger:
     """Logger class.
 
     Logger is designed to handling parallelized market simulations.
-    In the parallelized simulation, the order that logs are pushed to this logger is not deterministic because of varied computational time.
-    For example, there are 2 markets, market 1 and market 2, and those markets are run in parallel, the computational time of one step for each markets are not fixed.
+    In the parallelized simulation, the order that logs are pushed to this logger is not deterministic
+     because of varied computational time.
+    For example, there are 2 markets, market 1 and market 2, and those markets are run in parallel,
+     the computational time of one step for each market are not fixed.
     Therefore, the logging sequence of market 1 and market 2 is not always the same.
-    For handling this problem, logger should save the logs from those markets and the end of each step, the logs are processed and written.
+    For handling this problem, logger should save the logs from those markets and the end of each step,
+     the logs are processed and written.
     However, for some implementation, non-blocking log writing should be also supported.
     Therefore, this logger has 2 methods to handling logs -- :func:`write` and :func:`write_and_direct_process`
     """
