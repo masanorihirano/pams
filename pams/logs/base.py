@@ -8,7 +8,7 @@ class Log:
     """Log class."""
 
     def read_and_write(self, logger: "Logger") -> None:
-        """writing a log.
+        """writing a log. (The actual writing timing depends on the logger.)
 
         Args:
             logger (:class:`pams.logs.Logger`): logger.
@@ -19,7 +19,7 @@ class Log:
         logger.write(log=self)
 
     def read_and_write_with_direct_process(self, logger: "Logger") -> None:
-        """direct writing some logs.
+        """direct writing a log. (This method is intended to call logger to write the log immediately.)
 
         Args:
             logger (:class:`pams.logs.Logger`): logger.
@@ -31,7 +31,10 @@ class Log:
 
 
 class OrderLog(Log):
-    """Order type log class."""
+    """Order log class.
+
+    This log is usually generated when an order is accepted by markets.
+    """
 
     def __init__(
         self,
@@ -70,8 +73,12 @@ class OrderLog(Log):
 
 
 class CancelLog(Log):
-    """Cancel type log class."""
+    """Cancel type log class.
 
+    This log is usually generated when a cancel order is accepted by markets.
+    """
+
+    # ToDo: check ttl is necessary or not
     def __init__(
         self,
         order_id: int,
@@ -112,7 +119,10 @@ class CancelLog(Log):
 
 
 class ExecutionLog(Log):
-    """Execution type log class."""
+    """Execution type log class.
+
+    This log is usually generated when an order is executed on markets.
+    """
 
     def __init__(
         self,
@@ -134,8 +144,8 @@ class ExecutionLog(Log):
             sell_agent_id (int): seller agent ID.
             buy_order_id (int): buy order ID.
             sell_order_id (int): sell order ID.
-            price (float): order price.
-            volume (int): order volume.
+            price (float): executed price.
+            volume (int): executed volume.
         """
         self.market_id: int = market_id
         self.time: int = time
@@ -232,12 +242,21 @@ class MarketStepEndLog(Log):
 
 
 class Logger:
-    """Logger class."""
+    """Logger class.
+
+    Logger is designed to handling parallelized market simulations.
+    In the parallelized simulation, the order that logs are pushed to this logger is not deterministic because of varied computational time.
+    For example, there are 2 markets, market 1 and market 2, and those markets are run in parallel, the computational time of one step for each markets are not fixed.
+    Therefore, the logging sequence of market 1 and market 2 is not always the same.
+    For handling this problem, logger should save the logs from those markets and the end of each step, the logs are processed and written.
+    However, for some implementation, non-blocking log writing should be also supported.
+    Therefore, this logger has 2 methods to handling logs -- :func:`write` and :func:`write_and_direct_process`
+    """
 
     simulator: "Simulator"  # type: ignore
 
     def __init__(self) -> None:
-        """initialize logger. Set the pending list to empty."""
+        """initialize logger."""
         self.pending_logs: List[Log] = []
 
     def _set_simulator(self, simulator: "Simulator") -> None:  # type: ignore
@@ -296,16 +315,24 @@ class Logger:
         self.process(logs=logs)
 
     def _process(self) -> None:
-        """process wrapper.
-
-        .. seealso::
-            - :func:`pams.logs.Logger.process`
-        """
         self.process(logs=self.pending_logs)
         self.pending_logs = []
 
     def process(self, logs: List["Log"]) -> None:
-        """logging execution.
+        """logging execution. For each log type, each processing method are implemented.
+
+        For usual implementation, please use
+         - :func:`process_order_log`
+         - :fucn:`process_cancel_log`
+         - :func:`process_execution_log`
+         - :func:`process_simulation_begin_log`
+         - :func:`process_simulation_end_log`
+         - :func:`process_session_begin_log`
+         - :func:`process_session_end_log`
+         - :func:`process_market_step_begin_log`
+         - :func:`process_market_step_end_log`
+
+        However, if you want to control the log writing sequence, you can change this implementation.
 
         Args:
             logs (List[:class:`pams.logs.Log`]): log list.
