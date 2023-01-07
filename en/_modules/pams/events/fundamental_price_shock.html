@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -264,7 +270,7 @@
 
 
 <div class="viewcode-block" id="FundamentalPriceShock"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock">[docs]</a><span class="k">class</span> <span class="nc">FundamentalPriceShock</span><span class="p">(</span><span class="n">EventABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;This suddenly changes the fundamental price (just changing it).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This suddenly changes the fundamental price (just changing it).</span>
 
 <span class="sd">    This event is only called via :func:`hooked_before_step_for_market` at designated step.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -277,7 +283,7 @@
     <span class="n">shock_time_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="FundamentalPriceShock.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;event setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;event setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>

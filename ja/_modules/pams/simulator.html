@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -403,7 +409,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name2session</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
 
     <span class="k">def</span> <span class="nf">_update_time_on_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;be careful index matket have to be update after component markets, Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;be careful index matket have to be update after component markets, Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">):</span>
             <span class="n">market</span><span class="o">.</span><span class="n">_update_time</span><span class="p">(</span>
                 <span class="n">next_fundamental_price</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fundamentals</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span>
@@ -422,6 +428,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_on_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">),</span> <span class="n">markets</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_on_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_agents_for_execution</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">execution_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;ExecutionLog&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">execution_logs</span><span class="p">:</span>
+            <span class="n">buy_agent</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">buy_agent_id</span><span class="p">]</span>
+            <span class="n">sell_agent</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">sell_agent_id</span><span class="p">]</span>
+            <span class="n">price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">price</span>
+            <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">volume</span>
+            <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">market_id</span>
+            <span class="n">buy_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">-=</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+            <span class="n">sell_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">+=</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+            <span class="n">buy_agent</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">volume</span>
+            <span class="n">sell_agent</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">-=</span> <span class="n">volume</span>
 
     <span class="k">def</span> <span class="nf">_check_event_class_and_instance</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

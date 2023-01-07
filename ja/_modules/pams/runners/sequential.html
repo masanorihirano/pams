@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -361,7 +367,7 @@
                 <span class="p">)</span>
             <span class="n">fundamental_drift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">if</span> <span class="s2">&quot;fundamentalDrift&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">fundamental_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalDrift&quot;</span><span class="p">])</span>
+                <span class="n">fundamental_drift</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalDrift&quot;</span><span class="p">])</span>
             <span class="n">fundamental_volatility</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">if</span> <span class="s2">&quot;fundamentalVolatility&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                 <span class="n">fundamental_volatility</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalVolatility&quot;</span><span class="p">])</span>
@@ -637,7 +643,11 @@
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
                 <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span><span class="p">:</span>
                     <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span><span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">execution_log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+                        <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">buy_agent_id</span><span class="p">]</span>
+                        <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
+                        <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">sell_agent_id</span><span class="p">]</span>
                         <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_execution</span><span class="p">(</span>
                             <span class="n">execution_log</span><span class="o">=</span><span class="n">execution_log</span>

@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -275,7 +281,7 @@
 
 
 <div class="viewcode-block" id="Agent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent">[ドキュメント]</a><span class="k">class</span> <span class="nc">Agent</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Agent class (abstract class)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Agent class (abstract class)</span>
 
 <span class="sd">    Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents using the class you define.</span>
 <span class="sd">    Therefore, you don&#39;t need to call __init__ or any other method and simulator automatically call them if it is necessary.</span>
@@ -294,7 +300,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;agent initialization. Usually call from simulator automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;agent initialization. Usually call from simulator automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent_id (int): agent id. This is also required to generate orders to identify who submit orders.</span>
@@ -322,7 +328,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
 
 <div class="viewcode-block" id="Agent.setup"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.setup">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">accessible_markets_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;agent setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;agent setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration.  Usually, automatically set from json config of simulator.</span>
@@ -346,7 +352,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_asset_volume</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Agent.get_asset_volume"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_asset_volume">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_asset_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;getter of the asset volume held by the agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter of the asset volume held by the agent.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -359,7 +365,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Agent.get_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;getter of the cash amount held by the agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter of the cash amount held by the agent.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: cash amount held by this agent.</span>
@@ -367,7 +373,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span></div>
 
 <div class="viewcode-block" id="Agent.get_prng"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_prng">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_prng</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;getter of the pseudo random number generator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter of the pseudo random number generator.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            random.Random: pseudo random number generator for this agent.</span>
@@ -375,7 +381,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span></div>
 
 <div class="viewcode-block" id="Agent.is_market_accessible"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.is_market_accessible">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">is_market_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;determine if the market ID is included in the asset volume</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;determine if the market ID is included in the asset volume</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -386,7 +392,7 @@
         <span class="k">return</span> <span class="n">market_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span></div>
 
 <div class="viewcode-block" id="Agent.submitted_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">submitted_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;call back when an order submission is accepted by a market.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;call back when an order submission is accepted by a market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (OrderLog): log for order submission</span>
@@ -397,7 +403,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Agent.executed_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.executed_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">executed_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;call back when a submitted order is executed in a market.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;call back when a submitted order is executed in a market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (ExecutionLog): log for order execution</span>
@@ -408,7 +414,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Agent.canceled_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.canceled_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">canceled_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">CancelLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;call back when cancel order is accepted by a market.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;call back when cancel order is accepted by a market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (CancelLog): log for order cancellation</span>
@@ -419,7 +425,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Agent.set_asset_volume"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_asset_volume">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_asset_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;setter of the asset volume held by agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setter of the asset volume held by agent.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -433,7 +439,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">volume</span></div>
 
 <div class="viewcode-block" id="Agent.set_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cash_amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;setter of the cash amount held by agent.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setter of the cash amount held by agent.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cash_amount (float): cash amount held by this agent.</span>
@@ -444,7 +450,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">=</span> <span class="n">cash_amount</span></div>
 
 <div class="viewcode-block" id="Agent.set_market_accessible"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_market_accessible">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_market_accessible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;set the specified market volume to 0.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;set the specified market volume to 0.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -456,7 +462,7 @@
 
 <div class="viewcode-block" id="Agent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders">[ドキュメント]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;submit orders (abstract method). This method automatically called from runners.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;submit orders (abstract method). This method automatically called from runners.</span>
 
 <span class="sd">        This method is called only when this agent has a chance to submit orders.</span>
 <span class="sd">        Therefore, it is not guaranteed that this method is called at all the step of simulation.</span>
@@ -473,7 +479,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="Agent.update_asset_volume"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.update_asset_volume">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">update_asset_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;increasing or decreasing the asset volume.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;increasing or decreasing the asset volume.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -487,7 +493,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span></div>
 
 <div class="viewcode-block" id="Agent.update_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.update_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">update_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;increasing or decreasing the cash amount.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;increasing or decreasing the cash amount.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            delta (float): amount of change in the cash amount.</span>
@@ -498,7 +504,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">+=</span> <span class="n">delta</span></div>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;string representation of agent class.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;string representation of agent class.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: string representation of this class.</span>

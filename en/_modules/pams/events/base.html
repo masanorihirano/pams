@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -266,7 +272,7 @@
 
 
 <div class="viewcode-block" id="EventHook"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventHook.html#pams.events.EventHook">[docs]</a><span class="k">class</span> <span class="nc">EventHook</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Event Hook class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Event Hook class.</span>
 
 <span class="sd">    Event hook define when and what events are hooked from simulator.</span>
 <span class="sd">    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook using the evnet.</span>
@@ -286,7 +292,7 @@
         <span class="n">specific_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">specific_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Event Hook initialization.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Event Hook initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            event (:class:`pams.events.EventABC`): event instance.</span>
@@ -323,7 +329,7 @@
 
 
 <div class="viewcode-block" id="EventABC"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC">[docs]</a><span class="k">class</span> <span class="nc">EventABC</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;event base class (ABC class).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;event base class (ABC class).</span>
 
 <span class="sd">    It defines what the event is.</span>
 <span class="sd">    All events should inherit this class.</span>
@@ -340,7 +346,7 @@
         <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;event initialization. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;event initialization. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            event_id (int): event ID.</span>
@@ -359,7 +365,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span>
 
 <div class="viewcode-block" id="EventABC.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;event setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;event setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
@@ -371,7 +377,7 @@
 
 <div class="viewcode-block" id="EventABC.hook_registration"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hook_registration">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">hook_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Define when this event should be hooked by simulator.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define when this event should be hooked by simulator.</span>
 <span class="sd">        This method is automatically hooked by simulator at the beginning of simulation.</span>
 <span class="sd">        You must implement this.</span>
 
@@ -381,7 +387,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_before_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_order">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked before order placements if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before order placements if you set the event hook.</span>
 <span class="sd">        Please be careful that the order haven&#39;t yet been accepted by markets and it could be leakage of order information.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -394,7 +400,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_after_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_order">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked after order placements if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order placements if you set the event hook.</span>
 <span class="sd">        Please be careful that the order haven&#39;t yet been executed if it could be executed immediately.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -407,7 +413,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_before_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_cancel">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked before order cancellations if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before order cancellations if you set the event hook.</span>
 <span class="sd">        Please be careful that the cancel order haven&#39;t yet been executed.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -420,7 +426,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_after_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_cancel">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked after order cancellations if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order cancellations if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -432,7 +438,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked after order executions if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order executions if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -444,7 +450,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_before_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_session">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_before_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked before session beginnings if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before session beginnings if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -456,7 +462,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_after_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_session">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked after session ends if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after session ends if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -468,7 +474,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_step_for_market">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_before_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked at each step before market processing if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked at each step before market processing if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -480,7 +486,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_after_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_step_for_market">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-        <span class="sd">&quot;&quot;&quot;This method is hooked at each step after market processing if you set the event hook.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked at each step after market processing if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>

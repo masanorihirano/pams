@@ -215,7 +215,13 @@
 <li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -265,10 +271,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Log.read_and_write">
 <span class="sig-name descname"><span class="pre">read_and_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Log.read_and_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Log.read_and_write" title="Permalink to this definition">#</a></dt>
-<dd><p>writing a log.</p>
+<dd><p>writing a log. (The actual writing timing depends on the logger.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logger</strong> (<a class="reference internal" href="pams.logs.Logger.html#pams.logs.Logger" title="pams.logs.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Logger</span></code></a>) – logger.</p>
+<dd class="field-odd"><p><strong>logger</strong> (<a class="reference internal" href="../loggers/pams.logs.Logger.html#pams.logs.Logger" title="pams.logs.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Logger</span></code></a>) – logger.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -282,10 +288,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Log.read_and_write_with_direct_process">
 <span class="sig-name descname"><span class="pre">read_and_write_with_direct_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Log.read_and_write_with_direct_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Log.read_and_write_with_direct_process" title="Permalink to this definition">#</a></dt>
-<dd><p>direct writing some logs.</p>
+<dd><p>direct writing a log. (This method is intended to call logger to write the log immediately.)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logger</strong> (<a class="reference internal" href="pams.logs.Logger.html#pams.logs.Logger" title="pams.logs.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Logger</span></code></a>) – logger.</p>
+<dd class="field-odd"><p><strong>logger</strong> (<a class="reference internal" href="../loggers/pams.logs.Logger.html#pams.logs.Logger" title="pams.logs.Logger"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Logger</span></code></a>) – logger.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

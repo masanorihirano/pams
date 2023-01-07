@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="ja">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+<link rel="index" title="索引" href="../../../genindex.html" /><link rel="search" title="検索" href="../../../search.html" /><link rel="next" title="MarketStepSaver" href="pams.logs.MarketStepSaver.html" /><link rel="prev" title="Logger" href="pams.logs.Logger.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Logger - pams documentation</title>
+        <title>MarketStepPrintLogger - pams ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">pams  documentation</div></a>
+      <a href="../../../index.html"><div class="brand">pams  ドキュメント</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,16 +146,16 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
   
   
-  <span class="sidebar-brand-text">pams  documentation</span>
+  <span class="sidebar-brand-text">pams  ドキュメント</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
-  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="検索" name="q" aria-label="検索">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">ユーザーガイド</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/preface.html">Preface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">About this project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">Install</a></li>
@@ -168,7 +168,7 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
@@ -203,19 +203,25 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.Log.html">Log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.OrderLog.html">OrderLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.CancelLog.html">CancelLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.ExecutionLog.html">ExecutionLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionEndLog.html">SessionEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../loggers.html">Logger</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -256,92 +262,24 @@
           </label>
         </div>
         <article role="main">
-          <section id="logger">
-<h1>Logger<a class="headerlink" href="#logger" title="Permalink to this heading">#</a></h1>
+          <section id="marketstepprintlogger">
+<h1>MarketStepPrintLogger<a class="headerlink" href="#marketstepprintlogger" title="この見出しへのパーマリンク">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pams.logs.Logger">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.logs.</span></span><span class="sig-name descname"><span class="pre">Logger</span></span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger" title="Permalink to this definition">#</a></dt>
-<dd><p>Logger class.</p>
+<dt class="sig sig-object py" id="pams.logs.MarketStepPrintLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.logs.</span></span><span class="sig-name descname"><span class="pre">MarketStepPrintLogger</span></span><a class="reference internal" href="../../../_modules/pams/logs/market_step_loggers.html#MarketStepPrintLogger"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.MarketStepPrintLogger" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>Logger of the market step class.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.Logger.bulk_write">
-<span class="sig-name descname"><span class="pre">bulk_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.bulk_write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.bulk_write" title="Permalink to this definition">#</a></dt>
-<dd><p>set some logs to pending list.</p>
+<dt class="sig sig-object py" id="pams.logs.MarketStepPrintLogger.process_market_step_end_log">
+<span class="sig-name descname"><span class="pre">process_market_step_end_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/market_step_loggers.html#MarketStepPrintLogger.process_market_step_end_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.MarketStepPrintLogger.process_market_step_end_log" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>print the market log.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logs</strong> (List[<a class="reference internal" href="pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>]) – log list.</p>
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html#pams.logs.MarketStepEndLog" title="pams.logs.MarketStepEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.MarketStepEndLog</span></code></a>) -- matket log.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.Logger.bulk_write_and_direct_process">
-<span class="sig-name descname"><span class="pre">bulk_write_and_direct_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.bulk_write_and_direct_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.bulk_write_and_direct_process" title="Permalink to this definition">#</a></dt>
-<dd><p>direct writing some logs.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logs</strong> (List[<a class="reference internal" href="pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>]) – log list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.Logger.process">
-<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process" title="Permalink to this definition">#</a></dt>
-<dd><p>logging execution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logs</strong> (List[<a class="reference internal" href="pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>]) – log list.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.Logger.write">
-<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.write" title="Permalink to this definition">#</a></dt>
-<dd><p>set a log to pending list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>) – log.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="pams.logs.Logger.write_and_direct_process">
-<span class="sig-name descname"><span class="pre">write_and_direct_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.write_and_direct_process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.write_and_direct_process" title="Permalink to this definition">#</a></dt>
-<dd><p>direct writing a log.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>) – log.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
@@ -356,8 +294,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="pams.logs.MarketStepSaver.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">MarketStepSaver</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="pams.logs.Logger.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Logger</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -388,13 +344,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Logger</a><ul>
-<li><a class="reference internal" href="#pams.logs.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a><ul>
-<li><a class="reference internal" href="#pams.logs.Logger.bulk_write"><code class="docutils literal notranslate"><span class="pre">Logger.bulk_write()</span></code></a></li>
-<li><a class="reference internal" href="#pams.logs.Logger.bulk_write_and_direct_process"><code class="docutils literal notranslate"><span class="pre">Logger.bulk_write_and_direct_process()</span></code></a></li>
-<li><a class="reference internal" href="#pams.logs.Logger.process"><code class="docutils literal notranslate"><span class="pre">Logger.process()</span></code></a></li>
-<li><a class="reference internal" href="#pams.logs.Logger.write"><code class="docutils literal notranslate"><span class="pre">Logger.write()</span></code></a></li>
-<li><a class="reference internal" href="#pams.logs.Logger.write_and_direct_process"><code class="docutils literal notranslate"><span class="pre">Logger.write_and_direct_process()</span></code></a></li>
+<li><a class="reference internal" href="#">MarketStepPrintLogger</a><ul>
+<li><a class="reference internal" href="#pams.logs.MarketStepPrintLogger"><code class="docutils literal notranslate"><span class="pre">MarketStepPrintLogger</span></code></a><ul>
+<li><a class="reference internal" href="#pams.logs.MarketStepPrintLogger.process_market_step_end_log"><code class="docutils literal notranslate"><span class="pre">MarketStepPrintLogger.process_market_step_end_log()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -415,5 +367,6 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/scripts/furo.js"></script>
+    <script src="../../../_static/translations.js"></script>
     </body>
 </html>

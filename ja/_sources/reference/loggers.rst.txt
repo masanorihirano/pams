@@ -3,7 +3,7 @@
 Logger
 ~~~~~~~~~~~~~~~~~~
 .. autosummary::
-    :toctree: generated/logs/
+    :toctree: generated/loggers/
     :template: classtemplate.rst
 
     logs.Logger

@@ -214,7 +214,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -270,7 +276,7 @@
 
 
 <div class="viewcode-block" id="ArbitrageAgent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent">[docs]</a><span class="k">class</span> <span class="nc">ArbitrageAgent</span><span class="p">(</span><span class="n">HighFrequencyAgent</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Arbitrage Agent class.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Arbitrage Agent class.</span>
 
 <span class="sd">    This class inherits from the HighFrequencyAgent class.</span>
 <span class="sd">    Arbitrage agent mainly aimed to take arbitrage chance between spot markets and its index market.</span>
@@ -290,7 +296,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;agent setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;agent setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
@@ -314,7 +320,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderTimeLength&quot;</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;internal sub routine for submitting orders by market.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;internal sub routine for submitting orders by market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market (List[Market]): markets to order.</span>
@@ -398,7 +404,7 @@
         <span class="k">return</span> <span class="n">orders</span>
 
 <div class="viewcode-block" id="ArbitrageAgent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent.submit_orders">[docs]</a>    <span class="k">def</span> <span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;submit orders to take arbitrage chance.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;submit orders to take arbitrage chance.</span>
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">            - :func:`pams.agents.Agent.submit_orders`</span>
