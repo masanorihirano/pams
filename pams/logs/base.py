@@ -322,8 +322,9 @@ class Logger:
         """logging execution. For each log type, each processing method are implemented.
 
         For usual implementation, please use
+
          - :func:`process_order_log`
-         - :fucn:`process_cancel_log`
+         - :func:`process_cancel_log`
          - :func:`process_execution_log`
          - :func:`process_simulation_begin_log`
          - :func:`process_simulation_end_log`
@@ -363,28 +364,99 @@ class Logger:
                 raise NotImplementedError
 
     def process_order_log(self, log: "OrderLog") -> None:
+        """process order log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.OrderLog`]): order log
+
+        Returns:
+            None"""
         pass
 
     def process_cancel_log(self, log: "CancelLog") -> None:
+        """process cancel log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.CancelLog`]): cancel log
+
+        Returns:
+            None
+        """
         pass
 
     def process_execution_log(self, log: "ExecutionLog") -> None:
+        """process execution log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.ExecutionLog`]): execution log
+
+        Returns:
+            None
+        """
         pass
 
     def process_simulation_begin_log(self, log: "SimulationBeginLog") -> None:
+        """process simulation begin log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.SimulationBeginLog`]): simulation begin log
+
+        Returns:
+            None
+        """
         pass
 
     def process_simulation_end_log(self, log: "SimulationEndLog") -> None:
+        """process simulation end log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.SimulationEndLog`]): simulation end log
+
+        Returns:
+            None
+        """
         pass
 
     def process_session_begin_log(self, log: "SessionBeginLog") -> None:
+        """process session begin log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.SessionBeginLog`]): session begin log
+
+        Returns:
+            None
+        """
         pass
 
     def process_session_end_log(self, log: "SessionEndLog") -> None:
+        """process session end log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.SessionEndLog`]): session end log
+
+        Returns:
+            None
+        """
         pass
 
     def process_market_step_begin_log(self, log: "MarketStepBeginLog") -> None:
+        """process market step begin log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.MarketStepBeginLog`]): market step begin log
+
+        Returns:
+            None
+        """
         pass
 
     def process_market_step_end_log(self, log: "MarketStepEndLog") -> None:
+        """process market step end log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.MarketStepEndLog`]): market step end log
+
+        Returns:
+            None
+        """
         pass
