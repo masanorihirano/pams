@@ -104,7 +104,7 @@ class SequentialRunner(Runner):
                 )
             fundamental_drift: float = 0.0
             if "fundamentalDrift" in market_settings:
-                fundamental_price = float(market_settings["fundamentalDrift"])
+                fundamental_drift = float(market_settings["fundamentalDrift"])
             fundamental_volatility: float = 0.0
             if "fundamentalVolatility" in market_settings:
                 fundamental_volatility = float(market_settings["fundamentalVolatility"])
@@ -380,7 +380,11 @@ class SequentialRunner(Runner):
                     raise NotImplementedError
                 if session.with_order_execution:
                     logs: List[ExecutionLog] = market._execution()
+                    self.simulator._update_agents_for_execution(execution_logs=logs)
                     for execution_log in logs:
+                        agent = self.simulator.id2agent[execution_log.buy_agent_id]
+                        agent.executed_order(log=execution_log)
+                        agent = self.simulator.id2agent[execution_log.sell_agent_id]
                         agent.executed_order(log=execution_log)
                         self.simulator._trigger_event_after_execution(
                             execution_log=execution_log

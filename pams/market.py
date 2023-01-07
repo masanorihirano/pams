@@ -1,5 +1,6 @@
 import math
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import Iterable
@@ -441,6 +442,14 @@ class Market:
             raise AssertionError
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
+        if order.price is not None and order.price % self.tick_size != 0:
+            warnings.warn(
+                "order price does not accord to the tick size. price will be modified"
+            )
+            order.price = (
+                self.convert_to_tick_level(price=order.price, is_buy=order.is_buy)
+                * self.tick_size
+            )
         order.order_id = self._next_order_id
         self._next_order_id += 1
         self._update_market_price()

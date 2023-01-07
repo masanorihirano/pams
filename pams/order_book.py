@@ -84,7 +84,8 @@ class OrderBook:
             set(map(lambda x: x.price, self.priority_queue.queue))
         )
         has_market_order: bool = None in keys
-        keys.remove(None)
+        if has_market_order:
+            keys.remove(None)
         keys.sort(reverse=self.is_buy)
         if has_market_order:
             keys.insert(0, None)
