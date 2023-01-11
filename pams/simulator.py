@@ -166,6 +166,20 @@ class Simulator:
         for market in filter(lambda x: isinstance(x, IndexMarket), markets):
             self._update_time_on_market(market=market)
 
+    def _update_agents_for_execution(
+        self, execution_logs: List["ExecutionLog"]  # type: ignore
+    ) -> None:
+        for log in execution_logs:
+            buy_agent: Agent = self.id2agent[log.buy_agent_id]
+            sell_agent: Agent = self.id2agent[log.sell_agent_id]
+            price: float = log.price
+            volume: int = log.volume
+            market_id: int = log.market_id
+            buy_agent.cash_amount -= price * volume
+            sell_agent.cash_amount += price * volume
+            buy_agent.asset_volumes[market_id] += volume
+            sell_agent.asset_volumes[market_id] -= volume
+
     def _check_event_class_and_instance(
         self,
         check_object: object,

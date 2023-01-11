@@ -34,7 +34,7 @@ Currently, no publication related to this repository. Therefore, please cite thi
 
 ## Issues and Contribution
 About issues (bugs):
--   You can report issues [here](https://github.com/masanorihirano/slack_transfer/issues).
+-   You can report issues [here](https://github.com/masanorihirano/pams/issues).
 -   There are no guarantee to support or fix those issues.
 
 Contributions:

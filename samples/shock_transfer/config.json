@@ -88,7 +88,7 @@
 	"ArbitrageAgents": {
 		"class": "ArbitrageAgent",
 		"numAgents": 100,
-		"markets": ["IndexMarket-I"],
+		"markets": ["IndexMarket-I", "SpotMarket-1", "SpotMarket-2"],
 		"assetVolume": 50,
 		"cashAmount": 150000,
 		"orderVolume": 1,
