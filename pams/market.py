@@ -51,7 +51,7 @@ class Market:
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         if "tickSize" not in settings:
-            raise AssertionError("tickSize is required")
+            raise ValueError("tickSize is required")
         self.tick_size = settings["tickSize"]
         if "outstandingShares" in settings:
             self.outstanding_shares = settings["outstandingShares"]
