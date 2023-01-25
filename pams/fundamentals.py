@@ -9,7 +9,17 @@ from scipy.linalg import cholesky
 
 
 class Fundamentals:
+    """Fundamental functions for simulator."""
+
     def __init__(self, prng: random.Random) -> None:
+        """initialize.
+
+        Args:
+            prng (random.Random): pseudo random number generator for cholesky.
+
+        Returns:
+            None
+        """
         self._prng = prng
         self._np_prng: np.random.Generator = np.random.default_rng(
             self._prng.randint(0, 2**31)
@@ -32,6 +42,18 @@ class Fundamentals:
         volatility: float,
         start_at: int = 0,
     ) -> None:
+        """add a market.
+
+        Args:
+            market_id (int): market ID to add.
+            initial (float): initial value.
+            drift (float): drifts.
+            volatility (float): volatility for cholesky.
+            start_at (int): time step to start simulation (default 0).
+
+        Returns:
+            None
+        """
         if market_id in self.market_ids:
             raise ValueError(f"market {market_id} is already registered")
         if volatility < 0.0:
@@ -47,6 +69,14 @@ class Fundamentals:
         self._generated_until = min(start_at, self._generated_until)
 
     def remove_market(self, market_id: int) -> None:
+        """remove a market.
+
+        Args:
+            market_id (int): market ID to remove.
+
+        Returns:
+            None
+        """
         self.market_ids.remove(market_id)
         self.drifts.pop(market_id)
         self.volatilities.pop(market_id)
@@ -57,18 +87,49 @@ class Fundamentals:
     def change_volatility(
         self, market_id: int, volatility: float, time: int = 0
     ) -> None:
+        """change volatility.
+
+        Args:
+            market_id (int): market ID.
+            volatility (float): volatility.
+            time (int): time step to apply the change(default 0).
+
+        Returns:
+            None
+        """
         if volatility < 0.0:
             raise ValueError("volatility must be non-negative")
         self.volatilities[market_id] = volatility
         self._generated_until = time
 
     def change_drift(self, market_id: int, drift: float, time: int = 0) -> None:
+        """change drift.
+
+        Args:
+            market_id (int): market ID.
+            drift (float): drift.
+            time (int): time step to apply the change (default 0).
+
+        Returns:
+            None
+        """
         self.drifts[market_id] = drift
         self._generated_until = time
 
     def set_correlation(
         self, market_id1: int, market_id2: int, corr: float, time: int = 0
     ) -> None:
+        """set correlation.
+
+        Args:
+            market_id1 (int): one of the market IDs to compare.
+            market_id2 (int): the other of the market IDs to compare.
+            corr (float): correlation.
+            time (int): time step to apply the correlation (default 0).
+
+        Returns:
+            None
+        """
         if not (-1.0 < corr < 1.0):
             raise ValueError("corr must be between 0.0 and 1.0")
         if market_id1 == market_id2:
@@ -82,6 +143,16 @@ class Fundamentals:
     def remove_correlation(
         self, market_id1: int, market_id2: int, time: int = 0
     ) -> None:
+        """remove correlation.
+
+        Args:
+            market_id1 (int): one of the market IDs to compare.
+            market_id2 (int): the other of the market IDs to compare.
+            time (int): time step to apply the correlation (default 0).
+
+        Returns:
+            None
+        """
         if market_id1 == market_id2:
             raise ValueError("market_id1 and market_id2 must be different")
         if (market_id2, market_id1) in self.correlation:
@@ -93,6 +164,15 @@ class Fundamentals:
     def _generate_log_return(
         self, generate_target_ids: List[int], length: int
     ) -> np.ndarray:
+        """get log returns.
+
+        Args:
+            generate_target_ids (List[int]): target market ID list.
+            length (int): return length.
+
+        Returns:
+            np.ndarray: log returns.
+        """
         generate_target_ids_cholesky = list(
             filter(lambda x: self.volatilities[x] != 0.0, generate_target_ids)
         )
@@ -143,6 +223,9 @@ class Fundamentals:
         )
 
     def _generate_next(self) -> None:
+        """execute to next step.
+        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or :func:`pams.Fundamentals.get_fundamental_prices`.
+        """
         setting_change_points: List[int] = [
             x for x in self.start_at.values() if x > self._generated_until
         ]
@@ -170,6 +253,15 @@ class Fundamentals:
         self._generated_until += length
 
     def get_fundamental_price(self, market_id: int, time: int) -> float:
+        """get a fundamental price.
+
+        Args:
+            market_id (int): market ID.
+            time (int): time step to get the price.
+
+        Returns:
+            float: fundamental price at the specified time step.
+        """
         while time >= self._generated_until:
             self._generate_next()
         return self.prices[market_id][time]
@@ -177,6 +269,15 @@ class Fundamentals:
     def get_fundamental_prices(
         self, market_id: int, times: Iterable[int]
     ) -> List[float]:
+        """get some fundamental prices.
+
+        Args:
+            market_id (int): market ID.
+            times (Iterable[int]): time steps to get the price.
+
+        Returns:
+            List[float]: fundamental prices in specified range of time steps.
+        """
         while max([x for x in times]) >= self._generated_until:
             self._generate_next()
         return [self.prices[market_id][x] for x in times]
