@@ -10,9 +10,10 @@ from .market import Market
 
 class IndexMarket(Market):
     """Index of market.
-    
+
     This class inherits from the :class:`pams.market.Market` class.
     """
+
     _components: List[Market] = []
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
