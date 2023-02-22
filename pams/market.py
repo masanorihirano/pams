@@ -796,6 +796,11 @@ class Market:
                 )
 
     def _execution(self) -> List[ExecutionLog]:
+        """execute for market.
+
+        Returns:
+            List[:class:`pams.logs.base.ExecutionLog`]: execution logs.
+        """
         if not self.remain_executable_orders():
             return []
         pending: List[Tuple[int, Order, Order]] = []
