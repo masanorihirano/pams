@@ -6,22 +6,51 @@ from typing import cast
 
 @dataclass(frozen=True)
 class OrderKind:
+    """Kind of order.
+    This class has an order kind ID and an order name.
+    """
     kind_id: int
     name: str
 
     def __repr__(self) -> str:
+        """string representation of this class.
+
+        Returns:
+            str: string representation of this class.
+        """
         return self.name
 
     def __eq__(self, other: object) -> bool:
+        """get whether an argument's class is the same as this class or not.
+
+        Args:
+            other (object): an instance for comparison.
+
+        Returns:
+            bool: whether the class of the instance is the same as this class or not.
+        """
         if other.__class__ != self.__class__:
             return False
         other = cast(OrderKind, other)
         return other.kind_id == self.kind_id
 
     def __ne__(self, other: object) -> bool:
+        """get whether an argument's class is different from this class or not.
+
+        Args:
+            other (object): an instance for comparison.
+
+        Returns:
+            bool: whether an argument's class is different from this class or not.
+        """
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
+        """get the order kind ID.
+
+        Returns:
+            int: order kind ID.
+        """
         return self.kind_id
 
 
