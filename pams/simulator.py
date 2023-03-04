@@ -17,12 +17,27 @@ from .session import Session
 
 
 class Simulator:
+    """Simulator class."""
+
     def __init__(
         self,
         prng: random.Random,
         logger: Optional[Logger] = None,
         fundamental_class: Type[Fundamentals] = Fundamentals,
     ) -> None:
+        """initialization.
+
+        Args:
+            prng (random.Random): pseudo random number generator for this simulator.
+            logger (Logger, Optional): logger for correcting various outputs in one simulation.
+                                       logger is usually shared to all classes.
+                                       Please note that logger is usually not thread-safe and non-blocking.
+            fundamental_class (Type[Fundamentals]): the class that provide fundamental functions for simulator (default :class:`pams.fundamentals.Fundamentals`).
+
+        Note:
+             `prng` should not be shared with other classes and be used only in this class.
+             It is because sometimes agent process runs one of parallelized threads.
+        """
         self._prng = prng
         self.logger: Optional[Logger] = logger
         if self.logger is not None:
@@ -70,6 +85,14 @@ class Simulator:
         self.current_session: Optional[Session] = None
 
     def _add_event(self, event_hook: EventHook) -> None:
+        """add event to the simulator.
+
+        Args:
+            event_hook (:class:`pams.events.base.EventHook`): event hook.
+
+        Returns:
+            None
+        """
         if event_hook in self.event_hooks:
             raise ValueError("event_hook is already registered")
         if event_hook.event in self.events:
@@ -98,6 +121,15 @@ class Simulator:
             self.events_dict[register_name][time_].append(event_hook)
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
+        """add market to the simulator.
+
+        Args:
+            market (:class:`pamd.market.Market`): market.
+            group_name (str, Optional): group name for market (default None).
+
+        Returns:
+            None
+        """
         if market in self.markets:
             raise ValueError("market is already registered")
         if market.market_id in self.id2market:
@@ -114,6 +146,15 @@ class Simulator:
             self.markets_group_name2market[group_name].append(market)
 
     def _add_agent(self, agent: Agent, group_name: Optional[str] = None) -> None:
+        """add agent to the simulator.
+
+        Args:
+            agent (:class:`pams.agents.base.Agent`): agent.
+            group_name (str, Optional): group name for agent (default None).
+
+        Returns:
+            None
+        """
         if agent in self.agents:
             raise ValueError("agent is already registered")
         if agent.agent_id in self.id2agent:
@@ -134,6 +175,14 @@ class Simulator:
             self.agents_group_name2agent[group_name].append(agent)
 
     def _add_session(self, session: Session) -> None:
+        """add session to the simulator.
+
+        Args:
+            session (:class:`pams.session.Session`): session.
+
+        Returns:
+            None
+        """
         if session in self.sessions:
             raise ValueError("session is already registered")
         if session.session_id in self.id2session:
@@ -146,7 +195,18 @@ class Simulator:
         self.name2session[session.name] = session
 
     def _update_time_on_market(self, market: Market) -> None:
-        """be careful index matket have to be update after component markets, Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage"""
+        """update time on the market.
+
+        Args:
+            market (:class:`pams.market.Market`): market.
+
+        Returns:
+            None
+
+        Notes:
+            be careful index matket have to be update after component markets.
+            Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage.
+        """
         if not isinstance(market, IndexMarket):
             market._update_time(
                 next_fundamental_price=self.fundamentals.get_fundamental_price(
@@ -161,6 +221,14 @@ class Simulator:
             )
 
     def _update_times_on_markets(self, markets: List[Market]) -> None:
+        """update times on markets.
+
+        Args:
+            markets (List[:class:`pams.market.Market`]): list of markets.
+
+        Returns:
+            None
+        """
         for market in filter(lambda x: not isinstance(x, IndexMarket), markets):
             self._update_time_on_market(market=market)
         for market in filter(lambda x: isinstance(x, IndexMarket), markets):
@@ -169,6 +237,14 @@ class Simulator:
     def _update_agents_for_execution(
         self, execution_logs: List["ExecutionLog"]  # type: ignore
     ) -> None:
+        """update agents for execution.
+
+        Args:
+            execution_logs (List["ExecutionLog"]): execution logs.
+
+        Returns:
+            None
+        """
         for log in execution_logs:
             buy_agent: Agent = self.id2agent[log.buy_agent_id]
             sell_agent: Agent = self.id2agent[log.sell_agent_id]
@@ -186,6 +262,16 @@ class Simulator:
         class_requirement: Optional[Type] = None,
         instance_requirement: Optional[object] = None,
     ) -> bool:
+        """check event class and instance.
+
+        Args:
+            check_object (object): object for check.
+            class_requirement (Type, Optional): class requirement.
+            instance_requirement (object, Optional): instance requirement.
+
+        Returns:
+            bool: whether the event class or instance meet the requirements.
+        """
         if class_requirement is not None:
             if not isinstance(check_object, class_requirement):
                 return False
@@ -195,6 +281,14 @@ class Simulator:
         return True
 
     def _trigger_event_before_order(self, order: "Order") -> None:  # type: ignore
+        """trigger event before order.
+
+        Args:
+            order (Order): the order before the event.
+
+        Returns:
+            None
+        """
         time: int = order.placed_at
         event_hooks = self.events_dict["order_before"]
         target_event_hooks: List[EventHook] = []
@@ -206,6 +300,14 @@ class Simulator:
             event_hook.event.hooked_before_order(simulator=self, order=order)
 
     def _trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore
+        """trigger event after order.
+
+        Args:
+            order_log (OrderLog): the order log after the event.
+
+        Returns:
+            None
+        """
         time: int = order_log.time
         event_hooks = self.events_dict["order_after"]
         target_event_hooks: List[EventHook] = []
@@ -217,6 +319,14 @@ class Simulator:
             event_hook.event.hooked_after_order(simulator=self, order_log=order_log)
 
     def _trigger_event_before_cancel(self, cancel: "Cancel") -> None:  # type: ignore
+        """trigger event before cancel.
+
+        Args:
+            cancel (Cancel): the cancel order before the event.
+
+        Returns:
+            None
+        """
         time: int = cancel.placed_at
         event_hooks = self.events_dict["cancel_before"]
         target_event_hooks: List[EventHook] = []
@@ -228,6 +338,14 @@ class Simulator:
             event_hook.event.hooked_before_cancel(simulator=self, cancel=cancel)
 
     def _trigger_event_after_cancel(self, cancel_log: "CancelLog") -> None:  # type: ignore
+        """trigger event after cancel.
+
+        Args:
+            cancel_log (CancelLog): the cancel order log after the event.
+
+        Returns:
+            None
+        """
         time: int = cancel_log.time
         event_hooks = self.events_dict["cancel_after"]
         target_event_hooks: List[EventHook] = []
@@ -239,6 +357,14 @@ class Simulator:
             event_hook.event.hooked_after_cancel(simulator=self, cancel_log=cancel_log)
 
     def _trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore
+        """trigger event after execution.
+
+        Args:
+            execution_log (ExecutionLog): the execution log after the event.
+
+        Returns:
+            None
+        """
         time: int = execution_log.time
         event_hooks = self.events_dict["execution_after"]
         target_event_hooks: List[EventHook] = []
@@ -252,6 +378,14 @@ class Simulator:
             )
 
     def _trigger_event_before_session(self, session: "Session") -> None:  # type: ignore
+        """trigger event before session.
+
+        Args:
+            session (Session): the session before the event.
+
+        Returns:
+            None
+        """
         time: int = session.session_start_time
         event_hooks = self.events_dict["session_before"]
         target_event_hooks: List[EventHook] = []
@@ -263,6 +397,14 @@ class Simulator:
             event_hook.event.hooked_before_session(simulator=self, session=session)
 
     def _trigger_event_after_session(self, session: "Session") -> None:  # type: ignore
+        """trigger event after session.
+
+        Args:
+            session (Session): the session after the event.
+
+        Returns:
+            None
+        """
         time: int = session.session_start_time + session.iteration_steps - 1
         event_hooks = self.events_dict["session_after"]
         target_event_hooks: List[EventHook] = []
@@ -274,6 +416,14 @@ class Simulator:
             event_hook.event.hooked_after_session(simulator=self, session=session)
 
     def _trigger_event_before_step_for_market(self, market: "Market") -> None:  # type: ignore
+        """trigger event before step for market.
+
+        Args:
+            market (Market): the market before the event.
+
+        Returns:
+            None
+        """
         time: int = market.get_time()
         event_hooks = self.events_dict["market_before"]
         target_event_hooks: List[EventHook] = []
@@ -292,6 +442,14 @@ class Simulator:
                 )
 
     def _trigger_event_after_step_for_market(self, market: "Market") -> None:  # type: ignore
+        """trigger event after step for market.
+
+        Args:
+            market (Market): the market after the event.
+
+        Returns:
+            None
+        """
         time: int = market.get_time()
         event_hooks = self.events_dict["market_after"]
         target_event_hooks: List[EventHook] = []
