@@ -7,6 +7,8 @@ from .logs.base import Logger
 
 
 class Session:
+    """Session management class."""
+
     def __init__(
         self,
         session_id: int,
@@ -16,6 +18,25 @@ class Session:
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
+        """initialization.
+
+        Args:
+            session_id (int): session ID.
+            prng (random.Random): pseudo random number generator for this session.
+            session_start_time (int): start time of this session.
+            simulator (Simulator): this is used for accessing simulation environment.
+            name (str): session name.
+            logger (Logger, Optional): logger for correcting various outputs in one simulation.
+                                       logger is usually shared to all classes.
+                                       Please note that logger is usually not thread-safe and non-blocking.
+
+        Returns:
+            None
+
+        Note:
+             `prng` should not be shared with other classes and be used only in this class.
+             It is because sometimes agent process runs one of parallelized threads.
+        """
         self.session_id: int = session_id
         self.name: str = name
         self.prng: random.Random = prng
@@ -32,6 +53,16 @@ class Session:
         self.session_start_time: int = session_start_time
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+        """setup session configuration from setting format.
+
+        Args:
+            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.
+                                       This must include the parameters "iterationSteps", "withOrderPlacement", "withOrderExecution", and "withPrint".
+                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "hifreqSubmitRate".
+
+        Returns:
+            None
+        """
         if "iterationSteps" not in settings:
             raise ValueError(
                 "for each element in simulation.sessions must have iterationSteps"
