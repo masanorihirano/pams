@@ -9,6 +9,7 @@ class OrderKind:
     """Kind of order.
     This class has an order kind ID and an order name.
     """
+
     kind_id: int
     name: str
 
@@ -60,6 +61,7 @@ LIMIT_ORDER = OrderKind(kind_id=1, name="LIMIT_ORDER")
 
 class Order:
     """Order class."""
+
     def __init__(
         self,
         agent_id: int,
@@ -205,6 +207,7 @@ class Order:
 
 class Cancel:
     """Cancel order class."""
+
     def __init__(self, order: Order, placed_at: Optional[int] = None):
         """initialization.
 
