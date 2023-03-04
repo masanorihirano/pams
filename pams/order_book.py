@@ -8,13 +8,31 @@ from .order import Order
 
 
 class OrderBook:
+    """Book of order class."""
+
     def __init__(self, is_buy: bool) -> None:
+        """initialization.
+
+        Args:
+            is_buy (bool): whether it is a buy order or not.
+
+        Returns:
+            None
+        """
         self.priority_queue: PriorityQueue[Order] = PriorityQueue()
         self.time: int = 0
         self.is_buy = is_buy
         self.expire_time_list: Dict[int, List[Order]] = {}
 
     def add(self, order: Order) -> None:
+        """add the book of order.
+
+        Args:
+            order (:class:`pams.order.Order`): order.
+
+        Returns:
+            None
+        """
         if order.is_buy != self.is_buy:
             raise ValueError("buy/sell is incorrect")
         order.placed_at = self.time
@@ -26,6 +44,14 @@ class OrderBook:
             self.expire_time_list[expiration_time].append(order)
 
     def _remove(self, order: Order) -> None:
+        """remove the book of order.
+
+        Args:
+            order (:class:`pams.order.Order`): order.
+
+        Returns:
+            None
+        """
         self.priority_queue.queue.remove(order)
         if order.placed_at is None:
             raise AssertionError("the order is not yet placed")
@@ -34,28 +60,56 @@ class OrderBook:
             self.expire_time_list[expiration_time].remove(order)
 
     def cancel(self, cancel: Cancel) -> None:
+        """cancel the book of order.
+
+        Args:
+            cancel (:class:`pams.order.Cancel`): cancel order.
+
+        Returns:
+            None
+        """
         cancel.order.is_canceled = True
         cancel.placed_at = self.time
         self._remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
+        """get the order with highest priority.
+
+        Returns:
+            :class:`pams.order.Order`, Optional: the order with highest priority.
+        """
         if len(self.priority_queue.queue) > 0:
             return self.priority_queue.queue[0]
         else:
             return None
 
     def get_best_price(self) -> Optional[float]:
+        """get the order price with highest priority.
+
+        Returns:
+            float, Optional: the order price with highest priority.
+        """
         if len(self.priority_queue.queue) > 0:
             return self.priority_queue.queue[0].price
         else:
             return None
 
     def change_order_volume(self, order: Order, delta: int) -> None:
+        """change order volume.
+
+        Args:
+            order (:class:`pams.order.Order`): order.
+            delta (int): amount of volume change.
+
+        Returns:
+            None
+        """
         order.volume += delta
         if order.volume == 0:
             self._remove(order=order)
 
     def _check_expired_orders(self) -> None:
+        """check expired orders."""
         delete_orders: List[Order] = sum(
             [value for key, value in self.expire_time_list.items() if key < self.time],
             [],
@@ -69,17 +123,38 @@ class OrderBook:
             self.expire_time_list.pop(key)
 
     def _set_time(self, time: int) -> None:
+        """set time step.
+
+        Args:
+            time (int): time step.
+
+        Returns:
+            None
+        """
         self.time = time
         self._check_expired_orders()
 
     def _update_time(self) -> None:
+        """update.
+        Advance the time step and check expired orders.
+        """
         self.time += 1
         self._check_expired_orders()
 
     def __len__(self) -> int:
+        """get length of the order queue.
+
+        Returns:
+            int: length of the order queue.
+        """
         return len(self.priority_queue.queue)
 
     def get_price_volume(self) -> Dict[Optional[float], int]:
+        """get price volume.
+
+        Returns:
+            Dict[Optional[float], int]: price volume.
+        """
         keys: List[Optional[float]] = list(
             set(map(lambda x: x.price, self.priority_queue.queue))
         )
