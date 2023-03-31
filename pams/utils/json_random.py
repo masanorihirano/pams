@@ -9,19 +9,63 @@ JsonValue = Union[Dict, List, float, int]
 
 
 class JsonRandom:
+    """random generator from json."""
+
     def __init__(self, prng: random.Random) -> None:
+        """initialization.
+
+        Args:
+            prng (random.Random): pseudo random number generator for this event.
+
+        Returns:
+            None
+        """
         self.prng: random.Random = prng
 
     def _next_uniform(self, min_value: float, max_value: float) -> float:
+        """get next uniform.
+
+        Args:
+            min_value (float): min value.
+            max_value (float): max value.
+
+        Returns:
+            float: uniform.
+        """
         return self.prng.random() * (max_value - min_value) + min_value
 
     def _next_normal(self, mu: float, sigma: float) -> float:
+        """get next normal.
+
+        Args:
+            mu (float): mu.
+            sigma (float): sigma.
+
+        Returns:
+            float: normal.
+        """
         return self.prng.gauss(mu=mu, sigma=sigma)
 
     def _next_exponential(self, lam: float) -> float:
+        """get next exponential.
+
+        Args:
+            lam (float): lambda.
+
+        Returns:
+            float: exponential.
+        """
         return lam * -math.log(self.prng.random())
 
     def random(self, json_value: JsonValue) -> float:
+        """get a random value.
+
+        Args:
+            json_value (JsonValue): random type. This can include the parameter "const", "uniform", "normal", and "expon".
+
+        Returns:
+            float: random value.
+        """
         if isinstance(json_value, list):
             if len(json_value) != 2:
                 raise ValueError(

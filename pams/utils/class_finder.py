@@ -4,6 +4,18 @@ from typing import Type
 
 
 def find_class(name: str, optional_class_list: Optional[List[Type]] = None) -> Type:
+    """find class from pams name spaces.
+
+    .. seealso::
+        If you want to use user-defined classes, please use :class:`pams.runners.class_register`.
+
+    Args:
+        name (str): class name.
+        optional_class_list (List[Type], Optional): optional class list.
+
+    Returns:
+        Type: class type.
+    """
     _1 = __import__("pams", globals(), locals())
     _2 = __import__("pams.agents", globals(), locals(), ["*"])
     _3 = __import__("pams.events", globals(), locals(), ["*"])
