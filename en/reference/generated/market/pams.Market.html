@@ -267,13 +267,500 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.Market">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">Market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market" title="Permalink to this definition">#</a></dt>
-<dd><dl class="py method">
+<dd><p>Market class.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pams.IndexMarket.html#pams.IndexMarket" title="pams.index_market.IndexMarket"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket</span></code></a>: IndexMarket</p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.change_fundamental_price">
+<span class="sig-name descname"><span class="pre">change_fundamental_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.change_fundamental_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.change_fundamental_price" title="Permalink to this definition">#</a></dt>
+<dd><p>change fundamental price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scale</strong> (<em>float</em>) – scale.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.convert_to_price">
+<span class="sig-name descname"><span class="pre">convert_to_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tick_level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.convert_to_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.convert_to_price" title="Permalink to this definition">#</a></dt>
+<dd><p>convert tick to price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tick_level</strong> (<em>int</em>) – tick level.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>price.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.convert_to_tick_level">
+<span class="sig-name descname"><span class="pre">convert_to_tick_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">price</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_buy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.convert_to_tick_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.convert_to_tick_level" title="Permalink to this definition">#</a></dt>
+<dd><p>convert price to tick level. If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>price</strong> (<em>float</em>) – price.</p></li>
+<li><p><strong>is_buy</strong> (<em>bool</em>) – buy order or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>price for tick level.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.convert_to_tick_level_rounded_lower">
+<span class="sig-name descname"><span class="pre">convert_to_tick_level_rounded_lower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">price</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.convert_to_tick_level_rounded_lower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.convert_to_tick_level_rounded_lower" title="Permalink to this definition">#</a></dt>
+<dd><p>convert price to tick level rounded lower.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>price</strong> (<em>float</em>) – price.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>price for tick level rounded lower.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.convert_to_tick_level_rounded_upper">
+<span class="sig-name descname"><span class="pre">convert_to_tick_level_rounded_upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">price</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.convert_to_tick_level_rounded_upper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.convert_to_tick_level_rounded_upper" title="Permalink to this definition">#</a></dt>
+<dd><p>convert price to tick level rounded upper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>price</strong> (<em>float</em>) – price.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>price for tick level rounded upper.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_best_buy_price">
+<span class="sig-name descname"><span class="pre">get_best_buy_price</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_best_buy_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_best_buy_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get the best buy price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the best buy price.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float, Optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_best_sell_price">
+<span class="sig-name descname"><span class="pre">get_best_sell_price</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_best_sell_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_best_sell_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get the best sell price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the best sell price.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float, Optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_buy_order_book">
+<span class="sig-name descname"><span class="pre">get_buy_order_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_buy_order_book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_buy_order_book" title="Permalink to this definition">#</a></dt>
+<dd><p>get buy order book.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>buy order book.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[Optional[float], int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_executed_total_price">
+<span class="sig-name descname"><span class="pre">get_executed_total_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_executed_total_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_executed_total_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get executed total price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>total price.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_executed_total_prices">
+<span class="sig-name descname"><span class="pre">get_executed_total_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_executed_total_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_executed_total_prices" title="Permalink to this definition">#</a></dt>
+<dd><p>get executed total prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>total prices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_executed_volume">
+<span class="sig-name descname"><span class="pre">get_executed_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_executed_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_executed_volume" title="Permalink to this definition">#</a></dt>
+<dd><p>get executed volume.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>volume.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_executed_volumes">
+<span class="sig-name descname"><span class="pre">get_executed_volumes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_executed_volumes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_executed_volumes" title="Permalink to this definition">#</a></dt>
+<dd><p>get executed volumes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>volumes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_fundamental_price">
+<span class="sig-name descname"><span class="pre">get_fundamental_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_fundamental_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_fundamental_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get fundamental price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental price.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_fundamental_prices">
+<span class="sig-name descname"><span class="pre">get_fundamental_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_fundamental_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_fundamental_prices" title="Permalink to this definition">#</a></dt>
+<dd><p>get fundamental prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental prices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_last_executed_price">
+<span class="sig-name descname"><span class="pre">get_last_executed_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_last_executed_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_last_executed_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get price executed last step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>price.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, Optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_last_executed_prices">
+<span class="sig-name descname"><span class="pre">get_last_executed_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_last_executed_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_last_executed_prices" title="Permalink to this definition">#</a></dt>
+<dd><p>get prices executed last steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>prices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Optional[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_market_price">
+<span class="sig-name descname"><span class="pre">get_market_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_market_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_market_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get market price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>extracted data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pams.Market.get_market_prices">
 <span class="sig-name descname"><span class="pre">get_market_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_market_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_market_prices" title="Permalink to this definition">#</a></dt>
-<dd><p>last executed, midprice, fundamental</p>
+<dd><p>get market prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – range of time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>extracted sequential data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_mid_price">
+<span class="sig-name descname"><span class="pre">get_mid_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_mid_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_mid_price" title="Permalink to this definition">#</a></dt>
+<dd><p>get middle price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>middle price.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float, Optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_mid_prices">
+<span class="sig-name descname"><span class="pre">get_mid_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_mid_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_mid_prices" title="Permalink to this definition">#</a></dt>
+<dd><p>get middle prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>middle prices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Optional[float]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_n_buy_order">
+<span class="sig-name descname"><span class="pre">get_n_buy_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_n_buy_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_n_buy_order" title="Permalink to this definition">#</a></dt>
+<dd><p>get the number of buy order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of buy order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_n_buy_orders">
+<span class="sig-name descname"><span class="pre">get_n_buy_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_n_buy_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_n_buy_orders" title="Permalink to this definition">#</a></dt>
+<dd><p>get the number of buy orders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of buy orders.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_n_sell_order">
+<span class="sig-name descname"><span class="pre">get_n_sell_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_n_sell_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_n_sell_order" title="Permalink to this definition">#</a></dt>
+<dd><p>get the number of sell order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of sell order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_n_sell_orders">
+<span class="sig-name descname"><span class="pre">get_n_sell_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_n_sell_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_n_sell_orders" title="Permalink to this definition">#</a></dt>
+<dd><p>get the number of sell orders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of sell orders.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_sell_order_book">
+<span class="sig-name descname"><span class="pre">get_sell_order_book</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_sell_order_book"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_sell_order_book" title="Permalink to this definition">#</a></dt>
+<dd><p>get sell order book.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>sell order book.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[Optional[float], int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_time">
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_time" title="Permalink to this definition">#</a></dt>
+<dd><p>get time step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_vwap">
+<span class="sig-name descname"><span class="pre">get_vwap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_vwap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_vwap" title="Permalink to this definition">#</a></dt>
+<dd><p>get VWAP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>VWAP.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pams.Market.is_running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#pams.Market.is_running" title="Permalink to this definition">#</a></dt>
+<dd><p>get whether this market is running or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>whether this market is running or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.remain_executable_orders">
+<span class="sig-name descname"><span class="pre">remain_executable_orders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.remain_executable_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.remain_executable_orders" title="Permalink to this definition">#</a></dt>
+<dd><p>check if there are remain executable orders in this market.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>whether some orders is executable or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.setup" title="Permalink to this definition">#</a></dt>
+<dd><p>setup market configuration from setting format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – market configuration. Usually, automatically set from json config of simulator.
+This must include the parameters “tickSize” and either “marketPrice” or “fundamentalPrice”.
+This can include the parameter “outstandingShares”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -339,7 +826,36 @@
             <ul>
 <li><a class="reference internal" href="#">Market</a><ul>
 <li><a class="reference internal" href="#pams.Market"><code class="docutils literal notranslate"><span class="pre">Market</span></code></a><ul>
+<li><a class="reference internal" href="#pams.Market.change_fundamental_price"><code class="docutils literal notranslate"><span class="pre">Market.change_fundamental_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.convert_to_price"><code class="docutils literal notranslate"><span class="pre">Market.convert_to_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.convert_to_tick_level"><code class="docutils literal notranslate"><span class="pre">Market.convert_to_tick_level()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.convert_to_tick_level_rounded_lower"><code class="docutils literal notranslate"><span class="pre">Market.convert_to_tick_level_rounded_lower()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.convert_to_tick_level_rounded_upper"><code class="docutils literal notranslate"><span class="pre">Market.convert_to_tick_level_rounded_upper()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_best_buy_price"><code class="docutils literal notranslate"><span class="pre">Market.get_best_buy_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_best_sell_price"><code class="docutils literal notranslate"><span class="pre">Market.get_best_sell_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_buy_order_book"><code class="docutils literal notranslate"><span class="pre">Market.get_buy_order_book()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_executed_total_price"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_total_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_executed_total_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_total_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_executed_volume"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_volume()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_executed_volumes"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_volumes()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_fundamental_price"><code class="docutils literal notranslate"><span class="pre">Market.get_fundamental_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_fundamental_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_fundamental_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_last_executed_price"><code class="docutils literal notranslate"><span class="pre">Market.get_last_executed_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_last_executed_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_last_executed_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_market_price"><code class="docutils literal notranslate"><span class="pre">Market.get_market_price()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_market_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_market_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_mid_price"><code class="docutils literal notranslate"><span class="pre">Market.get_mid_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_mid_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_mid_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_n_buy_order"><code class="docutils literal notranslate"><span class="pre">Market.get_n_buy_order()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_n_buy_orders"><code class="docutils literal notranslate"><span class="pre">Market.get_n_buy_orders()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_n_sell_order"><code class="docutils literal notranslate"><span class="pre">Market.get_n_sell_order()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_n_sell_orders"><code class="docutils literal notranslate"><span class="pre">Market.get_n_sell_orders()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_sell_order_book"><code class="docutils literal notranslate"><span class="pre">Market.get_sell_order_book()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_time"><code class="docutils literal notranslate"><span class="pre">Market.get_time()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_vwap"><code class="docutils literal notranslate"><span class="pre">Market.get_vwap()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.is_running"><code class="docutils literal notranslate"><span class="pre">Market.is_running</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.remain_executable_orders"><code class="docutils literal notranslate"><span class="pre">Market.remain_executable_orders()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.setup"><code class="docutils literal notranslate"><span class="pre">Market.setup()</span></code></a></li>
 </ul>
 </li>
 </ul>

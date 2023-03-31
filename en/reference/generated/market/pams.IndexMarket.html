@@ -267,7 +267,141 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.IndexMarket">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">IndexMarket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Index of market.</p>
+<p>This class inherits from the <a class="reference internal" href="pams.Market.html#pams.Market" title="pams.market.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.market.Market</span></code></a> class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.compute_fundamental_index">
+<span class="sig-name descname"><span class="pre">compute_fundamental_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.compute_fundamental_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.compute_fundamental_index" title="Permalink to this definition">#</a></dt>
+<dd><p>compute fundamental index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.compute_market_index">
+<span class="sig-name descname"><span class="pre">compute_market_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.compute_market_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.compute_market_index" title="Permalink to this definition">#</a></dt>
+<dd><p>compute market index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>market index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.get_components">
+<span class="sig-name descname"><span class="pre">get_components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.get_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.get_components" title="Permalink to this definition">#</a></dt>
+<dd><p>get components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of components.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="pams.Market.html#pams.Market" title="pams.market.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.market.Market</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.get_fundamental_index">
+<span class="sig-name descname"><span class="pre">get_fundamental_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.get_fundamental_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.get_fundamental_index" title="Permalink to this definition">#</a></dt>
+<dd><p>get fundamental index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.get_index">
+<span class="sig-name descname"><span class="pre">get_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.get_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.get_index" title="Permalink to this definition">#</a></dt>
+<dd><p>get market index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>market index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.get_market_index">
+<span class="sig-name descname"><span class="pre">get_market_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.get_market_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.get_market_index" title="Permalink to this definition">#</a></dt>
+<dd><p>get computed market index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>int</em><em>, </em><em>Optional</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>market index.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.is_all_markets_running">
+<span class="sig-name descname"><span class="pre">is_all_markets_running</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.is_all_markets_running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.is_all_markets_running" title="Permalink to this definition">#</a></dt>
+<dd><p>get whether all markets is running or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>whether all markets is running or not.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.IndexMarket.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/index_market.html#IndexMarket.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.IndexMarket.setup" title="Permalink to this definition">#</a></dt>
+<dd><p>setup market configuration from setting format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – market configuration. Usually, automatically set from json config of simulator.
+This must include the parameter “markets”.
+This should include the parameter “requires”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -327,7 +461,17 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">IndexMarket</a><ul>
-<li><a class="reference internal" href="#pams.IndexMarket"><code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket"><code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code></a><ul>
+<li><a class="reference internal" href="#pams.IndexMarket.compute_fundamental_index"><code class="docutils literal notranslate"><span class="pre">IndexMarket.compute_fundamental_index()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.compute_market_index"><code class="docutils literal notranslate"><span class="pre">IndexMarket.compute_market_index()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.get_components"><code class="docutils literal notranslate"><span class="pre">IndexMarket.get_components()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.get_fundamental_index"><code class="docutils literal notranslate"><span class="pre">IndexMarket.get_fundamental_index()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.get_index"><code class="docutils literal notranslate"><span class="pre">IndexMarket.get_index()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.get_market_index"><code class="docutils literal notranslate"><span class="pre">IndexMarket.get_market_index()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.is_all_markets_running"><code class="docutils literal notranslate"><span class="pre">IndexMarket.is_all_markets_running()</span></code></a></li>
+<li><a class="reference internal" href="#pams.IndexMarket.setup"><code class="docutils literal notranslate"><span class="pre">IndexMarket.setup()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

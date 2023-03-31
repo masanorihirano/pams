@@ -267,7 +267,27 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.Session">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_start_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/session.html#Session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Session" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Session management class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Session.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/session.html#Session.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Session.setup" title="Permalink to this definition">#</a></dt>
+<dd><p>setup session configuration from setting format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – session configuration. Usually, automatically set from json config of simulator.
+This must include the parameters “iterationSteps”, “withOrderPlacement”, “withOrderExecution”, and “withPrint”.
+This can include the parameter “maxNormalOrders”, “maxHighFrequencyOrders”, and “hifreqSubmitRate”.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -327,7 +347,10 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Session</a><ul>
-<li><a class="reference internal" href="#pams.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a></li>
+<li><a class="reference internal" href="#pams.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a><ul>
+<li><a class="reference internal" href="#pams.Session.setup"><code class="docutils literal notranslate"><span class="pre">Session.setup()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

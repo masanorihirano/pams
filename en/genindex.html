@@ -262,16 +262,20 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#W"><strong>W</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#W"><strong>W</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.add_market">add_market() (pams.Fundamentals method)</a>
+</li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent">Agent (class in pams.agents)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/generated/order/pams.Cancel.html#pams.Cancel.agent_id">agent_id (pams.Cancel property)</a>
+</li>
         <li><a href="reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent">ArbitrageAgent (class in pams.agents)</a>
 </li>
     </ul></td>
@@ -300,11 +304,35 @@
 </li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.canceled_order">canceled_order() (pams.agents.Agent method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/logs/pams.logs.CancelLog.html#pams.logs.CancelLog">CancelLog (class in pams.logs)</a>
 </li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.change_drift">change_drift() (pams.Fundamentals method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.change_fundamental_price">change_fundamental_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.change_volatility">change_volatility() (pams.Fundamentals method)</a>
+</li>
+        <li><a href="reference/generated/order/pams.Cancel.html#pams.Cancel.check_system_acceptable">check_system_acceptable() (pams.Cancel method)</a>
+
+        <ul>
+          <li><a href="reference/generated/order/pams.Order.html#pams.Order.check_system_acceptable">(pams.Order method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/runner/pams.runners.Runner.html#pams.runners.Runner.class_register">class_register() (pams.runners.Runner method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.compute_fundamental_index">compute_fundamental_index() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.compute_market_index">compute_market_index() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.convert_to_price">convert_to_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level">convert_to_tick_level() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_lower">convert_to_tick_level_rounded_lower() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_upper">convert_to_tick_level_rounded_upper() (pams.Market method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -323,6 +351,8 @@
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.executed_order">executed_order() (pams.agents.Agent method)</a>
 </li>
         <li><a href="reference/generated/logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog">ExecutionLog (class in pams.logs)</a>
+</li>
+        <li><a href="reference/generated/order/pams.Order.html#pams.Order.extra_repr">extra_repr() (pams.Order method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -350,13 +380,71 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_asset_volume">get_asset_volume() (pams.agents.Agent method)</a>
 </li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_best_buy_price">get_best_buy_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_best_sell_price">get_best_sell_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_buy_order_book">get_buy_order_book() (pams.Market method)</a>
+</li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_cash_amount">get_cash_amount() (pams.agents.Agent method)</a>
 </li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_components">get_components() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_executed_total_price">get_executed_total_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_executed_total_prices">get_executed_total_prices() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_executed_volume">get_executed_volume() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_executed_volumes">get_executed_volumes() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_fundamental_index">get_fundamental_index() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_price">get_fundamental_price() (pams.Fundamentals method)</a>
+
+        <ul>
+          <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_fundamental_price">(pams.Market method)</a>
+</li>
+        </ul></li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_prices">get_fundamental_prices() (pams.Fundamentals method)</a>
+
+        <ul>
+          <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_fundamental_prices">(pams.Market method)</a>
+</li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_index">get_index() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_last_executed_price">get_last_executed_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_last_executed_prices">get_last_executed_prices() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_market_index">get_market_index() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_market_price">get_market_price() (pams.Market method)</a>
+</li>
         <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_market_prices">get_market_prices() (pams.Market method)</a>
 </li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_mid_price">get_mid_price() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_mid_prices">get_mid_prices() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_n_buy_order">get_n_buy_order() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_n_buy_orders">get_n_buy_orders() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_n_sell_order">get_n_sell_order() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_n_sell_orders">get_n_sell_orders() (pams.Market method)</a>
+</li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_prng">get_prng() (pams.agents.Agent method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_sell_order_book">get_sell_order_book() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_time">get_time() (pams.Market method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.get_vwap">get_vwap() (pams.Market method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -408,11 +496,27 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket">IndexMarket (class in pams)</a>
 </li>
+        <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.is_all_markets_running">is_all_markets_running() (pams.IndexMarket method)</a>
+</li>
+        <li><a href="reference/generated/order/pams.Order.html#pams.Order.is_expired">is_expired() (pams.Order method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.is_finite">is_finite() (pams.agents.FCNAgent method)</a>
 </li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.is_market_accessible">is_market_accessible() (pams.agents.Agent method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.is_running">is_running (pams.Market property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="J" class="genindex-section">
+  <h2>J</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner.judge_hft_or_not">judge_hft_or_not() (pams.runners.SequentialRunner static method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -441,6 +545,8 @@
         <li><a href="reference/generated/runner/pams.runners.Runner.html#pams.runners.Runner.main">main() (pams.runners.Runner method)</a>
 </li>
         <li><a href="reference/generated/market/pams.Market.html#pams.Market">Market (class in pams)</a>
+</li>
+        <li><a href="reference/generated/order/pams.Cancel.html#pams.Cancel.market_id">market_id (pams.Cancel property)</a>
 </li>
         <li><a href="reference/generated/order/pams.MARKET_ORDER.html#pams.MARKET_ORDER">MARKET_ORDER (in module pams)</a>
 </li>
@@ -530,9 +636,15 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write">read_and_write() (pams.logs.Log method)</a>
 </li>
+        <li><a href="reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write_with_direct_process">read_and_write_with_direct_process() (pams.logs.Log method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Market.html#pams.Market.remain_executable_orders">remain_executable_orders() (pams.Market method)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write_with_direct_process">read_and_write_with_direct_process() (pams.logs.Log method)</a>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.remove_correlation">remove_correlation() (pams.Fundamentals method)</a>
+</li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.remove_market">remove_market() (pams.Fundamentals method)</a>
 </li>
         <li><a href="reference/generated/runner/pams.runners.Runner.html#pams.runners.Runner">Runner (class in pams.runners)</a>
 </li>
@@ -556,6 +668,8 @@
 </li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_cash_amount">set_cash_amount() (pams.agents.Agent method)</a>
 </li>
+        <li><a href="reference/generated/market/pams.Fundamentals.html#pams.Fundamentals.set_correlation">set_correlation() (pams.Fundamentals method)</a>
+</li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_market_accessible">set_market_accessible() (pams.agents.Agent method)</a>
 </li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.setup">setup() (pams.agents.Agent method)</a>
@@ -568,6 +682,12 @@
           <li><a href="reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.setup">(pams.events.EventABC method)</a>
 </li>
           <li><a href="reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock.setup">(pams.events.FundamentalPriceShock method)</a>
+</li>
+          <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.setup">(pams.IndexMarket method)</a>
+</li>
+          <li><a href="reference/generated/market/pams.Market.html#pams.Market.setup">(pams.Market method)</a>
+</li>
+          <li><a href="reference/generated/session/pams.Session.html#pams.Session.setup">(pams.Session method)</a>
 </li>
         </ul></li>
     </ul></td>

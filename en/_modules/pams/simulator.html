@@ -280,12 +280,28 @@
 
 
 <div class="viewcode-block" id="Simulator"><a class="viewcode-back" href="../../reference/generated/simulator/pams.Simulator.html#pams.Simulator">[docs]</a><span class="k">class</span> <span class="nc">Simulator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulator class.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">fundamental_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Fundamentals</span><span class="p">]</span> <span class="o">=</span> <span class="n">Fundamentals</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prng (random.Random): pseudo random number generator for this simulator.</span>
+<span class="sd">            logger (Logger, Optional): logger for correcting various outputs in one simulation.</span>
+<span class="sd">                                       logger is usually shared to all classes.</span>
+<span class="sd">                                       Please note that logger is usually not thread-safe and non-blocking.</span>
+<span class="sd">            fundamental_class (Type[Fundamentals]): the class that provide fundamental functions for simulator</span>
+<span class="sd">                                                    (default :class:`pams.fundamentals.Fundamentals`).</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">             `prng` should not be shared with other classes and be used only in this class.</span>
+<span class="sd">             It is because sometimes agent process runs one of parallelized threads.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span> <span class="o">=</span> <span class="n">prng</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -333,6 +349,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_session</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Session</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_add_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_hook</span><span class="p">:</span> <span class="n">EventHook</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add event to the simulator. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event_hook (:class:`pams.events.base.EventHook`): event hook.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_hooks</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;event_hook is already registered&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
@@ -361,6 +385,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="n">register_name</span><span class="p">][</span><span class="n">time_</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event_hook</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">,</span> <span class="n">group_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add market to the simulator. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (:class:`pamd.market.Market`): market.</span>
+<span class="sd">            group_name (str, Optional): group name for market (default None).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">markets</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;market is already registered&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market</span><span class="o">.</span><span class="n">market_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2market</span><span class="p">:</span>
@@ -377,6 +410,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">markets_group_name2market</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">market</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">group_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add agent to the simulator. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent (:class:`pams.agents.base.Agent`): agent.</span>
+<span class="sd">            group_name (str, Optional): group name for agent (default None).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;agent is already registered&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2agent</span><span class="p">:</span>
@@ -397,6 +439,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">agents_group_name2agent</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add session to the simulator. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (:class:`pams.session.Session`): session.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sessions</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;session is already registered&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">session_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2session</span><span class="p">:</span>
@@ -409,7 +459,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name2session</span><span class="p">[</span><span class="n">session</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
 
     <span class="k">def</span> <span class="nf">_update_time_on_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;be careful index matket have to be update after component markets, Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;update time on the market. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (:class:`pams.market.Market`): market.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Notes:</span>
+<span class="sd">            be careful index matket have to be update after component markets.</span>
+<span class="sd">            Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">):</span>
             <span class="n">market</span><span class="o">.</span><span class="n">_update_time</span><span class="p">(</span>
                 <span class="n">next_fundamental_price</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fundamentals</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span>
@@ -424,6 +485,14 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_times_on_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;update times on markets. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            markets (List[:class:`pams.market.Market`]): list of markets.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">),</span> <span class="n">markets</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_on_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">),</span> <span class="n">markets</span><span class="p">):</span>
@@ -432,6 +501,14 @@
     <span class="k">def</span> <span class="nf">_update_agents_for_execution</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">execution_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;ExecutionLog&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;update agents for execution. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            execution_logs (List[&quot;ExecutionLog&quot;]): execution logs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">execution_logs</span><span class="p">:</span>
             <span class="n">buy_agent</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">buy_agent_id</span><span class="p">]</span>
             <span class="n">sell_agent</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">sell_agent_id</span><span class="p">]</span>
@@ -449,6 +526,16 @@
         <span class="n">class_requirement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">instance_requirement</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;check event class and instance. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            check_object (object): object for check.</span>
+<span class="sd">            class_requirement (Type, Optional): class requirement.</span>
+<span class="sd">            instance_requirement (object, Optional): instance requirement.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the event class or instance meet the requirements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">class_requirement</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">check_object</span><span class="p">,</span> <span class="n">class_requirement</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -458,6 +545,14 @@
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before order. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            order (Order): the order before the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">placed_at</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;order_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -469,6 +564,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_before_order</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after order. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            order_log (OrderLog): the order log after the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">order_log</span><span class="o">.</span><span class="n">time</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;order_after&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -480,6 +583,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_after_order</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_log</span><span class="o">=</span><span class="n">order_log</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before cancel. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cancel (Cancel): the cancel order before the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">cancel</span><span class="o">.</span><span class="n">placed_at</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;cancel_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -491,6 +602,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_before_cancel</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="n">cancel</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after cancel. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cancel_log (CancelLog): the cancel order log after the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">cancel_log</span><span class="o">.</span><span class="n">time</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;cancel_after&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -502,6 +621,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_after_cancel</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel_log</span><span class="o">=</span><span class="n">cancel_log</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after execution. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            execution_log (ExecutionLog): the execution log after the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">execution_log</span><span class="o">.</span><span class="n">time</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;execution_after&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -515,6 +642,14 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_before_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before session. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): the session before the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">session_start_time</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;session_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -526,6 +661,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_before_session</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_after_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after session. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): the session after the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">session_start_time</span> <span class="o">+</span> <span class="n">session</span><span class="o">.</span><span class="n">iteration_steps</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;session_after&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -537,6 +680,14 @@
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_after_session</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_before_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before step for market. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (Market): the market before the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;market_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -555,6 +706,14 @@
                 <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_trigger_event_after_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after step for market. (Usually, this is called from runner.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (Market): the market after the event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;market_after&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>

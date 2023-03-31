@@ -269,22 +269,56 @@
 
 <div class="viewcode-block" id="OrderKind"><a class="viewcode-back" href="../../reference/generated/order/pams.OrderKind.html#pams.OrderKind">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">OrderKind</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Kind of order.</span>
+<span class="sd">    This class has an order kind ID and an order name.</span>
+
+<span class="sd">    You should use the following pre-defined order kinds:</span>
+<span class="sd">     - MARKET_ORDER</span>
+<span class="sd">     - LIMIT_ORDER</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">kind_id</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;string representation of this class.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get whether an argument&#39;s class is the same as this class or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (object): an instance for comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the class of the instance is the same as this class or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">other</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">OrderKind</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="n">kind_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_id</span>
 
     <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get whether an argument&#39;s class is different from this class or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (object): an instance for comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether an argument&#39;s class is different from this class or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get the order kind ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: order kind ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind_id</span></div>
 
 
@@ -293,6 +327,8 @@
 
 
 <div class="viewcode-block" id="Order"><a class="viewcode-back" href="../../reference/generated/order/pams.Order.html#pams.Order">[docs]</a><span class="k">class</span> <span class="nc">Order</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Order class.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -305,6 +341,19 @@
         <span class="n">order_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent_id (int): agent ID.</span>
+<span class="sd">            market_id (int): market ID.</span>
+<span class="sd">            is_buy (bool): whether the order is buy order or not.</span>
+<span class="sd">            kind (:class:`pams.order.OrderKind`): kind of order.</span>
+<span class="sd">            volume (int): order volume.</span>
+<span class="sd">            placed_at (int, Optional): time step that the order is placed. (Set by market. Please do not set it in agent)</span>
+<span class="sd">            price (float, Optional): order price.</span>
+<span class="sd">            order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)</span>
+<span class="sd">            ttl (int, Optional): time to order expiration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span> <span class="ow">and</span> <span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;price have to be None when kind is MARKET_ORDER&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">LIMIT_ORDER</span> <span class="ow">and</span> <span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -327,7 +376,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_canceled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">check_system_acceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Order.check_system_acceptable"><a class="viewcode-back" href="../../reference/generated/order/pams.Order.html#pams.Order.check_system_acceptable">[docs]</a>    <span class="k">def</span> <span class="nf">check_system_acceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;check system acceptable. (Usually, markets automatically check it.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent_id (int): agent ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">agent_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;agent_id is fake&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -335,24 +392,45 @@
                 <span class="s2">&quot;this order is already submitted to a market or placed_at have to be set to None&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_canceled</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;this order is already canceled&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;this order is already canceled&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Order.is_expired"><a class="viewcode-back" href="../../reference/generated/order/pams.Order.html#pams.Order.is_expired">[docs]</a>    <span class="k">def</span> <span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get whether the order is expired or not.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int): time to order expiration.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether the order is expired or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;this order is not yet placed to a market&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">&lt;</span> <span class="n">time</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">&lt;</span> <span class="n">time</span></div>
 
-    <span class="k">def</span> <span class="nf">extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Order.extra_repr"><a class="viewcode-back" href="../../reference/generated/order/pams.Order.html#pams.Order.extra_repr">[docs]</a>    <span class="k">def</span> <span class="nf">extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;string representation of extra information for this class.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: string representation of extra information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order_id</span><span class="si">}</span><span class="s2">, kind=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">, is_buy=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_buy</span><span class="si">}</span><span class="s2">, price=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">, volume=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;agent=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, market=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">, placed_at=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="si">}</span><span class="s2">, ttl=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ttl</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;is_canceled=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_canceled</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;compare between sell and buy orders in terms of order priority.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other (object): the order for comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: this order is not prior than the other</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="vm">__class__</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;not supporting the comparison between Order and </span><span class="si">{</span><span class="n">other</span><span class="o">.</span><span class="vm">__class__</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -395,19 +473,48 @@
 
 
 <div class="viewcode-block" id="Cancel"><a class="viewcode-back" href="../../reference/generated/order/pams.Cancel.html#pams.Cancel">[docs]</a><span class="k">class</span> <span class="nc">Cancel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cancel order class.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">placed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            order (:class:`pams.order.Order`): order.</span>
+<span class="sd">            placed_at (int, Optional): time step that the order is canceled.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">:</span> <span class="n">Order</span> <span class="o">=</span> <span class="n">order</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">placed_at</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">agent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter for agent ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: agent ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">market_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;getter for market ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: market ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span>
 
-    <span class="k">def</span> <span class="nf">check_system_acceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Cancel.check_system_acceptable"><a class="viewcode-back" href="../../reference/generated/order/pams.Cancel.html#pams.Cancel.check_system_acceptable">[docs]</a>    <span class="k">def</span> <span class="nf">check_system_acceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;check system acceptable. (Usually, markets automatically check it.)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent_id (int): agent ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">agent_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;canceling other&#39;s order&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -415,7 +522,7 @@
                 <span class="s2">&quot;this cancel order is already submitted to a market or placed_at have to be set to None&quot;</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">is_canceled</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;this order is already canceled&quot;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;this order is already canceled&quot;</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

@@ -270,6 +270,8 @@
 
 
 <div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Session management class.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -279,6 +281,25 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session_id (int): session ID.</span>
+<span class="sd">            prng (random.Random): pseudo random number generator for this session.</span>
+<span class="sd">            session_start_time (int): start time of this session.</span>
+<span class="sd">            simulator (Simulator): this is used for accessing simulation environment.</span>
+<span class="sd">            name (str): session name.</span>
+<span class="sd">            logger (Logger, Optional): logger for correcting various outputs in one simulation.</span>
+<span class="sd">                                       logger is usually shared to all classes.</span>
+<span class="sd">                                       Please note that logger is usually not thread-safe and non-blocking.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">             `prng` should not be shared with other classes and be used only in this class.</span>
+<span class="sd">             It is because sometimes agent process runs one of parallelized threads.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
@@ -294,7 +315,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_start_time</span>
 
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="Session.setup"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setup session configuration from setting format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.</span>
+<span class="sd">                                       This must include the parameters &quot;iterationSteps&quot;, &quot;withOrderPlacement&quot;, &quot;withOrderExecution&quot;, and &quot;withPrint&quot;.</span>
+<span class="sd">                                       This can include the parameter &quot;maxNormalOrders&quot;, &quot;maxHighFrequencyOrders&quot;, and &quot;hifreqSubmitRate&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;iterationSteps&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;for each element in simulation.sessions must have iterationSteps&quot;</span>
@@ -326,7 +357,7 @@
         <span class="k">if</span> <span class="s2">&quot;maxHighFrequencyOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxHighFrequencyOrders&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;hifreqSubmitRate&quot;</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;hifreqSubmitRate&quot;</span><span class="p">]</span></div></div>
 </pre></div>
         </article>
       </div>

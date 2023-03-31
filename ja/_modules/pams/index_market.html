@@ -272,9 +272,24 @@
 
 
 <div class="viewcode-block" id="IndexMarket"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket">[ドキュメント]</a><span class="k">class</span> <span class="nc">IndexMarket</span><span class="p">(</span><span class="n">Market</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index of market.</span>
+
+<span class="sd">    This class inherits from the :class:`pams.market.Market` class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_components</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="IndexMarket.setup"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.setup">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;setup market configuration from setting format.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.</span>
+<span class="sd">                                       This must include the parameter &quot;markets&quot;.</span>
+<span class="sd">                                       This should include the parameter &quot;requires&quot;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">IndexMarket</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;markets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;markets is required for index markets as components&quot;</span><span class="p">)</span>
@@ -282,9 +297,17 @@
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;requires in index market settings is no longer required&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">market_name</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;markets&quot;</span><span class="p">]:</span>
             <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">name2market</span><span class="p">[</span><span class="n">market_name</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_add_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add market. (Internal method)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (:class:`pams.market.Market`): market.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">market</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;market is already registered as components&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market</span><span class="o">.</span><span class="n">outstanding_shares</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -294,10 +317,26 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">market</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;add markets. (Internal method)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            markets (List[:class:`pams.market.Market`]): list of market.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">compute_fundamental_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="IndexMarket.compute_fundamental_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.compute_fundamental_index">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">compute_fundamental_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;compute fundamental index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int, Optional): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: fundamental index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">total_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
@@ -306,9 +345,17 @@
             <span class="n">outstanding_shares</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">market</span><span class="o">.</span><span class="n">outstanding_shares</span><span class="p">)</span>
             <span class="n">total_value</span> <span class="o">+=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span> <span class="o">*</span> <span class="n">outstanding_shares</span>
             <span class="n">total_shares</span> <span class="o">+=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">outstanding_shares</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">total_value</span> <span class="o">/</span> <span class="n">total_shares</span>
+        <span class="k">return</span> <span class="n">total_value</span> <span class="o">/</span> <span class="n">total_shares</span></div>
 
-    <span class="k">def</span> <span class="nf">compute_market_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="IndexMarket.compute_market_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.compute_market_index">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">compute_market_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;compute market index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int, Optional): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: market index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">total_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
@@ -317,22 +364,56 @@
             <span class="n">outstanding_shares</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">market</span><span class="o">.</span><span class="n">outstanding_shares</span><span class="p">)</span>
             <span class="n">total_value</span> <span class="o">+=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span> <span class="o">*</span> <span class="n">outstanding_shares</span>
             <span class="n">total_shares</span> <span class="o">+=</span> <span class="n">outstanding_shares</span>
-        <span class="k">return</span> <span class="n">total_value</span> <span class="o">/</span> <span class="n">total_shares</span>
+        <span class="k">return</span> <span class="n">total_value</span> <span class="o">/</span> <span class="n">total_shares</span></div>
 
-    <span class="k">def</span> <span class="nf">get_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span>
+<div class="viewcode-block" id="IndexMarket.get_components"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_components">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get components.</span>
 
-    <span class="k">def</span> <span class="nf">is_all_markets_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_running</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[:class:`pams.market.Market`]: list of components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span></div>
 
-    <span class="k">def</span> <span class="nf">get_fundamental_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+<div class="viewcode-block" id="IndexMarket.is_all_markets_running"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.is_all_markets_running">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">is_all_markets_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get whether all markets is running or not.</span>
 
-    <span class="k">def</span> <span class="nf">get_market_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_market_index</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: whether all markets is running or not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_running</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span></div>
 
-    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_market_index</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+<div class="viewcode-block" id="IndexMarket.get_fundamental_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_fundamental_index">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_fundamental_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get fundamental index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int, Optional): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: fundamental index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndexMarket.get_market_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_market_index">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_market_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get computed market index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int, Optional): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: market index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_market_index</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IndexMarket.get_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_index">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;get market index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (int, Optional): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: market index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_market_index</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

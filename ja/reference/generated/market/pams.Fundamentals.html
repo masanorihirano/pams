@@ -267,7 +267,173 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.Fundamentals">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">Fundamentals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prng</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals" title="この定義へのパーマリンク">#</a></dt>
-<dd></dd></dl>
+<dd><p>Fundamental generator for simulator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.add_market">
+<span class="sig-name descname"><span class="pre">add_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volatility</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.add_market"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.add_market" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>add a market whose fundamental prices are generated in this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id</strong> (<em>int</em>) -- market ID to add.</p></li>
+<li><p><strong>initial</strong> (<em>float</em>) -- initial value.</p></li>
+<li><p><strong>drift</strong> (<em>float</em>) -- drifts.</p></li>
+<li><p><strong>volatility</strong> (<em>float</em>) -- volatility.</p></li>
+<li><p><strong>start_at</strong> (<em>int</em>) -- time step to start simulation (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.change_drift">
+<span class="sig-name descname"><span class="pre">change_drift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.change_drift"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.change_drift" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>change drift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id</strong> (<em>int</em>) -- market ID.</p></li>
+<li><p><strong>drift</strong> (<em>float</em>) -- drift.</p></li>
+<li><p><strong>time</strong> (<em>int</em>) -- time step to apply the change (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.change_volatility">
+<span class="sig-name descname"><span class="pre">change_volatility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volatility</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.change_volatility"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.change_volatility" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>change volatility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id</strong> (<em>int</em>) -- market ID.</p></li>
+<li><p><strong>volatility</strong> (<em>float</em>) -- volatility.</p></li>
+<li><p><strong>time</strong> (<em>int</em>) -- time step to apply the change(default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.get_fundamental_price">
+<span class="sig-name descname"><span class="pre">get_fundamental_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.get_fundamental_price"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.get_fundamental_price" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>get a fundamental price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id</strong> (<em>int</em>) -- market ID.</p></li>
+<li><p><strong>time</strong> (<em>int</em>) -- time step to get the price.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental price at the specified time step.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.get_fundamental_prices">
+<span class="sig-name descname"><span class="pre">get_fundamental_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.get_fundamental_prices"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.get_fundamental_prices" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>get some fundamental prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id</strong> (<em>int</em>) -- market ID.</p></li>
+<li><p><strong>times</strong> (<em>Iterable</em><em>[</em><em>int</em><em>]</em>) -- time steps to get the price.</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>fundamental prices in specified range of time steps.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.remove_correlation">
+<span class="sig-name descname"><span class="pre">remove_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_id2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.remove_correlation"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.remove_correlation" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>remove correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id1</strong> (<em>int</em>) -- one of the market IDs to remove correlation.</p></li>
+<li><p><strong>market_id2</strong> (<em>int</em>) -- the other of the market IDs to remove correlation.</p></li>
+<li><p><strong>time</strong> (<em>int</em>) -- time step to apply the correlation (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.remove_market">
+<span class="sig-name descname"><span class="pre">remove_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.remove_market"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.remove_market" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>remove a market from the list of markets whose fundamental prices are generated in this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>market_id</strong> (<em>int</em>) -- market ID to remove.</p>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Fundamentals.set_correlation">
+<span class="sig-name descname"><span class="pre">set_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market_id2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/fundamentals.html#Fundamentals.set_correlation"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Fundamentals.set_correlation" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>set correlation between fundamental prices of markets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>market_id1</strong> (<em>int</em>) -- one of the market IDs to set correlation.</p></li>
+<li><p><strong>market_id2</strong> (<em>int</em>) -- the other of the market IDs to set correlation.</p></li>
+<li><p><strong>corr</strong> (<em>float</em>) -- correlation.</p></li>
+<li><p><strong>time</strong> (<em>int</em>) -- time step to apply the correlation (default 0).</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -327,7 +493,17 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Fundamentals</a><ul>
-<li><a class="reference internal" href="#pams.Fundamentals"><code class="docutils literal notranslate"><span class="pre">Fundamentals</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals"><code class="docutils literal notranslate"><span class="pre">Fundamentals</span></code></a><ul>
+<li><a class="reference internal" href="#pams.Fundamentals.add_market"><code class="docutils literal notranslate"><span class="pre">Fundamentals.add_market()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.change_drift"><code class="docutils literal notranslate"><span class="pre">Fundamentals.change_drift()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.change_volatility"><code class="docutils literal notranslate"><span class="pre">Fundamentals.change_volatility()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.get_fundamental_price"><code class="docutils literal notranslate"><span class="pre">Fundamentals.get_fundamental_price()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.get_fundamental_prices"><code class="docutils literal notranslate"><span class="pre">Fundamentals.get_fundamental_prices()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.remove_correlation"><code class="docutils literal notranslate"><span class="pre">Fundamentals.remove_correlation()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.remove_market"><code class="docutils literal notranslate"><span class="pre">Fundamentals.remove_market()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Fundamentals.set_correlation"><code class="docutils literal notranslate"><span class="pre">Fundamentals.set_correlation()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

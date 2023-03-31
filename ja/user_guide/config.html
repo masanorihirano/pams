@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="ja">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Platform" href="platform.html" /><link rel="prev" title="About this project" href="about.html" />
+<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Install - pams documentation</title>
+        <title>Json config - pams ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../index.html"><div class="brand">pams  documentation</div></a>
+      <a href="../index.html"><div class="brand">pams  ドキュメント</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -146,19 +146,19 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   
-  <span class="sidebar-brand-text">pams  documentation</span>
+  <span class="sidebar-brand-text">pams  ドキュメント</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="検索" name="q" aria-label="検索">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="index.html">ユーザーガイド</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="preface.html">Preface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html">About this project</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="platform.html">Platform</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/outline.html">Outline</a></li>
@@ -256,46 +256,86 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="install">
-<h1>Install<a class="headerlink" href="#install" title="Permalink to this heading">#</a></h1>
-<section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>python3 (&gt;= 3.8)</p></li>
-</ul>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h2>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip3 install pams
-python3
-&gt;&gt; import pams
+          <section id="json-config">
+<h1>Json config<a class="headerlink" href="#json-config" title="この見出しへのパーマリンク">#</a></h1>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
+    &quot;simulation&quot;: {
+        &quot;markets&quot;: [&quot;SpotMarket-N&quot;],
+        &quot;agents&quot;: [&quot;FCNAgents&quot;],
+        &quot;sessions&quot;: [
+            {       &quot;sessionName&quot;: 0,
+                &quot;iterationSteps&quot;: 100,
+                &quot;withOrderPlacement&quot;: true,
+                &quot;withOrderExecution&quot;: false,
+                &quot;withPrint&quot;: true,
+                &quot;hifreqSubmitRate&quot;: 1.0
+            },
+            {       &quot;sessionName&quot;: 1,
+                &quot;iterationSteps&quot;: 500,
+                &quot;withOrderPlacement&quot;: true,
+                &quot;withOrderExecution&quot;: true,
+                &quot;withPrint&quot;: true,
+                &quot;events&quot;: [&quot;FundamentalPriceShock&quot;]
+            }
+        ],
+        &quot;fundamentalCorrelations&quot;: {
+            &quot;pairwise&quot;: [
+                [&quot;SpotMarket-0&quot;, &quot;SpotMarket-1&quot;,  0.9],
+                [&quot;SpotMarket-0&quot;, &quot;SpotMarket-2&quot;, -0.1]
+            ]
+        }
+    },
+    &quot;FundamentalPriceShock&quot;: {
+        &quot;class&quot;: &quot;FundamentalPriceShock&quot;,
+        &quot;target&quot;: &quot;SpotMarket-1&quot;,
+        &quot;triggerTime&quot;: 0,
+        &quot;priceChangeRate&quot;: -0.1,
+        &quot;shockTimeLength&quot;: 2,
+        &quot;enabled&quot;: true
+    },
+    &quot;Market&quot;: {
+        &quot;class&quot;: &quot;string required&quot;,
+        &quot;tickSize&quot;: float required,
+        &quot;marketPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
+        &quot;fundamentalPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
+        &quot;outstandingShares&quot;: int optional (default 0),
+    },
+    &quot;MarketBase&quot;: {
+        &quot;class&quot;: &quot;Market&quot;,
+        &quot;tickSize&quot;: 0.00001,
+        &quot;marketPrice&quot;: 300.0
+    },
+    &quot;SpotMarket-N&quot;: {
+        &quot;prefix&quot;: &quot;SpotMarket-&quot;,
+        &quot;numMarkets&quot;: 3,
+        &quot;extends&quot;: &quot;MarketBase&quot;
+    },
+    &quot;Agents&quot;: {
+        &quot;class&quot;: &quot;string required&quot;,
+        &quot;numAgents&quot;: 100,
+
+        &quot;markets&quot;: [&quot;SpotMarket-N&quot;],
+        &quot;assetVolume&quot;: 50,
+        &quot;cashAmount&quot;: 10000,
+
+        &quot;fundamentalWeight&quot;: {&quot;expon&quot;: [1.0]},
+        &quot;chartWeight&quot;: {&quot;expon&quot;: [0.0]},
+        &quot;noiseWeight&quot;: {&quot;expon&quot;: [1.0]},
+        &quot;meanReversionTime&quot;:{&quot;uniform&quot;:[50,100]},
+        &quot;noiseScale&quot;: 0.001,
+        &quot;timeWindowSize&quot;: [100, 200],
+        &quot;orderMargin&quot;: [0.0, 0.1]
+    }
+
+}
 </pre></div>
 </div>
-</section>
-<section id="run-sample-program">
-<h2>Run sample program<a class="headerlink" href="#run-sample-program" title="Permalink to this heading">#</a></h2>
-<p>We provide two types of samples.
-The latter one is more easy to run.</p>
-<section id="samples-which-can-be-run-on-command-line">
-<h3>(1) samples which can be run on command line:<a class="headerlink" href="#samples-which-can-be-run-on-command-line" title="Permalink to this heading">#</a></h3>
-<p><a class="reference external" href="https://github.com/masanorihirano/pams/tree/main/samples">https://github.com/masanorihirano/pams/tree/main/samples</a></p>
-<p>You can run it by the following command:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python3 path_to_folder/main.py path_to_folder/config.json [random_seed]
-</pre></div>
-</div>
-<p>Here, random_seed must be number and it is an optional argument.</p>
-</section>
-<section id="examples-on-google-colab-or-jupyter-notebook">
-<h3>(2) examples on google colab or jupyter notebook<a class="headerlink" href="#examples-on-google-colab-or-jupyter-notebook" title="Permalink to this heading">#</a></h3>
-<p><a class="reference external" href="https://github.com/masanorihirano/pams/tree/main/examples">https://github.com/masanorihirano/pams/tree/main/examples</a></p>
-</section>
-</section>
 </section>
 
         </article>
@@ -303,26 +343,8 @@ The latter one is more easy to run.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="platform.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Platform</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="about.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">About this project</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -341,33 +363,8 @@ The latter one is more easy to run.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Install</a><ul>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#run-sample-program">Run sample program</a><ul>
-<li><a class="reference internal" href="#samples-which-can-be-run-on-command-line">(1) samples which can be run on command line:</a></li>
-<li><a class="reference internal" href="#examples-on-google-colab-or-jupyter-notebook">(2) examples on google colab or jupyter notebook</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
@@ -379,5 +376,6 @@ The latter one is more easy to run.</p>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/translations.js"></script>
     </body>
 </html>

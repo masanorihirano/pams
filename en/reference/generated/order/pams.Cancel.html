@@ -267,7 +267,53 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.Cancel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">Cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placed_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/order.html#Cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Cancel" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Cancel order class.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pams.Cancel.agent_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">agent_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#pams.Cancel.agent_id" title="Permalink to this definition">#</a></dt>
+<dd><p>getter for agent ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>agent ID.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Cancel.check_system_acceptable">
+<span class="sig-name descname"><span class="pre">check_system_acceptable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/order.html#Cancel.check_system_acceptable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Cancel.check_system_acceptable" title="Permalink to this definition">#</a></dt>
+<dd><p>check system acceptable. (Usually, markets automatically check it.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent_id</strong> (<em>int</em>) – agent ID.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pams.Cancel.market_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">market_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#pams.Cancel.market_id" title="Permalink to this definition">#</a></dt>
+<dd><p>getter for market ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>market ID.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 
@@ -327,7 +373,12 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Cancel</a><ul>
-<li><a class="reference internal" href="#pams.Cancel"><code class="docutils literal notranslate"><span class="pre">Cancel</span></code></a></li>
+<li><a class="reference internal" href="#pams.Cancel"><code class="docutils literal notranslate"><span class="pre">Cancel</span></code></a><ul>
+<li><a class="reference internal" href="#pams.Cancel.agent_id"><code class="docutils literal notranslate"><span class="pre">Cancel.agent_id</span></code></a></li>
+<li><a class="reference internal" href="#pams.Cancel.check_system_acceptable"><code class="docutils literal notranslate"><span class="pre">Cancel.check_system_acceptable()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Cancel.market_id"><code class="docutils literal notranslate"><span class="pre">Cancel.market_id</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
