@@ -20,15 +20,20 @@ test-cov:
 	$(RUN) pytest --cov=$(PROJECT_NAME) --cov-report=xml
 
 .PHONY: lint
-lint: lint-black lint-isort
+lint: lint-black lint-isort lint-flake8
 
 .PHONY: lint-black
 lint-black:
-	$(RUN) black --check --diff --quiet --skip-magic-trailing-comma .
+	$(RUN) black --check --diff --quiet .
 
 .PHONY: lint-isort
 lint-isort:
-	$(RUN) isort --check --force-single-line-imports --quiet .
+	$(RUN) isort --check --quiet .
+
+.PHONY: lint-flake8
+lint-flake8:
+	$(RUN) pflake8 .
+
 
 .PHONY: mypy
 mypy:
@@ -39,11 +44,11 @@ format: format-black format-isort
 
 .PHONY: format-black
 format-black:
-	$(RUN) black --quiet --skip-magic-trailing-comma .
+	$(RUN) black --quiet .
 
 .PHONY: format-isort
 format-isort:
-	$(RUN) isort --force-single-line-imports --quiet .
+	$(RUN) isort --quiet .
 
 .PHONY: publish
 publish:
