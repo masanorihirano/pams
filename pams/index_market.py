@@ -37,7 +37,7 @@ class IndexMarket(Market):
             self._add_market(market=market)
 
     def _add_market(self, market: Market) -> None:
-        """add market.
+        """add market. (Internal method)
 
         Args:
             market (:class:`pams.market.Market`): market.
@@ -54,7 +54,7 @@ class IndexMarket(Market):
         self._components.append(market)
 
     def _add_markets(self, markets: List[Market]) -> None:
-        """add markets.
+        """add markets. (Internal method)
 
         Args:
             markets (List[:class:`pams.market.Market`]): list of market.

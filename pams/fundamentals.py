@@ -9,7 +9,7 @@ from scipy.linalg import cholesky
 
 
 class Fundamentals:
-    """Fundamental functions for simulator."""
+    """Fundamental generator for simulator."""
 
     def __init__(self, prng: random.Random) -> None:
         """initialize.
@@ -42,13 +42,13 @@ class Fundamentals:
         volatility: float,
         start_at: int = 0,
     ) -> None:
-        """add a market.
+        """add a market whose fundamental prices are generated in this class.
 
         Args:
             market_id (int): market ID to add.
             initial (float): initial value.
             drift (float): drifts.
-            volatility (float): volatility for cholesky.
+            volatility (float): volatility.
             start_at (int): time step to start simulation (default 0).
 
         Returns:
@@ -69,7 +69,7 @@ class Fundamentals:
         self._generated_until = min(start_at, self._generated_until)
 
     def remove_market(self, market_id: int) -> None:
-        """remove a market.
+        """remove a market from the list of markets whose fundamental prices are generated in this class.
 
         Args:
             market_id (int): market ID to remove.
@@ -119,11 +119,11 @@ class Fundamentals:
     def set_correlation(
         self, market_id1: int, market_id2: int, corr: float, time: int = 0
     ) -> None:
-        """set correlation.
+        """set correlation between fundamental prices of markets.
 
         Args:
-            market_id1 (int): one of the market IDs to compare.
-            market_id2 (int): the other of the market IDs to compare.
+            market_id1 (int): one of the market IDs to set correlation.
+            market_id2 (int): the other of the market IDs to set correlation.
             corr (float): correlation.
             time (int): time step to apply the correlation (default 0).
 
@@ -146,8 +146,8 @@ class Fundamentals:
         """remove correlation.
 
         Args:
-            market_id1 (int): one of the market IDs to compare.
-            market_id2 (int): the other of the market IDs to compare.
+            market_id1 (int): one of the market IDs to remove correlation.
+            market_id2 (int): the other of the market IDs to remove correlation.
             time (int): time step to apply the correlation (default 0).
 
         Returns:
@@ -164,7 +164,7 @@ class Fundamentals:
     def _generate_log_return(
         self, generate_target_ids: List[int], length: int
     ) -> np.ndarray:
-        """get log returns.
+        """get log returns. (Internal method)
 
         Args:
             generate_target_ids (List[int]): target market ID list.
@@ -223,7 +223,7 @@ class Fundamentals:
         )
 
     def _generate_next(self) -> None:
-        """execute to next step.
+        """execute to next step. (Internal method)
         This method is called by :func:`pams.Fundamentals.get_fundamental_price` or :func:`pams.Fundamentals.get_fundamental_prices`.
         """
         setting_change_points: List[int] = [

@@ -8,6 +8,10 @@ from typing import cast
 class OrderKind:
     """Kind of order.
     This class has an order kind ID and an order name.
+
+    You should use the following pre-defined order kinds:
+     - MARKET_ORDER
+     - LIMIT_ORDER
     """
 
     kind_id: int
@@ -82,9 +86,9 @@ class Order:
             is_buy (bool): whether the order is buy order or not.
             kind (:class:`pams.order.OrderKind`): kind of order.
             volume (int): order volume.
-            placed_at (int, Optional): time step that the order is started.
+            placed_at (int, Optional): time step that the order is placed. (Set by market. Please do not set it in agent)
             price (float, Optional): order price.
-            order_id (int, Optional): order ID.
+            order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)
             ttl (int, Optional): time to order expiration.
         """
         if kind == MARKET_ORDER and price is not None:
@@ -110,7 +114,7 @@ class Order:
         self.is_canceled: bool = False
 
     def check_system_acceptable(self, agent_id: int) -> None:
-        """check system acceptable.
+        """check system acceptable. (Usually, markets automatically check it.)
 
         Args:
             agent_id (int): agent ID.
@@ -156,13 +160,13 @@ class Order:
         )
 
     def __gt__(self, other: object) -> bool:
-        """compare between sell and buy orders.
+        """compare between sell and buy orders in terms of order priority.
 
         Args:
             other (object): the order for comparison.
 
         Returns:
-            bool: whether or not a profit was made.
+            bool: this order is not prior than the other
         """
         if self.__class__ != other.__class__:
             raise NotImplementedError(
@@ -240,7 +244,7 @@ class Cancel:
         return self.order.market_id
 
     def check_system_acceptable(self, agent_id: int) -> None:
-        """check system acceptable.
+        """check system acceptable. (Usually, markets automatically check it.)
 
         Args:
             agent_id (int): agent ID.

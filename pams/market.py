@@ -96,7 +96,7 @@ class Market:
         parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> List[Optional[T]]:
-        """extract sequential parameters by time.
+        """extract sequential parameters by time. (Internal method)
 
         Args:
             times (Union[Iterable[int], None]): range of time steps.
@@ -121,7 +121,7 @@ class Market:
         parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> Optional[T]:
-        """extract a parameter by time.
+        """extract a parameter by time. (Internal method)
 
         Args:
             time (Union[int, None]): time step.
@@ -326,7 +326,7 @@ class Market:
         )
 
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
-        """get number of buy orders.
+        """get the number of buy orders.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
@@ -342,7 +342,7 @@ class Market:
         )
 
     def get_n_buy_order(self, time: Union[int, None] = None) -> int:
-        """get number of buy order.
+        """get the number of buy order.
 
         Args:
             time (Union[int, None]): time step.
@@ -358,7 +358,7 @@ class Market:
         )
 
     def get_n_sell_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
-        """get number of sell orders.
+        """get the number of sell orders.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
@@ -374,7 +374,7 @@ class Market:
         )
 
     def get_n_sell_order(self, time: Union[int, None] = None) -> int:
-        """get number of sell order.
+        """get the number of sell order.
 
         Args:
             time (Union[int, None]): time step.
@@ -527,7 +527,7 @@ class Market:
         return self.tick_size * tick_level
 
     def _set_time(self, time: int, next_fundamental_price: float) -> None:
-        """set time step.
+        """set time step. (Usually, only triggered by simulator)
 
         Args:
             time (int): time step.
@@ -576,7 +576,7 @@ class Market:
                     self._market_prices[self.time] = self._mid_prices[self.time]
 
     def _update_time(self, next_fundamental_price: float) -> None:
-        """update time.
+        """update time. (Usually, only triggered by simulator)
 
         Args:
             next_fundamental_price (float): next fundamental price.
@@ -607,7 +607,7 @@ class Market:
                 self._market_prices[self.time] = next_fundamental_price
 
     def _cancel_order(self, cancel: Cancel) -> CancelLog:
-        """cancel order.
+        """cancel order. (Usually, only triggered by simulator)
 
         Args:
             cancel (:class:`pams.order.Cancel`): cancel class.
@@ -643,7 +643,7 @@ class Market:
         return log
 
     def _update_market_price(self) -> None:
-        """update market price."""
+        """update market price. (Internal method)"""
         best_buy_price: Optional[float] = self.get_best_buy_price()
         best_sell_price: Optional[float] = self.get_best_sell_price()
         if best_buy_price is None or best_sell_price is None:
@@ -663,7 +663,7 @@ class Market:
     def _execute_orders(
         self, price: float, volume: int, buy_order: Order, sell_order: Order
     ) -> ExecutionLog:
-        """execute orders.
+        """execute orders. (Internal method)
 
         Args:
             price (float): price.
@@ -714,7 +714,7 @@ class Market:
         return log
 
     def _add_order(self, order: Order) -> OrderLog:
-        """add order.
+        """add order. (Usually, only triggered by runner)
 
         Args:
             order (:class:`pams.order.Order`): order.
@@ -761,7 +761,7 @@ class Market:
         return log
 
     def remain_executable_orders(self) -> bool:
-        """remain executable orders.
+        """check if there are remain executable orders in this market.
 
         Returns:
             bool: whether some orders is executable or not.
@@ -796,7 +796,7 @@ class Market:
                 )
 
     def _execution(self) -> List[ExecutionLog]:
-        """execute for market.
+        """execute for market. (Usually, only triggered by runner)
 
         Returns:
             List[:class:`pams.logs.base.ExecutionLog`]: execution logs.

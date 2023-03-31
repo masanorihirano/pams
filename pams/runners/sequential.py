@@ -63,7 +63,7 @@ class SequentialRunner(Runner):
 
     @staticmethod
     def judge_hft_or_not(agent: Agent) -> bool:
-        """detemine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
+        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
 
         Args:
             agent (Agent): agent instance.
@@ -74,7 +74,7 @@ class SequentialRunner(Runner):
         return isinstance(agent, HighFrequencyAgent)
 
     def _generate_markets(self, market_type_names: List[str]) -> None:
-        """generate markets.
+        """generate markets. (Internal method)
 
         Args:
             market_type_names (List[str]): name list of market type.
@@ -160,7 +160,7 @@ class SequentialRunner(Runner):
                 )
 
     def _generate_agents(self, agent_type_names: List[str]) -> None:
-        """generate agents.
+        """generate agents. (Internal method)
 
         Args:
             agent_type_names (List[str]): name list of agent type.
@@ -245,7 +245,7 @@ class SequentialRunner(Runner):
                 )
 
     def _set_fundamental_correlation(self) -> None:
-        """set fundamental correlation."""
+        """set fundamental correlation. (Internal method)"""
         if "fundamentalCorrelations" in self.settings["simulation"]:
             corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
             for key, value in corr_settings.items():
@@ -271,7 +271,7 @@ class SequentialRunner(Runner):
                     )
 
     def _generate_sessions(self) -> None:
-        """generate sessions."""
+        """generate sessions. (Internal method)"""
         session_settings: Dict = self.settings["simulation"]["sessions"]
         if not isinstance(session_settings, list):
             raise ValueError("simulation.sessions must be list[dict]")
@@ -335,7 +335,7 @@ class SequentialRunner(Runner):
                     self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
-        """runner setup."""
+        """runner setup. (Internal method)"""
         if "simulation" not in self.settings:
             raise ValueError("simulation is required in json file")
 
@@ -373,7 +373,7 @@ class SequentialRunner(Runner):
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
     def _collect_orders(self, session: Session) -> List[List[Union[Order, Cancel]]]:
-        """collect orders.
+        """collect orders. (Internal method)
 
         Args:
             session (Session): session.
@@ -403,7 +403,7 @@ class SequentialRunner(Runner):
     def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
-        """handle orders.
+        """handle orders. (Internal method)
 
         Args:
             session (Session): session.
@@ -501,7 +501,7 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _update_markets(self, session: Session) -> None:
-        """update markets.
+        """update markets. (Internal method)
 
         Args:
             session (Session): session.
@@ -515,7 +515,7 @@ class SequentialRunner(Runner):
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
-        """iterate market updates.
+        """iterate market updates. (Internal method)
 
         Args:
             session (Session): session.
@@ -547,7 +547,7 @@ class SequentialRunner(Runner):
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
 
     def _run(self) -> None:
-        """main process."""
+        """main process. (Internal method)"""
         if self.logger is not None:
             log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
             log.read_and_write(logger=self.logger)

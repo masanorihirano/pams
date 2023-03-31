@@ -32,7 +32,8 @@ class Simulator:
             logger (Logger, Optional): logger for correcting various outputs in one simulation.
                                        logger is usually shared to all classes.
                                        Please note that logger is usually not thread-safe and non-blocking.
-            fundamental_class (Type[Fundamentals]): the class that provide fundamental functions for simulator (default :class:`pams.fundamentals.Fundamentals`).
+            fundamental_class (Type[Fundamentals]): the class that provide fundamental functions for simulator
+                                                    (default :class:`pams.fundamentals.Fundamentals`).
 
         Note:
              `prng` should not be shared with other classes and be used only in this class.
@@ -85,7 +86,7 @@ class Simulator:
         self.current_session: Optional[Session] = None
 
     def _add_event(self, event_hook: EventHook) -> None:
-        """add event to the simulator.
+        """add event to the simulator. (Usually, this is called from runner.)
 
         Args:
             event_hook (:class:`pams.events.base.EventHook`): event hook.
@@ -121,7 +122,7 @@ class Simulator:
             self.events_dict[register_name][time_].append(event_hook)
 
     def _add_market(self, market: Market, group_name: Optional[str] = None) -> None:
-        """add market to the simulator.
+        """add market to the simulator. (Usually, this is called from runner.)
 
         Args:
             market (:class:`pamd.market.Market`): market.
@@ -146,7 +147,7 @@ class Simulator:
             self.markets_group_name2market[group_name].append(market)
 
     def _add_agent(self, agent: Agent, group_name: Optional[str] = None) -> None:
-        """add agent to the simulator.
+        """add agent to the simulator. (Usually, this is called from runner.)
 
         Args:
             agent (:class:`pams.agents.base.Agent`): agent.
@@ -175,7 +176,7 @@ class Simulator:
             self.agents_group_name2agent[group_name].append(agent)
 
     def _add_session(self, session: Session) -> None:
-        """add session to the simulator.
+        """add session to the simulator. (Usually, this is called from runner.)
 
         Args:
             session (:class:`pams.session.Session`): session.
@@ -195,7 +196,7 @@ class Simulator:
         self.name2session[session.name] = session
 
     def _update_time_on_market(self, market: Market) -> None:
-        """update time on the market.
+        """update time on the market. (Usually, this is called from runner.)
 
         Args:
             market (:class:`pams.market.Market`): market.
@@ -221,7 +222,7 @@ class Simulator:
             )
 
     def _update_times_on_markets(self, markets: List[Market]) -> None:
-        """update times on markets.
+        """update times on markets. (Usually, this is called from runner.)
 
         Args:
             markets (List[:class:`pams.market.Market`]): list of markets.
@@ -237,7 +238,7 @@ class Simulator:
     def _update_agents_for_execution(
         self, execution_logs: List["ExecutionLog"]  # type: ignore
     ) -> None:
-        """update agents for execution.
+        """update agents for execution. (Usually, this is called from runner.)
 
         Args:
             execution_logs (List["ExecutionLog"]): execution logs.
@@ -262,7 +263,7 @@ class Simulator:
         class_requirement: Optional[Type] = None,
         instance_requirement: Optional[object] = None,
     ) -> bool:
-        """check event class and instance.
+        """check event class and instance. (Usually, this is called from runner.)
 
         Args:
             check_object (object): object for check.
@@ -281,7 +282,7 @@ class Simulator:
         return True
 
     def _trigger_event_before_order(self, order: "Order") -> None:  # type: ignore
-        """trigger event before order.
+        """trigger event before order. (Usually, this is called from runner.)
 
         Args:
             order (Order): the order before the event.
@@ -300,7 +301,7 @@ class Simulator:
             event_hook.event.hooked_before_order(simulator=self, order=order)
 
     def _trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore
-        """trigger event after order.
+        """trigger event after order. (Usually, this is called from runner.)
 
         Args:
             order_log (OrderLog): the order log after the event.
@@ -319,7 +320,7 @@ class Simulator:
             event_hook.event.hooked_after_order(simulator=self, order_log=order_log)
 
     def _trigger_event_before_cancel(self, cancel: "Cancel") -> None:  # type: ignore
-        """trigger event before cancel.
+        """trigger event before cancel. (Usually, this is called from runner.)
 
         Args:
             cancel (Cancel): the cancel order before the event.
@@ -338,7 +339,7 @@ class Simulator:
             event_hook.event.hooked_before_cancel(simulator=self, cancel=cancel)
 
     def _trigger_event_after_cancel(self, cancel_log: "CancelLog") -> None:  # type: ignore
-        """trigger event after cancel.
+        """trigger event after cancel. (Usually, this is called from runner.)
 
         Args:
             cancel_log (CancelLog): the cancel order log after the event.
@@ -357,7 +358,7 @@ class Simulator:
             event_hook.event.hooked_after_cancel(simulator=self, cancel_log=cancel_log)
 
     def _trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore
-        """trigger event after execution.
+        """trigger event after execution. (Usually, this is called from runner.)
 
         Args:
             execution_log (ExecutionLog): the execution log after the event.
@@ -378,7 +379,7 @@ class Simulator:
             )
 
     def _trigger_event_before_session(self, session: "Session") -> None:  # type: ignore
-        """trigger event before session.
+        """trigger event before session. (Usually, this is called from runner.)
 
         Args:
             session (Session): the session before the event.
@@ -397,7 +398,7 @@ class Simulator:
             event_hook.event.hooked_before_session(simulator=self, session=session)
 
     def _trigger_event_after_session(self, session: "Session") -> None:  # type: ignore
-        """trigger event after session.
+        """trigger event after session. (Usually, this is called from runner.)
 
         Args:
             session (Session): the session after the event.
@@ -416,7 +417,7 @@ class Simulator:
             event_hook.event.hooked_after_session(simulator=self, session=session)
 
     def _trigger_event_before_step_for_market(self, market: "Market") -> None:  # type: ignore
-        """trigger event before step for market.
+        """trigger event before step for market. (Usually, this is called from runner.)
 
         Args:
             market (Market): the market before the event.
@@ -442,7 +443,7 @@ class Simulator:
                 )
 
     def _trigger_event_after_step_for_market(self, market: "Market") -> None:  # type: ignore
-        """trigger event after step for market.
+        """trigger event after step for market. (Usually, this is called from runner.)
 
         Args:
             market (Market): the market after the event.

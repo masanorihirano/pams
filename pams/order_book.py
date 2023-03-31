@@ -8,7 +8,7 @@ from .order import Order
 
 
 class OrderBook:
-    """Book of order class."""
+    """Order book class."""
 
     def __init__(self, is_buy: bool) -> None:
         """initialization.
@@ -44,7 +44,7 @@ class OrderBook:
             self.expire_time_list[expiration_time].append(order)
 
     def _remove(self, order: Order) -> None:
-        """remove the book of order.
+        """remove the book of order. (Internal method. Usually, it is not called from the outside of this class.)
 
         Args:
             order (:class:`pams.order.Order`): order.
@@ -73,10 +73,10 @@ class OrderBook:
         self._remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
-        """get the order with highest priority.
+        """get the order with the highest priority.
 
         Returns:
-            :class:`pams.order.Order`, Optional: the order with highest priority.
+            :class:`pams.order.Order`, Optional: the order with the highest priority.
         """
         if len(self.priority_queue.queue) > 0:
             return self.priority_queue.queue[0]
@@ -84,10 +84,10 @@ class OrderBook:
             return None
 
     def get_best_price(self) -> Optional[float]:
-        """get the order price with highest priority.
+        """get the order price with the highest priority.
 
         Returns:
-            float, Optional: the order price with highest priority.
+            float, Optional: the order price with the highest priority.
         """
         if len(self.priority_queue.queue) > 0:
             return self.priority_queue.queue[0].price
@@ -105,11 +105,12 @@ class OrderBook:
             None
         """
         order.volume += delta
+        # ToDo: check if volume is non-negative
         if order.volume == 0:
             self._remove(order=order)
 
     def _check_expired_orders(self) -> None:
-        """check expired orders."""
+        """check and delete expired orders. (Internal Method)"""
         delete_orders: List[Order] = sum(
             [value for key, value in self.expire_time_list.items() if key < self.time],
             [],
@@ -123,7 +124,7 @@ class OrderBook:
             self.expire_time_list.pop(key)
 
     def _set_time(self, time: int) -> None:
-        """set time step.
+        """set time step. (Usually, it is called from market.)
 
         Args:
             time (int): time step.
@@ -135,7 +136,7 @@ class OrderBook:
         self._check_expired_orders()
 
     def _update_time(self) -> None:
-        """update.
+        """update time. (Usually, it is called from market.)
         Advance the time step and check expired orders.
         """
         self.time += 1
@@ -150,10 +151,10 @@ class OrderBook:
         return len(self.priority_queue.queue)
 
     def get_price_volume(self) -> Dict[Optional[float], int]:
-        """get price volume.
+        """get price and volume (order book).
 
         Returns:
-            Dict[Optional[float], int]: price volume.
+            Dict[Optional[float], int]: order book dict. Dict key is order price and the value is volumes.
         """
         keys: List[Optional[float]] = list(
             set(map(lambda x: x.price, self.priority_queue.queue))
