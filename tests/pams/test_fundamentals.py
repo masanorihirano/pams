@@ -112,6 +112,23 @@ class TestFundamentals:
         with pytest.raises(ValueError):
             f.set_correlation(market_id1=1, market_id2=2, corr=-1.0)
 
+    def test_set_correlation2(self) -> None:
+        corr: float = 0.9
+        f = Fundamentals(prng=random.Random(42))
+        f.add_market(market_id=1, initial=300, drift=-0.01, volatility=0.1)
+        f.add_market(market_id=2, initial=100, drift=0.0, volatility=0.0)
+        f.add_market(market_id=3, initial=200, drift=0.01, volatility=0.3)
+        f.add_market(market_id=4, initial=200, drift=0.01, volatility=0.0)
+        f.set_correlation(market_id1=1, market_id2=2, corr=corr)
+        f.set_correlation(market_id1=2, market_id2=3, corr=corr)
+        f.set_correlation(market_id1=2, market_id2=4, corr=corr)
+        f.get_fundamental_prices(market_id=1, times=range(10000))
+
+        # invalid operation
+        f.correlation[(3, 3)] = 0.8
+        with pytest.raises(AssertionError):
+            f.get_fundamental_prices(market_id=1, times=range(20000))
+
     def test_remove_correlation(self) -> None:
         f = Fundamentals(prng=random.Random(42))
         f.add_market(market_id=1, initial=300, drift=-0.01, volatility=0.1)

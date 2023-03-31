@@ -79,9 +79,11 @@ class Market:
             None
         """
         if "tickSize" not in settings:
-            raise AssertionError("tickSize is required")
+            raise ValueError("tickSize is required")
         self.tick_size = settings["tickSize"]
         if "outstandingShares" in settings:
+            if not isinstance(settings["outstandingShares"], int):
+                raise ValueError("outstandingShares must be int")
             self.outstanding_shares = settings["outstandingShares"]
         if "marketPrice" in settings:
             self._market_prices = [float(settings["marketPrice"])]
