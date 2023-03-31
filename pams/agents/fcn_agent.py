@@ -32,7 +32,7 @@ class FCNAgent(Agent):
     References:
         - Chiarella, C., & Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.
           Quantitative Finance, 2(5), 346–353. https://doi.org/10.1088/1469-7688/2/5/303
-    """
+    """  # NOQA
 
     fundamental_weight: float
     chart_weight: float
@@ -48,7 +48,7 @@ class FCNAgent(Agent):
         self,
         agent_id: int,
         prng: random.Random,
-        simulator: "Simulator",  # type: ignore
+        simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
         logger: Optional[Logger] = None,
     ):

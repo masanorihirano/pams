@@ -26,8 +26,7 @@ jobs:
            git checkout main
            git tag -a `echo '${{ github.event.pull_request.head.ref }}' | sed 's/release\///'` -m " "
            git push origin `echo '${{ github.event.pull_request.head.ref }}' | sed 's/release\///'`
-           git push --delete origin ${{ github.event.pull_request.head.ref }}
-  
+
   test:
     # The type of runner that the job will run on
     name: final test
@@ -56,8 +55,9 @@ jobs:
           poetry install
       - name: Test
         run: |
-          poetry run black --check --diff --quiet --skip-magic-trailing-comma .
-          poetry run isort --check --force-single-line-imports --quiet .
+          poetry run black --check --diff --quiet .
+          poetry run isort --check --quiet .
+          poetry run pflake8 .
           poetry run mypy .
           poetry run pytest tests/
   
@@ -196,3 +196,6 @@ jobs:
         asset_path: dist/checksums.txt
         asset_name: pams-${{ steps.get_version.outputs.TAG }}-checksums.txt
         asset_content_type: text/plain
+    - name: remove branch
+      run: |
+        git push --delete origin ${{ github.event.pull_request.head.ref }}

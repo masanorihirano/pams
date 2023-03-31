@@ -9,7 +9,7 @@
 				"withOrderExecution": false,
 				"withPrint": true,
 				"maxNormalOrders": 3, "MEMO": "The same number as #markets",
-				"maxHifreqOrders": 0
+				"maxHighFrequencyOrders": 0
 			},
 			{	"sessionName": 1,
 				"iterationSteps": 500,
@@ -17,7 +17,7 @@
 				"withOrderExecution": true,
 				"withPrint": true,
 				"maxNormalOrders": 3, "MEMO": "The same number as #markets",
-				"maxHifreqOrders": 5,
+				"maxHighFrequencyOrders": 5,
 				"events": ["FundamentalPriceShock"]
 			}
 		]
@@ -27,7 +27,7 @@
 		"class": "FundamentalPriceShock",
 		"target": "SpotMarket-1",
 		"triggerTime": 0,
-		"priceChangeRate": -0.1,
+		"priceChangeRate": -0.3,
 		"enabled": true
 	},
 	"SpotMarket": {
@@ -66,24 +66,15 @@
 
 	"FCNAgents-1": {
 		"extends": "FCNAgent",
-		"markets": ["SpotMarket-1"],
-		"fundamentalWeight": {"expon": [1.0]},
-		"chartWeight": {"expon": [0.0]},
-		"noiseWeight": {"expon": [1.0]}
+		"markets": ["SpotMarket-1"]
 	},
 	"FCNAgents-2": {
 		"extends": "FCNAgent",
-		"markets": ["SpotMarket-2"],
-		"fundamentalWeight": {"expon": [0.0]},
-		"chartWeight": {"expon": [0.0]},
-		"noiseWeight": {"expon": [0.2]}
+		"markets": ["SpotMarket-2"]
 	},
 	"FCNAgents-I": {
 		"extends": "FCNAgent",
-		"markets": ["IndexMarket-I"],
-		"fundamentalWeight": {"expon": [0.5]},
-		"chartWeight": {"expon": [0.0]},
-		"noiseWeight": {"expon": [1.0]}
+		"markets": ["IndexMarket-I"]
 	},
 	"ArbitrageAgents": {
 		"class": "ArbitrageAgent",

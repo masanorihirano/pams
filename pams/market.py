@@ -31,7 +31,7 @@ class Market:
     """
 
     def __init__(
-        self, market_id: int, prng: random.Random, simulator: "Simulator", name: str, logger: Optional[Logger] = None  # type: ignore
+        self, market_id: int, prng: random.Random, simulator: "Simulator", name: str, logger: Optional[Logger] = None  # type: ignore  # NOQA
     ) -> None:
         """initialization.
 
@@ -63,11 +63,11 @@ class Market:
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
-        self._simulator: "Simulator" = simulator  # type: ignore
+        self._simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup market configuration from setting format.
 
         Args:
@@ -90,7 +90,7 @@ class Market:
         elif "fundamentalPrice" in settings:
             self._market_prices = [float(settings["fundamentalPrice"])]
         else:
-            raise ValueError(f"fundamentalPrice or marketPrice is required for market")
+            raise ValueError("fundamentalPrice or marketPrice is required for market")
 
     def _extract_sequential_data_by_time(
         self,

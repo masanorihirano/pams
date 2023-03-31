@@ -160,7 +160,7 @@ class ExecutionLog(Log):
 class SimulationBeginLog(Log):
     """Simulation beginning log class."""
 
-    def __init__(self, simulator: "Simulator"):  # type: ignore
+    def __init__(self, simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -172,7 +172,7 @@ class SimulationBeginLog(Log):
 class SimulationEndLog(Log):
     """Simulation ending log class."""
 
-    def __init__(self, simulator: "Simulator"):  # type: ignore
+    def __init__(self, simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -184,7 +184,7 @@ class SimulationEndLog(Log):
 class SessionBeginLog(Log):
     """Session beginning log class."""
 
-    def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore
+    def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -198,7 +198,7 @@ class SessionBeginLog(Log):
 class SessionEndLog(Log):
     """Session ending log class."""
 
-    def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore
+    def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -212,7 +212,7 @@ class SessionEndLog(Log):
 class MarketStepBeginLog(Log):
     """Market step beginning log class."""
 
-    def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore
+    def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -228,7 +228,7 @@ class MarketStepBeginLog(Log):
 class MarketStepEndLog(Log):
     """Market step ending log class."""
 
-    def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore
+    def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore  # NOQA
         """initialize.
 
         Args:
@@ -256,13 +256,13 @@ class Logger:
     Therefore, this logger has 2 methods to handling logs -- :func:`write` and :func:`write_and_direct_process`
     """
 
-    simulator: "Simulator"  # type: ignore
+    simulator: "Simulator"  # type: ignore  # NOQA
 
     def __init__(self) -> None:
         """initialize logger."""
         self.pending_logs: List[Log] = []
 
-    def _set_simulator(self, simulator: "Simulator") -> None:  # type: ignore
+    def _set_simulator(self, simulator: "Simulator") -> None:  # type: ignore  # NOQA
         """set simulator.
 
         Args:
