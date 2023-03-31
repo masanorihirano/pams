@@ -371,8 +371,11 @@ class SequentialRunner(Runner):
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
-    def _collect_orders(self, session: Session) -> List[List[Union[Order, Cancel]]]:
-        """collect orders. (Internal method)
+    def _collect_orders_from_normal_agents(
+        self, session: Session
+    ) -> List[List[Union[Order, Cancel]]]:
+        """collect orders from normal_agents. (Internal method)
+        orders are corrected until the total number of orders reaches max_normal_orders
 
         Args:
             session (Session): session.
@@ -403,6 +406,7 @@ class SequentialRunner(Runner):
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
         """handle orders. (Internal method)
+        processing local orders and correct and process the orders from high frequency agents.
 
         Args:
             session (Session): session.
@@ -473,8 +477,8 @@ class SequentialRunner(Runner):
                             "spoofing order is not allowed. please check agent_id in order"
                         )
                     all_orders.append(high_freq_orders)
-                    n_high_freq_orders += 1
                     for order in high_freq_orders:
+                        n_high_freq_orders += 1
                         market = self.simulator.id2market[order.market_id]
                         if isinstance(order, Order):
                             self.simulator._trigger_event_before_order(order=order)
@@ -508,9 +512,9 @@ class SequentialRunner(Runner):
         Returns:
             None
         """
-        local_orders: List[List[Union[Order, Cancel]]] = self._collect_orders(
-            session=session
-        )
+        local_orders: List[
+            List[Union[Order, Cancel]]
+        ] = self._collect_orders_from_normal_agents(session=session)
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
