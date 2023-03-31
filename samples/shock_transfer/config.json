@@ -9,7 +9,7 @@
 				"withOrderExecution": false,
 				"withPrint": true,
 				"maxNormalOrders": 3, "MEMO": "The same number as #markets",
-				"maxHifreqOrders": 0
+				"maxHighFrequencyOrders": 0
 			},
 			{	"sessionName": 1,
 				"iterationSteps": 500,
@@ -17,7 +17,7 @@
 				"withOrderExecution": true,
 				"withPrint": true,
 				"maxNormalOrders": 3, "MEMO": "The same number as #markets",
-				"maxHifreqOrders": 5,
+				"maxHighFrequencyOrders": 5,
 				"events": ["FundamentalPriceShock"]
 			}
 		]

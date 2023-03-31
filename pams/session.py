@@ -1,4 +1,5 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import Optional
@@ -58,7 +59,7 @@ class Session:
         Args:
             settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameters "iterationSteps", "withOrderPlacement", "withOrderExecution", and "withPrint".
-                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "hifreqSubmitRate".
+                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "highFrequencySubmitRate".
 
         Returns:
             None
@@ -90,8 +91,32 @@ class Session:
             raise ValueError("withPrint must be boolean")
         self.with_print = settings["withPrint"]
         if "maxNormalOrders" in settings:
+            # TODO: check non-negative
             self.max_normal_orders = settings["maxNormalOrders"]
         if "maxHighFrequencyOrders" in settings:
+            # TODO: check non-negative
             self.max_high_frequency_orders = settings["maxHighFrequencyOrders"]
-        if "hifreqSubmitRate" in settings:
+            if "maxHifreqOrders" in settings:
+                raise ValueError(
+                    "maxHifreqOrders is replaced to maxHighFrequencyOrders in pams. Please delete it."
+                )
+        elif "maxHifreqOrders" in settings:
+            # TODO: check non-negative
+            warnings.warn(
+                "maxHifreqOrders is replaced to maxHighFrequencyOrders in pams."
+            )
+            self.max_high_frequency_orders = settings["maxHifreqOrders"]
+        # TODO: check malOrders + maxHighFrequencyOrders >= 1
+        if "highFrequencySubmitRate" in settings:
+            # TODO: check non-negative
+            self.max_high_frequency_orders = settings["highFrequencySubmitRate"]
+            if "hifreqSubmitRate" in settings:
+                raise ValueError(
+                    "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it."
+                )
+        elif "hifreqSubmitRate" in settings:
+            warnings.warn(
+                "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."
+            )
+            # TODO: check non-negative
             self.max_high_frequency_orders = settings["hifreqSubmitRate"]
