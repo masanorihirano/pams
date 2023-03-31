@@ -263,7 +263,6 @@
           <h1>pams.runners.sequential のソースコード</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOWrapper</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
@@ -635,8 +634,11 @@
 
         <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_collect_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;collect orders. (Internal method)</span>
+    <span class="k">def</span> <span class="nf">_collect_orders_from_normal_agents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;collect orders from normal_agents. (Internal method)</span>
+<span class="sd">        orders are corrected until the total number of orders reaches max_normal_orders</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
@@ -667,6 +669,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;handle orders. (Internal method)</span>
+<span class="sd">        processing local orders and correct and process the orders from high frequency agents.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
@@ -737,8 +740,8 @@
                             <span class="s2">&quot;spoofing order is not allowed. please check agent_id in order&quot;</span>
                         <span class="p">)</span>
                     <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
-                    <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">:</span>
+                        <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="n">market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
@@ -772,9 +775,9 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_orders</span><span class="p">(</span>
-            <span class="n">session</span><span class="o">=</span><span class="n">session</span>
-        <span class="p">)</span>
+        <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
+            <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_orders_from_normal_agents</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_orders</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">local_orders</span><span class="o">=</span><span class="n">local_orders</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_iterate_market_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

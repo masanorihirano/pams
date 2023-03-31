@@ -262,6 +262,7 @@
         <article role="main">
           <h1>Source code for pams.session</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
@@ -277,7 +278,7 @@
         <span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
         <span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -303,7 +304,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span> <span class="o">=</span> <span class="n">simulator</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span> <span class="o">=</span> <span class="n">simulator</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -315,13 +316,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_start_time</span>
 
-<div class="viewcode-block" id="Session.setup"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="Session.setup"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;setup session configuration from setting format.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.</span>
 <span class="sd">                                       This must include the parameters &quot;iterationSteps&quot;, &quot;withOrderPlacement&quot;, &quot;withOrderExecution&quot;, and &quot;withPrint&quot;.</span>
-<span class="sd">                                       This can include the parameter &quot;maxNormalOrders&quot;, &quot;maxHighFrequencyOrders&quot;, and &quot;hifreqSubmitRate&quot;.</span>
+<span class="sd">                                       This can include the parameter &quot;maxNormalOrders&quot;, &quot;maxHighFrequencyOrders&quot;, and &quot;highFrequencySubmitRate&quot;.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -353,10 +354,34 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;withPrint must be boolean&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">with_print</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withPrint&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;maxNormalOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="c1"># TODO: check non-negative</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">max_normal_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxNormalOrders&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;maxHighFrequencyOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="c1"># TODO: check non-negative</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxHighFrequencyOrders&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;maxHifreqOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;maxHifreqOrders is replaced to maxHighFrequencyOrders in pams. Please delete it.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;maxHifreqOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="c1"># TODO: check non-negative</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;maxHifreqOrders is replaced to maxHighFrequencyOrders in pams.&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxHifreqOrders&quot;</span><span class="p">]</span>
+        <span class="c1"># TODO: check malOrders + maxHighFrequencyOrders &gt;= 1</span>
+        <span class="k">if</span> <span class="s2">&quot;highFrequencySubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="c1"># TODO: check non-negative</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;highFrequencySubmitRate&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;hifreqSubmitRate is replaced to highFrequencySubmitRate in pams.&quot;</span>
+            <span class="p">)</span>
+            <span class="c1"># TODO: check non-negative</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;hifreqSubmitRate&quot;</span><span class="p">]</span></div></div>
 </pre></div>
         </article>

@@ -499,7 +499,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_on_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_agents_for_execution</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">execution_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;ExecutionLog&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">execution_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;ExecutionLog&quot;</span><span class="p">]</span>  <span class="c1"># type: ignore  # NOQA</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;update agents for execution. (Usually, this is called from runner.)</span>
 
@@ -544,7 +544,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_trigger_event_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">_trigger_event_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before order. (Usually, this is called from runner.)</span>
 
 <span class="sd">        Args:</span>
@@ -563,7 +563,7 @@
         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">target_event_hooks</span><span class="p">:</span>
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_before_order</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_trigger_event_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">_trigger_event_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after order. (Usually, this is called from runner.)</span>
 
 <span class="sd">        Args:</span>
@@ -582,7 +582,7 @@
         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">target_event_hooks</span><span class="p">:</span>
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_after_order</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_log</span><span class="o">=</span><span class="n">order_log</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_trigger_event_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">_trigger_event_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event before cancel. (Usually, this is called from runner.)</span>
 
 <span class="sd">        Args:</span>
@@ -601,7 +601,7 @@
         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">target_event_hooks</span><span class="p">:</span>
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_before_cancel</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="n">cancel</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_trigger_event_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">_trigger_event_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after cancel. (Usually, this is called from runner.)</span>
 
 <span class="sd">        Args:</span>
@@ -620,7 +620,7 @@
         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">target_event_hooks</span><span class="p">:</span>
             <span class="n">event_hook</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">hooked_after_cancel</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel_log</span><span class="o">=</span><span class="n">cancel_log</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_trigger_event_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">_trigger_event_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;trigger event after execution. (Usually, this is called from runner.)</span>
 
 <span class="sd">        Args:</span>

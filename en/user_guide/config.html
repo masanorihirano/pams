@@ -274,13 +274,18 @@
                 &quot;withOrderPlacement&quot;: true,
                 &quot;withOrderExecution&quot;: false,
                 &quot;withPrint&quot;: true,
-                &quot;hifreqSubmitRate&quot;: 1.0
+                &quot;highFrequencySubmitRate&quot;: float
+                &quot;maxNormalOrders&quot;: int (&gt;=0),
+                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0)
             },
             {       &quot;sessionName&quot;: 1,
                 &quot;iterationSteps&quot;: 500,
                 &quot;withOrderPlacement&quot;: true,
                 &quot;withOrderExecution&quot;: true,
                 &quot;withPrint&quot;: true,
+                &quot;highFrequencySubmitRate&quot;: float
+                &quot;maxNormalOrders&quot;: int (&gt;=0),
+                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0)
                 &quot;events&quot;: [&quot;FundamentalPriceShock&quot;]
             }
         ],

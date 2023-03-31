@@ -342,8 +342,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
-        <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
-        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
+        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;event initialization. Usually be called from simulator/runner automatically.</span>
@@ -386,7 +386,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_before_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_before_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">&quot;Order&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before order placements if you set the event hook.</span>
 <span class="sd">        Please be careful that the order haven&#39;t yet been accepted by markets and it could be leakage of order information.</span>
 
@@ -399,7 +399,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_after_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_order">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order placements if you set the event hook.</span>
 <span class="sd">        Please be careful that the order haven&#39;t yet been executed if it could be executed immediately.</span>
 
@@ -412,7 +412,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_before_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_cancel">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_before_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_cancel">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">&quot;Cancel&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before order cancellations if you set the event hook.</span>
 <span class="sd">        Please be careful that the cancel order haven&#39;t yet been executed.</span>
 
@@ -425,7 +425,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_cancel">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_after_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_cancel">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">cancel_log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order cancellations if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -437,7 +437,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after order executions if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -449,7 +449,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_before_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_session">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_before_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_session">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked before session beginnings if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -461,7 +461,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_session">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_after_session"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_session">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked after session ends if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -473,7 +473,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_step_for_market">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_step_for_market">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_before_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked at each step before market processing if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -485,7 +485,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_step_for_market">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.hooked_after_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_step_for_market">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">hooked_after_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;This method is hooked at each step after market processing if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>
