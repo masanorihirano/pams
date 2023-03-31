@@ -26,8 +26,7 @@ jobs:
            git checkout main
            git tag -a `echo '${{ github.event.pull_request.head.ref }}' | sed 's/release\///'` -m " "
            git push origin `echo '${{ github.event.pull_request.head.ref }}' | sed 's/release\///'`
-           git push --delete origin ${{ github.event.pull_request.head.ref }}
-  
+
   test:
     # The type of runner that the job will run on
     name: final test
@@ -197,3 +196,6 @@ jobs:
         asset_path: dist/checksums.txt
         asset_name: pams-${{ steps.get_version.outputs.TAG }}-checksums.txt
         asset_content_type: text/plain
+    - name: remove branch
+      run: |
+        git push --delete origin ${{ github.event.pull_request.head.ref }}
