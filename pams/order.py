@@ -6,22 +6,56 @@ from typing import cast
 
 @dataclass(frozen=True)
 class OrderKind:
+    """Kind of order.
+    This class has an order kind ID and an order name.
+
+    You should use the following pre-defined order kinds:
+     - MARKET_ORDER
+     - LIMIT_ORDER
+    """
+
     kind_id: int
     name: str
 
     def __repr__(self) -> str:
+        """string representation of this class.
+
+        Returns:
+            str: string representation of this class.
+        """
         return self.name
 
     def __eq__(self, other: object) -> bool:
+        """get whether an argument's class is the same as this class or not.
+
+        Args:
+            other (object): an instance for comparison.
+
+        Returns:
+            bool: whether the class of the instance is the same as this class or not.
+        """
         if other.__class__ != self.__class__:
             return False
         other = cast(OrderKind, other)
         return other.kind_id == self.kind_id
 
     def __ne__(self, other: object) -> bool:
+        """get whether an argument's class is different from this class or not.
+
+        Args:
+            other (object): an instance for comparison.
+
+        Returns:
+            bool: whether an argument's class is different from this class or not.
+        """
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
+        """get the order kind ID.
+
+        Returns:
+            int: order kind ID.
+        """
         return self.kind_id
 
 
@@ -30,6 +64,8 @@ LIMIT_ORDER = OrderKind(kind_id=1, name="LIMIT_ORDER")
 
 
 class Order:
+    """Order class."""
+
     def __init__(
         self,
         agent_id: int,
@@ -42,6 +78,19 @@ class Order:
         order_id: Optional[int] = None,
         ttl: Optional[int] = None,
     ):
+        """initialization.
+
+        Args:
+            agent_id (int): agent ID.
+            market_id (int): market ID.
+            is_buy (bool): whether the order is buy order or not.
+            kind (:class:`pams.order.OrderKind`): kind of order.
+            volume (int): order volume.
+            placed_at (int, Optional): time step that the order is placed. (Set by market. Please do not set it in agent)
+            price (float, Optional): order price.
+            order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)
+            ttl (int, Optional): time to order expiration.
+        """
         if kind == MARKET_ORDER and price is not None:
             raise ValueError("price have to be None when kind is MARKET_ORDER")
         if kind == LIMIT_ORDER and price is None:
@@ -65,6 +114,14 @@ class Order:
         self.is_canceled: bool = False
 
     def check_system_acceptable(self, agent_id: int) -> None:
+        """check system acceptable. (Usually, markets automatically check it.)
+
+        Args:
+            agent_id (int): agent ID.
+
+        Returns:
+            None
+        """
         if agent_id != self.agent_id:
             raise AttributeError("agent_id is fake")
         if self.placed_at is not None:
@@ -75,6 +132,14 @@ class Order:
             raise AttributeError("this order is already canceled")
 
     def is_expired(self, time: int) -> bool:
+        """get whether the order is expired or not.
+
+        Args:
+            time (int): time to order expiration.
+
+        Returns:
+            bool: whether the order is expired or not.
+        """
         if self.placed_at is None:
             raise Exception("this order is not yet placed to a market")
         if self.ttl is None:
@@ -83,6 +148,11 @@ class Order:
             return self.placed_at + self.ttl < time
 
     def extra_repr(self) -> str:
+        """string representation of extra information for this class.
+
+        Returns:
+            str: string representation of extra information.
+        """
         return (
             f"id={self.order_id}, kind={self.kind}, is_buy={self.is_buy}, price={self.price}, volume={self.volume}, "
             + f"agent={self.agent_id}, market={self.market_id}, placed_at={self.placed_at}, ttl={self.ttl}, "
@@ -90,6 +160,14 @@ class Order:
         )
 
     def __gt__(self, other: object) -> bool:
+        """compare between sell and buy orders in terms of order priority.
+
+        Args:
+            other (object): the order for comparison.
+
+        Returns:
+            bool: this order is not prior than the other
+        """
         if self.__class__ != other.__class__:
             raise NotImplementedError(
                 f"not supporting the comparison between Order and {other.__class__}"
@@ -132,19 +210,48 @@ class Order:
 
 
 class Cancel:
+    """Cancel order class."""
+
     def __init__(self, order: Order, placed_at: Optional[int] = None):
+        """initialization.
+
+        Args:
+            order (:class:`pams.order.Order`): order.
+            placed_at (int, Optional): time step that the order is canceled.
+
+        Returns:
+            None
+        """
         self.order: Order = order
         self.placed_at: Optional[int] = placed_at
 
     @property
     def agent_id(self) -> int:
+        """getter for agent ID.
+
+        Returns:
+            int: agent ID.
+        """
         return self.order.agent_id
 
     @property
     def market_id(self) -> int:
+        """getter for market ID.
+
+        Returns:
+            int: market ID.
+        """
         return self.order.market_id
 
     def check_system_acceptable(self, agent_id: int) -> None:
+        """check system acceptable. (Usually, markets automatically check it.)
+
+        Args:
+            agent_id (int): agent ID.
+
+        Returns:
+            None
+        """
         if agent_id != self.order.agent_id:
             raise AttributeError("canceling other's order")
         if self.placed_at is not None:

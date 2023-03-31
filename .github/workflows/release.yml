@@ -37,7 +37,7 @@ jobs:
       max-parallel: 5
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.7, 3.8, 3.9, "3.10", "3.11"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
         exclude:
           - platform: windows-latest
             python-version: "3.11"
@@ -161,6 +161,8 @@ jobs:
         draft: false
         prerelease: false
         body: |
+          ${{ github.event.pull_request.body }}
+          
           This release is automatically generated.
           Please see the pull request.
           [${{ github.event.pull_request.html_url }}](${{ github.event.pull_request.html_url }})
