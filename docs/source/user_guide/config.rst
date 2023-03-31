@@ -14,8 +14,8 @@ Json config
                     "withOrderExecution": false,
                     "withPrint": true,
                     "highFrequencySubmitRate": float
-				    "maxNormalOrders": int (>=0),
-				    "maxHighFrequencyOrders": int (>=0)
+                    "maxNormalOrders": int (>=0),
+                    "maxHighFrequencyOrders": int (>=0)
                 },
                 {	"sessionName": 1,
                     "iterationSteps": 500,
@@ -23,8 +23,8 @@ Json config
                     "withOrderExecution": true,
                     "withPrint": true,
                     "highFrequencySubmitRate": float
-				    "maxNormalOrders": int (>=0),
-				    "maxHighFrequencyOrders": int (>=0)
+                    "maxNormalOrders": int (>=0),
+                    "maxHighFrequencyOrders": int (>=0)
                     "events": ["FundamentalPriceShock"]
                 }
             ],
