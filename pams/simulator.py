@@ -236,7 +236,7 @@ class Simulator:
             self._update_time_on_market(market=market)
 
     def _update_agents_for_execution(
-        self, execution_logs: List["ExecutionLog"]  # type: ignore
+        self, execution_logs: List["ExecutionLog"]  # type: ignore  # NOQA
     ) -> None:
         """update agents for execution. (Usually, this is called from runner.)
 
@@ -281,7 +281,7 @@ class Simulator:
                 return False
         return True
 
-    def _trigger_event_before_order(self, order: "Order") -> None:  # type: ignore
+    def _trigger_event_before_order(self, order: "Order") -> None:  # type: ignore  # NOQA
         """trigger event before order. (Usually, this is called from runner.)
 
         Args:
@@ -300,7 +300,7 @@ class Simulator:
         for event_hook in target_event_hooks:
             event_hook.event.hooked_before_order(simulator=self, order=order)
 
-    def _trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore
+    def _trigger_event_after_order(self, order_log: "OrderLog") -> None:  # type: ignore  # NOQA
         """trigger event after order. (Usually, this is called from runner.)
 
         Args:
@@ -319,7 +319,7 @@ class Simulator:
         for event_hook in target_event_hooks:
             event_hook.event.hooked_after_order(simulator=self, order_log=order_log)
 
-    def _trigger_event_before_cancel(self, cancel: "Cancel") -> None:  # type: ignore
+    def _trigger_event_before_cancel(self, cancel: "Cancel") -> None:  # type: ignore  # NOQA
         """trigger event before cancel. (Usually, this is called from runner.)
 
         Args:
@@ -338,7 +338,7 @@ class Simulator:
         for event_hook in target_event_hooks:
             event_hook.event.hooked_before_cancel(simulator=self, cancel=cancel)
 
-    def _trigger_event_after_cancel(self, cancel_log: "CancelLog") -> None:  # type: ignore
+    def _trigger_event_after_cancel(self, cancel_log: "CancelLog") -> None:  # type: ignore  # NOQA
         """trigger event after cancel. (Usually, this is called from runner.)
 
         Args:
@@ -357,7 +357,7 @@ class Simulator:
         for event_hook in target_event_hooks:
             event_hook.event.hooked_after_cancel(simulator=self, cancel_log=cancel_log)
 
-    def _trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore
+    def _trigger_event_after_execution(self, execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
         """trigger event after execution. (Usually, this is called from runner.)
 
         Args:

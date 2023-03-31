@@ -14,7 +14,7 @@ class Session:
         session_id: int,
         prng: random.Random,
         session_start_time: int,
-        simulator: "Simulator",  # type: ignore
+        simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
@@ -40,7 +40,7 @@ class Session:
         self.session_id: int = session_id
         self.name: str = name
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore
+        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
         self.iteration_steps: int = 0
@@ -52,7 +52,7 @@ class Session:
         self.high_frequency_submission_rate: float = 1.0
         self.session_start_time: int = session_start_time
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup session configuration from setting format.
 
         Args:
