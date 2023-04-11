@@ -84,6 +84,13 @@ class SequentialRunner(Runner):
         i_market = 0
         for name in market_type_names:
             market_settings: Dict = self.settings[name]
+            market_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=market_settings,
+                excludes_fields=["from", "to"],
+            )
+            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
             n_markets = 1
             id_from = 0
             id_to = 0
@@ -107,12 +114,6 @@ class SequentialRunner(Runner):
                 prefix = market_settings["prefix"]
             else:
                 prefix = name + ("-" if n_markets > 1 else "")
-            market_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=market_settings,
-                excludes_fields=["numMarkets", "from", "to", "prefix"],
-            )
             if "class" not in market_settings:
                 raise ValueError(f"class is not defined for {name}")
             market_class: Type[Market] = find_class(
@@ -170,6 +171,13 @@ class SequentialRunner(Runner):
         i_agent = 0
         for name in agent_type_names:
             agent_settings: Dict = self.settings[name]
+            agent_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=agent_settings,
+                excludes_fields=["from", "to"],
+            )
+            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
             n_agents = 1
             id_from = 0
             id_to = 0
@@ -193,12 +201,7 @@ class SequentialRunner(Runner):
                 prefix = agent_settings["prefix"]
             else:
                 prefix = name + ("-" if n_agents > 1 else "")
-            agent_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=agent_settings,
-                excludes_fields=["numAgents", "from", "to", "prefix"],
-            )
+
             if "class" not in agent_settings:
                 raise ValueError(f"class is not defined for {name}")
             agent_class: Type[Agent] = find_class(
