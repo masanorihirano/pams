@@ -64,6 +64,13 @@ class EventHook:
         )
         self.specific_instance: Optional[object] = specific_instance
 
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | hook_type={self.hook_type}, "
+            f"is_before={self.is_before}, time={self.time}, event={self.event}, specific_class={self.specific_class}, "
+            f"specific_instance={self.specific_instance}>"
+        )
+
 
 class EventABC(ABC):
     """event base class (ABC class).
@@ -100,6 +107,12 @@ class EventABC(ABC):
         self.simulator = simulator
         self.name: str = name
         self.session = session
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.event_id}, name={self.name}, "
+            f"session={self.session}>"
+        )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         """event setup. Usually be called from simulator/runner automatically.

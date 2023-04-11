@@ -67,6 +67,12 @@ class Market:
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
 
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.market_id}, name={self.name}, "
+            f"tick_size={self.tick_size}, outstanding_shares={self.outstanding_shares}"
+        )
+
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup market configuration from setting format.
 

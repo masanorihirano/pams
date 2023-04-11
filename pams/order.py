@@ -147,16 +147,11 @@ class Order:
         else:
             return self.placed_at + self.ttl < time
 
-    def extra_repr(self) -> str:
-        """string representation of extra information for this class.
-
-        Returns:
-            str: string representation of extra information.
-        """
+    def __repr__(self) -> str:
         return (
-            f"id={self.order_id}, kind={self.kind}, is_buy={self.is_buy}, price={self.price}, volume={self.volume}, "
-            + f"agent={self.agent_id}, market={self.market_id}, placed_at={self.placed_at}, ttl={self.ttl}, "
-            + f"is_canceled={self.is_canceled}"
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.order_id}, kind={self.kind}, "
+            f"is_buy={self.is_buy}, price={self.price}, volume={self.volume}, agent={self.agent_id}, market={self.market_id}, "
+            f"placed_at={self.placed_at}, ttl={self.ttl}, is_canceled={self.is_canceled}>"
         )
 
     def __gt__(self, other: object) -> bool:
@@ -224,6 +219,9 @@ class Cancel:
         """
         self.order: Order = order
         self.placed_at: Optional[int] = placed_at
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__module__}.{self.__class__.__name__} | placed_at={self.placed_at}, order={self.order}>"
 
     @property
     def agent_id(self) -> int:

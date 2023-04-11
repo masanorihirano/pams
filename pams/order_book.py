@@ -24,6 +24,9 @@ class OrderBook:
         self.is_buy = is_buy
         self.expire_time_list: Dict[int, List[Order]] = {}
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__module__}.{self.__class__.__name__} | is_buy={self.is_buy}>"
+
     def add(self, order: Order) -> None:
         """add the book of order.
 
