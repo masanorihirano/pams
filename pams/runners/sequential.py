@@ -418,8 +418,6 @@ class SequentialRunner(Runner):
         Returns:
             List[List[Union[Order, Cancel]]]: order lists.
         """
-        agents = self.simulator.high_frequency_agents
-        agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
         all_orders: List[List[Union[Order, Cancel]]] = []
         for orders in sequential_orders:
@@ -457,6 +455,8 @@ class SequentialRunner(Runner):
                 continue
 
             n_high_freq_orders = 0
+            agents = self.simulator.high_frequency_agents
+            agents = self._prng.sample(agents, len(agents))
             for agent in agents:
                 if n_high_freq_orders >= session.max_high_frequency_orders:
                     break
