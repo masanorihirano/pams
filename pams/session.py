@@ -53,6 +53,16 @@ class Session:
         self.high_frequency_submission_rate: float = 1.0
         self.session_start_time: int = session_start_time
 
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.session_id}, name={self.name}, "
+            f"iteration_steps={self.iteration_steps}, session_start_time={self.session_start_time}, "
+            f"max_normal_orders={self.max_normal_orders}, max_high_frequency_orders={self.max_high_frequency_orders}, "
+            f"with_order_placement={self.with_order_placement}, with_order_execution={self.with_order_execution}, "
+            f"high_frequency_submission_rate={self.high_frequency_submission_rate}, with_print={self.with_print},"
+            f"logger={self.logger.__str__()}>"
+        )
+
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup session configuration from setting format.
 

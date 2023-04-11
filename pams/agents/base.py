@@ -64,6 +64,12 @@ class Agent(ABC):
         self.sim: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, name={self.name}, "
+            f"logger={self.logger}>"
+        )
+
     def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore
         """agent setup. Usually be called from simulator/runner automatically.
 
@@ -239,18 +245,3 @@ class Agent(ABC):
             None
         """
         self.cash_amount += delta
-
-    def __repr__(self) -> str:
-        """string representation of agent class.
-
-        Returns:
-            str: string representation of this class.
-        """
-        return (
-            self.__class__.__name__
-            + str(id)
-            + ","
-            + str(self.cash_amount)
-            + ","
-            + str(self.asset_volumes)
-        )
