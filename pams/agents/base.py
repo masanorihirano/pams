@@ -33,7 +33,7 @@ class Agent(ABC):
         self,
         agent_id: int,
         prng: random.Random,
-        simulator: "Simulator",  # type: ignore
+        simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
@@ -61,7 +61,7 @@ class Agent(ABC):
         self.asset_volumes: Dict[int, int] = {}
         self.cash_amount: float = 0
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore
+        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
     def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore

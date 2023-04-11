@@ -1,6 +1,5 @@
 import os
 import random
-import time
 from io import TextIOWrapper
 from typing import Any
 from typing import Callable
@@ -38,6 +37,8 @@ from .base import Runner
 
 
 class SequentialRunner(Runner):
+    """Sequential runner class."""
+
     def __init__(
         self,
         settings: Union[Dict, TextIOWrapper, os.PathLike, str],
@@ -45,14 +46,41 @@ class SequentialRunner(Runner):
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
     ):
+        """initialize.
+
+        Args:
+            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
+            prng (random.Random, Optional): pseudo random number generator for this runner.
+            logger (Logger, Optional): logger instance.
+            simulator_class (Type[Simulator]): type of simulator.
+
+        Returns:
+            None
+        """
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
 
     @staticmethod
     def judge_hft_or_not(agent: Agent) -> bool:
+        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
+
+        Args:
+            agent (Agent): agent instance.
+
+        Returns:
+            bool: whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or not.
+        """
         return isinstance(agent, HighFrequencyAgent)
 
     def _generate_markets(self, market_type_names: List[str]) -> None:
+        """generate markets. (Internal method)
+
+        Args:
+            market_type_names (List[str]): name list of market type.
+
+        Returns:
+            None
+        """
         i_market = 0
         for name in market_type_names:
             market_settings: Dict = self.settings[name]
@@ -131,6 +159,14 @@ class SequentialRunner(Runner):
                 )
 
     def _generate_agents(self, agent_type_names: List[str]) -> None:
+        """generate agents. (Internal method)
+
+        Args:
+            agent_type_names (List[str]): name list of agent type.
+
+        Returns:
+            None
+        """
         i_agent = 0
         for name in agent_type_names:
             agent_settings: Dict = self.settings[name]
@@ -208,6 +244,7 @@ class SequentialRunner(Runner):
                 )
 
     def _set_fundamental_correlation(self) -> None:
+        """set fundamental correlation. (Internal method)"""
         if "fundamentalCorrelations" in self.settings["simulation"]:
             corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
             for key, value in corr_settings.items():
@@ -233,6 +270,7 @@ class SequentialRunner(Runner):
                     )
 
     def _generate_sessions(self) -> None:
+        """generate sessions. (Internal method)"""
         session_settings: Dict = self.settings["simulation"]["sessions"]
         if not isinstance(session_settings, list):
             raise ValueError("simulation.sessions must be list[dict]")
@@ -296,6 +334,7 @@ class SequentialRunner(Runner):
                     self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
+        """runner setup. (Internal method)"""
         if "simulation" not in self.settings:
             raise ValueError("simulation is required in json file")
 
@@ -332,7 +371,18 @@ class SequentialRunner(Runner):
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
-    def _collect_orders(self, session: Session) -> List[List[Union[Order, Cancel]]]:
+    def _collect_orders_from_normal_agents(
+        self, session: Session
+    ) -> List[List[Union[Order, Cancel]]]:
+        """collect orders from normal_agents. (Internal method)
+        orders are corrected until the total number of orders reaches max_normal_orders
+
+        Args:
+            session (Session): session.
+
+        Returns:
+            List[List[Union[Order, Cancel]]]: orders lists.
+        """
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         n_orders = 0
@@ -355,6 +405,16 @@ class SequentialRunner(Runner):
     def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
+        """handle orders. (Internal method)
+        processing local orders and correct and process the orders from high frequency agents.
+
+        Args:
+            session (Session): session.
+            local_orders (List[List[Union[Order, Cancel]]]): local orders.
+
+        Returns:
+            List[List[Union[Order, Cancel]]]: order lists.
+        """
         agents = self.simulator.high_frequency_agents
         agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
@@ -417,8 +477,8 @@ class SequentialRunner(Runner):
                             "spoofing order is not allowed. please check agent_id in order"
                         )
                     all_orders.append(high_freq_orders)
-                    n_high_freq_orders += 1
                     for order in high_freq_orders:
+                        n_high_freq_orders += 1
                         market = self.simulator.id2market[order.market_id]
                         if isinstance(order, Order):
                             self.simulator._trigger_event_before_order(order=order)
@@ -444,12 +504,28 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _update_markets(self, session: Session) -> None:
-        local_orders: List[List[Union[Order, Cancel]]] = self._collect_orders(
-            session=session
-        )
+        """update markets. (Internal method)
+
+        Args:
+            session (Session): session.
+
+        Returns:
+            None
+        """
+        local_orders: List[
+            List[Union[Order, Cancel]]
+        ] = self._collect_orders_from_normal_agents(session=session)
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
+        """iterate market updates. (Internal method)
+
+        Args:
+            session (Session): session.
+
+        Returns:
+            None
+        """
         markets: List[Market] = self.simulator.markets
         for market in markets:
             market._is_running = session.with_order_execution
@@ -474,6 +550,7 @@ class SequentialRunner(Runner):
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
 
     def _run(self) -> None:
+        """main process. (Internal method)"""
         if self.logger is not None:
             log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
             log.read_and_write(logger=self.logger)

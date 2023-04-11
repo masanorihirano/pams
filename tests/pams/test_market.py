@@ -1,6 +1,8 @@
 import math
 import random
 import time
+from typing import List
+from typing import Optional
 
 import pytest
 
@@ -117,6 +119,139 @@ class TestMarket:
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0, 1, 0]
         assert m.get_n_sell_order() == 0
+
+    def test_setup(self) -> None:
+        m = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m.setup(
+            settings={
+                "tickSize": 0.001,
+                "outstandingShares": 100,
+                "marketPrice": 300.0,
+                "fundamentalPrice": 500.0,
+            }
+        )
+        with pytest.raises(ValueError):
+            m.setup(
+                settings={
+                    "outstandingShares": 100,
+                    "marketPrice": 300.0,
+                    "fundamentalPrice": 500.0,
+                }
+            )
+        with pytest.raises(ValueError):
+            m.setup(
+                settings={
+                    "tickSize": 0.001,
+                    "outstandingShares": 100.0,
+                    "marketPrice": 300.0,
+                    "fundamentalPrice": 500.0,
+                }
+            )
+        with pytest.raises(ValueError):
+            m.setup(settings={"tickSize": 0.001, "outstandingShares": 100})
+        m.setup(
+            settings={
+                "tickSize": 0.001,
+                "marketPrice": 300.0,
+                "fundamentalPrice": 500.0,
+            }
+        )
+        m.setup(settings={"tickSize": 0.001, "fundamentalPrice": 500.0})
+        m.setup(settings={"tickSize": 0.001, "marketPrice": 300.0})
+
+    def test_extract_sequential_data_by_time(self) -> None:
+        m = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        with pytest.raises(AssertionError):
+            m._extract_sequential_data_by_time(
+                times=[1, 2], parameters=[0, 1, 2, 3], allow_none=False
+            )
+        m.time = 1
+        with pytest.raises(AssertionError):
+            m._extract_sequential_data_by_time(
+                times=[1, 2], parameters=[0, 1, 2, 3], allow_none=False
+            )
+        m.time = 2
+        m._extract_sequential_data_by_time(
+            times=[1, 2], parameters=[0, 1, 2, 3], allow_none=False
+        )
+        m.time = 4
+        results: List[Optional[int]] = m._extract_sequential_data_by_time(
+            times=[1, 2], parameters=[0, 1, 2, 3], allow_none=False
+        )
+        expected: List[Optional[int]] = [1, 2]
+        assert results == expected
+        results = m._extract_sequential_data_by_time(
+            times=[1, 2], parameters=[0, 1, 2, 3], allow_none=True
+        )
+        expected = [1, 2]
+        assert results == expected
+        with pytest.raises(AssertionError):
+            m._extract_sequential_data_by_time(
+                times=[1, 2], parameters=[0, 1, None, 3], allow_none=False
+            )
+        results = m._extract_sequential_data_by_time(
+            times=[1, 2], parameters=[0, 1, None, 3], allow_none=True
+        )
+        expected = [1, None]
+        assert results == expected
+
+    def test_extract_data_by_time(self) -> None:
+        m = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        with pytest.raises(AssertionError):
+            m._extract_data_by_time(time=1, parameters=[0, 1, 2, 3], allow_none=False)
+        m.time = 1
+        result: Optional[int] = m._extract_data_by_time(
+            time=1, parameters=[0, 1, 2, 3], allow_none=False
+        )
+        expected: Optional[int] = 1
+        assert result == expected
+        m.time = 3
+        result = m._extract_data_by_time(
+            time=1, parameters=[0, 1, 2, 3], allow_none=True
+        )
+        expected = 1
+        assert result == expected
+        with pytest.raises(AssertionError):
+            m._extract_data_by_time(
+                time=2, parameters=[0, 1, None, 3], allow_none=False
+            )
+        result = m._extract_data_by_time(
+            time=2, parameters=[0, 1, None, 3], allow_none=True
+        )
+        expected = None
+        assert result == expected
+
+    def test_get_time(self) -> None:
+        m = Market(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        assert m.get_time() == -1
+        m._update_time(next_fundamental_price=300)
+        assert m.get_time() == 0
+        m.time = 3
+        assert m.get_time() == 3
 
     def test_execution(self) -> None:
         random.seed(42)

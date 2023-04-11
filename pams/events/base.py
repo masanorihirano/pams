@@ -79,8 +79,8 @@ class EventABC(ABC):
         self,
         event_id: int,
         prng: random.Random,
-        session: "Session",  # type: ignore
-        simulator: "Simulator",  # type: ignore
+        session: "Session",  # type: ignore  # NOQA
+        simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
     ) -> None:
         """event initialization. Usually be called from simulator/runner automatically.
@@ -123,7 +123,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore
+    def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         """This method is hooked before order placements if you set the event hook.
         Please be careful that the order haven't yet been accepted by markets and it could be leakage of order information.
 
@@ -136,7 +136,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore
+    def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
         """This method is hooked after order placements if you set the event hook.
         Please be careful that the order haven't yet been executed if it could be executed immediately.
 
@@ -149,7 +149,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore
+    def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore  # NOQA
         """This method is hooked before order cancellations if you set the event hook.
         Please be careful that the cancel order haven't yet been executed.
 
@@ -162,7 +162,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_cancel(self, simulator: "Simulator", cancel_log: "CancelLog") -> None:  # type: ignore
+    def hooked_after_cancel(self, simulator: "Simulator", cancel_log: "CancelLog") -> None:  # type: ignore  # NOQA
         """This method is hooked after order cancellations if you set the event hook.
 
         .. seealso:
@@ -174,7 +174,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore
+    def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
         """This method is hooked after order executions if you set the event hook.
 
         .. seealso:
@@ -186,7 +186,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_before_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore
+    def hooked_before_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore  # NOQA
         """This method is hooked before session beginnings if you set the event hook.
 
         .. seealso:
@@ -198,7 +198,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore
+    def hooked_after_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore  # NOQA
         """This method is hooked after session ends if you set the event hook.
 
         .. seealso:
@@ -210,7 +210,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
+    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         """This method is hooked at each step before market processing if you set the event hook.
 
         .. seealso:
@@ -222,7 +222,7 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
+    def hooked_after_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         """This method is hooked at each step after market processing if you set the event hook.
 
         .. seealso:

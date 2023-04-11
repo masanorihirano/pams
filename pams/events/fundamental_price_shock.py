@@ -13,13 +13,13 @@ class FundamentalPriceShock(EventABC):
     """
 
     target_market_name: str
-    target_market: "Market"  # type: ignore
+    target_market: "Market"  # type: ignore  # NOQA
     trigger_time: int
     price_change_rate: float
     is_enabled: bool = True
     shock_time_length: int = 1
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
 
         Args:
@@ -48,16 +48,19 @@ class FundamentalPriceShock(EventABC):
         self.target_market = self.simulator.name2market[self.target_market_name]
 
     def hook_registration(self) -> List[EventHook]:
-        event_hook = EventHook(
-            event=self,
-            hook_type="market",
-            is_before=True,
-            time=[self.trigger_time + i for i in range(self.shock_time_length)],
-            specific_instance=self.target_market,
-        )
-        return [event_hook]
+        if self.is_enabled:
+            event_hook = EventHook(
+                event=self,
+                hook_type="market",
+                is_before=True,
+                time=[self.trigger_time + i for i in range(self.shock_time_length)],
+                specific_instance=self.target_market,
+            )
+            return [event_hook]
+        else:
+            return []
 
-    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
+    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         time: int = market.get_time()
         if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
             raise AssertionError
