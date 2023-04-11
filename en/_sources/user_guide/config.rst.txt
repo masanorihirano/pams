@@ -63,6 +63,7 @@ Json config
         "Agents": {
             "class": "string required",
             "numAgents": 100,
+            "from": 0, "to": 99, # cannot be extended
 
             "markets": ["SpotMarket-N"],
             "assetVolume": 50,
