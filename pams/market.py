@@ -798,10 +798,19 @@ class Market:
             if None not in sell_book or None not in buy_book:
                 raise AssertionError
             if sell_book[None] != buy_book[None]:
-                return True
+                if sell_book[None] < buy_book[None]:
+                    additional_required_orders = buy_book[None] - sell_book[None]
+                    sell_book.pop(None)
+                    return len(sell_book) > additional_required_orders
+                else:
+                    additional_required_orders = sell_book[None] - buy_book[None]
+                    buy_book.pop(None)
+                    return len(buy_book) > additional_required_orders
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)
+                if len(sell_book) == 0 or len(buy_book) == 0:
+                    return False
                 return min(list(cast(Dict[float, int], sell_book).keys())) <= max(
                     list(cast(Dict[float, int], buy_book).keys())
                 )
@@ -834,6 +843,8 @@ class Market:
                 buy_order = heapq.heappop(self.buy_order_book.priority_queue)
                 popped_buy_orders.append(buy_order)
                 buy_order_volume_tmp = buy_order.volume
+                if buy_order_volume_tmp == 0:
+                    raise AssertionError
             if sell_order_volume_tmp == 0:
                 if len(self.sell_order_book.priority_queue) == 0:
                     break
@@ -861,7 +872,11 @@ class Market:
                 if buy_order.price is None and sell_order.price is None:
                     pending.append((volume, buy_order, sell_order))
                 else:
-                    price = buy_order.price or sell_order.price
+                    price = (
+                        buy_order.price
+                        if buy_order.price is not None
+                        else sell_order.price
+                    )
                     pending.append((volume, buy_order, sell_order))
             else:
                 if buy_order.placed_at == sell_order.placed_at:
