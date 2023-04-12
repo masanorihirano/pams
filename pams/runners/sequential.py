@@ -402,6 +402,8 @@ class SequentialRunner(Runner):
                         "spoofing order is not allowed. please check agent_id in order"
                     )
                 all_orders.append(orders)
+                # TODO: currently the original impl is used
+                # n_orders += len(orders)
                 n_orders += 1
         return all_orders
 
@@ -418,10 +420,8 @@ class SequentialRunner(Runner):
         Returns:
             List[List[Union[Order, Cancel]]]: order lists.
         """
-        agents = self.simulator.high_frequency_agents
-        agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
-        all_orders: List[List[Union[Order, Cancel]]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
         for orders in sequential_orders:
             for order in orders:
                 if not session.with_order_placement:
@@ -457,6 +457,8 @@ class SequentialRunner(Runner):
                 continue
 
             n_high_freq_orders = 0
+            agents = self.simulator.high_frequency_agents
+            agents = self._prng.sample(agents, len(agents))
             for agent in agents:
                 if n_high_freq_orders >= session.max_high_frequency_orders:
                     break
@@ -480,8 +482,10 @@ class SequentialRunner(Runner):
                             "spoofing order is not allowed. please check agent_id in order"
                         )
                     all_orders.append(high_freq_orders)
+                    # TODO: currently the original impl is used
+                    n_high_freq_orders += 1
+                    # n_high_freq_orders += len(high_freq_orders)
                     for order in high_freq_orders:
-                        n_high_freq_orders += 1
                         market = self.simulator.id2market[order.market_id]
                         if isinstance(order, Order):
                             self.simulator._trigger_event_before_order(order=order)

@@ -154,15 +154,7 @@ class Order:
             f"placed_at={self.placed_at}, ttl={self.ttl}, is_canceled={self.is_canceled}>"
         )
 
-    def __gt__(self, other: object) -> bool:
-        """compare between sell and buy orders in terms of order priority.
-
-        Args:
-            other (object): the order for comparison.
-
-        Returns:
-            bool: this order is not prior than the other
-        """
+    def _check_comparability(self, other: object) -> None:
         if self.__class__ != other.__class__:
             raise NotImplementedError(
                 f"not supporting the comparison between Order and {other.__class__}"
@@ -173,22 +165,49 @@ class Order:
                 "not supporting the comparison between sell and buy orders"
             )
 
+    def __eq__(self, other: object) -> bool:
+        self._check_comparability(other)
+        other = cast(Order, other)
+        return (
+            self.order_id == other.order_id
+            and self.price == other.price
+            and self.placed_at == other.placed_at
+            and self.is_buy == other.is_buy
+            and self.kind == other.kind
+        )
+
+    def _gt_lt(self, other: object, gt: bool = True) -> bool:
+        # high priority is less
+        self._check_comparability(other)
+        other = cast(Order, other)
+
         def _compare_placed_at(a: Order, b: Order) -> bool:
             if a.placed_at is None and b.placed_at is None:
                 raise ValueError("orders still not placed cannot be compared")
             elif a.placed_at is None:
-                return True
+                return True if gt else False
             elif b.placed_at is None:
-                return False
+                return False if gt else True
             else:
-                return a.placed_at > b.placed_at
+                if a.placed_at != b.placed_at:
+                    return (
+                        (a.placed_at > b.placed_at)
+                        if gt
+                        else (a.placed_at < b.placed_at)
+                    )
+                else:
+                    if a.order_id is None or b.order_id is None:
+                        raise ValueError("orders still not placed cannot be compared")
+                    return (
+                        (a.order_id > b.order_id) if gt else (a.order_id < b.order_id)
+                    )
 
         if self.kind == MARKET_ORDER and other.kind == MARKET_ORDER:
             return _compare_placed_at(a=self, b=other)
         elif self.kind == MARKET_ORDER:
-            return False
+            return False if gt else True
         elif other.kind == MARKET_ORDER:
-            return True
+            return True if gt else False
         else:
             if self.kind != LIMIT_ORDER or other.kind != LIMIT_ORDER:
                 raise NotImplementedError
@@ -197,11 +216,34 @@ class Order:
                     raise AssertionError
                 if self.price != other.price:
                     if self.is_buy:
-                        return self.price < other.price
+                        return (
+                            (self.price < other.price)
+                            if gt
+                            else (self.price > other.price)
+                        )
                     else:
-                        return self.price > other.price
+                        return (
+                            (self.price > other.price)
+                            if gt
+                            else (self.price < other.price)
+                        )
                 else:
                     return _compare_placed_at(a=self, b=other)
+
+    def __gt__(self, other: object) -> bool:
+        return self._gt_lt(other, gt=True)
+
+    def __lt__(self, other: object) -> bool:
+        return self._gt_lt(other, gt=False)
+
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
+
+    def __le__(self, other: object) -> bool:
+        return self.__eq__(other) or self.__lt__(other)
+
+    def __ge__(self, other: object) -> bool:
+        return self.__eq__(other) or self.__gt__(other)
 
 
 class Cancel:
