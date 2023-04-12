@@ -892,6 +892,7 @@ class Market:
                 pending.append((volume, buy_order, sell_order))
         if price is None:
             raise AssertionError
+        # TODO: faster impl
         self.buy_order_book.priority_queue = [
             *popped_buy_orders,
             *self.buy_order_book.priority_queue,
@@ -900,6 +901,8 @@ class Market:
             *popped_sell_orders,
             *self.sell_order_book.priority_queue,
         ]
+        heapq.heapify(self.buy_order_book.priority_queue)
+        heapq.heapify(self.sell_order_book.priority_queue)
         logs: List[ExecutionLog] = list(
             map(
                 lambda x: self._execute_orders(

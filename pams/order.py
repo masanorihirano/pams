@@ -169,7 +169,8 @@ class Order:
         self._check_comparability(other)
         other = cast(Order, other)
         return (
-            self.price == other.price
+            self.order_id == other.order_id
+            and self.price == other.price
             and self.placed_at == other.placed_at
             and self.is_buy == other.is_buy
             and self.kind == other.kind
@@ -188,9 +189,18 @@ class Order:
             elif b.placed_at is None:
                 return False if gt else True
             else:
-                return (
-                    (a.placed_at > b.placed_at) if gt else (a.placed_at < b.placed_at)
-                )
+                if a.placed_at != b.placed_at:
+                    return (
+                        (a.placed_at > b.placed_at)
+                        if gt
+                        else (a.placed_at < b.placed_at)
+                    )
+                else:
+                    if a.order_id is None or b.order_id is None:
+                        raise ValueError("orders still not placed cannot be compared")
+                    return (
+                        (a.order_id > b.order_id) if gt else (a.order_id < b.order_id)
+                    )
 
         if self.kind == MARKET_ORDER and other.kind == MARKET_ORDER:
             return _compare_placed_at(a=self, b=other)

@@ -98,8 +98,22 @@ class TestOrder:
         o2.placed_at = 2
         assert o < o2
 
-        o = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
-        o2 = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        o = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=1,
+            order_id=1,
+        )
+        o2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=1,
+            order_id=1,
+        )
         o.placed_at = 1
         o2.placed_at = 1
         assert (o > o2) is False
@@ -113,10 +127,22 @@ class TestOrder:
         assert o > o2
 
         o = Order(
-            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.0
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
         )
         o2 = Order(
-            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.0
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
         )
         o.placed_at = 1
         o2.placed_at = 1
@@ -128,10 +154,22 @@ class TestOrder:
         assert o > o2
 
         o = Order(
-            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.0
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
         )
         o2 = Order(
-            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.0
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
         )
         o.placed_at = 1
         o2.placed_at = 1
