@@ -83,7 +83,9 @@ class Agent(ABC):
         """
         if "cashAmount" not in settings:
             raise ValueError("cashAmount is required property of agent settings")
-        self.cash_amount = settings["cashAmount"]
+        self.cash_amount = JsonRandom(prng=self.prng).random(
+            json_value=settings["cashAmount"]
+        )
         if "assetVolume" not in settings:
             raise ValueError("cashAmount is required property of agent settings")
 
@@ -104,7 +106,7 @@ class Agent(ABC):
             int: asset volume for the specified market ID.
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
         return self.asset_volumes[market_id]
 
     def get_cash_amount(self) -> float:
@@ -178,7 +180,9 @@ class Agent(ABC):
             None
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
+        if not isinstance(volume, int):
+            raise ValueError("volume have to be int")
         self.asset_volumes[market_id] = volume
 
     def set_cash_amount(self, cash_amount: float) -> None:
@@ -201,6 +205,8 @@ class Agent(ABC):
         Returns:
             None
         """
+        if self.is_market_accessible(market_id=market_id):
+            raise ValueError(f"market {market_id} is already accessible")
         self.asset_volumes[market_id] = 0
 
     @abstractmethod
@@ -232,7 +238,9 @@ class Agent(ABC):
             None
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
+        if not isinstance(delta, int):
+            raise ValueError("delta have to be int")
         self.asset_volumes[market_id] += delta
 
     def update_cash_amount(self, delta: float) -> None:
