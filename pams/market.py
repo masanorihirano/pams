@@ -1,3 +1,4 @@
+import heapq
 import math
 import random
 import warnings
@@ -732,8 +733,7 @@ class Market:
         """
         if order.market_id != self.market_id:
             raise ValueError("order is not for this market")
-        (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
-        if order.placed_at is None:
+        if order.placed_at is not None:
             raise AssertionError
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
@@ -747,6 +747,9 @@ class Market:
             )
         order.order_id = self._next_order_id
         self._next_order_id += 1
+        (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
+        if order.placed_at != self.time:
+            raise AssertionError
         self._update_market_price()
         if order.is_buy:
             self._n_buy_orders[self.time] += 1
@@ -756,7 +759,7 @@ class Market:
         log: OrderLog = OrderLog(
             order_id=order.order_id,
             market_id=order.market_id,
-            time=order.placed_at,
+            time=cast(int, order.placed_at),
             agent_id=order.agent_id,
             is_buy=order.is_buy,
             kind=order.kind,
@@ -812,10 +815,12 @@ class Market:
         if not self.remain_executable_orders():
             return []
         pending: List[Tuple[int, Order, Order]] = []
-        buy_order_id_tmp: int = 0
-        sell_order_id_tmp: int = -1
 
-        buy_order: Order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
+        popped_buy_orders: List[Order] = []
+        popped_sell_orders: List[Order] = []
+
+        buy_order: Order = heapq.heappop(self.buy_order_book.priority_queue)
+        popped_buy_orders.append(buy_order)
         sell_order: Order
         buy_order_volume_tmp: int = buy_order.volume
         sell_order_volume_tmp: int = 0
@@ -824,19 +829,19 @@ class Market:
             if buy_order_volume_tmp != 0 and sell_order_volume_tmp != 0:
                 raise AssertionError
             if buy_order_volume_tmp == 0:
-                buy_order_id_tmp += 1
-                if buy_order_id_tmp >= len(self.buy_order_book.priority_queue.queue):
+                if len(self.buy_order_book.priority_queue) == 0:
                     break
-                buy_order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
+                buy_order = heapq.heappop(self.buy_order_book.priority_queue)
+                popped_buy_orders.append(buy_order)
                 buy_order_volume_tmp = buy_order.volume
             if sell_order_volume_tmp == 0:
-                sell_order_id_tmp += 1
-                if sell_order_id_tmp >= len(self.sell_order_book.priority_queue.queue):
+                if len(self.sell_order_book.priority_queue) == 0:
                     break
-                sell_order = self.sell_order_book.priority_queue.queue[
-                    sell_order_id_tmp
-                ]
+                sell_order = heapq.heappop(self.sell_order_book.priority_queue)
+                popped_sell_orders.append(sell_order)
                 sell_order_volume_tmp = sell_order.volume
+                if sell_order_volume_tmp == 0:
+                    raise AssertionError
             if (
                 buy_order.price is not None
                 and sell_order.price is not None
@@ -844,6 +849,8 @@ class Market:
             ):
                 break
             volume = min(buy_order_volume_tmp, sell_order_volume_tmp)
+            if volume == 0:
+                raise AssertionError
             buy_order_volume_tmp -= volume
             sell_order_volume_tmp -= volume
             if buy_order_volume_tmp < 0:
@@ -870,6 +877,14 @@ class Market:
                 pending.append((volume, buy_order, sell_order))
         if price is None:
             raise AssertionError
+        self.buy_order_book.priority_queue = [
+            *popped_buy_orders,
+            *self.buy_order_book.priority_queue,
+        ]
+        self.sell_order_book.priority_queue = [
+            *popped_sell_orders,
+            *self.sell_order_book.priority_queue,
+        ]
         logs: List[ExecutionLog] = list(
             map(
                 lambda x: self._execute_orders(
@@ -881,6 +896,8 @@ class Market:
                 pending,
             )
         )
+        if self.remain_executable_orders():
+            raise AssertionError
         if self.logger is not None:
             self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs

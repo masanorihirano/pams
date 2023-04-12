@@ -1,4 +1,4 @@
-from queue import PriorityQueue
+import heapq
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -19,7 +19,8 @@ class OrderBook:
         Returns:
             None
         """
-        self.priority_queue: PriorityQueue[Order] = PriorityQueue()
+        self.priority_queue: List[Order] = []
+        heapq.heapify(self.priority_queue)
         self.time: int = 0
         self.is_buy = is_buy
         self.expire_time_list: Dict[int, List[Order]] = {}
@@ -39,7 +40,7 @@ class OrderBook:
         if order.is_buy != self.is_buy:
             raise ValueError("buy/sell is incorrect")
         order.placed_at = self.time
-        self.priority_queue.put(order)
+        heapq.heappush(self.priority_queue, order)
         if order.ttl is not None:
             expiration_time = order.placed_at + order.ttl
             if expiration_time not in self.expire_time_list:
@@ -55,7 +56,9 @@ class OrderBook:
         Returns:
             None
         """
-        self.priority_queue.queue.remove(order)
+        # TODO: think better sorting
+        self.priority_queue.remove(order)
+        heapq.heapify(self.priority_queue)
         if order.placed_at is None:
             raise AssertionError("the order is not yet placed")
         if order.ttl is not None:
@@ -81,8 +84,8 @@ class OrderBook:
         Returns:
             :class:`pams.order.Order`, Optional: the order with the highest priority.
         """
-        if len(self.priority_queue.queue) > 0:
-            return self.priority_queue.queue[0]
+        if len(self.priority_queue) > 0:
+            return self.priority_queue[0]
         else:
             return None
 
@@ -92,8 +95,8 @@ class OrderBook:
         Returns:
             float, Optional: the order price with the highest priority.
         """
-        if len(self.priority_queue.queue) > 0:
-            return self.priority_queue.queue[0].price
+        if len(self.priority_queue) > 0:
+            return self.priority_queue[0].price
         else:
             return None
 
@@ -121,8 +124,10 @@ class OrderBook:
         delete_keys: List[int] = [
             key for key, value in self.expire_time_list.items() if key < self.time
         ]
+        # TODO: think better sorting in the following 3 lines
         for delete_order in delete_orders:
-            self.priority_queue.queue.remove(delete_order)
+            self.priority_queue.remove(delete_order)
+        heapq.heapify(self.priority_queue)
         for key in delete_keys:
             self.expire_time_list.pop(key)
 
@@ -151,7 +156,7 @@ class OrderBook:
         Returns:
             int: length of the order queue.
         """
-        return len(self.priority_queue.queue)
+        return len(self.priority_queue)
 
     def get_price_volume(self) -> Dict[Optional[float], int]:
         """get price and volume (order book).
@@ -160,7 +165,7 @@ class OrderBook:
             Dict[Optional[float], int]: order book dict. Dict key is order price and the value is volumes.
         """
         keys: List[Optional[float]] = list(
-            set(map(lambda x: x.price, self.priority_queue.queue))
+            set(map(lambda x: x.price, self.priority_queue))
         )
         has_market_order: bool = None in keys
         if has_market_order:
@@ -175,7 +180,7 @@ class OrderBook:
                     sum(
                         [
                             order.volume
-                            for order in self.priority_queue.queue
+                            for order in self.priority_queue
                             if order.price == key
                         ]
                     ),

@@ -402,6 +402,8 @@ class SequentialRunner(Runner):
                         "spoofing order is not allowed. please check agent_id in order"
                     )
                 all_orders.append(orders)
+                # TODO: currently the original impl is used
+                # n_orders += len(orders)
                 n_orders += 1
         return all_orders
 
@@ -480,8 +482,10 @@ class SequentialRunner(Runner):
                             "spoofing order is not allowed. please check agent_id in order"
                         )
                     all_orders.append(high_freq_orders)
+                    # TODO: currently the original impl is used
+                    n_high_freq_orders += 1
+                    # n_high_freq_orders += len(high_freq_orders)
                     for order in high_freq_orders:
-                        n_high_freq_orders += 1
                         market = self.simulator.id2market[order.market_id]
                         if isinstance(order, Order):
                             self.simulator._trigger_event_before_order(order=order)
