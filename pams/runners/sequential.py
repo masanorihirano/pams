@@ -421,7 +421,7 @@ class SequentialRunner(Runner):
             List[List[Union[Order, Cancel]]]: order lists.
         """
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
-        all_orders: List[List[Union[Order, Cancel]]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
         for orders in sequential_orders:
             for order in orders:
                 if not session.with_order_placement:

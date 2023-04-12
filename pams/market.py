@@ -880,8 +880,14 @@ class Market:
                     pending.append((volume, buy_order, sell_order))
             else:
                 if buy_order.placed_at == sell_order.placed_at:
-                    # ToDo: in the actual market, this doesn't occur
-                    price = buy_order.price
+                    if buy_order.order_id is None or sell_order.order_id is None:
+                        raise AssertionError
+                    if buy_order.order_id < sell_order.order_id:
+                        price = buy_order.price
+                    elif buy_order.order_id > sell_order.order_id:
+                        price = sell_order.price
+                    else:
+                        raise AssertionError
                 else:
                     price = (
                         buy_order.price
