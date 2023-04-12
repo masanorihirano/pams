@@ -665,6 +665,8 @@
                         <span class="s2">&quot;spoofing order is not allowed. please check agent_id in order&quot;</span>
                     <span class="p">)</span>
                 <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
+                <span class="c1"># TODO: currently the original impl is used</span>
+                <span class="c1"># n_orders += len(orders)</span>
                 <span class="n">n_orders</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">all_orders</span>
 
@@ -681,10 +683,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            List[List[Union[Order, Cancel]]]: order lists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">high_frequency_agents</span>
-        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
         <span class="n">sequential_orders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">local_orders</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_orders</span><span class="p">))</span>
-        <span class="n">all_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">all_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">sequential_orders</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">orders</span> <span class="ow">in</span> <span class="n">sequential_orders</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
@@ -720,6 +720,8 @@
                 <span class="k">continue</span>
 
             <span class="n">n_high_freq_orders</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">high_frequency_agents</span>
+            <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">n_high_freq_orders</span> <span class="o">&gt;=</span> <span class="n">session</span><span class="o">.</span><span class="n">max_high_frequency_orders</span><span class="p">:</span>
                     <span class="k">break</span>
@@ -743,8 +745,10 @@
                             <span class="s2">&quot;spoofing order is not allowed. please check agent_id in order&quot;</span>
                         <span class="p">)</span>
                     <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
+                    <span class="c1"># TODO: currently the original impl is used</span>
+                    <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># n_high_freq_orders += len(high_freq_orders)</span>
                     <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">:</span>
-                        <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="n">market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
