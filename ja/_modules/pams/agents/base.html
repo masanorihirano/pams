@@ -159,6 +159,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">About this project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../user_guide/platform.html">Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/config.html">Json config</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../user_guide/tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../user_guide/tutorials/outline.html">Outline</a></li>
 </ul>
@@ -225,6 +226,12 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/utils.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
 </ul>
 </li>
 </ul>
@@ -346,7 +353,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;cashAmount&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cashAmount is required property of agent settings&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;cashAmount&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">=</span> <span class="n">JsonRandom</span><span class="p">(</span><span class="n">prng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">)</span><span class="o">.</span><span class="n">random</span><span class="p">(</span>
+            <span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;cashAmount&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;assetVolume&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cashAmount is required property of agent settings&quot;</span><span class="p">)</span>
 
@@ -367,7 +376,7 @@
 <span class="sd">            int: asset volume for the specified market ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Agent.get_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.get_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -441,7 +450,9 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;volume have to be int&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">volume</span></div>
 
 <div class="viewcode-block" id="Agent.set_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.set_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">set_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cash_amount</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -464,6 +475,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is already accessible&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="Agent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders">[ドキュメント]</a>    <span class="nd">@abstractmethod</span>
@@ -495,7 +508,9 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;market </span><span class="si">{</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> is not accessible&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;delta have to be int&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">delta</span></div>
 
 <div class="viewcode-block" id="Agent.update_cash_amount"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.update_cash_amount">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">update_cash_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

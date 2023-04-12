@@ -37,6 +37,7 @@ Install:
    reference/logs
    reference/loggers
    reference/agents
+   reference/utils
 
 
 :ref:`genindex`

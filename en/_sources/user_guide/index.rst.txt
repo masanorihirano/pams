@@ -8,6 +8,7 @@ User Guide
    about
    install
    platform
+   config
    tutorials/index
 
 
