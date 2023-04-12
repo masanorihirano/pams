@@ -9,11 +9,15 @@ install:
 	@poetry install
 
 .PHONY: test
-test: pytest
+test: pytest doctest
 
 .PHONY: pytest
 pytest:
 	$(RUN) pytest
+
+.PHONY: doctest
+doctest:
+	$(RUN) pytest --doctest-modules $(PROJECT_NAME)
 
 .PHONY: test-cov
 test-cov:

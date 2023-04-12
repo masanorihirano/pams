@@ -44,3 +44,4 @@ jobs:
           poetry run pflake8 .
           poetry run mypy .
           poetry run pytest tests/
+          poetry run pytest --doctest-modules pams

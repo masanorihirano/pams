@@ -9,7 +9,30 @@ JsonValue = Union[Dict, List, float, int]
 
 
 class JsonRandom:
-    """random generator from json."""
+    """random generator from json.
+
+    The following direction can be used for config as randomized values:
+     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int, this automatically converted into int. This always satisfy :math:`a \leq x < b`
+     - :code:`{"const": [a]}`: constant value. Always set to a.
+     - :code:`{"uniform": [a, b]}`: same as [a, b]
+     - :code:`{"normal": [u, s]}`: normal distribution whose mean and deviation is u and s.
+     - :code:`{"expon": [lam]}`: exponential distribution whose mean and deviation is lam.
+
+    Examples:
+        >>> from pams.utils.json_random import JsonRandom
+        >>> import random
+        >>> jr = JsonRandom(prng=random.Random(42))
+        >>> [jr.random([10, 20]) for x in range(10)]
+        [16.39426798457884, 10.25010755222667, 12.750293183691193, 12.232107381488227, 17.364712141640126, 16.766994874229113, 18.921795677048454, 10.869388326294162, 14.219218196852704, 10.297972194380703]
+        >>> [jr.random({"const": [10]}) for x in range(10)]
+        [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+        >>> [jr.random({"uniform": [10, 20]}) for x in range(10)]
+        [12.186379748036034, 15.053552881033625, 10.265359696838637, 11.988376506866485, 16.49884437779523, 15.449414806032166, 12.204406220406966, 15.892656838759088, 18.094304566778266, 10.064987596780611]
+        >>> [jr.random({"normal": [0, 1]}) for x in range(10)]
+        [0.5317762204008692, -1.453545298008678, -0.3122773171445598, 0.49036253259352475, 0.8734043853794468, -0.2406296726551354, 0.3765998586879102, 0.24821344932841446, 0.7823268087036421, -1.1132222142481727]
+        >>> [jr.random({"expon": [3]}) for x in range(10)]
+        [0.642818017709456, 0.9452346835236866, 1.869586994011895, 0.08175668259806873, 2.9143451561160503, 1.7824008841046926, 0.5611413226153803, 1.4412784552296345, 0.4465202669419299, 1.6479086846872075]
+    """  # NOQA
 
     def __init__(self, prng: random.Random) -> None:
         """initialization.
@@ -78,7 +101,7 @@ class JsonRandom:
         if isinstance(json_value, dict):
             if len(json_value) != 1:
                 raise ValueError(
-                    "Multiple speficiation of distribution type: "
+                    "Multiple specification of distribution type: "
                     + json.dumps(json_value)
                 )
             if "const" in json_value:
