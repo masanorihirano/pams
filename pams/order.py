@@ -169,10 +169,10 @@ class Order:
         self._check_comparability(other)
         other = cast(Order, other)
         return (
-            self.is_buy == other.is_buy
-            and self.kind == other.kind
-            and self.price == other.price
+            self.price == other.price
             and self.placed_at == other.placed_at
+            and self.is_buy == other.is_buy
+            and self.kind == other.kind
         )
 
     def _gt_lt(self, other: object, gt: bool = True) -> bool:

@@ -56,9 +56,11 @@ class OrderBook:
         Returns:
             None
         """
-        # TODO: think better sorting
-        self.priority_queue.remove(order)
-        heapq.heapify(self.priority_queue)
+        if order == self.priority_queue[0]:
+            x = heapq.heappop(self.priority_queue)
+            assert x == order
+        else:
+            self.priority_queue.remove(order)
         if order.placed_at is None:
             raise AssertionError("the order is not yet placed")
         if order.ttl is not None:
@@ -114,6 +116,8 @@ class OrderBook:
         # ToDo: check if volume is non-negative
         if order.volume == 0:
             self._remove(order=order)
+        if order.volume < 0:
+            raise AssertionError
 
     def _check_expired_orders(self) -> None:
         """check and delete expired orders. (Internal Method)"""
@@ -124,10 +128,14 @@ class OrderBook:
         delete_keys: List[int] = [
             key for key, value in self.expire_time_list.items() if key < self.time
         ]
+        if len(delete_orders) == 0:
+            return
         # TODO: think better sorting in the following 3 lines
+        includes_peek = self.priority_queue[0] in delete_orders
         for delete_order in delete_orders:
             self.priority_queue.remove(delete_order)
-        heapq.heapify(self.priority_queue)
+        if includes_peek:
+            heapq.heapify(self.priority_queue)
         for key in delete_keys:
             self.expire_time_list.pop(key)
 
