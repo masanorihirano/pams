@@ -66,8 +66,8 @@ Json config
             "from": 0, "to": 99, # cannot be extended
 
             "markets": ["SpotMarket-N"],
-            "assetVolume": 50,
-            "cashAmount": 10000,
+            "assetVolume": int (JsonRandom applicable),
+            "cashAmount": float (JsonRandom applicable),
 
             "fundamentalWeight": {"expon": [1.0]},
             "chartWeight": {"expon": [0.0]},

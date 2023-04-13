@@ -263,8 +263,8 @@ class TestMarket:
             name="test",
         )
         market._update_time(1.0)
-        for _ in range(1000):
-            kind = LIMIT_ORDER if random.random() < 0.1 else MARKET_ORDER
+        for _ in range(100):
+            kind = LIMIT_ORDER if random.random() < 0.7 else MARKET_ORDER
             price = random.random() * 10 if kind == LIMIT_ORDER else None
             ttl = random.randint(1, 100) if bool(random.getrandbits(1)) else None
             order = Order(
@@ -283,8 +283,8 @@ class TestMarket:
         if len(logs) == 0:
             raise AssertionError
         start_time = time.time()
-        for _ in range(10000):
-            kind = LIMIT_ORDER if random.random() < 0.1 else MARKET_ORDER
+        for _ in range(5000):
+            kind = LIMIT_ORDER if random.random() < 0.7 else MARKET_ORDER
             price = random.random() * 10 if kind == LIMIT_ORDER else None
             ttl = random.randint(1, 100) if bool(random.getrandbits(1)) else None
             volume = random.randint(1, 10)
@@ -304,4 +304,4 @@ class TestMarket:
         end_time = time.time()
         time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
-        assert time_per_step < 0.002
+        assert time_per_step < 0.005

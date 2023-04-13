@@ -16,5 +16,6 @@ API reference
    logs
    loggers
    agents
+   utils
 
 * :ref:`genindex`
