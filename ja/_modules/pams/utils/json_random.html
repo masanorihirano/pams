@@ -318,6 +318,10 @@
     <span class="k">def</span> <span class="nf">_next_uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get next uniform.</span>
 
+<span class="sd">        Its probability density function is</span>
+<span class="sd">        :math:`p(x) = \frac{1}{max - min}`</span>
+<span class="sd">        anywhere within the interval :math:`[min, max)`, and 0 elsewhere.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            min_value (float): min value.</span>
 <span class="sd">            max_value (float): max value.</span>
@@ -330,6 +334,10 @@
     <span class="k">def</span> <span class="nf">_next_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get next normal.</span>
 
+<span class="sd">        Its probability density function is</span>
+<span class="sd">        :math:`p(x) = \frac{1}{\\sqrt{2 \\pi \\sigma^2}e^{- \frac{(x - \\mu)^2}{2 \\sigma^2}}}`</span>
+<span class="sd">        where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            mu (float): mu.</span>
 <span class="sd">            sigma (float): sigma.</span>
@@ -341,6 +349,10 @@
 
     <span class="k">def</span> <span class="nf">_next_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get next exponential.</span>
+
+<span class="sd">        Its probability density function is</span>
+<span class="sd">        :math:`p(x) = \\lambda exp(- \\lambda x)`</span>
+<span class="sd">        for :math:`x \\gt 0` and 0 elsewhere. Where :math:`\\lambda` is the scale parameter.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            lam (float): lambda.</span>
