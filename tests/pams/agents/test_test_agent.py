@@ -1,9 +1,12 @@
 import random
+from typing import List
+from typing import cast
 
 import pytest
 
 from pams import LIMIT_ORDER
 from pams import Market
+from pams import Order
 from pams import Simulator
 from pams.agents import TestAgent
 from pams.logs import Logger
@@ -34,7 +37,7 @@ class TestTestAgent(TestParentAgent):
         )
         market._update_time(next_fundamental_price=300.0)
 
-        orders = agent.submit_orders(markets=[market])
+        orders = cast(List[Order], agent.submit_orders(markets=[market]))
         _prng = random.Random(seed)
         price = 300 + _prng.random() * 2 * 10 - 10
         volume = _prng.randint(1, 100)
