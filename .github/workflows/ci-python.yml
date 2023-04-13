@@ -47,4 +47,7 @@ jobs:
           poetry run pflake8 .
           poetry run mypy .
           poetry run pytest tests/
-          poetry run pytest --doctest-modules pams
+      - name: Doc Test
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          poetry run pytest --doctest-modules pams          
