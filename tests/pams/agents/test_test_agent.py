@@ -2,9 +2,12 @@ import random
 
 import pytest
 
-from pams import Simulator, Market, LIMIT_ORDER
+from pams import LIMIT_ORDER
+from pams import Market
+from pams import Simulator
 from pams.agents import TestAgent
 from pams.logs import Logger
+
 from .test_base import TestAgent as TestParentAgent
 
 
