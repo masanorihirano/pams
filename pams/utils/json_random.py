@@ -25,6 +25,10 @@ class JsonRandom:
     def _next_uniform(self, min_value: float, max_value: float) -> float:
         """get next uniform.
 
+        Its probability density function is
+        :math:`p(x) = \frac{1}{max - min}`
+        anywhere within the interval :math:`[min, max)`, and 0 elsewhere.
+
         Args:
             min_value (float): min value.
             max_value (float): max value.
@@ -37,6 +41,10 @@ class JsonRandom:
     def _next_normal(self, mu: float, sigma: float) -> float:
         """get next normal.
 
+        Its probability density function is
+        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}e^{- \frac{(x - \mu)^2}{2 \sigma^2}}}`
+        where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
+
         Args:
             mu (float): mu.
             sigma (float): sigma.
@@ -48,6 +56,10 @@ class JsonRandom:
 
     def _next_exponential(self, lam: float) -> float:
         """get next exponential.
+
+        Its probability density function is
+        :math:`p(x) = \lambda exp(- \lambda x)`
+        for :math:`x \gt 0` and 0 elsewhere. Where :math:`\lambda` is the scale parameter.
 
         Args:
             lam (float): lambda.
