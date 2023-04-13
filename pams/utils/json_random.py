@@ -42,8 +42,8 @@ class JsonRandom:
         """get next normal.
 
         Its probability density function is
-        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}e^{- \frac{(x - \mu)^2}{2 \sigma^2}}}`
-        where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
+        :math:`p(x) = \frac{1}{\\sqrt{2 \\pi \\sigma^2}e^{- \frac{(x - \\mu)^2}{2 \\sigma^2}}}`
+        where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
 
         Args:
             mu (float): mu.
@@ -58,8 +58,8 @@ class JsonRandom:
         """get next exponential.
 
         Its probability density function is
-        :math:`p(x) = \lambda exp(- \lambda x)`
-        for :math:`x \gt 0` and 0 elsewhere. Where :math:`\lambda` is the scale parameter.
+        :math:`p(x) = \\lambda exp(- \\lambda x)`
+        for :math:`x \\gt 0` and 0 elsewhere. Where :math:`\\lambda` is the scale parameter.
 
         Args:
             lam (float): lambda.
