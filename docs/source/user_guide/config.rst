@@ -67,15 +67,19 @@ Json config
 
             "markets": ["SpotMarket-N"],
             "assetVolume": int (JsonRandom applicable),
-            "cashAmount": float (JsonRandom applicable),
-
+            "cashAmount": float (JsonRandom applicable)
+        },
+        "FCNAgent": {
+            "class": "FCNAgent",
+            "extends": "Agents",
             "fundamentalWeight": {"expon": [1.0]},
             "chartWeight": {"expon": [0.0]},
             "noiseWeight": {"expon": [1.0]},
             "meanReversionTime":{"uniform":[50,100]},
             "noiseScale": 0.001,
             "timeWindowSize": [100, 200],
-            "orderMargin": [0.0, 0.1]
+            "orderMargin": [0.0, 0.1],
+            "marginType": "fixed" or "normal"
         }
 
     }
