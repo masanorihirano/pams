@@ -36,7 +36,6 @@ class FCNAgent(Agent):
 
     fundamental_weight: float
     chart_weight: float
-    is_chart_following: bool = True
     margin_type: int
     mean_reversion_time: int
     noise_scale: float
@@ -53,6 +52,7 @@ class FCNAgent(Agent):
         logger: Optional[Logger] = None,
     ):
         super().__init__(agent_id, prng, simulator, name, logger)
+        self.is_chart_following = True
 
     def is_finite(self, x: float) -> bool:
         """determine if it is a valid value.

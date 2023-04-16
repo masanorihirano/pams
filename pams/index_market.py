@@ -1,3 +1,4 @@
+import random
 import warnings
 from typing import Any
 from typing import Dict
@@ -5,6 +6,7 @@ from typing import List
 from typing import Optional
 from typing import cast
 
+from .logs import Logger
 from .market import Market
 
 
@@ -14,7 +16,22 @@ class IndexMarket(Market):
     This class inherits from the :class:`pams.market.Market` class.
     """
 
-    _components: List[Market] = []
+    def __init__(
+        self,
+        market_id: int,
+        prng: random.Random,
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+        logger: Optional[Logger] = None,
+    ):
+        super().__init__(
+            market_id=market_id,
+            prng=prng,
+            simulator=simulator,
+            name=name,
+            logger=logger,
+        )
+        self._components: List[Market] = []
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
         """setup market configuration from setting format.

@@ -119,3 +119,24 @@ class TestAgent:
         cash = agent.get_cash_amount()
         agent.update_cash_amount(delta=101.23)
         assert agent.get_cash_amount() == cash + 101.23
+
+        agent = DummyAgent(
+            agent_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="test_agent",
+            logger=logger,
+        )
+        settings3 = {"cashAmount": [9000, 10000]}
+        with pytest.raises(ValueError):
+            agent.setup(settings=settings3, accessible_markets_ids=[1, 2, 3])
+        agent = DummyAgent(
+            agent_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="test_agent",
+            logger=logger,
+        )
+        settings4 = {"assetVolume": 50}
+        with pytest.raises(ValueError):
+            agent.setup(settings=settings4, accessible_markets_ids=[1, 2, 3])

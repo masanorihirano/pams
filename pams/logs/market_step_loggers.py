@@ -25,7 +25,9 @@ class MarketStepPrintLogger(Logger):
 class MarketStepSaver(Logger):
     """Saver of the market step class."""
 
-    market_step_logs: List[Dict] = []
+    def __init__(self) -> None:
+        super().__init__()
+        self.market_step_logs: List[Dict] = []
 
     def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
         """stack the market log.

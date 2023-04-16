@@ -1,6 +1,7 @@
 import math
 import random
 from typing import List
+from typing import Optional
 from typing import cast
 
 import pytest
@@ -126,6 +127,26 @@ class TestFCNAgent(TestAgent):
         }
         with pytest.raises(ValueError):
             agent.setup(settings=settings3, accessible_markets_ids=[0, 1, 2])
+        agent = FCNAgent(
+            agent_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="test_agent",
+            logger=logger,
+        )
+        settings4 = {
+            "assetVolume": 50,
+            "cashAmount": 10000,
+            "fundamentalWeight": 1.0,
+            "chartWeight": 2.0,
+            "noiseWeight": 3.0,
+            "noiseScale": 0.001,
+            "timeWindowSize": 100,
+            "orderMargin": 0.1,
+            "marginType": "fixed",
+        }
+        agent.setup(settings=settings4, accessible_markets_ids=[0, 1, 2])
+        assert agent.mean_reversion_time == 100
 
     def test__repr(self) -> None:
         sim = Simulator(prng=random.Random(4))
@@ -154,10 +175,12 @@ class TestFCNAgent(TestAgent):
             f"time_window_size=100, order_margin=MARGIN_NORMAL"
         )
 
-    def test_submit_orders(self) -> None:
-        sim = Simulator(prng=random.Random(4))
+    @pytest.mark.parametrize("margin_type", [None, "fixed", "normal"])
+    @pytest.mark.parametrize("seed", [1, 42, 100, 200])
+    def test_submit_orders(self, margin_type: Optional[str], seed: int) -> None:
+        sim = Simulator(prng=random.Random(seed + 1))
         logger = Logger()
-        _prng = random.Random(42)
+        _prng = random.Random(seed)
         agent = FCNAgent(
             agent_id=1, prng=_prng, simulator=sim, name="test_agent", logger=logger
         )
@@ -170,13 +193,13 @@ class TestFCNAgent(TestAgent):
             "noiseScale": 0.001,
             "timeWindowSize": 100,
             "orderMargin": 0.1,
-            "marginType": "fixed",
+            "marginType": margin_type,
             "meanReversionTime": 200,
         }
         agent.setup(settings=settings1, accessible_markets_ids=[0, 1, 2])
         market = Market(
             market_id=0,
-            prng=random.Random(1),
+            prng=random.Random(seed - 1),
             simulator=sim,
             name="market1",
             logger=logger,
@@ -185,16 +208,32 @@ class TestFCNAgent(TestAgent):
         orders = cast(List[Order], agent.submit_orders(markets=[market]))
         order = orders[0]
 
+        _prng = random.Random(seed)
         fundamental_log = 0
         chart_log = 0
-        noise_log = 0.001 * random.Random(42).gauss(mu=0.0, sigma=1.0)
+        noise_log = 0.001 * _prng.gauss(mu=0.0, sigma=1.0)
         exp_log_return = (fundamental_log + chart_log * 2 + noise_log * 3) / (1 + 2 + 3)
         exp_future_price = 300.0 * math.exp(exp_log_return * 100)
         if exp_future_price > 300:
-            price = exp_future_price * 0.9
+            if margin_type != "normal":
+                price = exp_future_price * 0.9
+            else:
+                price = exp_future_price + 0.1 * _prng.gauss(mu=0.0, sigma=1.0)
             assert order.is_buy
         else:
-            price = exp_future_price * 1.1
+            if margin_type != "normal":
+                price = exp_future_price * 1.1
+            else:
+                price = exp_future_price + 0.1 * _prng.gauss(mu=0.0, sigma=1.0)
             assert not order.is_buy
         assert order.price == price
         assert order.ttl == 100
+
+        market = Market(
+            market_id=4,
+            prng=random.Random(1),
+            simulator=sim,
+            name="market1",
+            logger=logger,
+        )
+        agent.submit_orders(markets=[market])
