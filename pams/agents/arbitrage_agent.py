@@ -1,9 +1,12 @@
+import random
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
 
 from ..index_market import IndexMarket
+from ..logs import Logger
 from ..market import Market
 from ..order import LIMIT_ORDER
 from ..order import Cancel
@@ -21,9 +24,21 @@ class ArbitrageAgent(HighFrequencyAgent):
         Currently, index markets must have the same weight for each constitutional stock.
     """
 
-    order_volume: int = 1
-    order_threshold_price: float = 1.0
-    order_time_length: int = 1
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        super().__init__(
+            agent_id=agent_id, prng=prng, simulator=simulator, name=name, logger=logger
+        )
+
+        self.order_volume: int = 1
+        self.order_threshold_price: float = 1.0
+        self.order_time_length: int = 1
 
     def setup(  # type: ignore
         self,
