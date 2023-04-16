@@ -32,7 +32,12 @@ class Market:
     """
 
     def __init__(
-        self, market_id: int, prng: random.Random, simulator: "Simulator", name: str, logger: Optional[Logger] = None  # type: ignore  # NOQA
+        self,
+        market_id: int,
+        prng: random.Random,
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+        logger: Optional[Logger] = None,
     ) -> None:
         """initialization.
 

@@ -48,11 +48,15 @@ class ArbitrageAgent(HighFrequencyAgent):
         )
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for ArbitrageAgent")
+        if not isinstance(settings["orderVolume"], int):
+            raise ValueError("orderVolume have to be int")
         self.order_volume = settings["orderVolume"]
         if "orderThresholdPrice" not in settings:
             raise ValueError("orderThresholdPrice is required for ArbitrageAgent")
         self.order_threshold_price = settings["orderThresholdPrice"]
         if "orderTimeLength" in settings:
+            if not isinstance(settings["orderTimeLength"], int):
+                raise ValueError("orderTimeLength have to be int")
             self.order_time_length = settings["orderTimeLength"]
 
     def _submit_orders(self, market: Market) -> List[Union[Order, Cancel]]:
