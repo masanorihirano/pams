@@ -79,7 +79,13 @@ Json config
             "noiseScale": 0.001,
             "timeWindowSize": [100, 200],
             "orderMargin": [0.0, 0.1],
-            "marginType": "fixed" or "normal"
-        }
-
+            "marginType": "fixed" or "normal" (Optional)
+        },
+        "ArbitrageAgent": {
+            "class": "ArbitrageAgent",
+            "extends": "Agents",
+            "orderVolume": int,
+            "orderThresholdPrice": float,
+            "orderTimeLength": int (Optional, default 1),
+        },
     }

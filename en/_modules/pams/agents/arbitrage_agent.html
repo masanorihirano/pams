@@ -268,12 +268,15 @@
         </div>
         <article role="main">
           <h1>Source code for pams.agents.arbitrage_agent</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">..index_market</span> <span class="kn">import</span> <span class="n">IndexMarket</span>
+<span class="kn">from</span> <span class="nn">..logs</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">..market</span> <span class="kn">import</span> <span class="n">Market</span>
 <span class="kn">from</span> <span class="nn">..order</span> <span class="kn">import</span> <span class="n">LIMIT_ORDER</span>
 <span class="kn">from</span> <span class="nn">..order</span> <span class="kn">import</span> <span class="n">Cancel</span>
@@ -291,9 +294,21 @@
 <span class="sd">        Currently, index markets must have the same weight for each constitutional stock.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">order_volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">order_threshold_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">order_time_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
+        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">agent_id</span><span class="o">=</span><span class="n">agent_id</span><span class="p">,</span> <span class="n">prng</span><span class="o">=</span><span class="n">prng</span><span class="p">,</span> <span class="n">simulator</span><span class="o">=</span><span class="n">simulator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_threshold_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="ArbitrageAgent.setup"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -318,11 +333,15 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;orderVolume&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orderVolume is required for ArbitrageAgent&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderVolume&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orderVolume have to be int&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_volume</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderVolume&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;orderThresholdPrice&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orderThresholdPrice is required for ArbitrageAgent&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_threshold_price</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderThresholdPrice&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">&quot;orderTimeLength&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderTimeLength&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;orderTimeLength have to be int&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderTimeLength&quot;</span><span class="p">]</span></div>
 
     <span class="k">def</span> <span class="nf">_submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>

@@ -295,7 +295,9 @@
 <div class="viewcode-block" id="MarketStepSaver"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver">[docs]</a><span class="k">class</span> <span class="nc">MarketStepSaver</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Saver of the market step class.&quot;&quot;&quot;</span>
 
-    <span class="n">market_step_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="MarketStepSaver.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver.process_market_step_end_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;stack the market log.</span>
