@@ -216,10 +216,10 @@ class TestFundamentalPriceShock(TestEventABC):
         event_hook = event_hooks[0]
         assert event_hook.event == event
         assert event_hook.hook_type == "market"
-        assert event_hook.is_before == True
+        assert event_hook.is_before
         assert event_hook.time == [0, 1]
         assert event_hook.specific_instance == market
-        assert event_hook.specific_class == None
+        assert event_hook.specific_class is None
 
         setting2 = {
             "target": "market1",
