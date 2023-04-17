@@ -108,6 +108,32 @@ class TestArbitrageAgent(TestAgent):
         }
         agent.setup(settings=settings5, accessible_markets_ids=[0, 1, 2])
         assert agent.order_time_length == 1
+        agent = ArbitrageAgent(
+            agent_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="test_agent",
+            logger=logger,
+        )
+        settings6 = {"assetVolume": 50, "cashAmount": 10000, "orderVolume": 1}
+        with pytest.raises(ValueError):
+            agent.setup(settings=settings6, accessible_markets_ids=[0, 1, 2])
+        agent = ArbitrageAgent(
+            agent_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="test_agent",
+            logger=logger,
+        )
+        settings5 = {
+            "assetVolume": 50,
+            "cashAmount": 10000,
+            "orderVolume": 1,
+            "orderThresholdPrice": 0.1,
+            "orderTimeLength": 10.1,
+        }
+        with pytest.raises(ValueError):
+            agent.setup(settings=settings5, accessible_markets_ids=[0, 1, 2])
 
     @pytest.mark.parametrize("index_price", [350.0, 350.05, 349.95, 351, 349])
     @pytest.mark.parametrize("order_volume", [1, 2])
@@ -205,3 +231,37 @@ class TestArbitrageAgent(TestAgent):
                 assert not order1.is_buy
                 assert not order2.is_buy
                 assert index_order.is_buy
+        index_market._is_running = False
+        orders = agent.submit_orders(markets=[market1, market2, index_market])
+        assert len(orders) == 0
+        index_market._is_running = True
+        agent2 = ArbitrageAgent(
+            agent_id=1, prng=_prng, simulator=sim, name="test_agent", logger=logger
+        )
+        agent2.setup(settings=settings1, accessible_markets_ids=[0, 1])
+        orders = agent2.submit_orders(markets=[market1, market2, index_market])
+        assert len(orders) == 0
+        market1.outstanding_shares = 1000
+        with pytest.raises(NotImplementedError):
+            agent.submit_orders(markets=[market1, market2, index_market])
+
+    def test__repr__(self) -> None:
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        _prng = random.Random(42)
+        agent = ArbitrageAgent(
+            agent_id=1, prng=_prng, simulator=sim, name="test_agent", logger=logger
+        )
+        settings1 = {
+            "assetVolume": 50,
+            "cashAmount": 10000,
+            "orderVolume": 2,
+            "orderThresholdPrice": 0.1,
+            "orderTimeLength": 10,
+        }
+        agent.setup(settings=settings1, accessible_markets_ids=[0, 1, 2])
+        assert (
+            str(agent)
+            == f"<pams.agents.arbitrage_agent.ArbitrageAgent | id=1, rnd={_prng}, order_volume=2, "
+            f"order_threshold_price=0.1, order_time_length=10>"
+        )
