@@ -1,4 +1,5 @@
 import random
+from typing import List
 from typing import Optional
 from typing import Type
 
@@ -7,6 +8,7 @@ import pytest
 from pams import Market
 from pams import Session
 from pams import Simulator
+from pams.events import EventABC
 from pams.events import EventHook
 from pams.events import FundamentalPriceShock
 from pams.logs import Logger
@@ -127,3 +129,47 @@ class TestEventHook:
             == f"<pams.events.base.EventHook | hook_type={hook_type}, is_before={is_before}, time=[1, 3], "
             f"specific_class={specific_class}, specific_instance={specific_instance}, event={event}>"
         )
+
+
+class DummyEvent(EventABC):
+    def hook_registration(self) -> List[EventHook]:
+        return []
+
+
+class TestEventABC:
+    def test__init__(self) -> None:
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=logger,
+        )
+        session_setting = {
+            "sessionName": 0,
+            "iterationSteps": 500,
+            "withOrderPlacement": True,
+            "withOrderExecution": True,
+            "withPrint": True,
+            "maxNormalOrders": 1,
+            "events": ["FundamentalPriceShock"],
+        }
+        session.setup(settings=session_setting)
+        _prng = random.Random(42)
+        event = DummyEvent(
+            event_id=1, prng=_prng, session=session, simulator=sim, name="event"
+        )
+        assert event.event_id == 1
+        assert event.prng == _prng
+        assert event.simulator == sim
+        assert event.name == "event"
+        assert event.session == session
+        assert (
+            str(event)
+            == f"<tests.pams.events.test_base.DummyEvent | id=1, name=event, session={session}>"
+        )
+        event.setup(settings={})
+        assert event.hook_registration() == []

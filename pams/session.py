@@ -59,7 +59,7 @@ class Session:
             f"iteration_steps={self.iteration_steps}, session_start_time={self.session_start_time}, "
             f"max_normal_orders={self.max_normal_orders}, max_high_frequency_orders={self.max_high_frequency_orders}, "
             f"with_order_placement={self.with_order_placement}, with_order_execution={self.with_order_execution}, "
-            f"high_frequency_submission_rate={self.high_frequency_submission_rate}, with_print={self.with_print},"
+            f"high_frequency_submission_rate={self.high_frequency_submission_rate}, with_print={self.with_print}, "
             f"logger={self.logger.__str__()}>"
         )
 
