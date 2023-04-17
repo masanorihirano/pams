@@ -54,6 +54,8 @@ class FundamentalPriceShock(EventABC):
         self.target_market_name = settings["target"]
         if "triggerTime" not in settings:
             raise ValueError("triggerTime is required for FundamentalPriceShock")
+        if not isinstance(settings["triggerTime"], int):
+            raise ValueError("triggerTime have to be int")
         self.trigger_time = self.session.session_start_time + settings["triggerTime"]
         if "priceChangeRate" not in settings:
             raise ValueError("priceChangeRate is required for FundamentalPriceShock")
@@ -61,6 +63,8 @@ class FundamentalPriceShock(EventABC):
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
         if "shockTimeLength" in settings:
+            if not isinstance(settings["shockTimeLength"], int):
+                raise ValueError("shockTimeLength have to be int")
             self.shock_time_length = settings["shockTimeLength"]
         self.target_market = self.simulator.name2market[self.target_market_name]
 

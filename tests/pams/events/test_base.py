@@ -137,7 +137,7 @@ class DummyEvent(EventABC):
 
 
 class TestEventABC:
-    def test__init__(self) -> None:
+    def test__init__(self) -> EventABC:
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
         session = Session(
@@ -173,3 +173,4 @@ class TestEventABC:
         )
         event.setup(settings={})
         assert event.hook_registration() == []
+        return event
