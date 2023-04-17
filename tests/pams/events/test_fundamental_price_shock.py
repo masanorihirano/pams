@@ -1,9 +1,7 @@
 import random
-from typing import cast
 
 import pytest
 
-from pams import Fundamentals
 from pams import Market
 from pams import Session
 from pams import Simulator
