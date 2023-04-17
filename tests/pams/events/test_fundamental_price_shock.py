@@ -5,13 +5,14 @@ import pytest
 from pams import Market
 from pams import Session
 from pams import Simulator
+from pams.events import EventABC
 from pams.events import FundamentalPriceShock
 from pams.logs import Logger
 from tests.pams.events.test_base import TestEventABC
 
 
 class TestFundamentalPriceShock(TestEventABC):
-    def test__init__(self) -> None:
+    def test__init__(self) -> EventABC:
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
         session = Session(
@@ -163,6 +164,7 @@ class TestFundamentalPriceShock(TestEventABC):
         }
         with pytest.raises(ValueError):
             event.setup(settings=setting9)
+        return event
 
     def test_hook_registration(self) -> None:
         sim = Simulator(prng=random.Random(4))
