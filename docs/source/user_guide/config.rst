@@ -40,8 +40,8 @@ Json config
             "target": "SpotMarket-1",
             "triggerTime": 0,
             "priceChangeRate": -0.1,
-            "shockTimeLength": 2,
-            "enabled": true
+            "shockTimeLength": int (Optional, default: 1),
+            "enabled": bool (Optional, default: True)
         },
         "Market": {
             "class": "string required",

@@ -6,6 +6,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Type
+from typing import cast
+
+from pams.market import Market
 
 
 class EventHook:
@@ -59,16 +62,29 @@ class EventHook:
                 raise ValueError(
                     "specific_class and specific_instance are not supported except for market"
                 )
-        self.specific_class: Optional[Type] = (
-            specific_class.__class__ if specific_class is not None else None
-        )
+            else:
+                if hook_type == "market":
+                    if specific_class is not None and not issubclass(
+                        specific_class, Market
+                    ):
+                        raise ValueError("specific_class and hook_type is incompatible")
+                    if specific_instance is not None and not isinstance(
+                        specific_instance, Market
+                    ):
+                        raise ValueError(
+                            "specific_instance and hook_type is incompatible"
+                        )
+                else:
+                    raise AssertionError
+        specific_class = cast(Optional[Type], specific_class)
+        self.specific_class: Optional[Type] = specific_class
         self.specific_instance: Optional[object] = specific_instance
 
     def __repr__(self) -> str:
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | hook_type={self.hook_type}, "
-            f"is_before={self.is_before}, time={self.time}, event={self.event}, specific_class={self.specific_class}, "
-            f"specific_instance={self.specific_instance}>"
+            f"is_before={self.is_before}, time={self.time}, specific_class={self.specific_class}, "
+            f"specific_instance={self.specific_instance}, event={self.event}>"
         )
 
 

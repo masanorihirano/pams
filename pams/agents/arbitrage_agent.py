@@ -45,7 +45,7 @@ class ArbitrageAgent(HighFrequencyAgent):
         settings: Dict[str, Any],
         accessible_markets_ids: List[int],
         *args,
-        **kwargs
+        **kwargs,
     ) -> None:
         """agent setup. Usually be called from simulator/runner automatically.
 
@@ -96,7 +96,7 @@ class ArbitrageAgent(HighFrequencyAgent):
         market_price: float = index.get_market_price()
 
         if len(set(map(lambda x: x.outstanding_shares, spots))) > 1:
-            raise AssertionError(
+            raise NotImplementedError(
                 "currently, the components must have the same outstanding shares"
             )
 
@@ -168,3 +168,15 @@ class ArbitrageAgent(HighFrequencyAgent):
         for market in markets:
             orders.extend(self._submit_orders(market=market))
         return orders
+
+    def __repr__(self) -> str:
+        """string representation of FCN agent class.
+
+        Returns:
+            str: string representation of this class.
+        """
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, rnd={self.prng}, "
+            f"order_volume={self.order_volume}, order_threshold_price={self.order_threshold_price}, "
+            f"order_time_length={self.order_time_length}>"
+        )
