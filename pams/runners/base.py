@@ -4,10 +4,12 @@ import random
 import time
 from abc import ABC
 from abc import abstractmethod
+from io import TextIOBase
 from io import TextIOWrapper
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import TextIO
 from typing import Type
 from typing import Union
 
@@ -24,7 +26,7 @@ class Runner(ABC):
 
     def __init__(
         self,
-        settings: Union[Dict, TextIOWrapper, os.PathLike, str],
+        settings: Union[Dict, TextIOBase, TextIO, TextIOWrapper, os.PathLike, str],
         prng: Optional[random.Random] = None,
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
@@ -32,7 +34,7 @@ class Runner(ABC):
         """initialize.
 
         Args:
-            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
+            settings (Union[Dict, TextIOBase, TextIOWrapper, os.PathLike, str]): runner configuration.
                 You can set python dictionary, a file pointer, or a file path.
             prng (random.Random, Optional): pseudo random number generator for this runner.
             logger (Logger, Optional): logger instance.
@@ -44,7 +46,7 @@ class Runner(ABC):
         self.settings: Dict
         if isinstance(settings, Dict):
             self.settings = settings
-        elif isinstance(settings, TextIOWrapper):
+        elif isinstance(settings, TextIOBase):
             self.settings = json.load(fp=settings)
         else:
             self.settings = json.load(fp=open(settings, mode="r"))
@@ -53,7 +55,7 @@ class Runner(ABC):
         self.simulator: Simulator = simulator_class(
             prng=random.Random(self._prng.randint(0, 2**31))
         )
-        self.registered_class: List[Type] = []
+        self.registered_classes: List[Type] = []
 
     def main(self) -> None:
         """main process. The process is executed while measuring time."""
@@ -79,7 +81,7 @@ class Runner(ABC):
         Returns:
             None
         """
-        self.registered_class.append(cls)
+        self.registered_classes.append(cls)
 
     @abstractmethod
     def _setup(self) -> None:
