@@ -141,7 +141,7 @@ class TestCancelLog:
 
 
 class TestExecutionLog:
-    def test___init__(self):
+    def test___init__(self) -> None:
         log = ExecutionLog(
             market_id=2,
             time=20,
@@ -323,9 +323,9 @@ class TestLogger:
         assert logger.count == 1  # type: ignore
         assert logger.pending_logs == []
 
-    def test_process(self):
+    def test_process(self) -> None:
         class DummyLogger(Logger):
-            def __init__(self):
+            def __init__(self) -> None:
                 super().__init__()
                 self.n_order_log = 0
                 self.n_cancel_log = 0
@@ -432,3 +432,13 @@ class TestLogger:
         unknown_log = Log()
         with pytest.raises(NotImplementedError):
             logger.write_and_direct_process(log=unknown_log)
+
+        assert logger.n_order_log == 1
+        assert logger.n_cancel_log == 1
+        assert logger.n_execution_log == 1
+        assert logger.n_simulation_begin_log == 1
+        assert logger.n_simulation_end_log == 1
+        assert logger.n_session_begin_log == 1
+        assert logger.n_session_end_log == 1
+        assert logger.n_market_step_begin_log == 1
+        assert logger.n_market_step_end_log == 1
