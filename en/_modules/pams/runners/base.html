@@ -274,10 +274,12 @@
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOBase</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOWrapper</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TextIO</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
@@ -294,7 +296,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">settings</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">TextIOBase</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">simulator_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Simulator</span><span class="p">]</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">,</span>
@@ -302,7 +304,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.</span>
+<span class="sd">            settings (Union[Dict, TextIOBase, TextIO, TextIOWrapper, os.PathLike, str]): runner configuration.</span>
 <span class="sd">                You can set python dictionary, a file pointer, or a file path.</span>
 <span class="sd">            prng (random.Random, Optional): pseudo random number generator for this runner.</span>
 <span class="sd">            logger (Logger, Optional): logger instance.</span>
@@ -314,7 +316,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">TextIOBase</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="n">settings</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">))</span>
@@ -323,7 +329,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">:</span> <span class="n">Simulator</span> <span class="o">=</span> <span class="n">simulator_class</span><span class="p">(</span>
             <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">))</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">registered_class</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Runner.main"><a class="viewcode-back" href="../../../reference/generated/runner/pams.runners.Runner.html#pams.runners.Runner.main">[docs]</a>    <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;main process. The process is executed while measuring time.&quot;&quot;&quot;</span>
@@ -349,7 +355,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">registered_class</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
