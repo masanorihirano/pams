@@ -141,7 +141,6 @@ class TestFundamentalPriceShock(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting8 = {
-            "triggerDays": 100,
             "target": "market1",
             "triggerTime": 0.1,
             "priceChangeRate": -0.1,
@@ -155,7 +154,6 @@ class TestFundamentalPriceShock(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting9 = {
-            "triggerDays": 100,
             "target": "market1",
             "triggerTime": 0,
             "priceChangeRate": -0.1,
@@ -302,6 +300,7 @@ class TestFundamentalPriceShock(TestEventABC):
             "marketPrice": 300.0,
             "outstandingShares": 2000,
         }
-        market.setup(settings=settings_market)
+        market2.setup(settings=settings_market)
+        market2._update_time(next_fundamental_price=300.0)
         with pytest.raises(AssertionError):
             event.hooked_before_step_for_market(simulator=sim, market=market2)
