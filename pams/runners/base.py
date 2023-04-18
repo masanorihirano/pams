@@ -34,7 +34,7 @@ class Runner(ABC):
         """initialize.
 
         Args:
-            settings (Union[Dict, TextIOBase, TextIOWrapper, os.PathLike, str]): runner configuration.
+            settings (Union[Dict, TextIOBase, TextIO, TextIOWrapper, os.PathLike, str]): runner configuration.
                 You can set python dictionary, a file pointer, or a file path.
             prng (random.Random, Optional): pseudo random number generator for this runner.
             logger (Logger, Optional): logger instance.
@@ -46,7 +46,11 @@ class Runner(ABC):
         self.settings: Dict
         if isinstance(settings, Dict):
             self.settings = settings
-        elif isinstance(settings, TextIOBase):
+        elif (
+            isinstance(settings, TextIOBase)
+            or isinstance(settings, TextIO)
+            or isinstance(settings, TextIOWrapper)
+        ):
             self.settings = json.load(fp=settings)
         else:
             self.settings = json.load(fp=open(settings, mode="r"))
