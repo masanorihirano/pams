@@ -301,6 +301,23 @@ pams package, especially from simulation runners. Therefore, the class registrat
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pams.runners.Runner.judge_hft_or_not">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">judge_hft_or_not</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/runners/base.html#Runner.judge_hft_or_not"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.runners.Runner.judge_hft_or_not" title="この定義へのパーマリンク">#</a></dt>
+<dd><p>determine if the agent is type of the <a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.HighFrequencyAgent</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>agent</strong> (<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><em>Agent</em></a>) -- agent instance.</p>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>whether the agent class is the <a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.HighFrequencyAgent</span></code></a> or not.</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pams.runners.Runner.main">
 <span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/runners/base.html#Runner.main"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.runners.Runner.main" title="この定義へのパーマリンク">#</a></dt>
 <dd><p>main process. The process is executed while measuring time.</p>
@@ -373,6 +390,7 @@ pams package, especially from simulation runners. Therefore, the class registrat
 <li><a class="reference internal" href="#">Runner</a><ul>
 <li><a class="reference internal" href="#pams.runners.Runner"><code class="docutils literal notranslate"><span class="pre">Runner</span></code></a><ul>
 <li><a class="reference internal" href="#pams.runners.Runner.class_register"><code class="docutils literal notranslate"><span class="pre">Runner.class_register()</span></code></a></li>
+<li><a class="reference internal" href="#pams.runners.Runner.judge_hft_or_not"><code class="docutils literal notranslate"><span class="pre">Runner.judge_hft_or_not()</span></code></a></li>
 <li><a class="reference internal" href="#pams.runners.Runner.main"><code class="docutils literal notranslate"><span class="pre">Runner.main()</span></code></a></li>
 </ul>
 </li>
