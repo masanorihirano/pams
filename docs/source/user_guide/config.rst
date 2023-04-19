@@ -46,6 +46,10 @@ Json config
         "Market": {
             "class": "string required",
             "tickSize": float required,
+            "numMarket": int (Optional; default  1),
+            "from": int (Optional; cannot be extended),
+            "to": int (Optional; cannot be extended; End is included),
+            "prefix": str (Optional; default is set to dict key),
             "marketPrice": float optional (marketPrice or fundamentalPrice must be specified),
             "fundamentalPrice": float optional (marketPrice or fundamentalPrice must be specified),
             "outstandingShares": int optional (default 0),

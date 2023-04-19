@@ -70,6 +70,8 @@ class SequentialRunner(Runner):
         """
         i_market = 0
         for name in market_type_names:
+            if name not in self.settings:
+                raise ValueError(f"{name} setting is missing in config")
             market_settings: Dict = self.settings[name]
             market_settings = json_extends(
                 whole_json=self.settings,
@@ -93,12 +95,19 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_markets = market_settings["to"] - market_settings["from"]
-                id_from = market_settings["from"]
-                id_to = market_settings["to"]
+                n_markets = int(market_settings["to"]) - int(market_settings["from"])
+                id_from = int(market_settings["from"])
+                id_to = int(market_settings["to"])
+            if "numMarkets" in market_settings:
+                del market_settings["numMarkets"]
+            if "from" in market_settings:
+                del market_settings["from"]
+            if "to" in market_settings:
+                del market_settings["to"]
             prefix: str
             if "prefix" in market_settings:
                 prefix = market_settings["prefix"]
+                del market_settings["prefix"]
             else:
                 prefix = name + ("-" if n_markets > 1 else "")
             if "class" not in market_settings:
