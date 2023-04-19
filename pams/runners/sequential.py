@@ -167,6 +167,8 @@ class SequentialRunner(Runner):
         """
         i_agent = 0
         for name in agent_type_names:
+            if name not in self.settings:
+                raise ValueError(f"{name} setting is missing in config")
             agent_settings: Dict = self.settings[name]
             agent_settings = json_extends(
                 whole_json=self.settings,
@@ -190,12 +192,19 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_agents = agent_settings["to"] - agent_settings["from"]
-                id_from = agent_settings["from"]
-                id_to = agent_settings["to"]
+                n_agents = int(agent_settings["to"]) - int(agent_settings["from"])
+                id_from = int(agent_settings["from"])
+                id_to = int(agent_settings["to"])
+            if "numAgents" in agent_settings:
+                del agent_settings["numAgents"]
+            if "from" in agent_settings:
+                del agent_settings["from"]
+            if "to" in agent_settings:
+                del agent_settings["to"]
             prefix: str
             if "prefix" in agent_settings:
                 prefix = agent_settings["prefix"]
+                del agent_settings["prefix"]
             else:
                 prefix = name + ("-" if n_agents > 1 else "")
 

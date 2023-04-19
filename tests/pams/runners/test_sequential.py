@@ -327,3 +327,210 @@ class TestSequentialRunner(TestRunner):
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
+
+    def test_generate_agents(self) -> None:
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"class": "FCNAgent", "markets": ["Market"]},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["agent"])
+        runner._generate_agents(agent_type_names=["Agent"])
+        assert len(runner.simulator.agents) == 1
+        agent = runner.simulator.agents[0]
+        assert agent.agent_id == 0
+        assert agent.name == "Agent"
+        assert agent.simulator == runner.simulator
+        assert len(runner._pending_setups) == 2
+        assert runner._pending_setups[1][0] == agent.setup
+        assert runner._pending_setups[1][1] == {
+            "settings": {"class": "FCNAgent", "markets": ["Market"]},
+            "accessible_markets_ids": [0],
+        }
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "AgentBase": {
+                "class": "FCNAgent",
+                "numAgents": 10,
+                "from": 0,
+                "to": 10,
+                "prefix": "Test",
+                "markets": ["Market"],
+            },
+            "Agent": {"extends": "AgentBase"},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        runner._generate_agents(agent_type_names=["Agent"])
+        assert len(runner.simulator.agents) == 10
+        agent = runner.simulator.agents[0]
+        assert agent.agent_id == 0
+        assert agent.name == "Test0"
+        assert len(runner._pending_setups) == 11
+        assert runner._pending_setups[1][0] == agent.setup
+        assert runner._pending_setups[1][1] == {
+            "settings": {"class": "FCNAgent", "markets": ["Market"]},
+            "accessible_markets_ids": [0],
+        }
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"markets": ["Market"]},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"class": "Market", "markets": ["Market"]},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"class": "FCNAgent"},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {
+                "class": "FCNAgent",
+                "numAgents": 10,
+                "from": 0,
+                "to": 9,
+                "markets": ["Market"],
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"class": "FCNAgent", "from": 0, "markets": ["Market"]},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+            "Agent": {"class": "FCNAgent", "from": 10, "to": 19, "markets": ["Market"]},
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        runner._generate_agents(agent_type_names=["Agent"])
+        assert len(runner.simulator.agents) == 10
+        agent = runner.simulator.agents[0]
+        assert agent.agent_id == 0
+        assert agent.name == "Agent-10"
+        assert list(map(lambda x: x.name, runner.simulator.agents)) == [
+            f"Agent-{10+i}" for i in range(10)
+        ]
+        assert len(runner._pending_setups) == 11
+        assert runner._pending_setups[1][0] == agent.setup
+        assert runner._pending_setups[1][1] == {
+            "settings": {"class": "FCNAgent", "markets": ["Market"]},
+            "accessible_markets_ids": [0],
+        }

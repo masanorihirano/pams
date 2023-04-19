@@ -33,7 +33,7 @@ class TestAgent:
         assert agent.name == "test_agent"
         assert len(agent.asset_volumes) == 0
         assert agent.cash_amount == 0
-        assert agent.sim == sim
+        assert agent.simulator == sim
         assert agent.logger == logger
 
         assert (

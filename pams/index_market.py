@@ -50,7 +50,7 @@ class IndexMarket(Market):
         if "requires" in settings:
             warnings.warn("requires in index market settings is no longer required")
         for market_name in settings["markets"]:
-            market: Market = self._simulator.name2market[market_name]
+            market: Market = self.simulator.name2market[market_name]
             self._add_market(market=market)
 
     def _add_market(self, market: Market) -> None:

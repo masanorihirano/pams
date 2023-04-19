@@ -61,7 +61,7 @@ class Agent(ABC):
         self.asset_volumes: Dict[int, int] = {}
         self.cash_amount: float = 0
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
     def __repr__(self) -> str:

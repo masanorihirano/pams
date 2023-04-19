@@ -69,7 +69,7 @@ class Market:
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
-        self._simulator: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
 
@@ -944,5 +944,5 @@ class Market:
         current_fundamental: float = self.get_fundamental_price(time=time)
         new_fundamental: float = current_fundamental * scale
         self._fundamental_prices[time] = new_fundamental
-        self._simulator.fundamentals.prices[self.market_id][time] = new_fundamental
-        self._simulator.fundamentals._generated_until = time
+        self.simulator.fundamentals.prices[self.market_id][time] = new_fundamental
+        self.simulator.fundamentals._generated_until = time
