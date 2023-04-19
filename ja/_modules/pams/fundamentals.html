@@ -467,7 +467,15 @@
             <span class="p">]</span> <span class="o">=</span> <span class="n">corr</span>
         <span class="n">vol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">volatilities</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">generate_target_ids_cholesky</span><span class="p">])</span>
         <span class="n">cov_matrix</span> <span class="o">=</span> <span class="n">vol</span> <span class="o">*</span> <span class="n">corr_matrix</span> <span class="o">*</span> <span class="n">vol</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">cholesky_matrix</span> <span class="o">=</span> <span class="n">cholesky</span><span class="p">(</span><span class="n">cov_matrix</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cholesky_matrix</span> <span class="o">=</span> <span class="n">cholesky</span><span class="p">(</span><span class="n">cov_matrix</span><span class="p">,</span> <span class="n">lower</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Error happened when calculating cholesky matrix for fundamental calculation.&quot;</span>
+                <span class="s2">&quot;This possibly means that fundamental correlations have a invalid circle correlation.&quot;</span>
+                <span class="s2">&quot;Please consider delete a circle correlation.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
 
         <span class="n">dw_cholesky</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_np_prng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span>
             <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">generate_target_ids_cholesky</span><span class="p">),</span> <span class="n">length</span><span class="p">)</span>
