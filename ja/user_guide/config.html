@@ -314,8 +314,15 @@
     &quot;Market&quot;: {
         &quot;class&quot;: &quot;string required&quot;,
         &quot;tickSize&quot;: float required,
+        &quot;numMarket&quot;: int (Optional; default  1),
+        &quot;from&quot;: int (Optional; cannot be extended),
+        &quot;to&quot;: int (Optional; cannot be extended; End is included),
+        &quot;prefix&quot;: str (Optional; default is set to dict key),
+        &quot;tickSize&quot;: float required,
         &quot;marketPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
         &quot;fundamentalPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
+        &quot;fundamentalDrift&quot;: float (Optional; default: 0.0),
+        &quot;fundamentalVolatility&quot;: float (Optional; default 0.0),
         &quot;outstandingShares&quot;: int optional (default 0),
     },
     &quot;MarketBase&quot;: {
@@ -330,10 +337,11 @@
     },
     &quot;Agents&quot;: {
         &quot;class&quot;: &quot;string required&quot;,
-        &quot;numAgents&quot;: 100,
-        &quot;from&quot;: 0, &quot;to&quot;: 99, # cannot be extended
-
-        &quot;markets&quot;: [&quot;SpotMarket-N&quot;],
+        &quot;numAgents&quot;: int (Optional; default  1),
+        &quot;from&quot;: int (Optional; cannot be extended),
+        &quot;to&quot;: int (Optional; cannot be extended; End is included),
+        &quot;prefix&quot;: str (Optional; default is set to dict key),
+        &quot;markets&quot;: [&quot;Market&quot;] (Required),
         &quot;assetVolume&quot;: int (JsonRandom applicable),
         &quot;cashAmount&quot;: float (JsonRandom applicable)
     },

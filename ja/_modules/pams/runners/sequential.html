@@ -340,6 +340,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">i_market</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">market_type_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config&quot;</span><span class="p">)</span>
             <span class="n">market_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="n">market_settings</span> <span class="o">=</span> <span class="n">json_extends</span><span class="p">(</span>
                 <span class="n">whole_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
@@ -363,12 +365,19 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time&quot;</span>
                     <span class="p">)</span>
-                <span class="n">n_markets</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-                <span class="n">id_from</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-                <span class="n">id_to</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;numMarkets&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;numMarkets&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
             <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
             <span class="k">if</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                 <span class="n">prefix</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;class&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
@@ -428,6 +437,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">i_agent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">agent_type_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config&quot;</span><span class="p">)</span>
             <span class="n">agent_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="n">agent_settings</span> <span class="o">=</span> <span class="n">json_extends</span><span class="p">(</span>
                 <span class="n">whole_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
@@ -451,12 +462,19 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time&quot;</span>
                     <span class="p">)</span>
-                <span class="n">n_agents</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-                <span class="n">id_from</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-                <span class="n">id_to</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
+                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;numAgents&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;numAgents&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
             <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
             <span class="k">if</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                 <span class="n">prefix</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 

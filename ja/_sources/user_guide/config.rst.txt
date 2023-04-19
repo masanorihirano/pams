@@ -46,8 +46,15 @@ Json config
         "Market": {
             "class": "string required",
             "tickSize": float required,
+            "numMarket": int (Optional; default  1),
+            "from": int (Optional; cannot be extended),
+            "to": int (Optional; cannot be extended; End is included),
+            "prefix": str (Optional; default is set to dict key),
+            "tickSize": float required,
             "marketPrice": float optional (marketPrice or fundamentalPrice must be specified),
             "fundamentalPrice": float optional (marketPrice or fundamentalPrice must be specified),
+            "fundamentalDrift": float (Optional; default: 0.0),
+            "fundamentalVolatility": float (Optional; default 0.0),
             "outstandingShares": int optional (default 0),
         },
         "MarketBase": {
@@ -62,10 +69,11 @@ Json config
         },
         "Agents": {
             "class": "string required",
-            "numAgents": 100,
-            "from": 0, "to": 99, # cannot be extended
-
-            "markets": ["SpotMarket-N"],
+            "numAgents": int (Optional; default  1),
+            "from": int (Optional; cannot be extended),
+            "to": int (Optional; cannot be extended; End is included),
+            "prefix": str (Optional; default is set to dict key),
+            "markets": ["Market"] (Required),
             "assetVolume": int (JsonRandom applicable),
             "cashAmount": float (JsonRandom applicable)
         },
