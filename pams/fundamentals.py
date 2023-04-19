@@ -197,7 +197,15 @@ class Fundamentals:
             ] = corr
         vol = np.asarray([self.volatilities[x] for x in generate_target_ids_cholesky])
         cov_matrix = vol * corr_matrix * vol.reshape(-1, 1)
-        cholesky_matrix = cholesky(cov_matrix, lower=True)
+        try:
+            cholesky_matrix = cholesky(cov_matrix, lower=True)
+        except Exception as e:
+            print(
+                "Error happened when calculating cholesky matrix for fundamental calculation."
+                "This possibly means that fundamental correlations have a invalid circle correlation."
+                "Please consider delete a circle correlation."
+            )
+            raise e
 
         dw_cholesky = self._np_prng.standard_normal(
             size=(len(generate_target_ids_cholesky), length)

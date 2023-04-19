@@ -30,7 +30,7 @@ Json config
             ],
             "fundamentalCorrelations": {
                 "pairwise": [
-                    ["SpotMarket-0", "SpotMarket-1",  0.9],
+                    ["SpotMarket-0", "SpotMarket-1",  0.9], # fundamentalVolatility is required in both markets
                     ["SpotMarket-0", "SpotMarket-2", -0.1]
                 ]
             }

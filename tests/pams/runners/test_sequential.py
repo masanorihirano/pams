@@ -6,6 +6,7 @@ from typing import Type
 from typing import cast
 
 import pytest
+from numpy.linalg import LinAlgError
 
 from pams.runners import Runner
 from pams.runners import SequentialRunner
@@ -534,3 +535,176 @@ class TestSequentialRunner(TestRunner):
             "settings": {"class": "FCNAgent", "markets": ["Market"]},
             "accessible_markets_ids": [0],
         }
+
+    def test_set_fundamental_correlation(self) -> None:
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "fundamentalCorrelations": {
+                    "pairwise": [
+                        ["Market-0", "Market-1", 0.9],
+                        ["Market-0", "Market-2", -0.1],
+                    ]
+                },
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+                "fundamentalVolatility": 0.1,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        runner._set_fundamental_correlation()
+        assert runner.simulator.fundamentals.correlation == {(0, 1): 0.9, (0, 2): -0.1}
+
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+                "fundamentalVolatility": 0.1,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        runner._set_fundamental_correlation()
+        assert runner.simulator.fundamentals.correlation == {}
+
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "fundamentalCorrelations": {
+                    "unknown": [
+                        ["Market-0", "Market-1", 0.9],
+                        ["Market-0", "Market-2", -0.1],
+                    ]
+                },
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+                "fundamentalVolatility": 0.1,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(NotImplementedError):
+            runner._set_fundamental_correlation()
+
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "fundamentalCorrelations": {
+                    "pairwise": [
+                        ["Market-0", "Market-1"],
+                        ["Market-0", "Market-2", -0.1],
+                    ]
+                },
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+                "fundamentalVolatility": 0.1,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._set_fundamental_correlation()
+
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "fundamentalCorrelations": {
+                    "pairwise": [
+                        ["Market-0", "Market-1", 0.9],
+                        ["Market-0", "Market-2", -0.1],
+                    ]
+                },
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._set_fundamental_correlation()
+
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "fundamentalCorrelations": {
+                    "pairwise": [
+                        ["Market-0", "Market-1", 0.9],
+                        ["Market-0", "Market-2", -0.1],
+                        ["Market-1", "Market-2", 0.5],
+                    ]
+                },
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 3,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+                "fundamentalVolatility": 0.1,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        runner._set_fundamental_correlation()
+        assert runner.simulator.fundamentals.correlation == {
+            (0, 1): 0.9,
+            (0, 2): -0.1,
+            (1, 2): 0.5,
+        }
+        with pytest.raises(LinAlgError):
+            runner.simulator.fundamentals._generate_next()

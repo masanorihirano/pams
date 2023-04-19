@@ -269,6 +269,15 @@ class SequentialRunner(Runner):
                     for (market1_name, market2_name, corr) in value:
                         market1 = self.simulator.name2market[market1_name]
                         market2 = self.simulator.name2market[market2_name]
+                        for m in [market1, market2]:
+                            if (
+                                self.simulator.fundamentals.volatilities[m.market_id]
+                                == 0.0
+                            ):
+                                raise ValueError(
+                                    f"For applying fundamental correlation fo {m.name}, "
+                                    f"fundamentalVolatility for {m.name} is required"
+                                )
                         self.simulator.fundamentals.set_correlation(
                             market_id1=market1.market_id,
                             market_id2=market2.market_id,
