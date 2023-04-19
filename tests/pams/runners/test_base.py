@@ -12,6 +12,8 @@ from typing import Type
 import pytest
 
 from pams import Simulator
+from pams.agents import ArbitrageAgent
+from pams.agents import FCNAgent
 from pams.logs import Logger
 from pams.runners import Runner
 
@@ -91,3 +93,15 @@ class TestRunner:
         )
         runner.class_register(cls=DummyRunner)
         assert DummyRunner in runner.registered_classes
+
+    def test_judge_hft_or_not(self) -> None:
+        sim = Simulator(prng=random.Random(42))
+        fnc_agent = FCNAgent(
+            agent_id=0, prng=random.Random(42), simulator=sim, name="fcn"
+        )
+        arbitrage_agent = ArbitrageAgent(
+            agent_id=1, prng=random.Random(42), simulator=sim, name="arbitrage"
+        )
+        runner = DummyRunner(settings=self.default_setting)
+        assert not runner.judge_hft_or_not(fnc_agent)
+        assert runner.judge_hft_or_not(arbitrage_agent)

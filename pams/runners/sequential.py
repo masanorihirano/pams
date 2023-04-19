@@ -11,7 +11,6 @@ from typing import Type
 from typing import Union
 
 from ..agents.base import Agent
-from ..agents.high_frequency_agent import HighFrequencyAgent
 from ..events import EventABC
 from ..events import EventHook
 from ..index_market import IndexMarket
@@ -59,18 +58,6 @@ class SequentialRunner(Runner):
         """
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
-
-    @staticmethod
-    def judge_hft_or_not(agent: Agent) -> bool:
-        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
-
-        Args:
-            agent (Agent): agent instance.
-
-        Returns:
-            bool: whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or not.
-        """
-        return isinstance(agent, HighFrequencyAgent)
 
     def _generate_markets(self, market_type_names: List[str]) -> None:
         """generate markets. (Internal method)

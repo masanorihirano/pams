@@ -13,6 +13,8 @@ from typing import TextIO
 from typing import Type
 from typing import Union
 
+from ..agents import Agent
+from ..agents import HighFrequencyAgent
 from ..logs.base import Logger
 from ..simulator import Simulator
 
@@ -99,3 +101,15 @@ class Runner(ABC):
         Usually the process in this methods should be control simulation flow and parallelization.
         """
         pass
+
+    @staticmethod
+    def judge_hft_or_not(agent: Agent) -> bool:
+        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
+
+        Args:
+            agent (Agent): agent instance.
+
+        Returns:
+            bool: whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or not.
+        """
+        return isinstance(agent, HighFrequencyAgent)
