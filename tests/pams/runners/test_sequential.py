@@ -708,3 +708,243 @@ class TestSequentialRunner(TestRunner):
         }
         with pytest.raises(LinAlgError):
             runner.simulator.fundamentals._generate_next()
+
+    def test_generate_sessions(self) -> None:
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 100,
+                        "withOrderPlacement": False,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "highFrequencySubmitRate": 0.2,
+                        "maxNormalOrders": 1,
+                        "maxHighFrequencyOrders": 5,
+                    },
+                    {
+                        "sessionName": 1,
+                        "iterationSteps": 500,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": False,
+                        "highFrequencySubmitRate": 0.0,
+                        "maxNormalOrders": 2,
+                        "maxHighFrequencyOrders": 3,
+                        "events": ["FundamentalPriceShock"],
+                    },
+                ]
+            },
+            "FundamentalPriceShock": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._generate_sessions()
+        assert len(runner.simulator.sessions) == 2
+        assert runner.simulator.sessions[0].name == str(0)
+        assert runner.simulator.sessions[1].name == str(1)
+        assert runner.simulator.sessions[0].session_id == 0
+        assert runner.simulator.sessions[1].session_id == 1
+        assert runner.simulator.sessions[0].session_start_time == 0
+        assert runner.simulator.sessions[1].session_start_time == 100
+        assert runner.simulator.sessions[0].simulator == runner.simulator
+        assert runner.simulator.sessions[1].simulator == runner.simulator
+        assert len(runner._pending_setups) == 4
+        assert runner._pending_setups[0][0] == runner.simulator.sessions[0].setup
+        assert runner._pending_setups[0][1] == {
+            "settings": {
+                "sessionName": 0,
+                "iterationSteps": 100,
+                "withOrderPlacement": False,
+                "withOrderExecution": False,
+                "withPrint": True,
+                "highFrequencySubmitRate": 0.2,
+                "maxNormalOrders": 1,
+                "maxHighFrequencyOrders": 5,
+            }
+        }
+        assert runner._pending_setups[1][0] == runner.simulator.sessions[1].setup
+        assert runner._pending_setups[1][1] == {
+            "settings": {
+                "sessionName": 1,
+                "iterationSteps": 500,
+                "withOrderPlacement": True,
+                "withOrderExecution": True,
+                "withPrint": False,
+                "highFrequencySubmitRate": 0.0,
+                "maxNormalOrders": 2,
+                "maxHighFrequencyOrders": 3,
+                "events": ["FundamentalPriceShock"],
+            }
+        }
+        assert runner._pending_setups[2][1] == {
+            "settings": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            }
+        }
+
+        setting = {
+            "simulation": {},
+            "FundamentalPriceShock": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        with pytest.raises(ValueError):
+            runner._generate_sessions()
+
+        setting = {
+            "simulation": {
+                "sessions": {
+                    "sessionName": 0,
+                    "iterationSteps": 100,
+                    "withOrderPlacement": False,
+                    "withOrderExecution": False,
+                    "withPrint": True,
+                    "highFrequencySubmitRate": 0.2,
+                    "maxNormalOrders": 1,
+                    "maxHighFrequencyOrders": 5,
+                }
+            },
+            "FundamentalPriceShock": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        with pytest.raises(ValueError):
+            runner._generate_sessions()
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {
+                        "iterationSteps": 100,
+                        "withOrderPlacement": False,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "highFrequencySubmitRate": 0.2,
+                        "maxNormalOrders": 1,
+                        "maxHighFrequencyOrders": 5,
+                    }
+                ]
+            },
+            "FundamentalPriceShock": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        with pytest.raises(ValueError):
+            runner._generate_sessions()
+
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "withOrderPlacement": False,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "highFrequencySubmitRate": 0.2,
+                        "maxNormalOrders": 1,
+                        "maxHighFrequencyOrders": 5,
+                    }
+                ]
+            }
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        with pytest.raises(ValueError):
+            runner._generate_sessions()
+
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 100,
+                        "withOrderPlacement": False,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "highFrequencySubmitRate": 0.2,
+                        "maxNormalOrders": 1,
+                        "maxHighFrequencyOrders": 5,
+                    },
+                    {
+                        "sessionName": 1,
+                        "iterationSteps": 500,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": False,
+                        "highFrequencySubmitRate": 0.0,
+                        "maxNormalOrders": 2,
+                        "maxHighFrequencyOrders": 3,
+                        "events": ["FundamentalPriceShock"],
+                    },
+                ]
+            },
+            "FundamentalPriceShock": {
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+                "shockTimeLength": 2,
+                "enabled": True,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        with pytest.raises(ValueError):
+            runner._generate_sessions()

@@ -290,6 +290,8 @@ class SequentialRunner(Runner):
 
     def _generate_sessions(self) -> None:
         """generate sessions. (Internal method)"""
+        if "sessions" not in self.settings["simulation"]:
+            raise ValueError("sessions is missing under 'simulation' config")
         session_settings: Dict = self.settings["simulation"]["sessions"]
         if not isinstance(session_settings, list):
             raise ValueError("simulation.sessions must be list[dict]")
@@ -306,7 +308,7 @@ class SequentialRunner(Runner):
                 prng=random.Random(self._prng.randint(0, 2**31)),
                 session_start_time=session_start_time,
                 simulator=self.simulator,
-                name=session_setting["sessionName"],
+                name=str(session_setting["sessionName"]),
                 logger=self.logger,
             )
             i_session += 1

@@ -41,7 +41,7 @@ class Session:
         self.session_id: int = session_id
         self.name: str = name
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
         self.iteration_steps: int = 0
