@@ -3,6 +3,7 @@ import os.path
 import random
 import time
 from typing import Dict
+from typing import List
 from typing import Type
 from typing import cast
 from unittest import mock
@@ -11,7 +12,9 @@ import pytest
 from numpy.linalg import LinAlgError
 
 from pams import LIMIT_ORDER
+from pams import Market
 from pams import Order
+from pams.agents import Agent
 from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
@@ -1204,18 +1207,63 @@ class TestSequentialRunner(TestRunner):
             ),
         )
         runner._setup()
+
+        def dummy_fn(cls: Agent, markets: List[Market]) -> List[Order]:
+            return [
+                Order(
+                    agent_id=cls.agent_id,
+                    market_id=markets[0].market_id,
+                    is_buy=True,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=300.0,
+                )
+            ]
+
+        with mock.patch("pams.agents.fcn_agent.FCNAgent.submit_orders", dummy_fn):
+            results = runner._collect_orders_from_normal_agents(
+                session=runner.simulator.sessions[0]
+            )
+        assert len(results) == 3
+
         dummy_order = Order(
-            agent_id=10,
-            market_id=0,
+            agent_id=100,
+            market_id=2,
             is_buy=True,
             kind=LIMIT_ORDER,
             volume=1,
             price=300.0,
         )
+
         with mock.patch(
             "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
         ):
-            with pytest.raises(ValueError)
-                results = runner._collect_orders_from_normal_agents(
+            with pytest.raises(ValueError):
+                _ = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
+
+        setting["simulation"]["sessions"][0]["withOrderPlacement"] = False
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._setup()
+        dummy_order = Order(
+            agent_id=100,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(AssertionError):
+                _ = runner._collect_orders_from_normal_agents(
                     session=runner.simulator.sessions[0]
                 )
