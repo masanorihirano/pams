@@ -5,10 +5,13 @@ import time
 from typing import Dict
 from typing import Type
 from typing import cast
+from unittest import mock
 
 import pytest
 from numpy.linalg import LinAlgError
 
+from pams import LIMIT_ORDER
+from pams import Order
 from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
@@ -1111,3 +1114,108 @@ class TestSequentialRunner(TestRunner):
         )
         with pytest.raises(ValueError):
             runner._setup()
+
+    def test_collect_orders_from_normal_agents(self) -> None:
+        setting = {
+            "simulation": {
+                "markets": ["SpotMarket-1", "SpotMarket-2", "IndexMarket-I"],
+                "agents": [
+                    "FCNAgents-1",
+                    "FCNAgents-2",
+                    "FCNAgents-I",
+                    "ArbitrageAgents",
+                ],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 100,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                        "MEMO": "The same number as #markets",
+                        "maxHighFrequencyOrders": 0,
+                    },
+                    {
+                        "sessionName": 1,
+                        "iterationSteps": 500,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                        "MEMO": "The same number as #markets",
+                        "maxHighFrequencyOrders": 5,
+                        "events": ["FundamentalPriceShock"],
+                    },
+                ],
+            },
+            "FundamentalPriceShock": {
+                "class": "FundamentalPriceShock",
+                "target": "SpotMarket-1",
+                "triggerTime": 0,
+                "priceChangeRate": -0.3,
+                "enabled": True,
+            },
+            "SpotMarket": {
+                "class": "Market",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+            },
+            "SpotMarket-1": {"extends": "SpotMarket"},
+            "SpotMarket-2": {"extends": "SpotMarket"},
+            "IndexMarket-I": {
+                "class": "IndexMarket",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+                "markets": ["SpotMarket-1", "SpotMarket-2"],
+            },
+            "FCNAgent": {
+                "class": "FCNAgent",
+                "numAgents": 100,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+                "fundamentalWeight": {"expon": [1.0]},
+                "chartWeight": {"expon": [0.0]},
+                "noiseWeight": {"expon": [1.0]},
+                "noiseScale": 0.001,
+                "timeWindowSize": [100, 200],
+                "orderMargin": [0.0, 0.1],
+            },
+            "FCNAgents-1": {"extends": "FCNAgent", "markets": ["SpotMarket-1"]},
+            "FCNAgents-2": {"extends": "FCNAgent", "markets": ["SpotMarket-2"]},
+            "FCNAgents-I": {"extends": "FCNAgent", "markets": ["IndexMarket-I"]},
+            "ArbitrageAgents": {
+                "class": "ArbitrageAgent",
+                "numAgents": 100,
+                "markets": ["IndexMarket-I", "SpotMarket-1", "SpotMarket-2"],
+                "assetVolume": 50,
+                "cashAmount": 150000,
+                "orderVolume": 1,
+                "orderThresholdPrice": 1.0,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._setup()
+        dummy_order = Order(
+            agent_id=10,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(ValueError)
+                results = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
