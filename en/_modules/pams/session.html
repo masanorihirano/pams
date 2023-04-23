@@ -389,7 +389,7 @@
         <span class="c1"># TODO: check malOrders + maxHighFrequencyOrders &gt;= 1</span>
         <span class="k">if</span> <span class="s2">&quot;highFrequencySubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;highFrequencySubmitRate&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;highFrequencySubmitRate&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">&quot;hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it.&quot;</span>
