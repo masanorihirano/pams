@@ -347,7 +347,7 @@ class Simulator:
         Returns:
             None
         """
-        time: int = cancel_log.time
+        time: int = cancel_log.cancel_time
         event_hooks = self.events_dict["cancel_after"]
         target_event_hooks: List[EventHook] = []
         if None in event_hooks:

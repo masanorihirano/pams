@@ -79,7 +79,9 @@ class OrderBook:
         """
         cancel.order.is_canceled = True
         cancel.placed_at = self.time
-        self._remove(cancel.order)
+        if cancel.order in self.priority_queue:
+            # in case that order is executed before canceling.
+            self._remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
         """get the order with the highest priority.

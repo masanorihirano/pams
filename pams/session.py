@@ -119,7 +119,7 @@ class Session:
         # TODO: check malOrders + maxHighFrequencyOrders >= 1
         if "highFrequencySubmitRate" in settings:
             # TODO: check non-negative
-            self.max_high_frequency_orders = settings["highFrequencySubmitRate"]
+            self.high_frequency_submission_rate = settings["highFrequencySubmitRate"]
             if "hifreqSubmitRate" in settings:
                 raise ValueError(
                     "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it."
