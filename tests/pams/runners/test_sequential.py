@@ -1245,7 +1245,7 @@ class TestSequentialRunner(TestRunner):
                     session=runner.simulator.sessions[0]
                 )
 
-        setting["simulation"]["sessions"][0]["withOrderPlacement"] = False
+        setting["simulation"]["sessions"][0]["withOrderPlacement"] = False  # type: ignore
         runner = cast(
             SequentialRunner,
             self.test__init__(
@@ -1345,7 +1345,7 @@ class TestSequentialRunner(TestRunner):
                 self.market_id = market_id
                 self.agent_id = agent_id
 
-        local_orders = [[dummy_order], [dummy_cancel], [BuggyOrder()]]
+        local_orders = [[dummy_order], [dummy_cancel], [BuggyOrder()]]  # type: ignore
         with pytest.raises(NotImplementedError):
             runner._handle_orders(
                 session=runner.simulator.sessions[0], local_orders=local_orders
@@ -1560,7 +1560,7 @@ class TestSequentialRunner(TestRunner):
                     session=runner.simulator.sessions[0], local_orders=local_orders
                 )
 
-        def dummy_fn(cls: Agent, markets: List[Market]) -> List[Order]:
+        def dummy_fn3(cls: Agent, markets: List[Market]) -> List[Order]:
             d_order = Order(
                 agent_id=cls.agent_id,
                 market_id=markets[0].market_id,
@@ -1571,7 +1571,7 @@ class TestSequentialRunner(TestRunner):
             )
             d_cancel = Cancel(order=d_order)
             d_bug = BuggyOrder(market_id=markets[0].market_id, agent_id=cls.agent_id)
-            return [d_order, d_cancel, d_bug]
+            return [d_order, d_cancel, d_bug]  # type: ignore
 
         dummy_order1 = Order(
             agent_id=0,
@@ -1591,7 +1591,7 @@ class TestSequentialRunner(TestRunner):
         )
         local_orders = [[dummy_order1], [dummy_order2]]
         with mock.patch(
-            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn3
         ):
             with pytest.raises(NotImplementedError):
                 runner._handle_orders(
@@ -1601,7 +1601,7 @@ class TestSequentialRunner(TestRunner):
         runner.simulator.sessions[0].with_order_placement = False
         local_orders = [[], []]
         with mock.patch(
-            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn3
         ):
             with pytest.raises(AssertionError):
                 runner._handle_orders(
