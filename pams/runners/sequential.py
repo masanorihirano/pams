@@ -457,7 +457,7 @@ class SequentialRunner(Runner):
                     log_: CancelLog = market._cancel_order(cancel=order)
                     agent = self.simulator.id2agent[order.order.agent_id]
                     agent.canceled_order(log=log_)
-                    self.simulator._trigger_event_after_cancel(cancel_log=order)
+                    self.simulator._trigger_event_after_cancel(cancel_log=log_)
                 else:
                     raise NotImplementedError
                 if session.with_order_execution:
@@ -517,7 +517,7 @@ class SequentialRunner(Runner):
                             log_ = market._cancel_order(cancel=order)
                             agent = self.simulator.id2agent[order.order.agent_id]
                             agent.canceled_order(log=log_)
-                            self.simulator._trigger_event_after_cancel(cancel_log=order)
+                            self.simulator._trigger_event_after_cancel(cancel_log=log_)
                         else:
                             raise NotImplementedError
                         if session.with_order_execution:

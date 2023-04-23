@@ -5,6 +5,7 @@ import time
 from typing import Dict
 from typing import List
 from typing import Type
+from typing import Union
 from typing import cast
 from unittest import mock
 
@@ -12,6 +13,7 @@ import pytest
 from numpy.linalg import LinAlgError
 
 from pams import LIMIT_ORDER
+from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.agents import Agent
@@ -1266,4 +1268,342 @@ class TestSequentialRunner(TestRunner):
             with pytest.raises(AssertionError):
                 _ = runner._collect_orders_from_normal_agents(
                     session=runner.simulator.sessions[0]
+                )
+
+    def test_handle_orders(self) -> None:
+        setting = {
+            "simulation": {
+                "markets": ["Market"],
+                "agents": ["FCNAgents"],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 10,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": True,
+                    }
+                ],
+            },
+            "Market": {"class": "Market", "tickSize": 0.00001, "marketPrice": 300.0},
+            "FCNAgents": {
+                "class": "FCNAgent",
+                "numAgents": 10,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+                "fundamentalWeight": {"expon": [1.0]},
+                "chartWeight": {"expon": [0.0]},
+                "noiseWeight": {"expon": [1.0]},
+                "meanReversionTime": {"uniform": [50, 100]},
+                "noiseScale": 0.001,
+                "timeWindowSize": [100, 200],
+                "orderMargin": [0.0, 0.1],
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._setup()
+        runner.simulator.markets[0]._update_time(next_fundamental_price=200.0)
+        local_orders = runner._collect_orders_from_normal_agents(
+            session=runner.simulator.sessions[0]
+        )
+        runner.simulator.sessions[0].with_order_placement = False
+        with pytest.raises(AssertionError):
+            runner._handle_orders(
+                session=runner.simulator.sessions[0], local_orders=local_orders
+            )
+
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._setup()
+        runner.simulator.markets[0]._update_time(next_fundamental_price=200.0)
+        dummy_order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_cancel = Cancel(order=dummy_order)
+        local_orders = [[dummy_order], [dummy_cancel]]
+        runner._handle_orders(
+            session=runner.simulator.sessions[0], local_orders=local_orders
+        )
+
+        class BuggyOrder:
+            def __init__(self, market_id: int = 0, agent_id: int = 0):
+                self.market_id = market_id
+                self.agent_id = agent_id
+
+        local_orders = [[dummy_order], [dummy_cancel], [BuggyOrder()]]
+        with pytest.raises(NotImplementedError):
+            runner._handle_orders(
+                session=runner.simulator.sessions[0], local_orders=local_orders
+            )
+
+        dummy_order1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        runner.simulator.markets[0]._is_running = True
+        local_orders = [[dummy_order1], [dummy_order2]]
+        runner._handle_orders(
+            session=runner.simulator.sessions[0], local_orders=local_orders
+        )
+
+        setting = {
+            "simulation": {
+                "markets": ["SpotMarket-1", "SpotMarket-2", "IndexMarket-I"],
+                "agents": [
+                    "FCNAgents-1",
+                    "FCNAgents-2",
+                    "FCNAgents-I",
+                    "ArbitrageAgents",
+                ],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 100,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                        "MEMO": "The same number as #markets",
+                        "maxHighFrequencyOrders": 0,
+                        "highFrequencySubmitRate": 0.0,
+                    }
+                ],
+            },
+            "SpotMarket": {
+                "class": "Market",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+            },
+            "SpotMarket-1": {"extends": "SpotMarket"},
+            "SpotMarket-2": {"extends": "SpotMarket"},
+            "IndexMarket-I": {
+                "class": "IndexMarket",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+                "markets": ["SpotMarket-1", "SpotMarket-2"],
+            },
+            "FCNAgent": {
+                "class": "FCNAgent",
+                "numAgents": 100,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+                "fundamentalWeight": {"expon": [1.0]},
+                "chartWeight": {"expon": [0.0]},
+                "noiseWeight": {"expon": [1.0]},
+                "noiseScale": 0.001,
+                "timeWindowSize": [100, 200],
+                "orderMargin": [0.0, 0.1],
+            },
+            "FCNAgents-1": {"extends": "FCNAgent", "markets": ["SpotMarket-1"]},
+            "FCNAgents-2": {"extends": "FCNAgent", "markets": ["SpotMarket-2"]},
+            "FCNAgents-I": {"extends": "FCNAgent", "markets": ["IndexMarket-I"]},
+            "ArbitrageAgents": {
+                "class": "ArbitrageAgent",
+                "numAgents": 100,
+                "markets": ["IndexMarket-I", "SpotMarket-1", "SpotMarket-2"],
+                "assetVolume": 50,
+                "cashAmount": 150000,
+                "orderVolume": 1,
+                "orderThresholdPrice": 1.0,
+            },
+        }
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+        runner._setup()
+        runner.simulator.markets[0]._is_running = True
+        runner.simulator.markets[1]._is_running = True
+        runner.simulator.markets[2]._is_running = True
+        runner.simulator.markets[0]._update_time(next_fundamental_price=200.0)
+        runner.simulator.markets[1]._update_time(next_fundamental_price=200.0)
+        runner.simulator.markets[2]._update_time(next_fundamental_price=200.0)
+        local_orders = runner._collect_orders_from_normal_agents(
+            session=runner.simulator.sessions[0]
+        )
+        runner._handle_orders(
+            session=runner.simulator.sessions[0], local_orders=local_orders
+        )
+        dummy_order1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        local_orders = [[dummy_order1], [dummy_order2]]
+        runner.simulator.sessions[0].high_frequency_submission_rate = 1.0
+        runner._handle_orders(
+            session=runner.simulator.sessions[0], local_orders=local_orders
+        )
+        runner.simulator.sessions[0].max_high_frequency_orders = 3
+        dummy_order1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        local_orders = [[dummy_order1], [dummy_order2]]
+
+        def dummy_fn(cls: Agent, markets: List[Market]) -> List[Union[Order, Cancel]]:
+            d_order = Order(
+                agent_id=cls.agent_id,
+                market_id=markets[0].market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            d_order2 = Order(
+                agent_id=cls.agent_id,
+                market_id=markets[0].market_id,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            d_cancel = Cancel(order=d_order)
+            return [d_order, d_order2, d_cancel]
+
+        with mock.patch(
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn
+        ):
+            runner._handle_orders(
+                session=runner.simulator.sessions[0], local_orders=local_orders
+            )
+
+        def dummy_fn2(cls: Agent, markets: List[Market]) -> List[Order]:
+            return [
+                Order(
+                    agent_id=cls.agent_id + 1,
+                    market_id=markets[0].market_id,
+                    is_buy=True,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=300.0,
+                )
+            ]
+
+        dummy_order1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        local_orders = [[dummy_order1], [dummy_order2]]
+        with mock.patch(
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn2
+        ):
+            with pytest.raises(ValueError):
+                runner._handle_orders(
+                    session=runner.simulator.sessions[0], local_orders=local_orders
+                )
+
+        def dummy_fn(cls: Agent, markets: List[Market]) -> List[Order]:
+            d_order = Order(
+                agent_id=cls.agent_id,
+                market_id=markets[0].market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            d_cancel = Cancel(order=d_order)
+            d_bug = BuggyOrder(market_id=markets[0].market_id, agent_id=cls.agent_id)
+            return [d_order, d_cancel, d_bug]
+
+        dummy_order1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100.0,
+        )
+        local_orders = [[dummy_order1], [dummy_order2]]
+        with mock.patch(
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn
+        ):
+            with pytest.raises(NotImplementedError):
+                runner._handle_orders(
+                    session=runner.simulator.sessions[0], local_orders=local_orders
+                )
+
+        runner.simulator.sessions[0].with_order_placement = False
+        local_orders = [[], []]
+        with mock.patch(
+            "pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders", dummy_fn
+        ):
+            with pytest.raises(AssertionError):
+                runner._handle_orders(
+                    session=runner.simulator.sessions[0], local_orders=local_orders
                 )
