@@ -1,13 +1,16 @@
+import copy
 import math
 import random
 import time
 from typing import List
 from typing import Optional
+from unittest import mock
 
 import pytest
 
 from pams import LIMIT_ORDER
 from pams import MARKET_ORDER
+from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.logs.base import Logger
@@ -15,8 +18,10 @@ from pams.simulator import Simulator
 
 
 class TestMarket:
+    base_class = Market
+
     def test_init__(self) -> None:
-        m = Market(
+        m = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),
@@ -73,6 +78,8 @@ class TestMarket:
             m.get_n_sell_orders(range(2))
         with pytest.raises(AssertionError):
             m.get_n_sell_order(1)
+        with pytest.raises(AssertionError):
+            m.get_vwap(1)
         assert math.isnan(m.get_vwap())
         m._is_running = True
         order = Order(
@@ -119,9 +126,82 @@ class TestMarket:
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0, 1, 0]
         assert m.get_n_sell_order() == 0
+        assert m.get_mid_prices() == [None, None, None]
+        assert m.get_mid_price() == None
+        assert m.get_vwap() == 1.0
+        order3 = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.2
+        )
+        m._add_order(order=order3)
+        order4 = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        m._add_order(order=order4)
+        assert m.get_mid_prices() == [None, None, 1.5]  # because of tick size
+        assert m.get_mid_price() == 1.5  # because of tick size
+        assert m.get_sell_order_book() == {2.0: 1}
+        assert m.get_buy_order_book() == {1.0: 1}
+        assert m.convert_to_price(tick_level=2) == 2.0
+        m._set_time(time=3, next_fundamental_price=1.3)
+
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        m._is_running = True
+        order3 = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.2
+        )
+        m._add_order(order=order3)
+        order4 = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=1.1
+        )
+        m._add_order(order=order4)
+        m._update_time(next_fundamental_price=1.2)
+        m._set_time(time=2, next_fundamental_price=1.3)
+        cancel_order = Cancel(order=order4)
+        log = m._cancel_order(cancel_order)
+        assert log is not None
+        dummy_order = copy.deepcopy(order3)
+        dummy_order.market_id = 1
+        cancel_dummy = Cancel(order=dummy_order)
+        with pytest.raises(ValueError):
+            m._cancel_order(cancel_dummy)
+        dummy_order = copy.deepcopy(order3)
+        dummy_order.order_id = None
+        cancel_dummy = Cancel(order=dummy_order)
+        with pytest.raises(ValueError):
+            m._cancel_order(cancel_dummy)
+        dummy_order = copy.deepcopy(order3)
+        dummy_order.placed_at = None
+        cancel_dummy = Cancel(order=dummy_order)
+        with pytest.raises(ValueError):
+            m._cancel_order(cancel_dummy)
+        cancel_dummy = Cancel(order=order3)
+        with mock.patch("pams.order_book.OrderBook.cancel", return_value=None):
+            with pytest.raises(AssertionError):
+                m._cancel_order(cancel_dummy)
+
+    def test_repr_(self) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        assert (
+            str(m)
+            == f"<{self.base_class.__module__}.{self.base_class.__name__} | id=0, name=test, tick_size=1.0,"
+            f" outstanding_shares=None>"
+        )
 
     def test_setup(self) -> None:
-        m = Market(
+        m = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),
@@ -166,7 +246,7 @@ class TestMarket:
         m.setup(settings={"tickSize": 0.001, "marketPrice": 300.0})
 
     def test_extract_sequential_data_by_time(self) -> None:
-        m = Market(
+        m = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),
@@ -208,7 +288,7 @@ class TestMarket:
         assert results == expected
 
     def test_extract_data_by_time(self) -> None:
-        m = Market(
+        m = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),
@@ -240,7 +320,7 @@ class TestMarket:
         assert result == expected
 
     def test_get_time(self) -> None:
-        m = Market(
+        m = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),
@@ -253,9 +333,109 @@ class TestMarket:
         m.time = 3
         assert m.get_time() == 3
 
+    def test_execute_orders(self) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        order_sell = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.0
+        )
+        m._add_order(order=order_sell)
+        order_buy = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=2.0
+        )
+        m._add_order(order=order_buy)
+        with pytest.raises(AssertionError):
+            m._execute_orders(
+                price=10, volume=1, buy_order=order_buy, sell_order=order_sell
+            )
+        m._is_running = True
+        order_buy.market_id = 1
+        with pytest.raises(ValueError):
+            m._execute_orders(
+                price=10, volume=1, buy_order=order_buy, sell_order=order_sell
+            )
+        order_buy.market_id = 0
+        order_sell.market_id = 1
+        with pytest.raises(ValueError):
+            m._execute_orders(
+                price=10, volume=1, buy_order=order_buy, sell_order=order_sell
+            )
+        order_sell.market_id = 0
+        with pytest.raises(AssertionError):
+            m._execute_orders(
+                price=1.5, volume=0, buy_order=order_buy, sell_order=order_sell
+            )
+        m._execute_orders(
+            price=1.5, volume=1, buy_order=order_buy, sell_order=order_sell
+        )
+        order_sell.placed_at = None
+        with pytest.raises(ValueError):
+            m._execute_orders(
+                price=1.5, volume=1, buy_order=order_buy, sell_order=order_sell
+            )
+        order_buy.placed_at = None
+        with pytest.raises(ValueError):
+            m._execute_orders(
+                price=1.5, volume=1, buy_order=order_buy, sell_order=order_sell
+            )
+
+    def test_add_order(self) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        order_sell = Order(
+            agent_id=0, market_id=1, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.0
+        )
+        with pytest.raises(ValueError):
+            m._add_order(order=order_sell)
+        order_sell = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            placed_at=0,
+        )
+        with pytest.raises(ValueError):
+            m._add_order(order=order_sell)
+        order_sell = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
+        )
+        with pytest.raises(ValueError):
+            m._add_order(order=order_sell)
+        with mock.patch("pams.order_book.OrderBook.add", return_value=None):
+            order_sell = Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=1.0,
+            )
+            with pytest.raises(AssertionError):
+                m._add_order(order=order_sell)
+
     def test_execution(self) -> None:
         random.seed(42)
-        market = Market(
+        market = self.base_class(
             market_id=0,
             prng=random.Random(42),
             logger=Logger(),

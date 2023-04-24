@@ -76,7 +76,7 @@ class Market:
     def __repr__(self) -> str:
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.market_id}, name={self.name}, "
-            f"tick_size={self.tick_size}, outstanding_shares={self.outstanding_shares}"
+            f"tick_size={self.tick_size}, outstanding_shares={self.outstanding_shares}>"
         )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
@@ -214,7 +214,7 @@ class Market:
         Returns:
             float, Optional: middle price.
         """
-        return self._extract_data_by_time(time, self._mid_prices, allow_none=False)
+        return self._extract_data_by_time(time, self._mid_prices, allow_none=True)
 
     def get_last_executed_prices(
         self, times: Union[Iterable[int], None] = None
@@ -661,7 +661,7 @@ class Market:
         best_buy_price: Optional[float] = self.get_best_buy_price()
         best_sell_price: Optional[float] = self.get_best_sell_price()
         if best_buy_price is None or best_sell_price is None:
-            pass
+            self._mid_prices[self.time] = None
         else:
             self._mid_prices[self.time] = (
                 (best_sell_price + best_buy_price) / 2.0
@@ -695,9 +695,9 @@ class Market:
         if sell_order.market_id != self.market_id:
             raise ValueError("sell order is not for this market")
 
-        if buy_order.market_id is None:
+        if buy_order.placed_at is None:
             raise ValueError("buy order is not submitted yet")
-        if sell_order.market_id is None:
+        if sell_order.placed_at is None:
             raise ValueError("sell order is not submitted yet")
 
         if volume <= 0:
@@ -739,7 +739,7 @@ class Market:
         if order.market_id != self.market_id:
             raise ValueError("order is not for this market")
         if order.placed_at is not None:
-            raise AssertionError
+            raise ValueError("the order is already submitted")
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
         if order.price is not None and order.price % self.tick_size != 0:
