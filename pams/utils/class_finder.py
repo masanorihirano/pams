@@ -19,6 +19,8 @@ def find_class(name: str, optional_class_list: Optional[List[Type]] = None) -> T
     _1 = __import__("pams", globals(), locals())
     _2 = __import__("pams.agents", globals(), locals(), ["*"])
     _3 = __import__("pams.events", globals(), locals(), ["*"])
+    _4 = __import__("pams.logs", globals(), locals(), ["*"])
+    _5 = __import__("pams.utils", globals(), locals(), ["*"])
 
     candidates_spaces = [*globals().values(), *locals().values()]
 
