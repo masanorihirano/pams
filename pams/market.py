@@ -806,11 +806,11 @@ class Market:
                 if sell_book[None] < buy_book[None]:
                     additional_required_orders = buy_book[None] - sell_book[None]
                     sell_book.pop(None)
-                    return len(sell_book) > additional_required_orders
+                    return len(sell_book) >= additional_required_orders
                 else:
                     additional_required_orders = sell_book[None] - buy_book[None]
                     buy_book.pop(None)
-                    return len(buy_book) > additional_required_orders
+                    return len(buy_book) >= additional_required_orders
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)

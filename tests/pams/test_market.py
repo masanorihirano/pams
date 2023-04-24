@@ -127,7 +127,7 @@ class TestMarket:
         assert m.get_n_sell_orders() == [0, 1, 0]
         assert m.get_n_sell_order() == 0
         assert m.get_mid_prices() == [None, None, None]
-        assert m.get_mid_price() == None
+        assert m.get_mid_price() is None
         assert m.get_vwap() == 1.0
         order3 = Order(
             agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=1.2
@@ -463,11 +463,14 @@ class TestMarket:
         if len(logs) == 0:
             raise AssertionError
         start_time = time.time()
+        n_logs = 0
+        total_volume = 0
         for _ in range(5000):
-            kind = LIMIT_ORDER if random.random() < 0.7 else MARKET_ORDER
+            kind = LIMIT_ORDER if random.random() < 0.6 else MARKET_ORDER
             price = random.random() * 10 if kind == LIMIT_ORDER else None
             ttl = random.randint(1, 100) if bool(random.getrandbits(1)) else None
             volume = random.randint(1, 10)
+            total_volume += volume
             order = Order(
                 agent_id=0,
                 market_id=0,
@@ -479,9 +482,270 @@ class TestMarket:
             )
             market._add_order(order)
             log = market._execution()
-            assert len(log) <= volume
+            n_logs += len(log)
             market._update_time(1.0)
+        assert n_logs <= total_volume
         end_time = time.time()
         time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
         assert time_per_step < 0.005
+
+    def test_execution_order_pattern1(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert not market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 0
+
+    def test_execution_order_pattern2(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert not market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 0
+
+    def test_execution_order_pattern3(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=1
+        )
+        market._add_order(order)
+        order = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        market._add_order(order)
+        assert not market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 0
+
+    def test_execution_order_pattern4(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=1
+        )
+        market._add_order(order)
+        order = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 2
+
+    def test_execution_order_pattern5(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=2, price=8
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 2
+
+    def test_execution_order_pattern6(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=8
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=11
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 2
+
+    def test_execution_order_pattern7(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=8
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=11
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 1
+
+    def test_execution_order_pattern8(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=1
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=11
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 1
+
+    def test_execution_order_pattern9(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=8
+        )
+        market._add_order(order)
+        order = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 1
+
+    def test_execution_order_pattern10(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=2
+        )
+        market._add_order(order)
+        order = Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1)
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 2
