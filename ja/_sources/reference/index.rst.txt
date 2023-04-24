@@ -11,6 +11,7 @@ API reference
    simulators
    sessions
    markets
+   fundamentals
    orders
    events
    logs
