@@ -1079,11 +1079,11 @@
                 <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
                     <span class="n">additional_required_orders</span> <span class="o">=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                     <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">sell_book</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">additional_required_orders</span>
+                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">sell_book</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">additional_required_orders</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">additional_required_orders</span> <span class="o">=</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                     <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">buy_book</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">additional_required_orders</span>
+                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">buy_book</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">additional_required_orders</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                 <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
