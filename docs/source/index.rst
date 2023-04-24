@@ -32,6 +32,7 @@ Install:
    reference/simulators
    reference/sessions
    reference/markets
+   reference/fundamentals
    reference/orders
    reference/events
    reference/logs
