@@ -17,6 +17,16 @@ from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.agents import Agent
+from pams.logs import CancelLog
+from pams.logs import ExecutionLog
+from pams.logs import Logger
+from pams.logs import MarketStepBeginLog
+from pams.logs import MarketStepEndLog
+from pams.logs import OrderLog
+from pams.logs import SessionBeginLog
+from pams.logs import SessionEndLog
+from pams.logs import SimulationBeginLog
+from pams.logs import SimulationEndLog
 from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
@@ -1607,3 +1617,88 @@ class TestSequentialRunner(TestRunner):
                 runner._handle_orders(
                     session=runner.simulator.sessions[0], local_orders=local_orders
                 )
+
+    def test_iterate_market_update(self) -> None:
+        class DummyLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.n_market_step_begin = 0
+                self.n_market_end_begin = 0
+
+            def process_market_step_begin_log(self, log: MarketStepBeginLog) -> None:
+                self.n_market_step_begin += 1
+
+            def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+                self.n_market_end_begin += 1
+
+        logger = DummyLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner.simulator._update_times_on_markets(runner.simulator.markets)
+        runner._iterate_market_updates(runner.simulator.sessions[0])
+        assert (
+            logger.n_market_step_begin == runner.simulator.sessions[0].iteration_steps
+        )
+        assert logger.n_market_end_begin == runner.simulator.sessions[0].iteration_steps
+
+    def test_run(self) -> None:
+        class DummyLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.n_order_log = 0
+                self.n_cancel_log = 0
+                self.n_execution_log = 0
+                self.n_simulation_begin_log = 0
+                self.n_simulation_end_log = 0
+                self.n_session_begin_log = 0
+                self.n_session_end_log = 0
+                self.n_market_step_begin = 0
+                self.n_market_step_end = 0
+
+            def process_order_log(self, log: OrderLog) -> None:
+                self.n_order_log += 1
+
+            def process_cancel_log(self, log: CancelLog) -> None:
+                self.n_cancel_log += 1
+
+            def process_execution_log(self, log: ExecutionLog) -> None:
+                self.n_execution_log += 1
+
+            def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
+                self.n_simulation_begin_log += 1
+
+            def process_simulation_end_log(self, log: SimulationEndLog) -> None:
+                self.n_simulation_end_log += 1
+
+            def process_session_begin_log(self, log: SessionBeginLog) -> None:
+                self.n_session_begin_log += 1
+
+            def process_session_end_log(self, log: SessionEndLog) -> None:
+                self.n_session_end_log += 1
+
+            def process_market_step_begin_log(self, log: MarketStepBeginLog) -> None:
+                self.n_market_step_begin += 1
+
+            def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+                self.n_market_step_end += 1
+
+        logger = DummyLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner._run()
+        assert logger.n_simulation_begin_log == 1
+        assert logger.n_simulation_end_log == 1
+        assert logger.n_session_begin_log == len(runner.simulator.sessions)
+        assert logger.n_session_end_log == len(runner.simulator.sessions)
+        assert logger.n_market_step_begin == sum(
+            [session.iteration_steps for session in runner.simulator.sessions]
+        )
+        assert logger.n_market_step_end == sum(
+            [session.iteration_steps for session in runner.simulator.sessions]
+        )
