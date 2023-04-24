@@ -6,7 +6,7 @@
 <link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>API reference - pams ドキュメント</title>
+        <title>Market - pams ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -268,83 +268,17 @@
           </label>
         </div>
         <article role="main">
-          <span class="target" id="module-pams"></span><section id="api-reference">
-<h1>API reference<a class="headerlink" href="#api-reference" title="この見出しへのパーマリンク">#</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="runners.html">Runner</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/runner/pams.runners.Runner.html">Runner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/simulator/pams.Simulator.html">Simulator</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="sessions.html">Session</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/session/pams.Session.html">Session</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="markets.html">Market</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/market/pams.Market.html">Market</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/market/pams.IndexMarket.html">IndexMarket</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="fundamentals.html">Market</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="orders.html">Order</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/order/pams.Order.html">Order</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/order/pams.Cancel.html">Cancel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/order/pams.OrderKind.html">OrderKind</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="events.html">Events</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/events/pams.events.EventABC.html">EventABC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/events/pams.events.EventHook.html">EventHook</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="logs.html">Logs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.Log.html">Log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="loggers.html">Logger</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/loggers/pams.logs.Logger.html">Logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="agents.html">Agents</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/agents/pams.agents.Agent.html">Agent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="generated/utils/pams.utils.class_finder.html">class_finder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/utils/pams.utils.json_extends.html">json_extends</a></li>
-<li class="toctree-l2"><a class="reference internal" href="generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
-</ul>
-</li>
-</ul>
+          <span class="target" id="module-pams"></span><section id="market">
+<h1>Market<a class="headerlink" href="#market" title="この見出しへのパーマリンク">#</a></h1>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals" title="pams.Fundamentals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fundamentals</span></code></a>(prng)</p></td>
+<td><p>Fundamental generator for simulator.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
-<ul class="simple">
-<li><p><a class="reference internal" href="../genindex.html"><span class="std std-ref">索引</span></a></p></li>
-</ul>
 </section>
 
         </article>
