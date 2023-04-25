@@ -90,6 +90,15 @@ class IndexMarket(Market):
 
         Returns:
             float: fundamental index.
+
+        .. note::
+            In an index market, there are two types of fundamental values:
+             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
+             2. fundamental value calculated from components' fundamental value
+                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,
+                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)
+            In usual usage, those become the same. But, in some special usage, it could be differ.
+            This method return 1st one.
         """
         if time is None:
             time = self.get_time()
@@ -144,6 +153,15 @@ class IndexMarket(Market):
 
         Returns:
             float: fundamental index.
+
+        .. note::
+            In an index market, there are two types of fundamental values:
+             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
+             2. fundamental value calculated from components' fundamental value
+                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,
+                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)
+            In usual usage, those become the same. But, in some special usage, it could be differ.
+            This method return 2nd one.
         """
         return self.get_fundamental_price(time=time)
 
