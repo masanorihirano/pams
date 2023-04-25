@@ -1,11 +1,10 @@
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Union
 
 from ..market import Market
-from ..order import Order, Cancel, MARKET_ORDER, LIMIT_ORDER
+from ..order import Order, Cancel, MARKET_ORDER
 from .fcn_agent import FCNAgent
 
 class DarkPoolFCNAgent(FCNAgent):
@@ -48,7 +47,7 @@ class DarkPoolFCNAgent(FCNAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """submit orders based on FCN-based calculation.
 
-        submit limit order to litMarket first, and then change the order destination to DarkPoolMarket with probability 1-d.
+        Create limit order to litMarket first, and then change the order destination to DarkPoolMarket with probability 1-d.
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
         """
