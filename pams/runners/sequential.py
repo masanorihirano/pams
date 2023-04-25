@@ -215,9 +215,7 @@ class SequentialRunner(Runner):
                 optional_class_list=self.registered_classes,
             )
             if not issubclass(agent_class, Agent):
-                raise ValueError(
-                    f"agent class for {name} does not inherit Agent class"
-                )
+                raise ValueError(f"agent class for {name} does not inherit Agent class")
             if "markets" not in agent_settings:
                 raise ValueError(f"markets is required in {name}")
             accessible_market_names: List[str] = agent_settings["markets"]

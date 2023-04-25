@@ -6,6 +6,7 @@ from .logs.base import ExecutionLog
 from .market import Market
 from .order import Order
 
+
 class DarkPoolMarket(Market):
     def setup(self, settings: Dict[str, Any]) -> None:
         """setup market configuration from setting format.
@@ -21,8 +22,7 @@ class DarkPoolMarket(Market):
         super().setup(settings)
         if "litMarket" not in settings:
             raise ValueError("litMarket is required for DarkPoolMarket")
-        self.lit_market: Market = \
-        self.simulator.name2market[settings["litMarket"]]
+        self.lit_market: Market = self.simulator.name2market[settings["litMarket"]]
 
     def _execution(self) -> List[ExecutionLog]:
         """execute for market. (Usually, only triggered by runner)
@@ -32,8 +32,10 @@ class DarkPoolMarket(Market):
         """
         logs: List[ExecutionLog] = []
         while True:
-            if len(self.sell_order_book.priority_queue) == 0 or \
-            len(self.buy_order_book.priority_queue) == 0:
+            if (
+                len(self.sell_order_book.priority_queue) == 0
+                or len(self.buy_order_book.priority_queue) == 0
+            ):
                 break
             buy_order: Order = self.buy_order_book.priority_queue[0]
             sell_order: Order = self.sell_order_book.priority_queue[0]
@@ -44,7 +46,6 @@ class DarkPoolMarket(Market):
                 execute_price = self.lit_market.get_market_price()
             else:
                 execute_price = self.lit_market.get_mid_price()
-            log = self._execute_orders(execute_price, volume,
-                                    buy_order, sell_order)
+            log = self._execute_orders(execute_price, volume, buy_order, sell_order)
             logs.append(log)
         return logs
