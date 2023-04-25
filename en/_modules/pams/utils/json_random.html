@@ -391,6 +391,10 @@
                 <span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;const&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;const&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Constant must be [value] (list) but &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;Constant must be [value] but &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
@@ -399,6 +403,11 @@
                 <span class="k">return</span> <span class="n">value</span>
             <span class="k">if</span> <span class="s2">&quot;uniform&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;uniform&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Uniform distribution must be [min, max] (list) but &quot;</span>
+                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;Uniform distribution must be [min, max] but &quot;</span>
@@ -409,6 +418,11 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_uniform</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">max_value</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;normal&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;normal&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Normal distribution must be [mu, sigma] (list) but &quot;</span>
+                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;Normal distribution must be [mu, sigma] but &quot;</span>
@@ -419,6 +433,11 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_normal</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;expon&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;expon&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Exponential distribution must be [lambda] (list) but &quot;</span>
+                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                    <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">&quot;Exponential distribution must be [lambda] but &quot;</span>
