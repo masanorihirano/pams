@@ -216,7 +216,7 @@ class SequentialRunner(Runner):
             )
             if not issubclass(agent_class, Agent):
                 raise ValueError(
-                    f"market class for {name} does not inherit Market class"
+                    f"agent class for {name} does not inherit Agent class"
                 )
             if "markets" not in agent_settings:
                 raise ValueError(f"markets is required in {name}")
