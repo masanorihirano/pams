@@ -488,9 +488,7 @@
                 <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent_class</span><span class="p">,</span> <span class="n">Agent</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;market class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Market class&quot;</span>
-                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;agent class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Agent class&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">&quot;markets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;markets is required in </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">accessible_market_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;markets&quot;</span><span class="p">]</span>
