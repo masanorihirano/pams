@@ -31,6 +31,10 @@ class TestOrderBook:
         assert ob.get_best_order() is None
         assert ob.get_best_price() is None
 
+    def test__repr__(self) -> None:
+        ob = OrderBook(is_buy=True)
+        assert str(ob) == "<pams.order_book.OrderBook | is_buy=True>"
+
     def test_time(self) -> None:
         ob = OrderBook(is_buy=True)
         assert ob.time == 0

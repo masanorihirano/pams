@@ -228,7 +228,7 @@ class TestOrder:
             agent_id=0,
             market_id=0,
             is_buy=False,
-            kind=4,
+            kind=4,  # type: ignore # NOQA
             volume=1,
             price=1.0,
             order_id=2,
@@ -285,7 +285,7 @@ class TestOrder:
         assert o >= o
         assert o <= o
 
-    def test__repe(self) -> None:
+    def test__repr(self) -> None:
         o = Order(
             agent_id=0,
             market_id=0,
@@ -303,7 +303,7 @@ class TestOrder:
 
 
 class TestCancel:
-    def test__init__(self):
+    def test__init__(self) -> None:
         o = Order(
             agent_id=0,
             market_id=0,
