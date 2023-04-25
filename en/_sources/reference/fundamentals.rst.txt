@@ -1,6 +1,6 @@
 .. module:: pams
 
-Market
+Fundamentals
 ~~~~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/fundamentals/
