@@ -3,11 +3,11 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from ..market import Market
-from ..order import MARKET_ORDER
-from ..order import Cancel
-from ..order import Order
-from .fcn_agent import FCNAgent
+from pams.agents.fcn_agent import FCNAgent
+from pams.market import Market
+from pams.order import MARKET_ORDER
+from pams.order import Cancel
+from pams.order import Order
 
 
 class DarkPoolFCNAgent(FCNAgent):
@@ -20,7 +20,11 @@ class DarkPoolFCNAgent(FCNAgent):
     """  # NOQA
 
     def setup(
-        self, settings: Dict[str, Any], accessible_markets_ids: List[int]
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         """agent setup.  Usually be called from simulator/runner automatically.
 
