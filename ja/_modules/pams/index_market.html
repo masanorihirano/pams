@@ -363,6 +363,15 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: fundamental index.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            In an index market, there are two types of fundamental values:</span>
+<span class="sd">             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
+<span class="sd">             2. fundamental value calculated from components&#39; fundamental value</span>
+<span class="sd">                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,</span>
+<span class="sd">                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)</span>
+<span class="sd">            In usual usage, those become the same. But, in some special usage, it could be differ.</span>
+<span class="sd">            This method return 1st one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
@@ -417,6 +426,15 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: fundamental index.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            In an index market, there are two types of fundamental values:</span>
+<span class="sd">             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
+<span class="sd">             2. fundamental value calculated from components&#39; fundamental value</span>
+<span class="sd">                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,</span>
+<span class="sd">                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)</span>
+<span class="sd">            In usual usage, those become the same. But, in some special usage, it could be differ.</span>
+<span class="sd">            This method return 2nd one.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span></div>
 
