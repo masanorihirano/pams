@@ -39,7 +39,12 @@ class DarkPoolMarket(Market):
             sell_order: Order = self.sell_order_book.priority_queue[0]
             sellbuy_order_volumes: List[int] = [sell_order.volume, buy_order.volume]
             volume: int = min(sellbuy_order_volumes)
-            log = self._execute_orders(self.lit_market.get_mid_price(), volume,
+            execute_price: float
+            if self.lit_market.get_mid_price() == None:
+                execute_price = self.lit_market.get_market_price()
+            else:
+                execute_price = self.lit_market.get_mid_price()
+            log = self._execute_orders(execute_price, volume,
                                     buy_order, sell_order)
             logs.append(log)
         return logs
