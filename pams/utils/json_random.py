@@ -118,6 +118,10 @@ class JsonRandom:
                 )
             if "const" in json_value:
                 args = json_value["const"]
+                if not isinstance(args, list):
+                    raise ValueError(
+                        "Constant must be [value] (list) but " + json.dumps(json_value)
+                    )
                 if len(args) != 1:
                     raise ValueError(
                         "Constant must be [value] but " + json.dumps(json_value)
@@ -126,6 +130,11 @@ class JsonRandom:
                 return value
             if "uniform" in json_value:
                 args = json_value["uniform"]
+                if not isinstance(args, list):
+                    raise ValueError(
+                        "Uniform distribution must be [min, max] (list) but "
+                        + json.dumps(json_value)
+                    )
                 if len(args) != 2:
                     raise ValueError(
                         "Uniform distribution must be [min, max] but "
@@ -136,6 +145,11 @@ class JsonRandom:
                 return self._next_uniform(min_value=min_value, max_value=max_value)
             if "normal" in json_value:
                 args = json_value["normal"]
+                if not isinstance(args, list):
+                    raise ValueError(
+                        "Normal distribution must be [mu, sigma] (list) but "
+                        + json.dumps(json_value)
+                    )
                 if len(args) != 2:
                     raise ValueError(
                         "Normal distribution must be [mu, sigma] but "
@@ -146,6 +160,11 @@ class JsonRandom:
                 return self._next_normal(mu=mu, sigma=sigma)
             if "expon" in json_value:
                 args = json_value["expon"]
+                if not isinstance(args, list):
+                    raise ValueError(
+                        "Exponential distribution must be [lambda] (list) but "
+                        + json.dumps(json_value)
+                    )
                 if len(args) != 1:
                     raise ValueError(
                         "Exponential distribution must be [lambda] but "
