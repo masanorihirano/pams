@@ -276,47 +276,41 @@
 <h1>Json config<a class="headerlink" href="#json-config" title="この見出しへのパーマリンク">#</a></h1>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
     &quot;simulation&quot;: {
-        &quot;markets&quot;: [&quot;SpotMarket-N&quot;],
-        &quot;agents&quot;: [&quot;FCNAgents&quot;],
+        &quot;markets&quot;: [&quot;MarketName&quot;, ...],
+        &quot;agents&quot;: [&quot;AgentName&quot;, ...],
         &quot;sessions&quot;: [
-            {       &quot;sessionName&quot;: 0,
-                &quot;iterationSteps&quot;: 100,
-                &quot;withOrderPlacement&quot;: true,
-                &quot;withOrderExecution&quot;: false,
-                &quot;withPrint&quot;: true,
-                &quot;highFrequencySubmitRate&quot;: float
-                &quot;maxNormalOrders&quot;: int (&gt;=0),
-                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0)
+            {
+                &quot;sessionName&quot;: str (or anything that can be converted into str),
+                &quot;iterationSteps&quot;: int,
+                &quot;withOrderPlacement&quot;: bool,
+                &quot;withOrderExecution&quot;: bool,
+                &quot;withPrint&quot;: bool,
+                &quot;highFrequencySubmitRate&quot;: float (Optional; default 1.0),
+                &quot;maxNormalOrders&quot;: int (&gt;=0; Optional; default 1),
+                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0; Optional; default 1),
+                &quot;events&quot;: [&quot;EventName&quot;] (Optional)
             },
-            {       &quot;sessionName&quot;: 1,
-                &quot;iterationSteps&quot;: 500,
-                &quot;withOrderPlacement&quot;: true,
-                &quot;withOrderExecution&quot;: true,
-                &quot;withPrint&quot;: true,
-                &quot;highFrequencySubmitRate&quot;: float
-                &quot;maxNormalOrders&quot;: int (&gt;=0),
-                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0)
-                &quot;events&quot;: [&quot;FundamentalPriceShock&quot;]
-            }
+            ...
         ],
-        &quot;fundamentalCorrelations&quot;: {
+        &quot;fundamentalCorrelations&quot;: { # Optional
             &quot;pairwise&quot;: [
-                [&quot;SpotMarket-0&quot;, &quot;SpotMarket-1&quot;,  0.9], # fundamentalVolatility is required in both markets
-                [&quot;SpotMarket-0&quot;, &quot;SpotMarket-2&quot;, -0.1]
+                [&quot;MarketName1&quot;, &quot;MarketName2&quot;,  float], # fundamentalVolatility is required in both markets
+                ...
             ]
         }
     },
     &quot;FundamentalPriceShock&quot;: {
         &quot;class&quot;: &quot;FundamentalPriceShock&quot;,
-        &quot;target&quot;: &quot;SpotMarket-1&quot;,
-        &quot;triggerTime&quot;: 0,
-        &quot;priceChangeRate&quot;: -0.1,
+        &quot;target&quot;: &quot;MarketName&quot;,
+        &quot;triggerTime&quot;: int,
+        &quot;priceChangeRate&quot;: float,
         &quot;shockTimeLength&quot;: int (Optional, default: 1),
         &quot;enabled&quot;: bool (Optional, default: True)
     },
     &quot;Market&quot;: {
-        &quot;class&quot;: &quot;string required&quot;,
-        &quot;tickSize&quot;: float required,
+        &quot;extends&quot;: string (Optional),
+        &quot;class&quot;: string,
+        &quot;tickSize&quot;: float,
         &quot;numMarket&quot;: int (Optional; default  1),
         &quot;from&quot;: int (Optional; cannot be extended),
         &quot;to&quot;: int (Optional; cannot be extended; End is included),
@@ -326,39 +320,29 @@
         &quot;fundamentalPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
         &quot;fundamentalDrift&quot;: float (Optional; default: 0.0),
         &quot;fundamentalVolatility&quot;: float (Optional; default 0.0),
-        &quot;outstandingShares&quot;: int optional (default 0),
-    },
-    &quot;MarketBase&quot;: {
-        &quot;class&quot;: &quot;Market&quot;,
-        &quot;tickSize&quot;: 0.00001,
-        &quot;marketPrice&quot;: 300.0
-    },
-    &quot;SpotMarket-N&quot;: {
-        &quot;prefix&quot;: &quot;SpotMarket-&quot;,
-        &quot;numMarkets&quot;: 3,
-        &quot;extends&quot;: &quot;MarketBase&quot;
+        &quot;outstandingShares&quot;: int optional (default 0)
     },
     &quot;Agents&quot;: {
-        &quot;class&quot;: &quot;string required&quot;,
+        &quot;class&quot;: string,
         &quot;numAgents&quot;: int (Optional; default  1),
         &quot;from&quot;: int (Optional; cannot be extended),
         &quot;to&quot;: int (Optional; cannot be extended; End is included),
         &quot;prefix&quot;: str (Optional; default is set to dict key),
-        &quot;markets&quot;: [&quot;Market&quot;] (Required),
+        &quot;markets&quot;: [&quot;Market&quot;, ...] (Required),
         &quot;assetVolume&quot;: int (JsonRandom applicable),
         &quot;cashAmount&quot;: float (JsonRandom applicable)
     },
     &quot;FCNAgent&quot;: {
         &quot;class&quot;: &quot;FCNAgent&quot;,
         &quot;extends&quot;: &quot;Agents&quot;,
-        &quot;fundamentalWeight&quot;: {&quot;expon&quot;: [1.0]},
-        &quot;chartWeight&quot;: {&quot;expon&quot;: [0.0]},
-        &quot;noiseWeight&quot;: {&quot;expon&quot;: [1.0]},
-        &quot;meanReversionTime&quot;:{&quot;uniform&quot;:[50,100]},
-        &quot;noiseScale&quot;: 0.001,
-        &quot;timeWindowSize&quot;: [100, 200],
-        &quot;orderMargin&quot;: [0.0, 0.1],
-        &quot;marginType&quot;: &quot;fixed&quot; or &quot;normal&quot; (Optional)
+        &quot;fundamentalWeight&quot;: JsonRandomFormat,
+        &quot;chartWeight&quot;: JsonRandomFormat,
+        &quot;noiseWeight&quot;: JsonRandomFormat,
+        &quot;meanReversionTime&quot;:JsonRandomFormat,
+        &quot;noiseScale&quot;: JsonRandomFormat,
+        &quot;timeWindowSize&quot;: JsonRandomFormat,
+        &quot;orderMargin&quot;: JsonRandomFormat,
+        &quot;marginType&quot;: &quot;fixed&quot; or &quot;normal&quot; (Optional; default fixed)
     },
     &quot;ArbitrageAgent&quot;: {
         &quot;class&quot;: &quot;ArbitrageAgent&quot;,
