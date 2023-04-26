@@ -31,7 +31,7 @@ def test_all() -> None:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=env,
-            shell=not ("OS" in os.environ and os.environ["OS"].startswith("Windows")),
+            shell=("OS" in os.environ and os.environ["OS"].startswith("Windows")),
         )
         if run.returncode != 0 or len(run.stdout) == 0:
             raise RuntimeError(
