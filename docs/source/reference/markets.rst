@@ -8,4 +8,3 @@ Market
 
     Market
     IndexMarket
-    Fundamentals

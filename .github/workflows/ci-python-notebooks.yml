@@ -41,4 +41,4 @@ jobs:
         run: |
           ls examples | xargs -I {} bash -c "poetry run jupyter nbconvert --to python examples/{} --stdout > tests/examples/{}.py"
       - name: Run examples
-        run: cd tests/examples && find . -name '*.py' -exec poetry run python {} \;
+        run: cd tests/examples && find . -name '*.py' | xargs -I {} -exec poetry run python {};

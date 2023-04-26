@@ -70,6 +70,7 @@ class OrderLog(Log):
         self.price: Optional[float] = price
         self.volume: int = volume
         self.ttl: Optional[int] = ttl
+        # TODO: Type validation
 
 
 class CancelLog(Log):
@@ -116,6 +117,7 @@ class CancelLog(Log):
         self.price: Optional[float] = price
         self.volume: int = volume
         self.ttl: Optional[int] = ttl
+        # TODO: Type validation
 
 
 class ExecutionLog(Log):
@@ -155,6 +157,7 @@ class ExecutionLog(Log):
         self.sell_order_id: int = sell_order_id
         self.price: float = price
         self.volume: int = volume
+        # TODO: Type validation
 
 
 class SimulationBeginLog(Log):

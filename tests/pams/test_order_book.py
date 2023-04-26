@@ -31,6 +31,10 @@ class TestOrderBook:
         assert ob.get_best_order() is None
         assert ob.get_best_price() is None
 
+    def test__repr__(self) -> None:
+        ob = OrderBook(is_buy=True)
+        assert str(ob) == "<pams.order_book.OrderBook | is_buy=True>"
+
     def test_time(self) -> None:
         ob = OrderBook(is_buy=True)
         assert ob.time == 0
@@ -72,3 +76,63 @@ class TestOrderBook:
         )
         ob.add(o)
         assert ob.get_price_volume() == {None: 1, 1.0: 1, 1.1: 2}
+
+    def test_remove(self) -> None:
+        ob = OrderBook(is_buy=False)
+        o1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=MARKET_ORDER,
+            volume=1,
+            order_id=0,
+        )
+        ob.add(o1)
+        o2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.0,
+            order_id=1,
+        )
+        ob.add(o2)
+        o3 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.1,
+            order_id=2,
+        )
+        ob.add(o3)
+        o4 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=1.1,
+            order_id=3,
+        )
+        ob.add(o4)
+        ob._remove(order=o2)
+        o3.placed_at = None
+        with pytest.raises(AssertionError):
+            ob._remove(order=o3)
+
+    def test_change_order_volume(self) -> None:
+        ob = OrderBook(is_buy=False)
+        o1 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=MARKET_ORDER,
+            volume=1,
+            order_id=0,
+        )
+        ob.add(o1)
+        with pytest.raises(AssertionError):
+            ob.change_order_volume(order=o1, delta=-2)

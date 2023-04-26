@@ -11,10 +11,12 @@ API reference
    simulators
    sessions
    markets
+   fundamentals
    orders
    events
    logs
    loggers
    agents
+   utils
 
 * :ref:`genindex`

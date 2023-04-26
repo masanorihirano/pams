@@ -1,3 +1,4 @@
+import heapq
 import math
 import random
 import warnings
@@ -31,7 +32,12 @@ class Market:
     """
 
     def __init__(
-        self, market_id: int, prng: random.Random, simulator: "Simulator", name: str, logger: Optional[Logger] = None  # type: ignore  # NOQA
+        self,
+        market_id: int,
+        prng: random.Random,
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+        logger: Optional[Logger] = None,
     ) -> None:
         """initialization.
 
@@ -63,9 +69,15 @@ class Market:
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
-        self._simulator: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.market_id}, name={self.name}, "
+            f"tick_size={self.tick_size}, outstanding_shares={self.outstanding_shares}>"
+        )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup market configuration from setting format.
@@ -202,7 +214,7 @@ class Market:
         Returns:
             float, Optional: middle price.
         """
-        return self._extract_data_by_time(time, self._mid_prices, allow_none=False)
+        return self._extract_data_by_time(time, self._mid_prices, allow_none=True)
 
     def get_last_executed_prices(
         self, times: Union[Iterable[int], None] = None
@@ -649,7 +661,7 @@ class Market:
         best_buy_price: Optional[float] = self.get_best_buy_price()
         best_sell_price: Optional[float] = self.get_best_sell_price()
         if best_buy_price is None or best_sell_price is None:
-            pass
+            self._mid_prices[self.time] = None
         else:
             self._mid_prices[self.time] = (
                 (best_sell_price + best_buy_price) / 2.0
@@ -683,9 +695,9 @@ class Market:
         if sell_order.market_id != self.market_id:
             raise ValueError("sell order is not for this market")
 
-        if buy_order.market_id is None:
+        if buy_order.placed_at is None:
             raise ValueError("buy order is not submitted yet")
-        if sell_order.market_id is None:
+        if sell_order.placed_at is None:
             raise ValueError("sell order is not submitted yet")
 
         if volume <= 0:
@@ -726,9 +738,8 @@ class Market:
         """
         if order.market_id != self.market_id:
             raise ValueError("order is not for this market")
-        (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
-        if order.placed_at is None:
-            raise AssertionError
+        if order.placed_at is not None:
+            raise ValueError("the order is already submitted")
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
         if order.price is not None and order.price % self.tick_size != 0:
@@ -741,6 +752,9 @@ class Market:
             )
         order.order_id = self._next_order_id
         self._next_order_id += 1
+        (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
+        if order.placed_at != self.time:
+            raise AssertionError
         self._update_market_price()
         if order.is_buy:
             self._n_buy_orders[self.time] += 1
@@ -750,7 +764,7 @@ class Market:
         log: OrderLog = OrderLog(
             order_id=order.order_id,
             market_id=order.market_id,
-            time=order.placed_at,
+            time=cast(int, order.placed_at),
             agent_id=order.agent_id,
             is_buy=order.is_buy,
             kind=order.kind,
@@ -789,10 +803,19 @@ class Market:
             if None not in sell_book or None not in buy_book:
                 raise AssertionError
             if sell_book[None] != buy_book[None]:
-                return True
+                if sell_book[None] < buy_book[None]:
+                    additional_required_orders = buy_book[None] - sell_book[None]
+                    sell_book.pop(None)
+                    return len(sell_book) >= additional_required_orders
+                else:
+                    additional_required_orders = sell_book[None] - buy_book[None]
+                    buy_book.pop(None)
+                    return len(buy_book) >= additional_required_orders
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)
+                if len(sell_book) == 0 or len(buy_book) == 0:
+                    return False
                 return min(list(cast(Dict[float, int], sell_book).keys())) <= max(
                     list(cast(Dict[float, int], buy_book).keys())
                 )
@@ -806,10 +829,12 @@ class Market:
         if not self.remain_executable_orders():
             return []
         pending: List[Tuple[int, Order, Order]] = []
-        buy_order_id_tmp: int = 0
-        sell_order_id_tmp: int = -1
 
-        buy_order: Order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
+        popped_buy_orders: List[Order] = []
+        popped_sell_orders: List[Order] = []
+
+        buy_order: Order = heapq.heappop(self.buy_order_book.priority_queue)
+        popped_buy_orders.append(buy_order)
         sell_order: Order
         buy_order_volume_tmp: int = buy_order.volume
         sell_order_volume_tmp: int = 0
@@ -818,19 +843,21 @@ class Market:
             if buy_order_volume_tmp != 0 and sell_order_volume_tmp != 0:
                 raise AssertionError
             if buy_order_volume_tmp == 0:
-                buy_order_id_tmp += 1
-                if buy_order_id_tmp >= len(self.buy_order_book.priority_queue.queue):
+                if len(self.buy_order_book.priority_queue) == 0:
                     break
-                buy_order = self.buy_order_book.priority_queue.queue[buy_order_id_tmp]
+                buy_order = heapq.heappop(self.buy_order_book.priority_queue)
+                popped_buy_orders.append(buy_order)
                 buy_order_volume_tmp = buy_order.volume
+                if buy_order_volume_tmp == 0:
+                    raise AssertionError
             if sell_order_volume_tmp == 0:
-                sell_order_id_tmp += 1
-                if sell_order_id_tmp >= len(self.sell_order_book.priority_queue.queue):
+                if len(self.sell_order_book.priority_queue) == 0:
                     break
-                sell_order = self.sell_order_book.priority_queue.queue[
-                    sell_order_id_tmp
-                ]
+                sell_order = heapq.heappop(self.sell_order_book.priority_queue)
+                popped_sell_orders.append(sell_order)
                 sell_order_volume_tmp = sell_order.volume
+                if sell_order_volume_tmp == 0:
+                    raise AssertionError
             if (
                 buy_order.price is not None
                 and sell_order.price is not None
@@ -838,6 +865,8 @@ class Market:
             ):
                 break
             volume = min(buy_order_volume_tmp, sell_order_volume_tmp)
+            if volume == 0:
+                raise AssertionError
             buy_order_volume_tmp -= volume
             sell_order_volume_tmp -= volume
             if buy_order_volume_tmp < 0:
@@ -848,12 +877,22 @@ class Market:
                 if buy_order.price is None and sell_order.price is None:
                     pending.append((volume, buy_order, sell_order))
                 else:
-                    price = buy_order.price or sell_order.price
+                    price = (
+                        buy_order.price
+                        if buy_order.price is not None
+                        else sell_order.price
+                    )
                     pending.append((volume, buy_order, sell_order))
             else:
                 if buy_order.placed_at == sell_order.placed_at:
-                    # ToDo: in the actual market, this doesn't occur
-                    price = buy_order.price
+                    if buy_order.order_id is None or sell_order.order_id is None:
+                        raise AssertionError
+                    if buy_order.order_id < sell_order.order_id:
+                        price = buy_order.price
+                    elif buy_order.order_id > sell_order.order_id:
+                        price = sell_order.price
+                    else:
+                        raise AssertionError
                 else:
                     price = (
                         buy_order.price
@@ -864,6 +903,17 @@ class Market:
                 pending.append((volume, buy_order, sell_order))
         if price is None:
             raise AssertionError
+        # TODO: faster impl
+        self.buy_order_book.priority_queue = [
+            *popped_buy_orders,
+            *self.buy_order_book.priority_queue,
+        ]
+        self.sell_order_book.priority_queue = [
+            *popped_sell_orders,
+            *self.sell_order_book.priority_queue,
+        ]
+        heapq.heapify(self.buy_order_book.priority_queue)
+        heapq.heapify(self.sell_order_book.priority_queue)
         logs: List[ExecutionLog] = list(
             map(
                 lambda x: self._execute_orders(
@@ -875,6 +925,8 @@ class Market:
                 pending,
             )
         )
+        if self.remain_executable_orders():
+            raise AssertionError
         if self.logger is not None:
             self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs
@@ -892,5 +944,5 @@ class Market:
         current_fundamental: float = self.get_fundamental_price(time=time)
         new_fundamental: float = current_fundamental * scale
         self._fundamental_prices[time] = new_fundamental
-        self._simulator.fundamentals.prices[self.market_id][time] = new_fundamental
-        self._simulator.fundamentals._generated_until = time
+        self.simulator.fundamentals.prices[self.market_id][time] = new_fundamental
+        self.simulator.fundamentals._generated_until = time

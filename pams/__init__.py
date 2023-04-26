@@ -11,6 +11,8 @@ from pams.order import Cancel
 from pams.order import Order
 from pams.order import OrderKind
 from pams.order_book import OrderBook
+from pams.runners import Runner
+from pams.runners import SequentialRunner
 from pams.session import Session
 from pams.simulator import Simulator
 from pams.version import __version__

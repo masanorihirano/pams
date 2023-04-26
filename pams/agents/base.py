@@ -61,8 +61,14 @@ class Agent(ABC):
         self.asset_volumes: Dict[int, int] = {}
         self.cash_amount: float = 0
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, name={self.name}, "
+            f"logger={self.logger}>"
+        )
 
     def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore
         """agent setup. Usually be called from simulator/runner automatically.
@@ -77,7 +83,9 @@ class Agent(ABC):
         """
         if "cashAmount" not in settings:
             raise ValueError("cashAmount is required property of agent settings")
-        self.cash_amount = settings["cashAmount"]
+        self.cash_amount = JsonRandom(prng=self.prng).random(
+            json_value=settings["cashAmount"]
+        )
         if "assetVolume" not in settings:
             raise ValueError("cashAmount is required property of agent settings")
 
@@ -98,7 +106,7 @@ class Agent(ABC):
             int: asset volume for the specified market ID.
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
         return self.asset_volumes[market_id]
 
     def get_cash_amount(self) -> float:
@@ -172,7 +180,9 @@ class Agent(ABC):
             None
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
+        if not isinstance(volume, int):
+            raise ValueError("volume have to be int")
         self.asset_volumes[market_id] = volume
 
     def set_cash_amount(self, cash_amount: float) -> None:
@@ -195,6 +205,8 @@ class Agent(ABC):
         Returns:
             None
         """
+        if self.is_market_accessible(market_id=market_id):
+            raise ValueError(f"market {market_id} is already accessible")
         self.asset_volumes[market_id] = 0
 
     @abstractmethod
@@ -226,7 +238,9 @@ class Agent(ABC):
             None
         """
         if not self.is_market_accessible(market_id=market_id):
-            raise AssertionError(f"market {market_id} is not accessible")
+            raise ValueError(f"market {market_id} is not accessible")
+        if not isinstance(delta, int):
+            raise ValueError("delta have to be int")
         self.asset_volumes[market_id] += delta
 
     def update_cash_amount(self, delta: float) -> None:
@@ -239,18 +253,3 @@ class Agent(ABC):
             None
         """
         self.cash_amount += delta
-
-    def __repr__(self) -> str:
-        """string representation of agent class.
-
-        Returns:
-            str: string representation of this class.
-        """
-        return (
-            self.__class__.__name__
-            + str(id)
-            + ","
-            + str(self.cash_amount)
-            + ","
-            + str(self.asset_volumes)
-        )

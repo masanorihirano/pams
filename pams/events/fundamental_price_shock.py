@@ -1,3 +1,4 @@
+import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -16,8 +17,24 @@ class FundamentalPriceShock(EventABC):
     target_market: "Market"  # type: ignore  # NOQA
     trigger_time: int
     price_change_rate: float
-    is_enabled: bool = True
-    shock_time_length: int = 1
+
+    def __init__(
+        self,
+        event_id: int,
+        prng: random.Random,
+        session: "Session",  # type: ignore  # NOQA
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+    ) -> None:
+        super().__init__(
+            event_id=event_id,
+            prng=prng,
+            session=session,
+            simulator=simulator,
+            name=name,
+        )
+        self.is_enabled: bool = True
+        self.shock_time_length: int = 1
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
@@ -37,6 +54,8 @@ class FundamentalPriceShock(EventABC):
         self.target_market_name = settings["target"]
         if "triggerTime" not in settings:
             raise ValueError("triggerTime is required for FundamentalPriceShock")
+        if not isinstance(settings["triggerTime"], int):
+            raise ValueError("triggerTime have to be int")
         self.trigger_time = self.session.session_start_time + settings["triggerTime"]
         if "priceChangeRate" not in settings:
             raise ValueError("priceChangeRate is required for FundamentalPriceShock")
@@ -44,6 +63,8 @@ class FundamentalPriceShock(EventABC):
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
         if "shockTimeLength" in settings:
+            if not isinstance(settings["shockTimeLength"], int):
+                raise ValueError("shockTimeLength have to be int")
             self.shock_time_length = settings["shockTimeLength"]
         self.target_market = self.simulator.name2market[self.target_market_name]
 

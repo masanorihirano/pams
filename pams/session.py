@@ -41,7 +41,7 @@ class Session:
         self.session_id: int = session_id
         self.name: str = name
         self.prng: random.Random = prng
-        self.sim: "Simulator" = simulator  # type: ignore  # NOQA
+        self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.logger: Optional[Logger] = logger
 
         self.iteration_steps: int = 0
@@ -52,6 +52,16 @@ class Session:
         self.with_print: bool = True
         self.high_frequency_submission_rate: float = 1.0
         self.session_start_time: int = session_start_time
+
+    def __repr__(self) -> str:
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.session_id}, name={self.name}, "
+            f"iteration_steps={self.iteration_steps}, session_start_time={self.session_start_time}, "
+            f"max_normal_orders={self.max_normal_orders}, max_high_frequency_orders={self.max_high_frequency_orders}, "
+            f"with_order_placement={self.with_order_placement}, with_order_execution={self.with_order_execution}, "
+            f"high_frequency_submission_rate={self.high_frequency_submission_rate}, with_print={self.with_print}, "
+            f"logger={self.logger.__str__()}>"
+        )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """setup session configuration from setting format.
@@ -68,6 +78,8 @@ class Session:
             raise ValueError(
                 "for each element in simulation.sessions must have iterationSteps"
             )
+        if not isinstance(settings["iterationSteps"], int):
+            raise ValueError("iterationSteps must be int")
         self.iteration_steps = int(settings["iterationSteps"])
         if "withOrderPlacement" not in settings:
             raise ValueError(
@@ -109,7 +121,7 @@ class Session:
         # TODO: check malOrders + maxHighFrequencyOrders >= 1
         if "highFrequencySubmitRate" in settings:
             # TODO: check non-negative
-            self.max_high_frequency_orders = settings["highFrequencySubmitRate"]
+            self.high_frequency_submission_rate = settings["highFrequencySubmitRate"]
             if "hifreqSubmitRate" in settings:
                 raise ValueError(
                     "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it."

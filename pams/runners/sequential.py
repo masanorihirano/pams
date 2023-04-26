@@ -11,7 +11,6 @@ from typing import Type
 from typing import Union
 
 from ..agents.base import Agent
-from ..agents.high_frequency_agent import HighFrequencyAgent
 from ..events import EventABC
 from ..events import EventHook
 from ..index_market import IndexMarket
@@ -60,18 +59,6 @@ class SequentialRunner(Runner):
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
 
-    @staticmethod
-    def judge_hft_or_not(agent: Agent) -> bool:
-        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
-
-        Args:
-            agent (Agent): agent instance.
-
-        Returns:
-            bool: whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or not.
-        """
-        return isinstance(agent, HighFrequencyAgent)
-
     def _generate_markets(self, market_type_names: List[str]) -> None:
         """generate markets. (Internal method)
 
@@ -83,7 +70,16 @@ class SequentialRunner(Runner):
         """
         i_market = 0
         for name in market_type_names:
+            if name not in self.settings:
+                raise ValueError(f"{name} setting is missing in config")
             market_settings: Dict = self.settings[name]
+            market_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=market_settings,
+                excludes_fields=["from", "to"],
+            )
+            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
             n_markets = 1
             id_from = 0
             id_to = 0
@@ -99,24 +95,26 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_markets = market_settings["to"] - market_settings["from"]
-                id_from = market_settings["from"]
-                id_to = market_settings["to"]
+                n_markets = int(market_settings["to"]) - int(market_settings["from"])
+                id_from = int(market_settings["from"])
+                id_to = int(market_settings["to"])
+            if "numMarkets" in market_settings:
+                del market_settings["numMarkets"]
+            if "from" in market_settings:
+                del market_settings["from"]
+            if "to" in market_settings:
+                del market_settings["to"]
             prefix: str
             if "prefix" in market_settings:
                 prefix = market_settings["prefix"]
+                del market_settings["prefix"]
             else:
                 prefix = name + ("-" if n_markets > 1 else "")
-            market_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=market_settings,
-                excludes_fields=["numMarkets", "from", "to", "prefix"],
-            )
             if "class" not in market_settings:
                 raise ValueError(f"class is not defined for {name}")
             market_class: Type[Market] = find_class(
-                name=market_settings["class"], optional_class_list=self.registered_class
+                name=market_settings["class"],
+                optional_class_list=self.registered_classes,
             )
             if not issubclass(market_class, Market):
                 raise ValueError(
@@ -169,7 +167,16 @@ class SequentialRunner(Runner):
         """
         i_agent = 0
         for name in agent_type_names:
+            if name not in self.settings:
+                raise ValueError(f"{name} setting is missing in config")
             agent_settings: Dict = self.settings[name]
+            agent_settings = json_extends(
+                whole_json=self.settings,
+                parent_name=name,
+                target_json=agent_settings,
+                excludes_fields=["from", "to"],
+            )
+            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
             n_agents = 1
             id_from = 0
             id_to = 0
@@ -185,29 +192,30 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_agents = agent_settings["to"] - agent_settings["from"]
-                id_from = agent_settings["from"]
-                id_to = agent_settings["to"]
+                n_agents = int(agent_settings["to"]) - int(agent_settings["from"])
+                id_from = int(agent_settings["from"])
+                id_to = int(agent_settings["to"])
+            if "numAgents" in agent_settings:
+                del agent_settings["numAgents"]
+            if "from" in agent_settings:
+                del agent_settings["from"]
+            if "to" in agent_settings:
+                del agent_settings["to"]
             prefix: str
             if "prefix" in agent_settings:
                 prefix = agent_settings["prefix"]
+                del agent_settings["prefix"]
             else:
                 prefix = name + ("-" if n_agents > 1 else "")
-            agent_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=agent_settings,
-                excludes_fields=["numAgents", "from", "to", "prefix"],
-            )
+
             if "class" not in agent_settings:
                 raise ValueError(f"class is not defined for {name}")
             agent_class: Type[Agent] = find_class(
-                name=agent_settings["class"], optional_class_list=self.registered_class
+                name=agent_settings["class"],
+                optional_class_list=self.registered_classes,
             )
             if not issubclass(agent_class, Agent):
-                raise ValueError(
-                    f"market class for {name} does not inherit Market class"
-                )
+                raise ValueError(f"agent class for {name} does not inherit Agent class")
             if "markets" not in agent_settings:
                 raise ValueError(f"markets is required in {name}")
             accessible_market_names: List[str] = agent_settings["markets"]
@@ -259,6 +267,15 @@ class SequentialRunner(Runner):
                     for (market1_name, market2_name, corr) in value:
                         market1 = self.simulator.name2market[market1_name]
                         market2 = self.simulator.name2market[market2_name]
+                        for m in [market1, market2]:
+                            if (
+                                self.simulator.fundamentals.volatilities[m.market_id]
+                                == 0.0
+                            ):
+                                raise ValueError(
+                                    f"For applying fundamental correlation fo {m.name}, "
+                                    f"fundamentalVolatility for {m.name} is required"
+                                )
                         self.simulator.fundamentals.set_correlation(
                             market_id1=market1.market_id,
                             market_id2=market2.market_id,
@@ -271,6 +288,8 @@ class SequentialRunner(Runner):
 
     def _generate_sessions(self) -> None:
         """generate sessions. (Internal method)"""
+        if "sessions" not in self.settings["simulation"]:
+            raise ValueError("sessions is missing under 'simulation' config")
         session_settings: Dict = self.settings["simulation"]["sessions"]
         if not isinstance(session_settings, list):
             raise ValueError("simulation.sessions must be list[dict]")
@@ -287,7 +306,7 @@ class SequentialRunner(Runner):
                 prng=random.Random(self._prng.randint(0, 2**31)),
                 session_start_time=session_start_time,
                 simulator=self.simulator,
-                name=session_setting["sessionName"],
+                name=str(session_setting["sessionName"]),
                 logger=self.logger,
             )
             i_session += 1
@@ -312,7 +331,8 @@ class SequentialRunner(Runner):
                         raise ValueError(f"class is required in {event_name}")
                     event_class_name = event_setting["class"]
                     event_class: Type[EventABC] = find_class(
-                        name=event_class_name, optional_class_list=self.registered_class
+                        name=event_class_name,
+                        optional_class_list=self.registered_classes,
                     )
                     event = event_class(
                         event_id=i_event,
@@ -399,6 +419,8 @@ class SequentialRunner(Runner):
                         "spoofing order is not allowed. please check agent_id in order"
                     )
                 all_orders.append(orders)
+                # TODO: currently the original impl is used
+                # n_orders += len(orders)
                 n_orders += 1
         return all_orders
 
@@ -415,10 +437,8 @@ class SequentialRunner(Runner):
         Returns:
             List[List[Union[Order, Cancel]]]: order lists.
         """
-        agents = self.simulator.high_frequency_agents
-        agents = self._prng.sample(agents, len(agents))
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
-        all_orders: List[List[Union[Order, Cancel]]] = []
+        all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
         for orders in sequential_orders:
             for order in orders:
                 if not session.with_order_placement:
@@ -435,7 +455,7 @@ class SequentialRunner(Runner):
                     log_: CancelLog = market._cancel_order(cancel=order)
                     agent = self.simulator.id2agent[order.order.agent_id]
                     agent.canceled_order(log=log_)
-                    self.simulator._trigger_event_after_cancel(cancel_log=order)
+                    self.simulator._trigger_event_after_cancel(cancel_log=log_)
                 else:
                     raise NotImplementedError
                 if session.with_order_execution:
@@ -454,6 +474,8 @@ class SequentialRunner(Runner):
                 continue
 
             n_high_freq_orders = 0
+            agents = self.simulator.high_frequency_agents
+            agents = self._prng.sample(agents, len(agents))
             for agent in agents:
                 if n_high_freq_orders >= session.max_high_frequency_orders:
                     break
@@ -477,8 +499,10 @@ class SequentialRunner(Runner):
                             "spoofing order is not allowed. please check agent_id in order"
                         )
                     all_orders.append(high_freq_orders)
+                    # TODO: currently the original impl is used
+                    n_high_freq_orders += 1
+                    # n_high_freq_orders += len(high_freq_orders)
                     for order in high_freq_orders:
-                        n_high_freq_orders += 1
                         market = self.simulator.id2market[order.market_id]
                         if isinstance(order, Order):
                             self.simulator._trigger_event_before_order(order=order)
@@ -491,7 +515,7 @@ class SequentialRunner(Runner):
                             log_ = market._cancel_order(cancel=order)
                             agent = self.simulator.id2agent[order.order.agent_id]
                             agent.canceled_order(log=log_)
-                            self.simulator._trigger_event_after_cancel(cancel_log=order)
+                            self.simulator._trigger_event_after_cancel(cancel_log=log_)
                         else:
                             raise NotImplementedError
                         if session.with_order_execution:

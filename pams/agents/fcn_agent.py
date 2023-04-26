@@ -36,7 +36,6 @@ class FCNAgent(Agent):
 
     fundamental_weight: float
     chart_weight: float
-    is_chart_following: bool = True
     margin_type: int
     mean_reversion_time: int
     noise_scale: float
@@ -53,6 +52,7 @@ class FCNAgent(Agent):
         logger: Optional[Logger] = None,
     ):
         super().__init__(agent_id, prng, simulator, name, logger)
+        self.is_chart_following = True
 
     def is_finite(self, x: float) -> bool:
         """determine if it is a valid value.
@@ -97,8 +97,12 @@ class FCNAgent(Agent):
         self.order_margin = json_random.random(json_value=settings["orderMargin"])
         if settings.get("marginType") in [None, "fixed"]:
             self.margin_type = MARGIN_FIXED
-        else:
+        elif settings.get("marginType") == "normal":
             self.margin_type = MARGIN_NORMAL
+        else:
+            raise ValueError(
+                "marginType have to be normal or fixed (not specified is also allowed.)"
+            )
         if "meanReversionTime" in settings:
             self.mean_reversion_time = int(
                 json_random.random(json_value=settings["meanReversionTime"])
@@ -235,15 +239,17 @@ class FCNAgent(Agent):
                 )
         return orders
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         """string representation of FCN agent class.
 
         Returns:
             str: string representation of this class.
         """
         return (
-            f"Agent:{self.agent_id}[rnd:{self.prng},cw:{self.chart_weight},fw:{self.fundamental_weight},"
-            + f"following:{self.is_chart_following},mtypr:{self.margin_type},mrt:{self.mean_reversion_time},"
-            + f"ns:{self.noise_scale},nw:{self.noise_weight},om:{self.order_margin},tws:{self.time_window_size},"
-            + f"cash:{self.cash_amount}]"
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, rnd={self.prng}, "
+            f"chart_weight={self.chart_weight}, fundamental_weight={self.fundamental_weight}, "
+            f"noise_weight={self.noise_weight}, is_chart_following:{self.is_chart_following}, "
+            f"margin_type={self.margin_type}, mean_reversion_time:{self.mean_reversion_time}, "
+            f"noise_scale={self.noise_scale}, time_window_size={self.time_window_size}, "
+            f"order_margin={'MARGIN_FIXED' if self.order_margin == MARGIN_FIXED else 'MARGIN_NORMAL'}"
         )
