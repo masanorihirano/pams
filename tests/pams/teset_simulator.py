@@ -339,10 +339,10 @@ class TestSimulator:
         cancel = Cancel(order=order, placed_at=1)
         sim._trigger_event_before_cancel(cancel=cancel)
         cancel_log = CancelLog(
-            order_id=cancel.order.order_id,
+            order_id=cancel.order.order_id,  # type: ignore
             market_id=cancel.order.market_id,
             cancel_time=1,
-            order_time=cancel.order.placed_at,
+            order_time=cancel.order.placed_at,  # type: ignore
             agent_id=cancel.agent_id,
             is_buy=cancel.order.is_buy,
             kind=cancel.order.kind,
