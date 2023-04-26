@@ -29,9 +29,9 @@ def test_all() -> None:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=env,
-            shell=True,
+            shell=False,
         )
-        if run.returncode != 0:
+        if run.returncode != 0 or len(run.stdout) == 0:
             raise RuntimeError(
                 f"Error: {' '.join(cmd)}\n{str(run.stdout)}\n{str(run.stderr)}"
             )
