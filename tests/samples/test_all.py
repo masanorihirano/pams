@@ -10,6 +10,8 @@ def test_all() -> None:
     for sample_dir in sample_dirs:
         if not os.path.isdir(sample_dir):
             continue
+        if os.path.basename(sample_dir) == "__pycache__":
+            continue
         cmd = [
             "python",
             f"{sample_dir}/main.py",
