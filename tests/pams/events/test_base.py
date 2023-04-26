@@ -5,13 +5,19 @@ from typing import Type
 
 import pytest
 
+from pams import LIMIT_ORDER
+from pams import Cancel
 from pams import Market
+from pams import Order
 from pams import Session
 from pams import Simulator
 from pams.events import EventABC
 from pams.events import EventHook
 from pams.events import FundamentalPriceShock
+from pams.logs import CancelLog
+from pams.logs import ExecutionLog
 from pams.logs import Logger
+from pams.logs import OrderLog
 from tests.pams.agents.test_base import DummyAgent
 
 
@@ -133,7 +139,17 @@ class TestEventHook:
 
 class DummyEvent(EventABC):
     def hook_registration(self) -> List[EventHook]:
-        return []
+        event_hooks = []
+        for hook_type in ["order", "cancel", "execution", "session", "market"]:
+            for is_before in [True, False]:
+                if hook_type == "execution" and is_before:
+                    continue
+                for time in [None, [0, 1, 2]]:
+                    event_hook = EventHook(
+                        event=self, hook_type=hook_type, is_before=is_before, time=time
+                    )
+                    event_hooks.append(event_hook)
+        return event_hooks
 
 
 class TestEventABC:
@@ -172,5 +188,65 @@ class TestEventABC:
             == f"<tests.pams.events.test_base.DummyEvent | id=1, name=event, session={session}>"
         )
         event.setup(settings={})
-        assert event.hook_registration() == []
+        event_hooks = event.hook_registration()
+        for event_hook in event_hooks:
+            sim._add_event(event_hook=event_hook)
+        market = Market(
+            market_id=0, prng=random.Random(42), simulator=sim, name="market"
+        )
+        sim._add_market(market=market, group_name="market_group")
+        order = Order(
+            agent_id=1,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            placed_at=1,
+            price=100.0,
+            order_id=1,
+        )
+        sim._trigger_event_before_order(order=order)
+        order_log = OrderLog(
+            order_id=order.order_id,  # type: ignore
+            market_id=order.market_id,
+            time=order.placed_at,  # type: ignore
+            agent_id=order.agent_id,
+            is_buy=order.is_buy,
+            kind=order.kind,
+            volume=order.volume,
+            price=order.price,
+            ttl=order.ttl,
+        )
+        sim._trigger_event_after_order(order_log=order_log)
+        cancel = Cancel(order=order, placed_at=1)
+        sim._trigger_event_before_cancel(cancel=cancel)
+        cancel_log = CancelLog(
+            order_id=cancel.order.order_id,  # type: ignore
+            market_id=cancel.order.market_id,
+            cancel_time=1,
+            order_time=cancel.order.placed_at,  # type: ignore
+            agent_id=cancel.agent_id,
+            is_buy=cancel.order.is_buy,
+            kind=cancel.order.kind,
+            volume=cancel.order.volume,
+            price=cancel.order.price,
+            ttl=cancel.order.ttl,
+        )
+        sim._trigger_event_after_cancel(cancel_log=cancel_log)
+        execution_log = ExecutionLog(
+            market_id=0,
+            time=1,
+            buy_agent_id=0,
+            sell_agent_id=1,
+            buy_order_id=110,
+            sell_order_id=111,
+            price=90.9,
+            volume=2,
+        )
+        sim._trigger_event_after_execution(execution_log=execution_log)
+        sim._trigger_event_before_session(session=session)
+        sim._trigger_event_after_session(session=session)
+        market._update_time(next_fundamental_price=300.0)
+        sim._trigger_event_before_step_for_market(market=market)
+        sim._trigger_event_after_step_for_market(market=market)
         return event
