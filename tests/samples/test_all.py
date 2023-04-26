@@ -20,7 +20,7 @@ def test_all() -> None:
         ]
         env = os.environ.copy()
         if "PYTHONPATH" in env:
-            env["PYTHONPATH"] += ";root_dir"
+            env["PYTHONPATH"] += f";{root_dir}"
         else:
             env["PYTHONPATH"] = root_dir
         run = subprocess.run(
