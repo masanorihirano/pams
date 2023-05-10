@@ -1,3 +1,4 @@
+import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -7,19 +8,34 @@ from .base import EventHook
 
 
 class PriceLimitRule(EventABC):
-    """This suddenly changes the fundamental price (just changing it).
+    """This limits the price range.
 
-    This event is only called via :func:`hooked_before_step_for_market` at designated step.
+    This event is only called via :func:`hooked_before_order` at designated step.
     """
 
-    target_market_name: str
-    target_market: "Market"  # type: ignore
-    trigger_time: int
-    price_change_rate: float
-    is_enabled: bool = True
-    shock_time_length: int = 1
+    reference_market_name: str
+    reference_market: "Market"  # type: ignore  # NOQA
+    reference_price: float
+    trigger_change_rate: float
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def __init__(
+        self,
+        event_id: int,
+        prng: random.Random,
+        session: "Session",  # type: ignore  # NOQA
+        simulator: "Simulator",  # type: ignore  # NOQA
+        name: str,
+    ) -> None:
+        super().__init__(
+            event_id=event_id,
+            prng=prng,
+            session=session,
+            simulator=simulator,
+            name=name,
+        )
+        self.is_enabled: bool = True
+
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
 
         Args:
@@ -30,43 +46,50 @@ class PriceLimitRule(EventABC):
         Returns:
             None
         """
-        if "triggerDays" in settings:
-            raise ValueError("triggerDays and numStepsOneDay are obsoleted.")
-        if "target" not in settings:
-            raise ValueError("target is required for FundamentalPriceShock")
-        self.target_market_name = settings["target"]
-        if "triggerTime" not in settings:
-            raise ValueError("triggerTime is required for FundamentalPriceShock")
-        self.trigger_time = self.session.session_start_time + settings["triggerTime"]
-        if "priceChangeRate" not in settings:
-            raise ValueError("priceChangeRate is required for FundamentalPriceShock")
-        self.price_change_rate = settings["priceChangeRate"]
+        if "referenceMarket" not in settings:
+            raise ValueError("referenceMarket is required for PriceLimitRule.")
+        self.reference_market_name = settings["referenceMarket"]
+        self.reference_market = self.simulator.name2market[self.reference_market_name]
+        self.reference_price = self.reference_market.get_market_price()
+        if "triggerChangeRate" not in settings:
+            raise ValueError("triggerChangeRate is required for PriceLimitRule.")
+        if not isinstance(settings["triggerChangeRate"], float):
+            raise ValueError("triggerChangeRate have to be float.")
+        self.trigger_change_rate = settings["triggerChangeRate"]
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
-        if "shockTimeLength" in settings:
-            self.shock_time_length = settings["shockTimeLength"]
-        self.target_market = self.simulator.name2market[self.target_market_name]
 
     def hook_registration(self) -> List[EventHook]:
-        event_hook = EventHook(
-            event=self,
-            hook_type="market",
-            is_before=True,
-            time=[self.trigger_time + i for i in range(self.shock_time_length)],
-            specific_instance=self.target_market,
-        )
-        return [event_hook]
+        if self.is_enabled:
+            event_hook = EventHook(
+                event=self,
+                hook_type="market",
+                is_before=True,
+                time=None,
+                specific_instance=self.target_market,
+            )
+            return [event_hook]
+        else:
+            return []
 
-    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore
-        time: int = market.get_time()
-        if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
+    def get_limited_price(self, order: "Order", market: "Market") -> float:  # type: ignore  # NOQA
+        if self.reference_market != market:
             raise AssertionError
-        if market != self.target_market:
-            raise AssertionError
-        market.change_fundamental_price(scale=1 + self.price_change_rate)
+        order_price: float = order.price
+        price_change: float = order_price - self.reference_price
+        threshold_change: float = self.reference_price * self.trigger_change_rate
+        if abs(price_change) >= abs(threshold_change):
+            max_price: float = self.reference_price * (1 + self.trigger_change_rate)
+            min_price: float = self.reference_price * (1 - self.trigger_change_rate)
+            limited_price: float = min(max(order_price, min_price), max_price)
+            return limited_price
+        return order_price
 
+    def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
+        new_price: float = get_limited_price(order, self.reference_market)  # type: ignore
+        order.price = new_price
 
-FundamentalPriceShock.hook_registration.__doc__ = EventABC.hook_registration.__doc__
-FundamentalPriceShock.hooked_before_step_for_market.__doc__ = (
-    EventABC.hooked_before_step_for_market.__doc__
+PriceLimitRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
+PriceLimitRule.hooked_before_order.__doc__ = (
+    EventABC.hooked_before_order.__doc__
 )
