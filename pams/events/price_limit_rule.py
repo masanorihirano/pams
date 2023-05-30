@@ -62,10 +62,7 @@ class PriceLimitRule(EventABC):
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
             event_hook = EventHook(
-                event=self,
-                hook_type="market",
-                is_before=True,
-                time=None,
+                event=self, hook_type="market", is_before=True, time=None
             )
             return [event_hook]
         else:
@@ -85,10 +82,9 @@ class PriceLimitRule(EventABC):
         return order_price
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
-        new_price: float = get_limited_price(order, self.reference_market)  # type: ignore
+        new_price: float = get_limited_price(order, self.reference_market)  # type: ignore  # NOQA
         order.price = new_price
 
+
 PriceLimitRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
-PriceLimitRule.hooked_before_order.__doc__ = (
-    EventABC.hooked_before_order.__doc__
-)
+PriceLimitRule.hooked_before_order.__doc__ = EventABC.hooked_before_order.__doc__
