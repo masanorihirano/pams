@@ -66,7 +66,6 @@ class PriceLimitRule(EventABC):
                 hook_type="market",
                 is_before=True,
                 time=None,
-                specific_instance=self.target_market,
             )
             return [event_hook]
         else:
