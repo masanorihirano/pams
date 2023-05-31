@@ -3,10 +3,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 
+from ..market import Market
 from .base import EventABC
 from .base import EventHook
-
-from ..market import Market
 
 
 class TradingHaltRule(EventABC):
@@ -76,7 +75,10 @@ class TradingHaltRule(EventABC):
                 event=self,
                 hook_type="market",
                 is_before=True,
-                time=[self.halting_time_started + i for i in range(self.halting_time_length)],
+                time=[
+                    self.halting_time_started + i
+                    for i in range(self.halting_time_length)
+                ],
             )
             return [event_hook]
         else:
@@ -84,8 +86,14 @@ class TradingHaltRule(EventABC):
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
         if self.reference_market.is_running():
-            price_change: float = self.reference_price - self.reference_market.get_market_price()
-            threshold_change: float = self.reference_price * self.trigger_change_rate * (self.activation_count + 1)
+            price_change: float = (
+                self.reference_price - self.reference_market.get_market_price()
+            )
+            threshold_change: float = (
+                self.reference_price
+                * self.trigger_change_rate
+                * (self.activation_count + 1)
+            )
             if abs(price_change) >= abs(threshold_change):
                 self.reference_market._is_running = False
                 for m in self.target_market:
@@ -101,6 +109,4 @@ class TradingHaltRule(EventABC):
 
 
 TradingHaltRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
-TradingHaltRule.hooked_after_order.__doc__ = (
-    EventABC.hooked_after_order.__doc__
-)
+TradingHaltRule.hooked_after_order.__doc__ = EventABC.hooked_after_order.__doc__
