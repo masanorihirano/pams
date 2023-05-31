@@ -1,0 +1,63 @@
+{
+	"simulation": {
+		"markets": ["Market"],
+		"agents": ["FCNAgents"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 500,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"events": ["FundamentalPriceShock", "TradingHaltRule"]
+			}
+		]
+	},
+
+	"FundamentalPriceShock": {
+		"class": "FundamentalPriceShock",
+		"target": "Market",
+		"triggerTime": 0,    "MEMO": "At the beginning of the session 2",
+		"priceChangeRate": -0.1,    "MEMO": "Sign: negative for down; positive for up; zero for no change",
+		"enabled": true
+	},
+
+	"TradingHaltRule": {
+		"class": "TradingHaltRule",
+		"referenceMarket": "Market",
+		"targetMarkets": ["Market"],
+		"triggerChangeRate": 0.05,
+		"haltingTimeLength": 100,
+		"enabled": true
+	},
+
+	"Market": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"FCNAgents": {
+		"class": "FCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["Market"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [1.0]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1]
+	}
+}
