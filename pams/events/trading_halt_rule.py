@@ -16,7 +16,6 @@ class TradingHaltRule(EventABC):
     """
 
     target_market_name: str
-    target_markets: List[Market]  # type: ignore  # NOQA
 
     def __init__(
         self,
@@ -37,6 +36,7 @@ class TradingHaltRule(EventABC):
         self.halting_time_length: int = 1
         self.halting_time_started: int = 0
         self.activation_count: int = 0
+        self.target_markets: List[Market] = []
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
