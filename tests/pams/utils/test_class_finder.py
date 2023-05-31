@@ -21,6 +21,7 @@ def test_find_class() -> None:
     find_class(name="EventHook")
     find_class(name="FundamentalPriceShock")
     find_class(name="PriceLimitRule")
+    find_class(name="TradingHaltRule")
     find_class(name="Log")
     find_class(name="OrderLog")
     find_class(name="CancelLog")
