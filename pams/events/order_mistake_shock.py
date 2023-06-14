@@ -62,7 +62,7 @@ class OrderMistakeShock(EventABC):
         if "priceChangeRate" not in settings:
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
         self.price_change_rate = settings["priceChangeRate"]
-        if "orderVolme" not in settings:
+        if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for OrderMistakeShock")
         if not isinstance(settings["orderVolume"], int):
             raise ValueError("orderVolume have to be int")
