@@ -3,6 +3,8 @@ from typing import Any
 from typing import Dict
 from typing import List
 
+from ..order import LIMIT_ORDER, Order
+
 from .base import EventABC
 from .base import EventHook
 
@@ -17,6 +19,7 @@ class OrderMistakeShock(EventABC):
     target_market: "Market"  # type: ignore  # NOQA
     trigger_time: int
     price_change_rate: float
+    order_volume: int
 
     def __init__(
         self,
@@ -35,6 +38,7 @@ class OrderMistakeShock(EventABC):
         )
         self.is_enabled: bool = True
         self.order_time_length: int = 1
+        self.agent_id: int = simulator.agents[0].agent_id
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
@@ -62,19 +66,14 @@ class OrderMistakeShock(EventABC):
             raise ValueError("orderVolume is required for OrderMistakeShock")
         if not isinstance(settings["orderVolume"], int):
             raise ValueError("orderVolume have to be int")
+        self.order_volume = settings["orderVolume"]
         if "orderTimeLength" not in settings:
             raise ValueError("orderTimeLength is required for OrderMistakeShock")
         if not isinstance(settings["orderTimeLength"], int):
             raise ValueError("orderTimeLength have to be int")
         self.order_time_length = settings["orderTimeLength"]
-        
-
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
-        if "shockTimeLength" in settings:
-            if not isinstance(settings["shockTimeLength"], int):
-                raise ValueError("shockTimeLength have to be int")
-        #self.target_market = self.simulator.name2market[self.target_market_name]
 
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
@@ -91,11 +90,34 @@ class OrderMistakeShock(EventABC):
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         time: int = market.get_time()
-        if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
-            raise AssertionError
-        if market != self.target_market:
-            raise AssertionError
-        market.change_fundamental_price(scale=1 + self.price_change_rate)
+        if time == self.trigger_time:
+            agent: "Agent" = simulator.id2agent[self.agent_id]  # type: ignore
+            base_price: float = market.get_market_price()
+            order_price: float = base_price * (1 + self.price_change_rate)
+            time_length: int = self.order_time_length
+            if self.price_change_rate <= 0.0:
+                # Hit sell orders to the buy side.
+                order = Order(
+                    agent_id=self.agent_id,
+                    market_id=market.market_id,
+                    is_buy=True,
+                    kind=LIMIT_ORDER,
+                    volume=self.order_volume,
+                    price=order_price,
+                    ttl=time_length
+                )
+            else:
+                # Hit buy orders to the sell side.
+                order = Order(
+                    agent_id=self.agent_id,
+                    market_id=market.market_id,
+                    is_buy=False,
+                    kind=LIMIT_ORDER,
+                    volume=self.order_volume,
+                    price=order_price,
+                    ttl=time_length
+                )
+            market._add_order(order)
 
 
 OrderMistakeShock.hook_registration.__doc__ = EventABC.hook_registration.__doc__
