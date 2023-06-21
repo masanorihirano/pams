@@ -50,7 +50,6 @@ class PriceLimitRule(EventABC):
             raise ValueError("referenceMarket is required for PriceLimitRule.")
         self.reference_market_name = settings["referenceMarket"]
         self.reference_market = self.simulator.name2market[self.reference_market_name]
-        self.reference_price = self.reference_market.get_market_price()
         if "triggerChangeRate" not in settings:
             raise ValueError("triggerChangeRate is required for PriceLimitRule.")
         if not isinstance(settings["triggerChangeRate"], float):
@@ -69,6 +68,7 @@ class PriceLimitRule(EventABC):
             return []
 
     def get_limited_price(self, order: "Order", market: "Market") -> float:  # type: ignore  # NOQA
+        self.reference_price = self.reference_market.get_market_price(0)
         if self.reference_market != market:
             raise AssertionError
         order_price: float = order.price
