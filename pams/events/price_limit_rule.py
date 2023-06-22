@@ -82,7 +82,7 @@ class PriceLimitRule(EventABC):
         return order_price
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
-        new_price: float = get_limited_price(order, self.reference_market)  # type: ignore  # NOQA
+        new_price: float = self.get_limited_price(order, self.reference_market)  # type: ignore  # NOQA
         order.price = new_price
 
 
