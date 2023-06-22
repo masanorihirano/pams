@@ -34,6 +34,7 @@ class PriceLimitRule(EventABC):
             name=name,
         )
         self.is_enabled: bool = True
+        self.activation_count: int = 0
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
@@ -83,6 +84,8 @@ class PriceLimitRule(EventABC):
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         new_price: float = self.get_limited_price(order, self.reference_market)  # type: ignore  # NOQA
+        if order.price != new_price:
+            self.activation_count += 1
         order.price = new_price
 
 
