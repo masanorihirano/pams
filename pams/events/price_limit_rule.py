@@ -1,8 +1,8 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
-import warnings
 
 from .base import EventABC
 from .base import EventHook

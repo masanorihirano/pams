@@ -1,5 +1,4 @@
 import random
-from pams.order import LIMIT_ORDER, Order
 
 import pytest
 
@@ -9,6 +8,8 @@ from pams import Simulator
 from pams.events import EventABC
 from pams.events import PriceLimitRule
 from pams.logs import Logger
+from pams.order import LIMIT_ORDER
+from pams.order import Order
 from tests.pams.events.test_base import TestEventABC
 
 
