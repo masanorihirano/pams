@@ -2,6 +2,7 @@ import random
 from typing import Any
 from typing import Dict
 from typing import List
+import warnings
 
 from .base import EventABC
 from .base import EventHook
@@ -13,8 +14,6 @@ class PriceLimitRule(EventABC):
     This event is only called via :func:`hooked_before_order` at designated step.
     """
 
-    reference_market_name: str
-    reference_market: "Market"  # type: ignore  # NOQA
     reference_price: float
     trigger_change_rate: float
 
@@ -33,6 +32,7 @@ class PriceLimitRule(EventABC):
             simulator=simulator,
             name=name,
         )
+        self.target_markets: Dict[str, "Market"] = {}  # type: ignore  # NOQA
         self.is_enabled: bool = True
         self.activation_count: int = 0
 
@@ -41,16 +41,20 @@ class PriceLimitRule(EventABC):
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "referenceMarket" and "triggerGhangeRate".
+                                       This must include the parameters "targetMarkets" and "triggerGhangeRate".
                                        This can include the parameters "enabled".
+                                       The parameter "referenceMarket" is obsolate.
 
         Returns:
             None
         """
-        if "referenceMarket" not in settings:
-            raise ValueError("referenceMarket is required for PriceLimitRule.")
-        self.reference_market_name = settings["referenceMarket"]
-        self.reference_market = self.simulator.name2market[self.reference_market_name]
+        if "referenceMarket" in settings:
+            warnings.warn("referenceMarket is obsolate.")
+        if "targetMarkets" not in settings:
+            raise ValueError("targetMarkets is required for PriceLimitRule.")
+        for market_name in settings["targetMarkets"]:
+            market: "Market" = self.simulator.name2market[market_name]  # type: ignore
+            self._add_market(name=market_name, market=market)
         if "triggerChangeRate" not in settings:
             raise ValueError("triggerChangeRate is required for PriceLimitRule.")
         if not isinstance(settings["triggerChangeRate"], float):
@@ -69,8 +73,8 @@ class PriceLimitRule(EventABC):
             return []
 
     def get_limited_price(self, order: "Order", market: "Market") -> float:  # type: ignore  # NOQA
-        self.reference_price = self.reference_market.get_market_price(0)
-        if self.reference_market != market:
+        self.reference_price = market.get_market_price(0)
+        if market not in self.target_markets.values():
             raise AssertionError
         order_price: float = order.price
         price_change: float = order_price - self.reference_price
@@ -83,10 +87,23 @@ class PriceLimitRule(EventABC):
         return order_price
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
-        new_price: float = self.get_limited_price(order, self.reference_market)  # type: ignore  # NOQA
+        new_price: float = self.get_limited_price(order, simulator.id2market[order.market_id])  # type: ignore  # NOQA
         if order.price != new_price:
             self.activation_count += 1
         order.price = new_price
+
+    def _add_market(self, name: str, market: "Market") -> None:  # type: ignore
+        """add market. (Internal method)
+
+        Args:
+            market (:class:`pams.market.Market`): market.
+
+        Returns:
+            None
+        """
+        if name in self.target_markets:
+            raise ValueError("market is already registered.")
+        self.target_markets[name] = market
 
 
 PriceLimitRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__

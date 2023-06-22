@@ -60,8 +60,8 @@ class TestPriceLimitRule(TestEventABC):
         }
         event.setup(settings=setting1)
 
-        assert event.reference_market_name == "market1"
-        assert event.reference_market == market
+        assert "market1" in event.target_markets
+        assert market in event.target_markets.values()
         assert event.trigger_change_rate == 0.05
         assert not event.is_enabled
 
@@ -69,7 +69,7 @@ class TestPriceLimitRule(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting2 = {
-            "targetMarkets": ["market1"],
+            "referenceMarket": "market1",
             "triggerChangeRate": 0.05,
             "enabled": False,
         }
@@ -155,6 +155,10 @@ class TestPriceLimitRule(TestEventABC):
         assert event_hook.specific_instance is None
         assert event_hook.specific_class is None
 
+        _prng = random.Random(42)
+        event = PriceLimitRule(
+            event_id=1, prng=_prng, session=session, simulator=sim, name="event"
+        )
         setting2 = {
             "referenceMarket": "market1",
             "targetMarkets": ["market1"],
