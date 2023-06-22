@@ -53,7 +53,7 @@ class PriceLimitRule(EventABC):
         if "targetMarkets" not in settings:
             raise ValueError("targetMarkets is required for PriceLimitRule.")
         for market_name in settings["targetMarkets"]:
-            market: "Market" = self.simulator.name2market[market_name]  # type: ignore
+            market: "Market" = self.simulator.name2market[market_name]  # type: ignore  # NOQA
             self._add_market(name=market_name, market=market)
         if "triggerChangeRate" not in settings:
             raise ValueError("triggerChangeRate is required for PriceLimitRule.")
@@ -92,7 +92,7 @@ class PriceLimitRule(EventABC):
             self.activation_count += 1
         order.price = new_price
 
-    def _add_market(self, name: str, market: "Market") -> None:  # type: ignore
+    def _add_market(self, name: str, market: "Market") -> None:  # type: ignore  # NOQA
         """add market. (Internal method)
 
         Args:
