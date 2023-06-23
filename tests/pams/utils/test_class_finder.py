@@ -37,6 +37,8 @@ def test_find_class() -> None:
     find_class(name="HighFrequencyAgent")
     find_class(name="FCNAgent")
     find_class(name="ArbitrageAgent")
+    find_class(name="MarketShareFCNAgent")
+    find_class(name="MarketMakerAgent")
     find_class(name="JsonRandom")
 
     class DummyAgent(FCNAgent):
