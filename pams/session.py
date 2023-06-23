@@ -78,6 +78,8 @@ class Session:
             raise ValueError(
                 "for each element in simulation.sessions must have iterationSteps"
             )
+        if not isinstance(settings["iterationSteps"], int):
+            raise ValueError("iterationSteps must be int")
         self.iteration_steps = int(settings["iterationSteps"])
         if "withOrderPlacement" not in settings:
             raise ValueError(
