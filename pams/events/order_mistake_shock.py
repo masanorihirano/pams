@@ -3,8 +3,8 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-from ..order import LIMIT_ORDER, Order
-
+from ..order import LIMIT_ORDER
+from ..order import Order
 from .base import EventABC
 from .base import EventHook
 
@@ -103,7 +103,7 @@ class OrderMistakeShock(EventABC):
                     kind=LIMIT_ORDER,
                     volume=self.order_volume,
                     price=order_price,
-                    ttl=time_length
+                    ttl=time_length,
                 )
             else:
                 # Hit buy orders to the sell side.
@@ -114,7 +114,7 @@ class OrderMistakeShock(EventABC):
                     kind=LIMIT_ORDER,
                     volume=self.order_volume,
                     price=order_price,
-                    ttl=time_length
+                    ttl=time_length,
                 )
             market._add_order(order)
 
