@@ -90,7 +90,7 @@ class OrderMistakeShock(EventABC):
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         time: int = market.get_time()
         if time == self.trigger_time:
-            agent: "Agent" = simulator.id2agent[self.agent_id]  # type: ignore
+            agent: "Agent" = simulator.id2agent[self.agent_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
             order_price: float = base_price * (1 + self.price_change_rate)
             time_length: int = self.order_time_length
