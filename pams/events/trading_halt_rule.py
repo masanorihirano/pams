@@ -42,8 +42,9 @@ class TradingHaltRule(EventABC):
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".
-                                       This can include the parameters "enabled" and "shockTimeLength".
+                                       This must include the parameters "targetMarkets" and "triggerChangeRate".
+                                       This can include the parameters "haltingTimeLength" and "enabled".
+                                       The parameter "referenceMarket" is obsolate.
 
         Returns:
             None
