@@ -2,8 +2,8 @@ import random
 from typing import Any
 from typing import Dict
 from typing import List
+import warnings
 
-from ..market import Market
 from .base import EventABC
 from .base import EventHook
 
@@ -13,8 +13,6 @@ class TradingHaltRule(EventABC):
 
     The current implementation sets :func:`pams.market.Market.is_running` = false when the price changed beyond the prespecified threshold range.
     """
-
-    target_market_name: str
 
     def __init__(
         self,
@@ -35,7 +33,7 @@ class TradingHaltRule(EventABC):
         self.halting_time_length: int = 1
         self.halting_time_started: int = 0
         self.activation_count: int = 0
-        self.target_markets: List[Market] = []
+        self.target_markets: Dict[str, "Market"] = {}  # type: ignore  # NOQA
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
@@ -49,10 +47,13 @@ class TradingHaltRule(EventABC):
         Returns:
             None
         """
-        if "referenceMarket" not in settings:
-            raise ValueError("referenceMarket is required for PriceLimitRule.")
-        self.reference_market_name = settings["referenceMarket"]
-        self.reference_market = self.simulator.name2market[self.reference_market_name]
+        if "referenceMarket" in settings:
+            warnings.warn("referenceMarket is obsolate.")
+        if "targetMarkets" not in settings:
+            raise ValueError("targetMarkets is required for TradingHaltRule")
+        for market_name in settings["targetMarkets"]:
+            market: "Market" = self.simulator.name2market[market_name]  # type: ignore  # NOQA
+            self._add_market(name=market_name, market=market)
         if "triggerChangeRate" not in settings:
             raise ValueError("triggerChangeRate is required for TradingHaltRule.")
         if not isinstance(settings["triggerChangeRate"], float):
@@ -62,10 +63,6 @@ class TradingHaltRule(EventABC):
             if not isinstance(settings["haltingTimeLength"], int):
                 raise ValueError("haltingTimeLength have to be int")
             self.halting_time_length = settings["haltingTimeLength"]
-        if "targetMarkets" not in settings:
-            raise ValueError("targetMarkets is required for TradingHaltRule")
-        for market_name in settings["targetMarkets"]:
-            self.target_markets.append(self.simulator.name2market[market_name])
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
 
@@ -81,8 +78,9 @@ class TradingHaltRule(EventABC):
             return []
 
     def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
-        self.reference_price = self.reference_market.get_market_price(0)
-        if self.reference_market.is_running():
+        market: "Market" = simulator.id2market[execution_log.market_id]  # type: ignore  # NOQA
+        self.reference_price = market.get_market_price(0)
+        if market.is_running():
             price_change: float = (
                 self.reference_price - self.reference_market.get_market_price()
             )
@@ -92,19 +90,29 @@ class TradingHaltRule(EventABC):
                 * (self.activation_count + 1)
             )
             if abs(price_change) >= abs(threshold_change):
-                self.reference_market._is_running = False
-                for m in self.target_markets:
-                    m._is_running = False
+                for m in self.target_markets.values():
+                    if m == market:
+                        m._is_running = False
                 self.halting_time_started = execution_log.time
                 self.activation_count += 1
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         if market.get_time() > self.halting_time_started + self.halting_time_length:
-            self.reference_market._is_running = True
-            for m in self.target_markets:
-                m._is_running = True
+            for m in self.target_markets.values():
+                    if m == market:
+                        m._is_running = True
             self.halting_time_started = 0
 
+    def _add_market(self, name: str, market: "Market") -> None:  # type: ignore  # NOQA
+        """add market. (Internal method)
+        Args:
+            market (:class:`pams.market.Market`): market.
+        Returns:
+            None
+        """
+        if name in self.target_markets:
+            raise ValueError("market is already registered.")
+        self.target_markets[name] = market
 
 TradingHaltRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
 TradingHaltRule.hooked_after_execution.__doc__ = EventABC.hooked_after_execution.__doc__
