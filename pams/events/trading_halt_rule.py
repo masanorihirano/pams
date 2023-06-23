@@ -77,9 +77,7 @@ class TradingHaltRule(EventABC):
         market: "Market" = simulator.id2market[execution_log.market_id]  # type: ignore  # NOQA
         self.reference_price = market.get_market_price(0)
         if market.is_running():
-            price_change: float = (
-                self.reference_price - self.reference_market.get_market_price()
-            )
+            price_change: float = self.reference_price - market.get_market_price()
             threshold_change: float = (
                 self.reference_price
                 * self.trigger_change_rate
