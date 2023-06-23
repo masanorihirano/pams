@@ -1,4 +1,3 @@
-import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -29,13 +28,13 @@ class MarketMakerAgent(HighFrequencyAgent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup.  Usually be called from simulator/runner automatically.
+        """agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration.
                                        This must include the parameters "targetMarket" and "netInterestSpread".
                                        This can include the parameters "orderTimeLength".
-            accessible_markets_ids (List[int]): list of market IDs. Length of accessible_markets_ids must be 2.
+            accessible_markets_ids (List[int]): list of market IDs.
 
         Returns:
             None
