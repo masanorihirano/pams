@@ -48,10 +48,10 @@ class MarketMakerAgent(HighFrequencyAgent):
         self.net_interest_spread = json_random.random(
             json_value=settings["netInterestSpread"]
         )
-        self.order_time_length = json_random.random(
-            json_value=settings["orderTimeLength"]
+        self.order_time_length = (
+            int(json_random.random(json_value=settings["orderTimeLength"]))
             if "orderTimeLength" in settings
-            else "2"
+            else 2
         )
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
 
@@ -61,10 +61,10 @@ class MarketMakerAgent(HighFrequencyAgent):
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
         """
+        orders: List[Union[Order, Cancel]] = []
         base_price: float = self.get_base_price(markets)
         if base_price != float("inf"):
             base_price = self.target_market.get_market_price()
-        orders: List[Order] = []
         price_margin: float = (
             self.target_market.get_fundamental_price() * self.net_interest_spread * 0.5
         )
@@ -98,14 +98,14 @@ class MarketMakerAgent(HighFrequencyAgent):
         for market in markets:
             if (
                 self.is_market_accessible(market.market_id)
-                and market.get_best_buy_price() is float
+                and market.get_best_buy_price() is not None
             ):
-                max_buy = max(max_buy, market.get_best_buy_price())
+                max_buy = max(max_buy, market.get_best_buy_price())  # type: ignore  # NOQA
         min_sell: float = float("inf")
         for market in markets:
             if (
                 self.is_market_accessible(market.market_id)
-                and market.get_best_sell_price() is float
+                and market.get_best_sell_price() is not None
             ):
-                min_sell = min(min_sell, market.get_best_sell_price())
+                min_sell = min(min_sell, market.get_best_sell_price())  # type: ignore  # NOQA
         return (max_buy + min_sell) / 2.0
