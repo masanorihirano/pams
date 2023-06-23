@@ -52,7 +52,6 @@ class TradingHaltRule(EventABC):
             raise ValueError("referenceMarket is required for PriceLimitRule.")
         self.reference_market_name = settings["referenceMarket"]
         self.reference_market = self.simulator.name2market[self.reference_market_name]
-        self.reference_price = self.reference_market.get_market_price()
         if "triggerChangeRate" not in settings:
             raise ValueError("triggerChangeRate is required for TradingHaltRule.")
         if not isinstance(settings["triggerChangeRate"], float):
@@ -85,6 +84,7 @@ class TradingHaltRule(EventABC):
             return []
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
+        self.reference_price = self.reference_market.get_market_price(0)
         if self.reference_market.is_running():
             price_change: float = (
                 self.reference_price - self.reference_market.get_market_price()
