@@ -75,16 +75,12 @@ class TradingHaltRule(EventABC):
                 event=self,
                 hook_type="market",
                 is_before=True,
-                time=[
-                    self.halting_time_started + i
-                    for i in range(self.halting_time_length)
-                ],
             )
             return [event_hook]
         else:
             return []
 
-    def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
+    def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
         self.reference_price = self.reference_market.get_market_price(0)
         if self.reference_market.is_running():
             price_change: float = (
@@ -97,17 +93,19 @@ class TradingHaltRule(EventABC):
             )
             if abs(price_change) >= abs(threshold_change):
                 self.reference_market._is_running = False
-                for m in self.target_market:
+                for m in self.target_markets:
                     m._is_running = False
-                self.halting_time_started = order_log.time
+                self.halting_time_started = execution_log.time
                 self.activation_count += 1
-        else:
-            if order_log.time > self.halting_time_started + self.halting_time_length:
-                self.reference_market._is_running = True
-                for m in self.target_market:
-                    m._is_running = True
-                self.halting_time_started = 0
+
+    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
+        if market.get_time() > self.halting_time_started + self.halting_time_length:
+            self.reference_market._is_running = True
+            for m in self.target_markets:
+                m._is_running = True
+            self.halting_time_started = 0
 
 
 TradingHaltRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
-TradingHaltRule.hooked_after_order.__doc__ = EventABC.hooked_after_order.__doc__
+TradingHaltRule.hooked_after_execution.__doc__ = EventABC.hooked_after_execution.__doc__
+TradingHaltRule.hooked_before_step_for_market.__doc__ = EventABC.hooked_before_step_for_market.__doc__
