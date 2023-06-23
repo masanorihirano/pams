@@ -39,9 +39,8 @@ class MarketShareFCNAgent(FCNAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """submit orders based on FCN-based calculation.
 
-        Create limit order to litMarket first, and then change the order destination to DarkPoolMarket with probability 1-d.
         .. seealso::
-            - :func:`pams.agents.Agent.submit_orders`
+            - :func:`pams.agents.FCNAgent.submit_orders`
         """
         filter_markets: List[Market] = self.filter_markets(markets)
         weights: List[float] = []
