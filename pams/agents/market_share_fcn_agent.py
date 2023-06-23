@@ -17,7 +17,11 @@ class MarketShareFCNAgent(FCNAgent):
     """
 
     def setup(
-        self, settings: Dict[str, Any], accessible_markets_ids: List[int]
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         """agent setup.  Usually be called from simulator/runner automatically.
 
