@@ -21,12 +21,8 @@ class MarketShareFCNAgent(FCNAgent):
         """agent setup.  Usually be called from simulator/runner automatically.
 
         Args:
-            settings (Dict[str, Any]): agent configuration.
-                                       This must include the parameters "d" and "DarkPoolMarket".
-                                       This can include the parameters "fundamentalWeight", "chartWeight",
-                                       "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType",
-                                       and "meanReversionTime".
-            accessible_markets_ids (List[int]): list of market IDs. len(accessible_markets_ids) must be 2.
+            settings (Dict[str, Any]): agent configuration. See also :func:`pams.agents.FCNAgent.setup`.
+            accessible_markets_ids (List[int]): list of market IDs. Length of accessible_markets_ids must be 2.
 
         Returns:
             None
