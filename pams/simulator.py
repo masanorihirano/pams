@@ -96,17 +96,14 @@ class Simulator:
         """
         if event_hook in self.event_hooks:
             raise ValueError("event_hook is already registered")
-        if event_hook.event in self.events:
-            raise ValueError("event is already registered")
-        if event_hook.event.event_id in self.id2event:
-            raise ValueError(f"event_id {event_hook.event.event_id} is duplicated")
-        if event_hook.event.name in self.name2event:
-            raise ValueError(f"event name {event_hook.event.name} is duplicate")
         event = event_hook.event
-        self.events.append(event)
+        if event_hook.event not in self.events:
+            self.events.append(event)
         self.n_events += 1
-        self.id2event[event.event_id] = event
-        self.name2event[event.name] = event
+        if event_hook.event.event_id not in self.id2event:
+            self.id2event[event.event_id] = event
+        if event_hook.event.name not in self.name2event:
+            self.name2event[event.name] = event
         self.event_hooks.append(event_hook)
         register_name: str = event_hook.hook_type + (
             "_before" if event_hook.is_before else "_after"
