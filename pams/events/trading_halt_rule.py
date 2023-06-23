@@ -1,8 +1,8 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
-import warnings
 
 from .base import EventABC
 from .base import EventHook
@@ -68,11 +68,7 @@ class TradingHaltRule(EventABC):
 
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
-            event_hook = EventHook(
-                event=self,
-                hook_type="market",
-                is_before=True,
-            )
+            event_hook = EventHook(event=self, hook_type="market", is_before=True)
             return [event_hook]
         else:
             return []
@@ -99,8 +95,8 @@ class TradingHaltRule(EventABC):
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         if market.get_time() > self.halting_time_started + self.halting_time_length:
             for m in self.target_markets.values():
-                    if m == market:
-                        m._is_running = True
+                if m == market:
+                    m._is_running = True
             self.halting_time_started = 0
 
     def _add_market(self, name: str, market: "Market") -> None:  # type: ignore  # NOQA
@@ -114,6 +110,9 @@ class TradingHaltRule(EventABC):
             raise ValueError("market is already registered.")
         self.target_markets[name] = market
 
+
 TradingHaltRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__
 TradingHaltRule.hooked_after_execution.__doc__ = EventABC.hooked_after_execution.__doc__
-TradingHaltRule.hooked_before_step_for_market.__doc__ = EventABC.hooked_before_step_for_market.__doc__
+TradingHaltRule.hooked_before_step_for_market.__doc__ = (
+    EventABC.hooked_before_step_for_market.__doc__
+)
