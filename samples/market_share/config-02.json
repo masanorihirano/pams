@@ -1,0 +1,72 @@
+{
+	"simulation": {
+		"markets": ["Market-A", "Market-B"],
+		"agents": ["MarketShareFCNAgents", "MarketMakerAgent"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 2000,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"maxHifreqOrders": 1
+			}
+		]
+	},
+
+	"Market-A": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000,
+
+		"MEMO": "Required only here",
+		"tradeVolume": 90
+	},
+
+	"Market-B": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000,
+
+		"MEMO": "Required only here",
+		"tradeVolume": 10
+	},
+
+	"MarketShareFCNAgents": {
+		"class": "MarketShareFCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["Market-A", "Market-B"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [1.0]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1]
+	},
+
+	"MarketMakerAgent": {
+		"class": "MarketMakerAgent",
+		"numAgents": 1,
+
+		"markets": ["Market-B"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"targetMarket": "Market-B",
+		"netInterestSpread": 0.02,
+		"orderTimeLength": 2
+	}
+}
