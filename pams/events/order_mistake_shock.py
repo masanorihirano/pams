@@ -81,7 +81,6 @@ class OrderMistakeShock(EventABC):
                 event=self,
                 hook_type="market",
                 is_before=True,
-                time=[self.trigger_time + i for i in range(self.order_time_length)],
                 specific_instance=self.target_market,
             )
             return [event_hook]
