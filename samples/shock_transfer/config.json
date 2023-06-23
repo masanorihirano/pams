@@ -27,7 +27,7 @@
 		"class": "FundamentalPriceShock",
 		"target": "SpotMarket-1",
 		"triggerTime": 0,
-		"priceChangeRate": -0.3,
+		"priceChangeRate": -0.1,
 		"enabled": true
 	},
 	"SpotMarket": {

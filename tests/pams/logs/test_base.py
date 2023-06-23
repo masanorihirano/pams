@@ -442,3 +442,74 @@ class TestLogger:
         assert logger.n_session_end_log == 1
         assert logger.n_market_step_begin_log == 1
         assert logger.n_market_step_end_log == 1
+
+    def test_process2(self) -> None:
+
+        logger = Logger()
+        sim = Simulator(prng=random.Random(42))
+        session = Session(
+            session_id=0,
+            prng=random.Random(31),
+            session_start_time=0,
+            simulator=sim,
+            name="test_session",
+        )
+        market = Market(
+            market_id=2, prng=random.Random(22), simulator=sim, name="test_market"
+        )
+        order_log = OrderLog(
+            order_id=1,
+            market_id=2,
+            time=3,
+            agent_id=4,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=5,
+            price=6.0,
+            ttl=7,
+        )
+        logger.write(log=order_log)
+        cancel_log = CancelLog(
+            order_id=1,
+            market_id=2,
+            cancel_time=4,
+            order_time=3,
+            agent_id=5,
+            is_buy=False,
+            kind=MARKET_ORDER,
+            volume=8,
+            ttl=9,
+        )
+        logger.write(log=cancel_log)
+        execution_log = ExecutionLog(
+            market_id=1,
+            time=2,
+            buy_agent_id=3,
+            sell_agent_id=4,
+            buy_order_id=5,
+            sell_order_id=6,
+            price=7.0,
+            volume=8,
+        )
+        logger.write(log=execution_log)
+        simulation_begin_log = SimulationBeginLog(simulator=sim)
+        logger.write(log=simulation_begin_log)
+        simulation_end_log = SimulationEndLog(simulator=sim)
+        logger.write(log=simulation_end_log)
+        session_begin_log = SessionBeginLog(session=session, simulator=sim)
+        logger.write(log=session_begin_log)
+        session_end_log = SessionEndLog(session=session, simulator=sim)
+        logger.write(log=session_end_log)
+        market_step_begin_log = MarketStepBeginLog(
+            session=session, market=market, simulator=sim
+        )
+        logger.write(log=market_step_begin_log)
+        market_step_end_log = MarketStepEndLog(
+            session=session, market=market, simulator=sim
+        )
+        logger.write(log=market_step_end_log)
+        logger._process()
+
+        unknown_log = Log()
+        with pytest.raises(NotImplementedError):
+            logger.write_and_direct_process(log=unknown_log)

@@ -10,6 +10,8 @@ def test_all() -> None:
     for sample_dir in sample_dirs:
         if not os.path.isdir(sample_dir):
             continue
+        if os.path.basename(sample_dir) == "__pycache__":
+            continue
         cmd = [
             "python",
             f"{sample_dir}/main.py",
@@ -20,7 +22,7 @@ def test_all() -> None:
         ]
         env = os.environ.copy()
         if "PYTHONPATH" in env:
-            env["PYTHONPATH"] += ";root_dir"
+            env["PYTHONPATH"] += f";{root_dir}"
         else:
             env["PYTHONPATH"] = root_dir
         run = subprocess.run(
@@ -29,9 +31,9 @@ def test_all() -> None:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=env,
-            shell=True,
+            shell=("OS" in os.environ and os.environ["OS"].startswith("Windows")),
         )
-        if run.returncode != 0:
+        if run.returncode != 0 or len(run.stdout) == 0:
             raise RuntimeError(
                 f"Error: {' '.join(cmd)}\n{str(run.stdout)}\n{str(run.stderr)}"
             )
