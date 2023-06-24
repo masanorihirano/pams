@@ -22,7 +22,7 @@ class MarketShareFCNAgent(FCNAgent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup.  Usually be called from simulator/runner automatically.
+        """agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. See also :func:`pams.agents.FCNAgent.setup`.
@@ -41,16 +41,24 @@ class MarketShareFCNAgent(FCNAgent):
         .. seealso::
             - :func:`pams.agents.FCNAgent.submit_orders`
         """
-        filter_markets: List[Market] = self.filter_markets(markets)
+        filter_markets: List[Market] = self.filter_markets(markets=markets)
         if len(filter_markets) == 0:
             raise RuntimeError("filter_markets in MarketShareFCNAgent is empty.")
         weights: List[float] = []
         for market in filter_markets:
-            weights.append(float(self.get_sum_trade_volume(market)))
+            weights.append(float(self.get_sum_trade_volume(market=market)))
         k: int = self.roulette(weights=weights)
-        return self.submit_orders_by_market(filter_markets[k])
+        return self.submit_orders_by_market(market=filter_markets[k])
 
     def filter_markets(self, markets: List[Market]) -> List[Market]:
+        """filter markets by accessibility.
+
+        Args:
+            markets (List[:class:`pams.Market`]): markets before filtering.
+
+        Returns:
+            List[:class:`pams.Market`]:  markets after filtering.
+        """
         a: List[Market] = []
         for market in markets:
             if self.is_market_accessible(market_id=market.market_id):
@@ -58,6 +66,14 @@ class MarketShareFCNAgent(FCNAgent):
         return a
 
     def get_sum_trade_volume(self, market: Market) -> int:
+        """get sum of trade volume.
+
+        Args:
+            market (:class:`pams.Market`): trading market.
+
+        Returns:
+            int: total trade volume.
+        """
         t: int = market.get_time()
         time_window_size: int = min(t, self.time_window_size)
         volume: int = 0
@@ -66,6 +82,14 @@ class MarketShareFCNAgent(FCNAgent):
         return volume
 
     def roulette(self, weights: List[float]) -> int:
+        """weighted roulette. Randomly get the index of the list.
+
+        Args:
+            weights (List[float]): rouleted list.
+
+        Returns:
+            int: index of the list.
+        """
         size: int = len(weights)
         total: float = sum(weights)
         d: float = total * self.get_prng().random()
