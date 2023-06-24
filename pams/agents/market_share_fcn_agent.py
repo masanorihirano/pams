@@ -1,4 +1,3 @@
-import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -43,12 +42,13 @@ class MarketShareFCNAgent(FCNAgent):
             - :func:`pams.agents.FCNAgent.submit_orders`
         """
         filter_markets: List[Market] = self.filter_markets(markets)
+        if len(filter_markets) == 0:
+            raise RuntimeError("filter_markets in MarketShareFCNAgent is empty.")
         weights: List[float] = []
         for market in filter_markets:
             weights.append(float(self.get_sum_trade_volume(market)))
-        if len(filter_markets) == 0:
-            raise RuntimeError("filter_markets in MarketShareFCNAgent is empty.")
-        return self.submit_orders_by_market(random.choice(filter_markets))
+        k: int = self.roulette(weights=weights)
+        return self.submit_orders_by_market(filter_markets[k])
 
     def filter_markets(self, markets: List[Market]) -> List[Market]:
         a: List[Market] = []
@@ -64,3 +64,14 @@ class MarketShareFCNAgent(FCNAgent):
         for d in range(1, time_window_size + 1):
             volume += market.get_executed_volume(t - d)
         return volume
+
+    def roulette(self, weights: List[float]) -> int:
+        size: int = len(weights)
+        total: float = sum(weights)
+        d: float = total * self.get_prng().random()
+        w: float = 0.0
+        for i in range(size):
+            w += weights[i]
+            if d <= w:
+                return i
+        return size - 1
