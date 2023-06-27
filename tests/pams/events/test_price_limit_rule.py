@@ -153,7 +153,7 @@ class TestPriceLimitRule(TestEventABC):
         assert event_hook.hook_type == "market"
         assert event_hook.is_before
         assert event_hook.time is None
-        assert event_hook.specific_instance is None
+        assert event_hook.specific_instance == market
         assert event_hook.specific_class is None
 
         _prng = random.Random(42)
