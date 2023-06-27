@@ -68,7 +68,7 @@ class TradingHaltRule(EventABC):
 
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
-            event_hook = EventHook(event=self, hook_type="market", is_before=True)
+            event_hook = EventHook(event=self, hook_type="execution", is_before=False)
             return [event_hook]
         else:
             return []
