@@ -68,12 +68,25 @@ class TradingHaltRule(EventABC):
 
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
-            event_hook = EventHook(event=self, hook_type="execution", is_before=False)
-            return [event_hook]
+            event_hooked_after_execution = EventHook(
+                event=self, hook_type="execution", is_before=False
+            )
+            event_hooked_before_step_for_market = []
+            for market in self.target_markets.values():
+                event_hooked_before_step_for_market.append(
+                    EventHook(
+                        event=self,
+                        hook_type="market",
+                        is_before=True,
+                        specific_instance=market,
+                    )
+                )
+            return [event_hooked_after_execution] + event_hooked_before_step_for_market
         else:
             return []
 
     def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
+        """event to stop the trading."""
         market: "Market" = simulator.id2market[execution_log.market_id]  # type: ignore  # NOQA
         self.reference_price = market.get_market_price(0)
         if market.is_running:
@@ -87,15 +100,18 @@ class TradingHaltRule(EventABC):
                 for m in self.target_markets.values():
                     if m == market:
                         m._is_running = False
-                self.halting_time_started = execution_log.time
-                self.activation_count += 1
+                        self.halting_time_started = m.time
+                        self.activation_count += 1
+                        simulator.current_session.with_order_execution = False
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
+        """event to start the trading."""
         if market.get_time() > self.halting_time_started + self.halting_time_length:
             for m in self.target_markets.values():
                 if m == market:
+                    simulator.current_session.with_order_execution = True
                     m._is_running = True
-            self.halting_time_started = 0
+                    self.halting_time_started = 0
 
     def _add_market(self, name: str, market: "Market") -> None:  # type: ignore  # NOQA
         """add market. (Internal method)
