@@ -65,18 +65,10 @@ class PriceLimitRule(EventABC):
 
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
-            event_hook = []
-            for instance in self.target_markets.values():
-                event_hook.append(
-                    EventHook(
-                        event=self,
-                        hook_type="market",
-                        is_before=True,
-                        time=None,
-                        specific_instance=instance,
-                    )
-                )
-            return event_hook
+            event_hook = EventHook(
+                event=self, hook_type="order", is_before=True, time=None
+            )
+            return [event_hook]
         else:
             return []
 
