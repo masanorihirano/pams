@@ -76,7 +76,7 @@ class TradingHaltRule(EventABC):
     def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
         market: "Market" = simulator.id2market[execution_log.market_id]  # type: ignore  # NOQA
         self.reference_price = market.get_market_price(0)
-        if market.is_running():
+        if market.is_running:
             price_change: float = self.reference_price - market.get_market_price()
             threshold_change: float = (
                 self.reference_price
