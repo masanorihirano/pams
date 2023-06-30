@@ -1,0 +1,51 @@
+{
+	"simulation": {
+		"markets": ["Market"],
+		"agents": ["FCNAgents"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 500,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"events": ["PriceLimitRule"]
+			}
+		]
+	},
+
+	"PriceLimitRule": {
+		"class": "PriceLimitRule",
+		"targetMarkets": ["Market"],
+		"triggerChangeRate": 0.05,
+		"enabled": true
+	},
+
+	"Market": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"FCNAgents": {
+		"class": "FCNAgent",
+		"numAgents": 100,
+
+		"markets": ["Market"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"fundamentalWeight": {"expon": [0.2]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1]
+	}
+}
