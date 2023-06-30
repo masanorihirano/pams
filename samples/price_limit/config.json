@@ -21,7 +21,6 @@
 
 	"PriceLimitRule": {
 		"class": "PriceLimitRule",
-		"referenceMarket": "Market",
 		"targetMarkets": ["Market"],
 		"triggerChangeRate": 0.05,
 		"enabled": true
