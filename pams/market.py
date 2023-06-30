@@ -103,6 +103,10 @@ class Market:
             self._market_prices = [float(settings["fundamentalPrice"])]
         else:
             raise ValueError("fundamentalPrice or marketPrice is required for market")
+        if "tradeVolume" in settings:
+            if not isinstance(settings["tradeVolume"], int):
+                raise ValueError("tradeVolume must be int")
+            self._executed_volumes = [int(settings["tradeVolume"])]
 
     def _extract_sequential_data_by_time(
         self,
