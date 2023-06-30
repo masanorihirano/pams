@@ -10,7 +10,6 @@ from pams.events import TradingHaltRule
 from pams.logs import ExecutionLog
 from pams.logs import Logger
 from pams.order import LIMIT_ORDER
-from pams.order import MARKET_ORDER
 from pams.order import Order
 from tests.pams.events.test_base import TestEventABC
 
