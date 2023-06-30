@@ -38,7 +38,6 @@ Json config
         },
         "PriceLimitRule": {
             "class": "PriceLimitRule",
-            "referenceMarket": "Market",
             "targetMarkets": ["Market"],
             "triggerChangeRate": float required,
             "enabled": bool (Optional, default: True)

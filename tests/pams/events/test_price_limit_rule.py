@@ -9,6 +9,7 @@ from pams.events import EventABC
 from pams.events import PriceLimitRule
 from pams.logs import Logger
 from pams.order import LIMIT_ORDER
+from pams.order import MARKET_ORDER
 from pams.order import Order
 from tests.pams.events.test_base import TestEventABC
 
@@ -54,7 +55,6 @@ class TestPriceLimitRule(TestEventABC):
         )
         assert event.is_enabled
         setting1 = {
-            "referenceMarket": "market1",
             "targetMarkets": ["market1"],
             "triggerChangeRate": 0.05,
             "enabled": False,
@@ -69,22 +69,14 @@ class TestPriceLimitRule(TestEventABC):
         event = PriceLimitRule(
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
-        setting2 = {
-            "referenceMarket": "market1",
-            "triggerChangeRate": 0.05,
-            "enabled": False,
-        }
+        setting2 = {"triggerChangeRate": 0.05, "enabled": False}
         with pytest.raises(ValueError):
             event.setup(settings=setting2)
 
         event = PriceLimitRule(
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
-        setting3 = {
-            "referenceMarket": "market1",
-            "targetMarkets": ["market1"],
-            "enabled": False,
-        }
+        setting3 = {"targetMarkets": ["market1"], "enabled": False}
         with pytest.raises(ValueError):
             event.setup(settings=setting3)
 
@@ -92,14 +84,108 @@ class TestPriceLimitRule(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting4 = {
-            "referenceMarket": "market1",
             "targetMarkets": ["market1"],
             "triggerChangeRate": 1,
             "enabled": False,
         }
         with pytest.raises(ValueError):
             event.setup(settings=setting4)
+        event = PriceLimitRule(
+            event_id=1, prng=_prng, session=session, simulator=sim, name="event"
+        )
+        setting5 = {
+            "referenceMarket": "market1",
+            "targetMarkets": "market1",
+            "triggerChangeRate": 1,
+            "enabled": False,
+        }
+        with pytest.raises(ValueError):
+            event.setup(settings=setting5)
+        setting6 = {"targetMarkets": [0], "triggerChangeRate": 1, "enabled": False}
+        with pytest.raises(ValueError):
+            event.setup(settings=setting6)
+        setting7 = {
+            "targetMarkets": ["market2"],
+            "triggerChangeRate": 1,
+            "enabled": False,
+        }
+        with pytest.raises(ValueError):
+            event.setup(settings=setting7)
         return event
+
+    def test_get_limited_price(self) -> None:
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=logger,
+        )
+        session_setting = {
+            "sessionName": 0,
+            "iterationSteps": 500,
+            "withOrderPlacement": True,
+            "withOrderExecution": True,
+            "withPrint": True,
+            "events": ["PriceLimitRule"],
+        }
+        session.setup(settings=session_setting)
+        market = Market(
+            market_id=0,
+            prng=random.Random(42),
+            simulator=sim,
+            name="market1",
+            logger=logger,
+        )
+        market2 = Market(
+            market_id=1,
+            prng=random.Random(42),
+            simulator=sim,
+            name="market2",
+            logger=logger,
+        )
+        settings_market = {
+            "tickSize": 0.01,
+            "marketPrice": 300.0,
+            "outstandingShares": 2000,
+        }
+        market.setup(settings=settings_market)
+        sim._add_market(market=market)
+        _prng = random.Random(42)
+        event = PriceLimitRule(
+            event_id=1, prng=_prng, session=session, simulator=sim, name="event"
+        )
+        setting1 = {
+            "targetMarkets": ["market1"],
+            "triggerChangeRate": 0.05,
+            "enabled": False,
+        }
+        event.setup(settings=setting1)
+        market._update_time(next_fundamental_price=300.0)
+        market2._update_time(next_fundamental_price=300.0)
+        dummy_order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        with pytest.raises(AssertionError):
+            event.get_limited_price(order=dummy_order, market=market2)
+        dummy_order2 = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1
+        )
+        results = event.get_limited_price(order=dummy_order2, market=market)
+        assert results is None
+        dummy_order2 = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+        results = event.get_limited_price(order=dummy_order2, market=market)
+        assert results == 300.0
 
     def test_hook_registration(self) -> None:
         sim = Simulator(prng=random.Random(4))
@@ -140,7 +226,6 @@ class TestPriceLimitRule(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting1 = {
-            "referenceMarket": "market1",
             "targetMarkets": ["market1"],
             "triggerChangeRate": 0.05,
             "enabled": True,
@@ -161,7 +246,6 @@ class TestPriceLimitRule(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting2 = {
-            "referenceMarket": "market1",
             "targetMarkets": ["market1"],
             "triggerChangeRate": 0.05,
             "enabled": False,
@@ -212,7 +296,6 @@ class TestPriceLimitRule(TestEventABC):
             event_id=1, prng=_prng, session=session, simulator=sim, name="event"
         )
         setting1 = {
-            "referenceMarket": "market1",
             "targetMarkets": ["market1"],
             "triggerChangeRate": 0.05,
             "enabled": True,
