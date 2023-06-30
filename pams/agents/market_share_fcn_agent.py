@@ -48,7 +48,7 @@ class MarketShareFCNAgent(FCNAgent):
         for market in filter_markets:
             weights.append(float(self.get_sum_trade_volume(market=market)))
         k: int = self.roulette(weights=weights)
-        return self.submit_orders_by_market(market=filter_markets[k])
+        return self.submit_orders_by_market(market=self.get_prng().choices(filter_markets, weights=weights)[0])
 
     def filter_markets(self, markets: List[Market]) -> List[Market]:
         """filter markets by accessibility.
