@@ -20,9 +20,6 @@ class PriceLimitRule(EventABC):
     This event is only called via :func:`hooked_before_order` at designated step.
     """
 
-    reference_price: float
-    trigger_change_rate: float
-
     def __init__(
         self,
         event_id: int,
@@ -41,6 +38,7 @@ class PriceLimitRule(EventABC):
         self.target_markets: Dict[str, Market] = {}
         self.is_enabled: bool = True
         self.activation_count: int = 0
+        self.trigger_change_rate: float = 0.0
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
@@ -94,17 +92,17 @@ class PriceLimitRule(EventABC):
         Returns:
             Optional[float]: price after price limit. If the input order is market order, the return become None (market order).
         """
-        self.reference_price = market.get_market_price(0)
+        reference_price = market.get_market_price(0)
         if market not in self.target_markets.values():
             raise AssertionError
         if order.price is None:
             return order.price
         order_price: float = order.price
-        price_change: float = order_price - self.reference_price
-        threshold_change: float = self.reference_price * self.trigger_change_rate
+        price_change: float = order_price - reference_price
+        threshold_change: float = reference_price * self.trigger_change_rate
         if abs(price_change) >= abs(threshold_change):
-            max_price: float = self.reference_price * (1 + self.trigger_change_rate)
-            min_price: float = self.reference_price * (1 - self.trigger_change_rate)
+            max_price: float = reference_price * (1 + self.trigger_change_rate)
+            min_price: float = reference_price * (1 - self.trigger_change_rate)
             limited_price: float = min(max(order_price, min_price), max_price)
             return limited_price
         return order_price
