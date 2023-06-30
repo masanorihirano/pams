@@ -85,6 +85,15 @@ class PriceLimitRule(EventABC):
             return []
 
     def get_limited_price(self, order: Order, market: Market) -> Optional[float]:
+        """Calculate the limited price for an order.
+
+        Args:
+            order (Order): order whose price is calculated
+            market (Market): market that order belongs to
+
+        Returns:
+            Optional[float]: price after price limit. If the input order is market order, the return become None (market order).
+        """
         self.reference_price = market.get_market_price(0)
         if market not in self.target_markets.values():
             raise AssertionError
