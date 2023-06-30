@@ -42,6 +42,13 @@ Json config
             "triggerChangeRate": float required,
             "enabled": bool (Optional, default: True)
         },
+        "TradingHaltRule": {
+        	"class": "TradingHaltRule",
+        	"targetMarkets": ["Market"],
+        	"triggerChangeRate": float required,
+        	"haltingTimeLength": int required,
+        	"enabled": bool (Optional, default: True)
+        },
         "Market": {
             "extends": string (Optional),
             "class": string,
