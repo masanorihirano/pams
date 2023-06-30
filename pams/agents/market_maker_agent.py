@@ -63,7 +63,7 @@ class MarketMakerAgent(HighFrequencyAgent):
         """
         orders: List[Union[Order, Cancel]] = []
         base_price: float = self.get_base_price(markets=markets)
-        if base_price != float("inf"):
+        if base_price is None:
             base_price = self.target_market.get_market_price()
         price_margin: float = (
             self.target_market.get_fundamental_price() * self.net_interest_spread * 0.5
@@ -116,4 +116,6 @@ class MarketMakerAgent(HighFrequencyAgent):
                 and market.get_best_sell_price() is not None
             ):
                 min_sell = min(min_sell, market.get_best_sell_price())  # type: ignore  # NOQA
+        if max_buy == -float("inf") or min_sell == float("inf"):
+            return None
         return (max_buy + min_sell) / 2.0
