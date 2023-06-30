@@ -203,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/generated/events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/generated/events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="reference/logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -273,7 +274,7 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#W"><strong>W</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#W"><strong>W</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
@@ -476,11 +477,17 @@
 </li>
           <li><a href="reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule.hook_registration">(pams.events.PriceLimitRule method)</a>
 </li>
+          <li><a href="reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hook_registration">(pams.events.TradingHaltRule method)</a>
+</li>
         </ul></li>
         <li><a href="reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_cancel">hooked_after_cancel() (pams.events.EventABC method)</a>
 </li>
         <li><a href="reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">hooked_after_execution() (pams.events.EventABC method)</a>
+
+        <ul>
+          <li><a href="reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_after_execution">(pams.events.TradingHaltRule method)</a>
 </li>
+        </ul></li>
         <li><a href="reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_order">hooked_after_order() (pams.events.EventABC method)</a>
 </li>
     </ul></td>
@@ -503,6 +510,8 @@
 
         <ul>
           <li><a href="reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock.hooked_before_step_for_market">(pams.events.FundamentalPriceShock method)</a>
+</li>
+          <li><a href="reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_before_step_for_market">(pams.events.TradingHaltRule method)</a>
 </li>
         </ul></li>
     </ul></td>
@@ -714,6 +723,8 @@
 </li>
           <li><a href="reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule.setup">(pams.events.PriceLimitRule method)</a>
 </li>
+          <li><a href="reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.setup">(pams.events.TradingHaltRule method)</a>
+</li>
           <li><a href="reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.setup">(pams.IndexMarket method)</a>
 </li>
           <li><a href="reference/generated/market/pams.Market.html#pams.Market.setup">(pams.Market method)</a>
@@ -740,6 +751,16 @@
         <li><a href="reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.submit_orders_by_market">submit_orders_by_market() (pams.agents.FCNAgent method)</a>
 </li>
         <li><a href="reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order">submitted_order() (pams.agents.Agent method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule">TradingHaltRule (class in pams.events)</a>
 </li>
     </ul></td>
   </tr></table>

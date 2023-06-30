@@ -10,3 +10,4 @@ Events
     events.EventHook
     events.FundamentalPriceShock
     events.PriceLimitRule
+    events.TradingHaltRule
