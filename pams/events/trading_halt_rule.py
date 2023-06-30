@@ -15,6 +15,8 @@ from .base import EventHook
 class TradingHaltRule(EventABC):
     """A trading halt is a market regulation that suspends the trading of some assets.
 
+    When the one of targetMarkets violate halting line, all of them will be halted.
+    If you want to halt them separately, please make event separately.
     The current implementation sets :func:`pams.market.Market.is_running` = false when the price changed beyond the prespecified threshold range.
     """
 
