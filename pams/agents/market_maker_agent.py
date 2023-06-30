@@ -1,6 +1,7 @@
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
 
 from pams.agents.high_frequency_agent import HighFrequencyAgent
@@ -62,7 +63,7 @@ class MarketMakerAgent(HighFrequencyAgent):
             - :func:`pams.agents.Agent.submit_orders`
         """
         orders: List[Union[Order, Cancel]] = []
-        base_price: float = self.get_base_price(markets=markets)
+        base_price: Optional[float] = self.get_base_price(markets=markets)
         if base_price is None:
             base_price = self.target_market.get_market_price()
         price_margin: float = (
@@ -93,14 +94,14 @@ class MarketMakerAgent(HighFrequencyAgent):
         )
         return orders
 
-    def get_base_price(self, markets: List[Market]) -> float:
+    def get_base_price(self, markets: List[Market]) -> Optional[float]:
         """get base price of markets.
 
         Args:
             markets (List[:class:`pams.Market`]): markets.
 
         Returns:
-            float: average of the max and min prices.
+            float, Optional: average of the max and min prices.
         """
         max_buy: float = -float("inf")
         for market in markets:
