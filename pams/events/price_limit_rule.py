@@ -16,6 +16,7 @@ from .base import EventHook
 class PriceLimitRule(EventABC):
     """This limits the price range.
 
+    The order having the price that is out of the price range, the price is overridden to the edge of range.
     This event is only called via :func:`hooked_before_order` at designated step.
     """
 
@@ -100,7 +101,9 @@ class PriceLimitRule(EventABC):
         return order_price
 
     def hooked_before_order(self, simulator: Simulator, order: Order) -> None:
-        new_price: float = self.get_limited_price(order, simulator.id2market[order.market_id])  # type: ignore  # NOQA
+        new_price: Optional[float] = self.get_limited_price(
+            order, simulator.id2market[order.market_id]
+        )
         if order.price != new_price:
             self.activation_count += 1
         order.price = new_price
