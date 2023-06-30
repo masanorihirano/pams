@@ -49,7 +49,7 @@ class TradingHaltRule(EventABC):
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameters "targetMarkets" and "triggerChangeRate".
                                        This can include the parameters "haltingTimeLength" and "enabled".
-                                       The parameter "referenceMarket" is obsolate.
+                                       The parameter "referenceMarket" is obsoleted.
 
         Returns:
             None
@@ -63,6 +63,8 @@ class TradingHaltRule(EventABC):
         for market_name in settings["targetMarkets"]:
             if not isinstance(market_name, str):
                 raise ValueError("constituent of targetMarkets must be string")
+            if market_name not in self.simulator.name2market:
+                raise ValueError(f"{market_name} does not exist")
             market: Market = self.simulator.name2market[market_name]
             self.target_markets[market_name] = market
         if "triggerChangeRate" not in settings:
@@ -70,10 +72,11 @@ class TradingHaltRule(EventABC):
         if not isinstance(settings["triggerChangeRate"], float):
             raise ValueError("triggerChangeRate have to be float")
         self.trigger_change_rate = settings["triggerChangeRate"]
-        if "haltingTimeLength" in settings:
-            if not isinstance(settings["haltingTimeLength"], int):
-                raise ValueError("haltingTimeLength have to be int")
-            self.halting_time_length = settings["haltingTimeLength"]
+        if "haltingTimeLength" not in settings:
+            raise ValueError("haltingTimeLength is required")
+        if not isinstance(settings["haltingTimeLength"], int):
+            raise ValueError("haltingTimeLength have to be int")
+        self.halting_time_length = settings["haltingTimeLength"]
         if "enabled" in settings:
             self.is_enabled = settings["enabled"]
 
