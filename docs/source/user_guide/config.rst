@@ -36,6 +36,12 @@ Json config
             "shockTimeLength": int (Optional, default: 1),
             "enabled": bool (Optional, default: True)
         },
+        "PriceLimitRule": {
+            "class": "PriceLimitRule",
+            "targetMarkets": ["Market"],
+            "triggerChangeRate": float required,
+            "enabled": bool (Optional, default: True)
+        },
         "Market": {
             "extends": string (Optional),
             "class": string,
