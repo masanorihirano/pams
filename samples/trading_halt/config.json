@@ -29,7 +29,6 @@
 
 	"TradingHaltRule": {
 		"class": "TradingHaltRule",
-		"referenceMarket": "Market",
 		"targetMarkets": ["Market"],
 		"triggerChangeRate": 0.05,
 		"haltingTimeLength": 100,
