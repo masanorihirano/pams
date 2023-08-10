@@ -1,4 +1,5 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
@@ -18,7 +19,6 @@ class OrderMistakeShock(EventABC):
     This event is only called via :func:`hooked_before_step_for_market` at designated step.
     """
 
-    target_market_name: str
     target_market: "Market"  # type: ignore  # NOQA
     trigger_time: int
     price_change_rate: float
@@ -54,6 +54,8 @@ class OrderMistakeShock(EventABC):
         Returns:
             None
         """
+        if "agent" in settings:
+            warnings.warn("agent in OrderMistakeShock is obsoleted.")
         if "target" not in settings:
             raise ValueError("target is required for OrderMistakeShock")
         if settings["target"] not in self.simulator.name2market:
@@ -66,6 +68,8 @@ class OrderMistakeShock(EventABC):
         self.trigger_time = self.session.session_start_time + settings["triggerTime"]
         if "priceChangeRate" not in settings:
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
+        if not isinstance(settings["priceChangeRate"], float):
+            raise ValueError("priceChangeRate have to be float")
         self.price_change_rate = settings["priceChangeRate"]
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for OrderMistakeShock")
@@ -91,7 +95,7 @@ class OrderMistakeShock(EventABC):
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         if not self.triggerd:
-            market: Market = self.simulator.id2market[order.market_id]
+            market: "Market" = self.simulator.id2market[order.market_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
             order_price: float = base_price * (1 + self.price_change_rate)
             time_length: int = self.order_time_length

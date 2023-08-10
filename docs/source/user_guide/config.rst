@@ -52,7 +52,6 @@ Json config
         "OrderMistakeShock": {
             "class": "OrderMistakeShock",
             "target": "Market",
-            "agent": "FCNAgents",
             "triggerTime": int required,
             "priceChangeRate": float required,
             "orderVolume": int required,

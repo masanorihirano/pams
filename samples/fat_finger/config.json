@@ -22,7 +22,6 @@
 	"OrderMistakeShock": {
 		"class": "OrderMistakeShock",
 		"target": "Market",
-		"agent": "FCNAgents", "MEMO": "One of them is selected",
 		"triggerTime": 100,       "MEMO": "At the 100th step of the session 2",
 		"priceChangeRate": -0.05, "MEMO": "Sign: negative for down; positive for up; zero for no change",
 		"orderVolume": 10000,     "MEMO": "Very much",
