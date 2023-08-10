@@ -11,3 +11,4 @@ Events
     events.FundamentalPriceShock
     events.PriceLimitRule
     events.TradingHaltRule
+    events.OrderMistakeShock
