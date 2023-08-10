@@ -1,4 +1,5 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
@@ -10,12 +11,14 @@ from .base import EventHook
 
 
 class OrderMistakeShock(EventABC):
-    """This suddenly changes the fundamental price (just changing it).
+    """This suddenly changes the market price.
+
+     It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
+     at an extremely cheap or expensive price.
 
     This event is only called via :func:`hooked_before_step_for_market` at designated step.
     """
 
-    target_market_name: str
     target_market: "Market"  # type: ignore  # NOQA
     trigger_time: int
     price_change_rate: float
@@ -38,29 +41,35 @@ class OrderMistakeShock(EventABC):
         )
         self.is_enabled: bool = True
         self.order_time_length: int = 1
-        self.agent_id: int = simulator.agents[0].agent_id
+        self.triggerd: bool = False
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
         """event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "target", "triggerTime", "priceChangeRate", "orderVolume", and "orderTimeLength".
-                                       This can include the parameters "enabled".
+                                       This must include the parameters "target", "triggerTime", "priceChangeRate",
+                                       "orderVolume", and "orderTimeLength". This can include the parameters "enabled".
 
         Returns:
             None
         """
+        if "agent" in settings:
+            warnings.warn("agent in OrderMistakeShock is obsoleted.")
         if "target" not in settings:
             raise ValueError("target is required for OrderMistakeShock")
+        if settings["target"] not in self.simulator.name2market:
+            raise ValueError(f"market {settings['target']} is not exists")
         self.target_market = self.simulator.name2market[settings["target"]]
         if "triggerTime" not in settings:
             raise ValueError("triggerTime is required for OrderMistakeShock")
         if not isinstance(settings["triggerTime"], int):
             raise ValueError("triggerTime have to be int")
-        self.trigger_time = self.target_market.get_time() + settings["triggerTime"]
+        self.trigger_time = self.session.session_start_time + settings["triggerTime"]
         if "priceChangeRate" not in settings:
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
+        if not isinstance(settings["priceChangeRate"], float):
+            raise ValueError("priceChangeRate have to be float")
         self.price_change_rate = settings["priceChangeRate"]
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for OrderMistakeShock")
@@ -78,47 +87,26 @@ class OrderMistakeShock(EventABC):
     def hook_registration(self) -> List[EventHook]:
         if self.is_enabled:
             event_hook = EventHook(
-                event=self,
-                hook_type="market",
-                is_before=True,
-                specific_instance=self.target_market,
+                event=self, hook_type="order", is_before=True, time=[self.trigger_time]
             )
             return [event_hook]
         else:
             return []
 
-    def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
-        time: int = market.get_time()
-        if time == self.trigger_time + self.session.session_start_time:
+    def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
+        if not self.triggerd:
+            market: "Market" = self.simulator.id2market[order.market_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
             order_price: float = base_price * (1 + self.price_change_rate)
             time_length: int = self.order_time_length
-            if self.price_change_rate <= 0.0:
-                # Hit sell orders to the buy side.
-                order = Order(
-                    agent_id=self.agent_id,
-                    market_id=market.market_id,
-                    is_buy=False,
-                    kind=LIMIT_ORDER,
-                    volume=self.order_volume,
-                    price=order_price,
-                    ttl=time_length,
-                )
-            else:
-                # Hit buy orders to the sell side.
-                order = Order(
-                    agent_id=self.agent_id,
-                    market_id=market.market_id,
-                    is_buy=True,
-                    kind=LIMIT_ORDER,
-                    volume=self.order_volume,
-                    price=order_price,
-                    ttl=time_length,
-                )
-            market._add_order(order)
+            # override a order
+            order.is_buy = self.price_change_rate > 0.0
+            order.kind = LIMIT_ORDER
+            order.volume = self.order_volume
+            order.price = order_price
+            order.ttl = time_length
+            self.triggerd = True
 
 
 OrderMistakeShock.hook_registration.__doc__ = EventABC.hook_registration.__doc__
-OrderMistakeShock.hooked_before_step_for_market.__doc__ = (
-    EventABC.hooked_before_step_for_market.__doc__
-)
+OrderMistakeShock.hooked_before_order.__doc__ = EventABC.hooked_before_order.__doc__

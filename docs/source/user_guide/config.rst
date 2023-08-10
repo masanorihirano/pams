@@ -49,6 +49,15 @@ Json config
         	"haltingTimeLength": int required,
         	"enabled": bool (Optional, default: True)
         },
+        "OrderMistakeShock": {
+            "class": "OrderMistakeShock",
+            "target": "Market",
+            "triggerTime": int required,
+            "priceChangeRate": float required,
+            "orderVolume": int required,
+            "orderTimeLength": int required,
+            "enabled": bool (Optional, default: True)
+        },
         "Market": {
             "extends": string (Optional),
             "class": string,
