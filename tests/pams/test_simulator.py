@@ -312,10 +312,11 @@ class TestSimulator:
         event_hooks = event.hook_registration()
         for event_hook in event_hooks:
             sim._add_event(event_hook=event_hook)
+        market._update_time(next_fundamental_price=300)
 
         order = Order(
             agent_id=1,
-            market_id=2,
+            market_id=0,
             is_buy=True,
             kind=LIMIT_ORDER,
             volume=1,

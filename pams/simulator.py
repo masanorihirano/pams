@@ -287,7 +287,7 @@ class Simulator:
         Returns:
             None
         """
-        time: int = order.placed_at
+        time: int = self.id2market[order.market_id].get_time()
         event_hooks = self.events_dict["order_before"]
         target_event_hooks: List[EventHook] = []
         if None in event_hooks:
@@ -325,7 +325,7 @@ class Simulator:
         Returns:
             None
         """
-        time: int = cancel.placed_at
+        time: int = self.id2market[cancel.market_id].get_time()
         event_hooks = self.events_dict["cancel_before"]
         target_event_hooks: List[EventHook] = []
         if None in event_hooks:
