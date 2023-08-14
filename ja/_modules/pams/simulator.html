@@ -205,6 +205,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -562,7 +563,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">placed_at</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;order_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">event_hooks</span><span class="p">:</span>
@@ -600,7 +601,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">cancel</span><span class="o">.</span><span class="n">placed_at</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">cancel</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
         <span class="n">event_hooks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_dict</span><span class="p">[</span><span class="s2">&quot;cancel_before&quot;</span><span class="p">]</span>
         <span class="n">target_event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">event_hooks</span><span class="p">:</span>
