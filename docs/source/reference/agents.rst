@@ -10,3 +10,4 @@ Agents
     agents.HighFrequencyAgent
     agents.FCNAgent
     agents.ArbitrageAgent
+    agents.MarketShareFCNAgent

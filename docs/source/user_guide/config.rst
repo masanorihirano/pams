@@ -95,6 +95,10 @@ Json config
             "orderMargin": JsonRandomFormat,
             "marginType": "fixed" or "normal" (Optional; default fixed)
         },
+	    "MarketShareFCNAgents": {
+            "class": "MarketShareFCNAgent",
+            "extends": "FCNAgent"
+        },
         "ArbitrageAgent": {
             "class": "ArbitrageAgent",
             "extends": "Agents",
