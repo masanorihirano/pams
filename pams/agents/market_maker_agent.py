@@ -16,7 +16,12 @@ class MarketMakerAgent(HighFrequencyAgent):
     """Market Maker Agent class
 
     This class inherits from the :class:`pams.agents.Agent` class.
-    """
+
+    This agent submits orders to the target market at the following price:
+    :math:`\left\{\max_i(P^b_i) + \min_i(P^a_i) \pm P_f \times \theta\right\} / 2`
+    where :math:`P^b_i` and :math:`P^a_i` are the best bid and ask prices of the :math:`i`-th target market,
+    and :math:`P_f` is the fundamental price of the target market.
+    """  # NOQA
 
     target_market: Market
     net_interest_spread: float
@@ -40,8 +45,11 @@ class MarketMakerAgent(HighFrequencyAgent):
         Returns:
             None
         """
+        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         if "targetMarket" not in settings:
             raise ValueError("targetMarket is required for MarketMakerAgent.")
+        if not isinstance(settings["targetMarket"], str):
+            raise ValueError("targetMarket must be string")
         self.target_market = self.simulator.name2market[settings["targetMarket"]]
         if "netInterestSpread" not in settings:
             raise ValueError("netInterestSpread is required for MarketMakerAgent.")
@@ -54,7 +62,6 @@ class MarketMakerAgent(HighFrequencyAgent):
             if "orderTimeLength" in settings
             else 2
         )
-        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """submit orders.
@@ -105,18 +112,20 @@ class MarketMakerAgent(HighFrequencyAgent):
         """
         max_buy: float = -float("inf")
         for market in markets:
+            best_buy_price: Optional[float] = market.get_best_buy_price()
             if (
                 self.is_market_accessible(market_id=market.market_id)
-                and market.get_best_buy_price() is not None
+                and best_buy_price is not None
             ):
-                max_buy = max(max_buy, market.get_best_buy_price())  # type: ignore  # NOQA
+                max_buy = max(max_buy, best_buy_price)
         min_sell: float = float("inf")
         for market in markets:
+            best_sell_price: Optional[float] = market.get_best_sell_price()
             if (
                 self.is_market_accessible(market_id=market.market_id)
-                and market.get_best_sell_price() is not None
+                and best_sell_price is not None
             ):
-                min_sell = min(min_sell, market.get_best_sell_price())  # type: ignore  # NOQA
+                min_sell = min(min_sell, best_sell_price)
         if max_buy == -float("inf") or min_sell == float("inf"):
             return None
         return (max_buy + min_sell) / 2.0

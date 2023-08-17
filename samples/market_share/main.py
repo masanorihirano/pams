@@ -1,9 +1,21 @@
 import argparse
 import random
+from typing import Any
+from typing import Dict
 from typing import Optional
 
+from pams import Market
 from pams.logs.market_step_loggers import MarketStepPrintLogger
 from pams.runners.sequential import SequentialRunner
+
+
+class ExtendedMarket(Market):
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
+        super(ExtendedMarket, self).setup(settings, *args, **kwargs)
+        if "tradeVolume" in settings:
+            if not isinstance(settings["tradeVolume"], int):
+                raise ValueError("tradeVolume must be int")
+            self._executed_volumes = [int(settings["tradeVolume"])]
 
 
 def main() -> None:
@@ -23,6 +35,7 @@ def main() -> None:
         prng=random.Random(seed) if seed is not None else None,
         logger=MarketStepPrintLogger(),
     )
+    runner.class_register(cls=ExtendedMarket)
     runner.main()
 
 
