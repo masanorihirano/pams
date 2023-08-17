@@ -1,8 +1,11 @@
 import random
+from typing import List
+from typing import cast
 
 import pytest
 
 from pams import Market
+from pams import Order
 from pams import Simulator
 from pams.agents import MarketMakerAgent
 from tests.pams.agents.test_base import TestAgent
@@ -92,7 +95,9 @@ class TestMarketMakerAgent(TestAgent):
             "orderTimeLength": 3,
         }
         agent.setup(settings=settings1, accessible_markets_ids=[0])
-        orders = agent.submit_orders(markets=[market1])
+        orders = cast(List[Order], agent.submit_orders(markets=[market1]))
+        for order in orders:
+            assert isinstance(order, Order)
         order_buy = list(filter(lambda x: x.is_buy, orders))[0]
         order_sell = list(filter(lambda x: not x.is_buy, orders))[0]
         assert order_buy.price == 300.0 * 0.975
