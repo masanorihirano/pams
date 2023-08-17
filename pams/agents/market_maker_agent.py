@@ -17,8 +17,11 @@ class MarketMakerAgent(HighFrequencyAgent):
 
     This class inherits from the :class:`pams.agents.Agent` class.
 
-    # TODO: model specifies
-    """
+    This agent submits orders to the target market at the following price:
+    :math:`\left\{\max_i(P^b_i) + \min_i(P^a_i) \pm P_f \times \theta\right\} / 2`
+    where :math:`P^b_i` and :math:`P^a_i` are the best bid and ask prices of the :math:`i`-th target market,
+    and :math:`P_f` is the fundamental price of the target market.
+    """  # NOQA
 
     target_market: Market
     net_interest_spread: float
