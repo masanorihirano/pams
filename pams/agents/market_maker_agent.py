@@ -16,6 +16,8 @@ class MarketMakerAgent(HighFrequencyAgent):
     """Market Maker Agent class
 
     This class inherits from the :class:`pams.agents.Agent` class.
+
+    # TODO: model specifies
     """
 
     target_market: Market
@@ -40,6 +42,7 @@ class MarketMakerAgent(HighFrequencyAgent):
         Returns:
             None
         """
+        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         if "targetMarket" not in settings:
             raise ValueError("targetMarket is required for MarketMakerAgent.")
         self.target_market = self.simulator.name2market[settings["targetMarket"]]
@@ -54,7 +57,6 @@ class MarketMakerAgent(HighFrequencyAgent):
             if "orderTimeLength" in settings
             else 2
         )
-        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """submit orders.
@@ -105,18 +107,20 @@ class MarketMakerAgent(HighFrequencyAgent):
         """
         max_buy: float = -float("inf")
         for market in markets:
+            best_buy_price: Optional[float] = market.get_best_buy_price()
             if (
                 self.is_market_accessible(market_id=market.market_id)
-                and market.get_best_buy_price() is not None
+                and best_buy_price is not None
             ):
-                max_buy = max(max_buy, market.get_best_buy_price())  # type: ignore  # NOQA
+                max_buy = max(max_buy, best_buy_price)
         min_sell: float = float("inf")
         for market in markets:
+            best_sell_price: Optional[float] = market.get_best_sell_price()
             if (
                 self.is_market_accessible(market_id=market.market_id)
-                and market.get_best_sell_price() is not None
+                and best_sell_price is not None
             ):
-                min_sell = min(min_sell, market.get_best_sell_price())  # type: ignore  # NOQA
+                min_sell = min(min_sell, best_sell_price)
         if max_buy == -float("inf") or min_sell == float("inf"):
             return None
         return (max_buy + min_sell) / 2.0
