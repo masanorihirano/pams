@@ -45,6 +45,8 @@ class MarketMakerAgent(HighFrequencyAgent):
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         if "targetMarket" not in settings:
             raise ValueError("targetMarket is required for MarketMakerAgent.")
+        if not isinstance(settings["targetMarket"], str):
+            raise ValueError("targetMarket must be string")
         self.target_market = self.simulator.name2market[settings["targetMarket"]]
         if "netInterestSpread" not in settings:
             raise ValueError("netInterestSpread is required for MarketMakerAgent.")
