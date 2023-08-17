@@ -106,4 +106,11 @@ Json config
             "orderThresholdPrice": float,
             "orderTimeLength": int (Optional, default 1),
         },
+        "MarketMakerAgent": {
+            "class": "MarketMakerAgent",
+            "extends": "Agents",
+            "targetMarket": string required,
+            "netInterestSpread": float required,
+            "orderTimeLength": int optional; default 2,
+        }
     }

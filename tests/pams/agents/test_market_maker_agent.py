@@ -4,6 +4,7 @@ from typing import cast
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams import Market
 from pams import Order
 from pams import Simulator
@@ -102,3 +103,41 @@ class TestMarketMakerAgent(TestAgent):
         order_sell = list(filter(lambda x: not x.is_buy, orders))[0]
         assert order_buy.price == 300.0 * 0.975
         assert order_sell.price == 300.0 * 1.025
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            placed_at=None,
+            price=290.0,
+            order_id=None,
+            ttl=None,
+        )
+        market1._add_order(order=order)
+        orders = cast(List[Order], agent.submit_orders(markets=[market1]))
+        for order in orders:
+            assert isinstance(order, Order)
+        order_buy = list(filter(lambda x: x.is_buy, orders))[0]
+        order_sell = list(filter(lambda x: not x.is_buy, orders))[0]
+        assert order_buy.price == 300.0 * 0.975
+        assert order_sell.price == 300.0 * 1.025
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            placed_at=None,
+            price=320.0,
+            order_id=None,
+            ttl=None,
+        )
+        market1._add_order(order=order)
+        orders = cast(List[Order], agent.submit_orders(markets=[market1]))
+        for order in orders:
+            assert isinstance(order, Order)
+        order_buy = list(filter(lambda x: x.is_buy, orders))[0]
+        order_sell = list(filter(lambda x: not x.is_buy, orders))[0]
+        assert order_buy.price == 305.0 - 300.0 * 0.025
+        assert order_sell.price == 305.0 + 300.0 * 0.025
