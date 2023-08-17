@@ -85,7 +85,7 @@ class Market:
         Args:
             settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameters "tickSize" and either "marketPrice" or "fundamentalPrice".
-                                       This can include the parameter "outstandingShares".
+                                       This can include the parameter "outstandingShares" and "tradeVolume".
 
         Returns:
             None

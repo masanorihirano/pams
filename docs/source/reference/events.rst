@@ -9,3 +9,6 @@ Events
     events.EventABC
     events.EventHook
     events.FundamentalPriceShock
+    events.PriceLimitRule
+    events.TradingHaltRule
+    events.OrderMistakeShock
