@@ -197,7 +197,7 @@ class TestEventABC:
         sim._add_market(market=market, group_name="market_group")
         order = Order(
             agent_id=1,
-            market_id=2,
+            market_id=0,
             is_buy=True,
             kind=LIMIT_ORDER,
             volume=1,
