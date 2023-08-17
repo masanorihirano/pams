@@ -26,7 +26,7 @@ class MarketShareFCNAgent(FCNAgent):
             if self.is_market_accessible(market_id=market.market_id)
         ]
         if len(filter_markets) == 0:
-            raise RuntimeError("filter_markets in MarketShareFCNAgent is empty.")
+            raise AssertionError("filter_markets in MarketShareFCNAgent is empty.")
         weights: List[float] = []
         for market in filter_markets:
             weights.append(float(self.get_sum_trade_volume(market=market)) + 1e-10)
