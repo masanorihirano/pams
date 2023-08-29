@@ -44,6 +44,6 @@ class MarketShareFCNAgent(FCNAgent):
             int: total trade volume.
         """
         t: int = market.get_time()
-        time_window_size: int = min(t, self.time_window_size)
-        volume: int = sum(market.get_executed_volumes(range(1, time_window_size + 1)))
+        time_window_size: int = min(t + 1, self.time_window_size)
+        volume: int = sum(market.get_executed_volumes(range(0, time_window_size)))
         return volume
