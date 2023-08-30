@@ -233,6 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/utils.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -369,6 +370,10 @@
         &quot;orderMargin&quot;: JsonRandomFormat,
         &quot;marginType&quot;: &quot;fixed&quot; or &quot;normal&quot; (Optional; default fixed)
     },
+        &quot;MarketShareFCNAgents&quot;: {
+        &quot;class&quot;: &quot;MarketShareFCNAgent&quot;,
+        &quot;extends&quot;: &quot;FCNAgent&quot;
+    },
     &quot;ArbitrageAgent&quot;: {
         &quot;class&quot;: &quot;ArbitrageAgent&quot;,
         &quot;extends&quot;: &quot;Agents&quot;,
@@ -376,6 +381,13 @@
         &quot;orderThresholdPrice&quot;: float,
         &quot;orderTimeLength&quot;: int (Optional, default 1),
     },
+    &quot;MarketMakerAgent&quot;: {
+        &quot;class&quot;: &quot;MarketMakerAgent&quot;,
+        &quot;extends&quot;: &quot;Agents&quot;,
+        &quot;targetMarket&quot;: string required,
+        &quot;netInterestSpread&quot;: float required,
+        &quot;orderTimeLength&quot;: int optional; default 2,
+    }
 }
 </pre></div>
 </div>

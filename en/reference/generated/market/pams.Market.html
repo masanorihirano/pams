@@ -233,6 +233,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../utils.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -767,7 +768,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – market configuration. Usually, automatically set from json config of simulator.
 This must include the parameters “tickSize” and either “marketPrice” or “fundamentalPrice”.
-This can include the parameter “outstandingShares”.</p>
+This can include the parameter “outstandingShares” and “tradeVolume”.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

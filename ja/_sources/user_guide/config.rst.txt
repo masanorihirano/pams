@@ -95,6 +95,10 @@ Json config
             "orderMargin": JsonRandomFormat,
             "marginType": "fixed" or "normal" (Optional; default fixed)
         },
+	    "MarketShareFCNAgents": {
+            "class": "MarketShareFCNAgent",
+            "extends": "FCNAgent"
+        },
         "ArbitrageAgent": {
             "class": "ArbitrageAgent",
             "extends": "Agents",
@@ -102,4 +106,11 @@ Json config
             "orderThresholdPrice": float,
             "orderTimeLength": int (Optional, default 1),
         },
+        "MarketMakerAgent": {
+            "class": "MarketMakerAgent",
+            "extends": "Agents",
+            "targetMarket": string required,
+            "netInterestSpread": float required,
+            "orderTimeLength": int optional; default 2,
+        }
     }
