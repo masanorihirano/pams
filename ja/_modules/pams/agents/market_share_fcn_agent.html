@@ -321,8 +321,8 @@
 <span class="sd">            int: total trade volume.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">t</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
-        <span class="n">time_window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span><span class="p">)</span>
-        <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">get_executed_volumes</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_window_size</span><span class="p">)))</span>
+        <span class="n">t_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span><span class="p">)</span>
+        <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">get_executed_volumes</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">volume</span></div></div>
 </pre></div>
         </article>
