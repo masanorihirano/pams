@@ -21,7 +21,7 @@
 
 	"Market-A": {
 		"class": "ExtendedMarket",
-		"tickSize": 5.0,    "MEMO": "0.05% of 10,000 YEN",
+		"tickSize": 10.0,
 		"marketPrice": 300.0,
 		"outstandingShares": 25000,
 
@@ -31,7 +31,7 @@
 
 	"Market-B": {
 		"class": "ExtendedMarket",
-		"tickSize": 1.0,    "MEMO": "0.01% of 10,000 YEN",
+		"tickSize": 1.0,
 		"marketPrice": 300.0,
 		"outstandingShares": 25000,
 
