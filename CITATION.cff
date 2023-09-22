@@ -6,5 +6,8 @@ authors:
   orcid: "https://orcid.org/0000-0001-5883-8250"
 - family-names: "Takata"
   given-names: "Ryosuke"
+- family-names: "Kiyoshi"
+  given-names: "IZUMI"
 title: "PAMS: Platform for Artificial Market Simulations"
 url: "https://github.com/masanorihirano/pams"
+doi: 10.48550/arXiv.2309.10729

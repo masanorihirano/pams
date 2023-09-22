@@ -22,11 +22,22 @@ $ python
 ```
 
 ## Citation
-Currently, no publication related to this repository. Therefore, please cite this repository directly if you want.
+If you consider cite our work, please use the following [arxiv entry](https://arxiv.org/abs/2309.10729):
+```bibtex
+@misc{Hirano2023-pams
+    title={{PAMS: Platform for Artificial Market Simulations}},
+    autors={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
+    year={2023},
+    doi = {10.48550/arXiv.2309.10729}
+}
+```
+https://arxiv.org/abs/2309.10729
+
+If you prefer to cite this package directly, please use the following bibtex entry:
 ```bibtex
 @misc{Hirano2022-pams
     title={{PAMS: Platform for Artificial Market Simulations}},
-    autors={Masanori HIRANO, Ryosuke TAKATA},
+    autors={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
     year={2022},
     url = {https://github.com/masanorihirano/pams}
 }

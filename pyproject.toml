@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "pams"
-version = "0.1.3"
+version = "0.2.0"
 description = "PAMS: Platform for Artificial Market Simulations"
-authors = ["Masanori HIRANO <masa.hirano.1996@gmail.com>"]
-license = "MIT"
+authors = ["Masanori HIRANO <masa.hirano.1996@gmail.com>", "Ryosuke TAKATA <ryos427@yahoo.co.jp>", "Kiyoshi IZUMI"]
+license = "epl-1.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
