@@ -24,7 +24,7 @@ $ python
 ## Citation
 If you consider cite our work, please use the following [arxiv entry](https://arxiv.org/abs/2309.10729):
 ```bibtex
-@misc{Hirano2023-pams
+@misc{Hirano2023-pams,
     title={{PAMS: Platform for Artificial Market Simulations}},
     autors={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
     year={2023},
@@ -35,7 +35,7 @@ https://arxiv.org/abs/2309.10729
 
 If you prefer to cite this package directly, please use the following bibtex entry:
 ```bibtex
-@misc{Hirano2022-pams
+@misc{Hirano2022-pams,
     title={{PAMS: Platform for Artificial Market Simulations}},
     autors={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
     year={2022},
