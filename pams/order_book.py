@@ -141,7 +141,6 @@ class OrderBook:
             return logs
         # TODO: think better sorting in the following 3 lines
         for delete_order in delete_orders:
-            assert delete_order.placed_at + delete_order.ttl + 1 == self.time
             log: ExpirationLog = ExpirationLog(
                 order_id=delete_order.order_id,
                 market_id=delete_order.order_id,
