@@ -13,6 +13,7 @@ from pams import MARKET_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
+from pams.logs.base import ExpirationLog
 from pams.logs.base import Logger
 from pams.simulator import Simulator
 
@@ -749,3 +750,54 @@ class TestMarket:
         assert market.remain_executable_orders()
         logs = market._execution()
         assert len(logs) == 2
+
+    def test_expiration_orrder_pattern01(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=2, ttl=1
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1, ttl=1
+        )
+        market._add_order(order)
+        market._update_time(1.0)
+        market._update_time(1.0)
+        assert (
+            len([log for log in logger.pending_logs if isinstance(log, ExpirationLog)])
+            == 2
+        )
+
+    def test_expiration_orrder_pattern02(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=2, ttl=1
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1, ttl=1
+        )
+        market._add_order(order)
+        market._set_time(time=2, next_fundamental_price=1.0)
+        assert (
+            len([log for log in logger.pending_logs if isinstance(log, ExpirationLog)])
+            == 2
+        )

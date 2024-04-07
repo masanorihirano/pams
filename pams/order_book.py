@@ -3,6 +3,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+from .logs.base import ExpirationLog
 from .order import Cancel
 from .order import Order
 
@@ -122,8 +123,12 @@ class OrderBook:
         if order.volume < 0:
             raise AssertionError
 
-    def _check_expired_orders(self) -> None:
-        """check and delete expired orders. (Internal Method)"""
+    def _check_expired_orders(self) -> List[ExpirationLog]:
+        """check and delete expired orders. (Internal Method)
+
+        Returns:
+            List[ExpirationLog]: the list of expiration logs.
+        """
         delete_orders: List[Order] = sum(
             [value for key, value in self.expire_time_list.items() if key < self.time],
             [],
@@ -131,26 +136,42 @@ class OrderBook:
         delete_keys: List[int] = [
             key for key, value in self.expire_time_list.items() if key < self.time
         ]
+        logs: List[ExpirationLog] = []
         if len(delete_orders) == 0:
-            return
+            return logs
         # TODO: think better sorting in the following 3 lines
         for delete_order in delete_orders:
+            log: ExpirationLog = ExpirationLog(
+                order_id=delete_order.order_id,
+                market_id=delete_order.market_id,
+                time=self.time,
+                order_time=delete_order.placed_at,
+                agent_id=delete_order.agent_id,
+                is_buy=delete_order.is_buy,
+                kind=delete_order.kind,
+                volume=delete_order.volume,
+                price=delete_order.price,
+                ttl=delete_order.ttl,
+            )
+            logs.append(log)
             self.priority_queue.remove(delete_order)
         heapq.heapify(self.priority_queue)
         for key in delete_keys:
             self.expire_time_list.pop(key)
+        return logs
 
-    def _set_time(self, time: int) -> None:
+    def _set_time(self, time: int) -> List[ExpirationLog]:
         """set time step. (Usually, it is called from market.)
 
         Args:
             time (int): time step.
 
         Returns:
-            None
+            List[ExpirationLog]: the list of expiration logs.
         """
         self.time = time
-        self._check_expired_orders()
+        logs: List[ExpirationLog] = self._check_expired_orders()
+        return logs
 
     def _update_time(self) -> None:
         """update time. (Usually, it is called from market.)
