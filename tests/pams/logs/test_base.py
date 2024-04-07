@@ -375,6 +375,7 @@ class TestLogger:
                 super().__init__()
                 self.n_order_log = 0
                 self.n_cancel_log = 0
+                self.n_expiration_log = 0
                 self.n_execution_log = 0
                 self.n_simulation_begin_log = 0
                 self.n_simulation_end_log = 0
@@ -388,6 +389,9 @@ class TestLogger:
 
             def process_cancel_log(self, log: CancelLog) -> None:
                 self.n_cancel_log += 1
+
+            def process_expiration_log(self, log: ExpirationLog) -> None:
+                self.n_expiration_log += 1
 
             def process_execution_log(self, log: ExecutionLog) -> None:
                 self.n_execution_log += 1
@@ -446,6 +450,19 @@ class TestLogger:
             ttl=9,
         )
         logger.write(log=cancel_log)
+        expiration_log = ExpirationLog(
+            order_id=1,
+            market_id=2,
+            time=5,
+            order_time=3,
+            agent_id=4,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=6,
+            price=7.0,
+            ttl=2,
+        )
+        logger.write(log=expiration_log)
         execution_log = ExecutionLog(
             market_id=1,
             time=2,
@@ -481,6 +498,7 @@ class TestLogger:
 
         assert logger.n_order_log == 1
         assert logger.n_cancel_log == 1
+        assert logger.n_expiration_log == 1
         assert logger.n_execution_log == 1
         assert logger.n_simulation_begin_log == 1
         assert logger.n_simulation_end_log == 1
@@ -527,6 +545,19 @@ class TestLogger:
             ttl=9,
         )
         logger.write(log=cancel_log)
+        expiration_log = ExpirationLog(
+            order_id=1,
+            market_id=2,
+            time=5,
+            order_time=3,
+            agent_id=4,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=6,
+            price=7.0,
+            ttl=2,
+        )
+        logger.write(log=expiration_log)
         execution_log = ExecutionLog(
             market_id=1,
             time=2,

@@ -395,6 +395,8 @@ class Logger:
                 self.process_order_log(log=log)
             elif isinstance(log, CancelLog):
                 self.process_cancel_log(log=log)
+            elif isinstance(log, ExpirationLog):
+                self.process_expiration_log(log=log)
             elif isinstance(log, ExecutionLog):
                 self.process_execution_log(log=log)
             elif isinstance(log, SimulationBeginLog):
@@ -427,6 +429,17 @@ class Logger:
 
         Args:
             log (:class:`pams.logs.CancelLog`]): cancel log
+
+        Returns:
+            None
+        """
+        pass
+
+    def process_expiration_log(self, log: "ExpirationLog") -> None:
+        """process expiration log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.ExpirationLog`]): expiration log
 
         Returns:
             None
