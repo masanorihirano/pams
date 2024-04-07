@@ -143,7 +143,7 @@ class OrderBook:
         for delete_order in delete_orders:
             log: ExpirationLog = ExpirationLog(
                 order_id=delete_order.order_id,
-                market_id=delete_order.order_id,
+                market_id=delete_order.market_id,
                 time=self.time,
                 order_time=delete_order.placed_at,
                 agent_id=delete_order.agent_id,
