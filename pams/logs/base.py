@@ -119,6 +119,7 @@ class CancelLog(Log):
         self.ttl: Optional[int] = ttl
         # TODO: Type validation
 
+
 class ExpirationLog(Log):
     """Expiration type log class.
 
@@ -162,6 +163,7 @@ class ExpirationLog(Log):
         self.price: Optional[float] = price
         self.volume: int = volume
         self.ttl: Optional[int] = ttl
+
 
 class ExecutionLog(Log):
     """Execution type log class.
