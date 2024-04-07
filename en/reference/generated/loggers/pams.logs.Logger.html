@@ -399,6 +399,23 @@ Therefore, this logger has 2 methods to handling logs – <a class="reference in
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pams.logs.Logger.process_expiration_log">
+<span class="sig-name descname"><span class="pre">process_expiration_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_expiration_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_expiration_log" title="Permalink to this definition">#</a></dt>
+<dd><p>process expiration log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExpirationLog</span></code>]) – expiration log</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_market_step_begin_log">
 <span class="sig-name descname"><span class="pre">process_market_step_begin_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_market_step_begin_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_market_step_begin_log" title="Permalink to this definition">#</a></dt>
 <dd><p>process market step begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
@@ -617,6 +634,7 @@ Therefore, this logger has 2 methods to handling logs – <a class="reference in
 <li><a class="reference internal" href="#pams.logs.Logger.process"><code class="docutils literal notranslate"><span class="pre">Logger.process()</span></code></a></li>
 <li><a class="reference internal" href="#pams.logs.Logger.process_cancel_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_cancel_log()</span></code></a></li>
 <li><a class="reference internal" href="#pams.logs.Logger.process_execution_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_execution_log()</span></code></a></li>
+<li><a class="reference internal" href="#pams.logs.Logger.process_expiration_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_expiration_log()</span></code></a></li>
 <li><a class="reference internal" href="#pams.logs.Logger.process_market_step_begin_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_market_step_begin_log()</span></code></a></li>
 <li><a class="reference internal" href="#pams.logs.Logger.process_market_step_end_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_market_step_end_log()</span></code></a></li>
 <li><a class="reference internal" href="#pams.logs.Logger.process_order_log"><code class="docutils literal notranslate"><span class="pre">Logger.process_order_log()</span></code></a></li>

@@ -291,6 +291,7 @@
 
 <span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">CancelLog</span>
 <span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">ExecutionLog</span>
+<span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">ExpirationLog</span>
 <span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">.logs.base</span> <span class="kn">import</span> <span class="n">OrderLog</span>
@@ -828,8 +829,14 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">read_and_write</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">logs_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">log_</span> <span class="ow">in</span> <span class="n">logs_</span><span class="p">:</span>
+                <span class="n">log_</span><span class="o">.</span><span class="n">read_and_write</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fill_until</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_fundamental_price</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -876,8 +883,14 @@
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">read_and_write</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">logs_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">log_</span> <span class="ow">in</span> <span class="n">logs_</span><span class="p">:</span>
+                <span class="n">log_</span><span class="o">.</span><span class="n">read_and_write</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fill_until</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_fundamental_price</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
