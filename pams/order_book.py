@@ -5,7 +5,6 @@ from typing import Optional
 
 from .logs.base import ExpirationLog
 from .order import Cancel
-from .order import LIMIT_ORDER
 from .order import Order
 
 
