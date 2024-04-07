@@ -153,7 +153,7 @@ class OrderBook:
                 kind=delete_order.kind,
                 volume=delete_order.volume,
                 price=delete_order.price,
-                ttl=delete_order.ttl
+                ttl=delete_order.ttl,
             )
             logs.append(log)
             self.priority_queue.remove(delete_order)

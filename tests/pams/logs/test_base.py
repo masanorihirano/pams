@@ -173,7 +173,7 @@ class TestExpirationLog:
             agent_id=4,
             is_buy=True,
             kind=MARKET_ORDER,
-            volume=10
+            volume=10,
         )
         assert log.order_id == 2
         assert log.market_id == 3
