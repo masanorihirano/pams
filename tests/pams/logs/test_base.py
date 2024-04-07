@@ -161,7 +161,7 @@ class TestExpirationLog:
         assert log.order_time == 8
         assert log.agent_id == 4
         assert log.is_buy == True
-        assert log.kind == LIMIT_ORDER
+        assert log.kind is LIMIT_ORDER
         assert log.volume == 10
         assert log.price == 100.0
         assert log.ttl == 2
@@ -182,7 +182,7 @@ class TestExpirationLog:
         assert log.order_time == 8
         assert log.agent_id == 4
         assert log.is_buy == True
-        assert log.kind == MARKET_ORDER
+        assert log.kind is MARKET_ORDER
         assert log.volume == 10
         assert log.price is None
         assert log.ttl is None
