@@ -556,10 +556,10 @@ class Market:
         if self.logger is not None:
             for log in logs:
                 log.read_and_write(logger=self.logger)
-        logs: List[ExpirationLog] = self.sell_order_book._set_time(time)
+        logs_: List[ExpirationLog] = self.sell_order_book._set_time(time)
         if self.logger is not None:
-            for log in logs:
-                log.read_and_write(logger=self.logger)
+            for log_ in logs_:
+                log_.read_and_write(logger=self.logger)
         self._fill_until(time=time)
         self._fundamental_prices[self.time] = next_fundamental_price
         if self.time > 0:
@@ -610,10 +610,10 @@ class Market:
         if self.logger is not None:
             for log in logs:
                 log.read_and_write(logger=self.logger)
-        logs: List[ExpirationLog] = self.sell_order_book._set_time(self.time)
+        logs_: List[ExpirationLog] = self.sell_order_book._set_time(self.time)
         if self.logger is not None:
-            for log in logs:
-                log.read_and_write(logger=self.logger)
+            for log_ in logs_:
+                log_.read_and_write(logger=self.logger)
         self._fill_until(time=self.time)
         self._fundamental_prices[self.time] = next_fundamental_price
         if self.time > 0:
