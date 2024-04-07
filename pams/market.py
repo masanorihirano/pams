@@ -14,6 +14,7 @@ from typing import cast
 
 from .logs.base import CancelLog
 from .logs.base import ExecutionLog
+from .logs.base import ExpirationLog
 from .logs.base import Log
 from .logs.base import Logger
 from .logs.base import OrderLog
@@ -551,8 +552,14 @@ class Market:
             None
         """
         self.time = time
-        self.buy_order_book._set_time(time)
-        self.sell_order_book._set_time(time)
+        logs: List[ExpirationLog] = self.buy_order_book._set_time(time)
+        if self.logger is not None:
+            for log in logs:
+                log.read_and_write(logger=self.logger)
+        logs_: List[ExpirationLog] = self.sell_order_book._set_time(time)
+        if self.logger is not None:
+            for log_ in logs_:
+                log_.read_and_write(logger=self.logger)
         self._fill_until(time=time)
         self._fundamental_prices[self.time] = next_fundamental_price
         if self.time > 0:
@@ -599,8 +606,14 @@ class Market:
             None
         """
         self.time += 1
-        self.buy_order_book._set_time(self.time)
-        self.sell_order_book._set_time(self.time)
+        logs: List[ExpirationLog] = self.buy_order_book._set_time(self.time)
+        if self.logger is not None:
+            for log in logs:
+                log.read_and_write(logger=self.logger)
+        logs_: List[ExpirationLog] = self.sell_order_book._set_time(self.time)
+        if self.logger is not None:
+            for log_ in logs_:
+                log_.read_and_write(logger=self.logger)
         self._fill_until(time=self.time)
         self._fundamental_prices[self.time] = next_fundamental_price
         if self.time > 0:

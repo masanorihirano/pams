@@ -120,6 +120,51 @@ class CancelLog(Log):
         # TODO: Type validation
 
 
+class ExpirationLog(Log):
+    """Expiration type log class.
+
+    This log is usually generated when an order is expired on markets.
+    """
+
+    def __init__(
+        self,
+        order_id: Optional[int],
+        market_id: int,
+        time: int,
+        order_time: Optional[int],
+        agent_id: int,
+        is_buy: bool,
+        kind: OrderKind,
+        volume: int,
+        price: Optional[float] = None,
+        ttl: Optional[int] = None,
+    ):
+        """initialize
+
+        Args:
+            order_id (int): order ID.
+            market_id (int): market ID.
+            time (int): time.
+            order_time (int): time to order.
+            agent_id (int): agent ID.
+            is_buy (bool): whether it is a buy order or not.
+            kind (:class:`pams.order.OrderKind`): kind of order.
+            volume (int): order volume.
+            price (float, Optional): order price.
+            ttl (int, Optional): time to order expiration.
+        """
+        self.order_id: Optional[int] = order_id
+        self.market_id: int = market_id
+        self.time: int = time
+        self.order_time: Optional[int] = order_time
+        self.agent_id: int = agent_id
+        self.is_buy: bool = is_buy
+        self.kind: OrderKind = kind
+        self.price: Optional[float] = price
+        self.volume: int = volume
+        self.ttl: Optional[int] = ttl
+
+
 class ExecutionLog(Log):
     """Execution type log class.
 
@@ -352,6 +397,8 @@ class Logger:
                 self.process_order_log(log=log)
             elif isinstance(log, CancelLog):
                 self.process_cancel_log(log=log)
+            elif isinstance(log, ExpirationLog):
+                self.process_expiration_log(log=log)
             elif isinstance(log, ExecutionLog):
                 self.process_execution_log(log=log)
             elif isinstance(log, SimulationBeginLog):
@@ -384,6 +431,17 @@ class Logger:
 
         Args:
             log (:class:`pams.logs.CancelLog`]): cancel log
+
+        Returns:
+            None
+        """
+        pass
+
+    def process_expiration_log(self, log: "ExpirationLog") -> None:
+        """process expiration log. Called from :func:`process`.
+
+        Args:
+            log (:class:`pams.logs.ExpirationLog`]): expiration log
 
         Returns:
             None

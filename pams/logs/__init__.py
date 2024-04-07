@@ -1,5 +1,6 @@
 from .base import CancelLog
 from .base import ExecutionLog
+from .base import ExpirationLog
 from .base import Log
 from .base import Logger
 from .base import MarketStepBeginLog
