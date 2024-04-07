@@ -128,10 +128,10 @@ class ExpirationLog(Log):
 
     def __init__(
         self,
-        order_id: int,
+        order_id: Optional[int],
         market_id: int,
         time: int,
-        order_time: int,
+        order_time: Optional[int],
         agent_id: int,
         is_buy: bool,
         kind: OrderKind,
@@ -153,10 +153,10 @@ class ExpirationLog(Log):
             price (float, Optional): order price.
             ttl (int, Optional): time to order expiration.
         """
-        self.order_id: int = order_id
+        self.order_id: Optional[int] = order_id
         self.market_id: int = market_id
         self.time: int = time
-        self.order_time: int = order_time
+        self.order_time: Optional[int] = order_time
         self.agent_id: int = agent_id
         self.is_buy: bool = is_buy
         self.kind: OrderKind = kind
