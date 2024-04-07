@@ -8,12 +8,12 @@ on:
 
 jobs:
   doc:
-    runs-on:  ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
     strategy:
       max-parallel: 5
       matrix:
         platform: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.11]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
