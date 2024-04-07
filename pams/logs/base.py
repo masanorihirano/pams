@@ -119,6 +119,49 @@ class CancelLog(Log):
         self.ttl: Optional[int] = ttl
         # TODO: Type validation
 
+class ExpirationLog(Log):
+    """Expiration type log class.
+
+    This log is usually generated when an order is expired on markets.
+    """
+
+    def __init__(
+        self,
+        order_id: int,
+        market_id: int,
+        time: int,
+        order_time: int,
+        agent_id: int,
+        is_buy: bool,
+        kind: OrderKind,
+        volume: int,
+        price: Optional[float] = None,
+        ttl: Optional[int] = None,
+    ):
+        """initialize
+
+        Args:
+            order_id (int): order ID.
+            market_id (int): market ID.
+            time (int): time.
+            order_time (int): time to order.
+            agent_id (int): agent ID.
+            is_buy (bool): whether it is a buy order or not.
+            kind (:class:`pams.order.OrderKind`): kind of order.
+            volume (int): order volume.
+            price (float, Optional): order price.
+            ttl (int, Optional): time to order expiration.
+        """
+        self.order_id: int = order_id
+        self.market_id: int = market_id
+        self.time: int = time
+        self.order_time: int = order_time
+        self.agent_id: int = agent_id
+        self.is_buy: bool = is_buy
+        self.kind: OrderKind = kind
+        self.price: Optional[float] = price
+        self.volume: int = volume
+        self.ttl: Optional[int] = ttl
 
 class ExecutionLog(Log):
     """Execution type log class.

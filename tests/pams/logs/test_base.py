@@ -10,6 +10,7 @@ from pams import Session
 from pams import Simulator
 from pams.logs import CancelLog
 from pams.logs import ExecutionLog
+from pams.logs import ExpirationLog
 from pams.logs import Log
 from pams.logs import Logger
 from pams.logs import MarketStepBeginLog
@@ -139,6 +140,51 @@ class TestCancelLog:
         assert log.price is None
         assert log.ttl is None
 
+class TestExpirationLog:
+    def test__init__(self) -> None:
+        log = ExpirationLog(
+            order_id=2,
+            market_id=3,
+            time=10,
+            order_time=8,
+            agent_id=4,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=10,
+            price=100.0,
+            ttl=2,
+        )
+        assert log.order_id == 2
+        assert log.market_id == 3
+        assert log.time == 10
+        assert log.order_time == 8
+        assert log.agent_id == 4
+        assert log.is_buy == True
+        assert log.kind == LIMIT_ORDER
+        assert log.volume == 10
+        assert log.price == 100.0
+        assert log.ttl == 2
+
+        log = ExpirationLog(
+            order_id=2,
+            market_id=3,
+            time=10,
+            order_time=8,
+            agent_id=4,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=10
+        )
+        assert log.order_id == 2
+        assert log.market_id == 3
+        assert log.time == 10
+        assert log.order_time == 8
+        assert log.agent_id == 4
+        assert log.is_buy == True
+        assert log.kind == MARKET_ORDER
+        assert log.volume == 10
+        assert log.price is None
+        assert log.ttl is None
 
 class TestExecutionLog:
     def test___init__(self) -> None:
