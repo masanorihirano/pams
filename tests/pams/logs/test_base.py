@@ -140,6 +140,7 @@ class TestCancelLog:
         assert log.price is None
         assert log.ttl is None
 
+
 class TestExpirationLog:
     def test__init__(self) -> None:
         log = ExpirationLog(
@@ -185,6 +186,7 @@ class TestExpirationLog:
         assert log.volume == 10
         assert log.price is None
         assert log.ttl is None
+
 
 class TestExecutionLog:
     def test___init__(self) -> None:
