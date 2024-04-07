@@ -610,7 +610,7 @@ class Market:
         if self.logger is not None:
             for log in logs:
                 log.read_and_write(logger=self.logger)
-        self.sell_order_book._set_time(self.time)
+        logs: List[ExpirationLog] = self.sell_order_book._set_time(self.time)
         if self.logger is not None:
             for log in logs:
                 log.read_and_write(logger=self.logger)
