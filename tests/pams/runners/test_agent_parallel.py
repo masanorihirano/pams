@@ -4,6 +4,8 @@ from typing import Dict
 from typing import Type
 from typing import cast
 
+import pytest
+
 from pams.runners import MultiProcessAgentParallelRuner
 from pams.runners import MultiThreadAgentParallelRuner
 from pams.runners import Runner
@@ -93,6 +95,15 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
         assert elps_time_sequential > wait_time * 15
         assert elps_time_parallel < wait_time * 5 + 1
         assert elps_time_parallel > wait_time * 5
+
+    def test_parallel_thread_warning(self) -> None:
+        settings = copy.deepcopy(self.default_setting)
+        settings["simulation"]["numParallel"] = 5
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=settings
+        )
+        with pytest.warns(UserWarning, match="is set to a larger value."):
+            runner.main()
 
 
 class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRuner):
