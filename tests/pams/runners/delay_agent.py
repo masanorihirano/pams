@@ -1,5 +1,6 @@
 import time
-from typing import List, Union
+from typing import List
+from typing import Union
 
 from pams.agents.fcn_agent import FCNAgent
 from pams.market import Market
