@@ -1,17 +1,17 @@
+import copy
 import time
 from typing import Dict
-from typing import List
 from typing import Type
 from typing import cast
 
-from pams.agents.fcn_agent import FCNAgent
-from pams.market import Market
-from pams.order import Cancel
-from pams.order import Order
+from pams.runners import MultiProcessAgentParallelRuner
 from pams.runners import MultiThreadAgentParallelRuner
 from pams.runners import Runner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
+
+from .delay_agent import FCNDelayAgent
+from .delay_agent import wait_time
 
 
 class TestMultiThreadAgentParallelRuner(TestRunner):
@@ -59,14 +59,8 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
     }
 
     def test_parallel_efficiency(self) -> None:
-        wait_time = 0.2  # seconds
 
-        class FCNDelayAgent(FCNAgent):
-            def submit_orders(self, markets: List[Market]) -> List[Order | Cancel]:
-                time.sleep(wait_time)  # Simulate a delay
-                return super().submit_orders(markets)
-
-        setting = self.default_setting.copy()
+        setting = copy.deepcopy(self.default_setting)
         setting["FCNAgents"]["class"] = "FCNDelayAgent"  # Use the delayed agent
 
         runner_class_dummy = self.runner_class
@@ -99,3 +93,7 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
         assert elps_time_sequential > wait_time * 15
         assert elps_time_parallel < wait_time * 5 + 1
         assert elps_time_parallel > wait_time * 5
+
+
+class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRuner):
+    runner_class: Type[Runner] = MultiProcessAgentParallelRuner

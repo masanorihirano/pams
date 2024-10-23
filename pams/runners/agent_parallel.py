@@ -1,6 +1,7 @@
 import os
 import random
 import warnings
+from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from io import TextIOWrapper
 from multiprocessing import cpu_count
@@ -26,6 +27,10 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
     This means that the number of agents that can be parallelized is limited by MAX_NORMAL_ORDERS.
     """
 
+    _parallel_pool_provider: Union[
+        Type[ThreadPoolExecutor], Type[ProcessPoolExecutor]
+    ] = ThreadPoolExecutor
+
     def __init__(
         self,
         settings: Union[Dict, TextIOWrapper, os.PathLike, str],
@@ -35,7 +40,7 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
     ):
         super().__init__(settings, prng, logger, simulator_class)
         warnings.warn(
-            "MultiThreadRuner is experimental. Future changes may occur disruptively."
+            f"{self.__class__.__name__} is experimental. Future changes may occur disruptively."
         )
         self.num_parallel = max(cpu_count() - 1, 1)
 
@@ -48,11 +53,11 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
         )
         if self.num_parallel > max_notmal_orders:
             warnings.warn(
-                f"When MultiThreadAgentParallelRuner is used, the maximum number of parallel agents"
+                f"When {self.__class__.__name__} is used, the maximum number of parallel agents"
                 f" is limited by max_normal_orders ({max_notmal_orders}) evne if numParallel"
                 f" ({self.num_parallel}) is set to a larger value."
             )
-        self.thread_pool = ThreadPoolExecutor(max_workers=self.num_parallel)
+        self.thread_pool = self._parallel_pool_provider(max_workers=self.num_parallel)
 
     def _collect_orders_from_normal_agents(
         self, session: Session
@@ -88,3 +93,15 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
                     )
                 all_orders.append(orders)
         return all_orders
+
+
+class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRuner):
+    """Multi Process Agent Parallel runner class. This is experimental.
+
+    In this runner, only normal agents are parallelized in each steps.
+    This means that the number of agents that can be parallelized is limited by MAX_NORMAL_ORDERS.
+    """
+
+    _parallel_pool_provider: Union[
+        Type[ThreadPoolExecutor], Type[ProcessPoolExecutor]
+    ] = ProcessPoolExecutor
