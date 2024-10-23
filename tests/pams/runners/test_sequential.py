@@ -83,7 +83,7 @@ class TestSequentialRunner(TestRunner):
             "CI2002",
             "config.json",
         )
-        runner = SequentialRunner(settings=config, prng=random.Random(42))
+        runner = self.runner_class(settings=config, prng=random.Random(42))
         runner._setup()
         runner.simulator._update_times_on_markets(markets=runner.simulator.markets)
         start_time = time.time()
@@ -108,7 +108,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -148,7 +148,7 @@ class TestSequentialRunner(TestRunner):
             "Market": {"extends": "MarketBase"},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -182,7 +182,7 @@ class TestSequentialRunner(TestRunner):
             "Market": {"extends": "MarketBase"},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -219,7 +219,7 @@ class TestSequentialRunner(TestRunner):
             "Market": {"extends": "MarketBase", "from": 10, "to": 19},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -257,7 +257,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -277,7 +277,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -295,7 +295,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -314,7 +314,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -334,7 +334,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -349,7 +349,7 @@ class TestSequentialRunner(TestRunner):
             "Market": {"class": "Market", "tickSize": 0.01, "outstandingShares": 2000},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -369,7 +369,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"class": "FCNAgent", "markets": ["Market"]},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -409,7 +409,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"extends": "AgentBase"},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -438,7 +438,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"markets": ["Market"]},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -457,7 +457,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"class": "Market", "markets": ["Market"]},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -477,7 +477,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"class": "FCNAgent"},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -503,7 +503,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -523,7 +523,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"class": "FCNAgent", "from": 0, "markets": ["Market"]},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -543,7 +543,7 @@ class TestSequentialRunner(TestRunner):
             "Agent": {"class": "FCNAgent", "from": 10, "to": 19, "markets": ["Market"]},
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -585,7 +585,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -606,7 +606,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -635,7 +635,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -664,7 +664,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -692,7 +692,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -722,7 +722,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -774,7 +774,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -840,7 +840,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -871,7 +871,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -902,7 +902,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -926,7 +926,7 @@ class TestSequentialRunner(TestRunner):
             }
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -969,7 +969,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -979,7 +979,7 @@ class TestSequentialRunner(TestRunner):
 
     def test_setup(self) -> None:
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(setting_mode="dict", logger=None, simulator_class=None),
         )
         runner._setup()
@@ -1012,7 +1012,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1023,7 +1023,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["markets"]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1034,7 +1034,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1045,7 +1045,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["markets"] = {}
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1056,7 +1056,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["markets"] = [10]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1067,7 +1067,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["agents"]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1078,7 +1078,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["agents"] = {}
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1089,7 +1089,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["agents"] = [10]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1100,7 +1100,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["sessions"]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1111,7 +1111,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["sessions"] = {}
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1122,7 +1122,7 @@ class TestSequentialRunner(TestRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["sessions"] = [10]
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1213,7 +1213,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1257,7 +1257,7 @@ class TestSequentialRunner(TestRunner):
 
         setting["simulation"]["sessions"][0]["withOrderPlacement"] = False  # type: ignore
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1312,7 +1312,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1329,7 +1329,7 @@ class TestSequentialRunner(TestRunner):
             )
 
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1448,7 +1448,7 @@ class TestSequentialRunner(TestRunner):
             },
         }
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
@@ -1633,7 +1633,7 @@ class TestSequentialRunner(TestRunner):
 
         logger = DummyLogger()
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
         )
         runner._setup()
@@ -1687,7 +1687,7 @@ class TestSequentialRunner(TestRunner):
 
         logger = DummyLogger()
         runner = cast(
-            SequentialRunner,
+            self.runner_class,
             self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
         )
         runner._setup()
