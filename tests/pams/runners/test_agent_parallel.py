@@ -1,10 +1,13 @@
 import time
-from typing import Dict, List, cast
+from typing import Dict
+from typing import List
 from typing import Type
+from typing import cast
 
 from pams.agents.fcn_agent import FCNAgent
 from pams.market import Market
-from pams.order import Cancel, Order
+from pams.order import Cancel
+from pams.order import Order
 from pams.runners import MultiThreadAgentParallelRuner
 from pams.runners import Runner
 from pams.runners.sequential import SequentialRunner
