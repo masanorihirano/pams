@@ -10,8 +10,7 @@ readme = "README.md"
 python = "^3.9"
 tqdm = "^4.64.1"
 numpy = "^1.25.1"
-scipy = "^1.9.2"
-
+scipy = [{version = "^1.9.2", python = ">=3.8,<3.13"},{version = "^1.14.1", python = ">=3.13,<4.0"}]
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
