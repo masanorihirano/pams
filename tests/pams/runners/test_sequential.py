@@ -6,7 +6,6 @@ from typing import Dict
 from typing import List
 from typing import Type
 from typing import Union
-from typing import cast
 from unittest import mock
 
 import pytest
