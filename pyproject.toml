@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pams"
-version = "0.2.1"
+version = "0.2.2"
 description = "PAMS: Platform for Artificial Market Simulations"
 authors = ["Masanori HIRANO <masa.hirano.1996@gmail.com>", "Ryosuke TAKATA <ryos427@yahoo.co.jp>", "Kiyoshi IZUMI"]
 license = "epl-1.0"
