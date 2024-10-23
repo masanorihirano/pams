@@ -48,13 +48,13 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
         super()._setup()
         if "numParallel" in self.settings["simulation"]:
             self.num_parallel = self.settings["simulation"]["numParallel"]
-        max_notmal_orders = max(
+        max_normal_orders = max(
             session.max_normal_orders for session in self.simulator.sessions
         )
-        if self.num_parallel > max_notmal_orders:
+        if self.num_parallel > max_normal_orders:
             warnings.warn(
                 f"When {self.__class__.__name__} is used, the maximum number of parallel agents"
-                f" is limited by max_normal_orders ({max_notmal_orders}) evne if numParallel"
+                f" is limited by max_normal_orders ({max_normal_orders}) evne if numParallel"
                 f" ({self.num_parallel}) is set to a larger value."
             )
         self.thread_pool = self._parallel_pool_provider(max_workers=self.num_parallel)
