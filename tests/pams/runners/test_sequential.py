@@ -229,7 +229,7 @@ class TestSequentialRunner(TestRunner):
         market = runner.simulator.markets[0]
         assert market.name == "Test10"
         assert list(map(lambda x: x.name, runner.simulator.markets)) == [
-            f"Test{i+10}" for i in range(10)
+            f"Test{i + 10}" for i in range(10)
         ]
         assert len(runner._pending_setups) == 10
         assert runner._pending_setups[0][0] == market.setup
@@ -555,7 +555,7 @@ class TestSequentialRunner(TestRunner):
         assert agent.agent_id == 0
         assert agent.name == "Agent-10"
         assert list(map(lambda x: x.name, runner.simulator.agents)) == [
-            f"Agent-{10+i}" for i in range(10)
+            f"Agent-{10 + i}" for i in range(10)
         ]
         assert len(runner._pending_setups) == 11
         assert runner._pending_setups[1][0] == agent.setup
