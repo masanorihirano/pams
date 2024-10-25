@@ -83,9 +83,9 @@ class TestSequentialRunner(TestRunner):
                 session=runner.simulator.sessions[0]
             )
         end_time = time.time()
-        time_per_step = (end_time - start_time) / 1000
+        time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
-        assert time_per_step < 0.003
+        assert time_per_step < 0.0003
 
     def test_generate_markets(self) -> None:
         setting = {
