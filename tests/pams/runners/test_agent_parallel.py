@@ -10,8 +10,8 @@ from pams.runners import MultiThreadAgentParallelRuner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
-from .delay_agent import FCNDelayAgent
-from .delay_agent import wait_time
+from .dummy import FCNDelayAgent
+from .dummy import wait_time
 
 
 class TestMultiThreadAgentParallelRuner(TestSequentialRunner):
