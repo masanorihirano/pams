@@ -2,13 +2,11 @@ import copy
 import time
 from typing import Dict
 from typing import Type
-from typing import cast
 
 import pytest
 
 from pams.runners import MultiProcessAgentParallelRuner
 from pams.runners import MultiThreadAgentParallelRuner
-from pams.runners import Runner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
 
@@ -17,7 +15,7 @@ from .delay_agent import wait_time
 
 
 class TestMultiThreadAgentParallelRuner(TestRunner):
-    runner_class: Type[Runner] = MultiThreadAgentParallelRuner
+    runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRuner
     default_setting: Dict = {
         "simulation": {
             "markets": ["Market"],
@@ -67,18 +65,12 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
 
         runner_class_dummy = self.runner_class
         self.runner_class = SequentialRunner  # Temporarily set to SequentialRunner
-        sequential_runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        sequential_runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         self.runner_class = runner_class_dummy
-        parallel_runner = cast(
-            self.runner_class,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        parallel_runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
 
         sequential_runner.class_register(cls=FCNDelayAgent)
@@ -107,4 +99,4 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
 
 
 class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRuner):
-    runner_class: Type[Runner] = MultiProcessAgentParallelRuner
+    runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRuner
