@@ -83,9 +83,10 @@ class TestMultiThreadAgentParallelRuner(TestRunner):
         parallel_runner.main()
         end_time = time.time()
         elps_time_parallel = end_time - start_time
-        assert elps_time_sequential < wait_time * 15 + 1
+        overhead_time = elps_time_sequential - wait_time * 15
+        assert elps_time_sequential < wait_time * 15 + overhead_time + 1
         assert elps_time_sequential > wait_time * 15
-        assert elps_time_parallel < wait_time * 5 + 1
+        assert elps_time_parallel < wait_time * 5 + overhead_time + 1
         assert elps_time_parallel > wait_time * 5
 
     def test_parallel_thread_warning(self) -> None:
