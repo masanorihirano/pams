@@ -8,13 +8,13 @@ import pytest
 from pams.runners import MultiProcessAgentParallelRuner
 from pams.runners import MultiThreadAgentParallelRuner
 from pams.runners.sequential import SequentialRunner
-from tests.pams.runners.test_base import TestRunner
+from tests.pams.runners.test_sequential import TestSequentialRunner
 
 from .delay_agent import FCNDelayAgent
 from .delay_agent import wait_time
 
 
-class TestMultiThreadAgentParallelRuner(TestRunner):
+class TestMultiThreadAgentParallelRuner(TestSequentialRunner):
     runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRuner
     default_setting: Dict = {
         "simulation": {
