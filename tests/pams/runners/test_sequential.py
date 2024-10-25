@@ -1559,3 +1559,49 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_market_step_end == sum(
             [session.iteration_steps for session in runner.simulator.sessions]
         )
+
+    def test_collect_orders_from_normal_agents_error_1(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        runner._setup()
+
+        dummy_order = Order(
+            agent_id=100,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(ValueError):
+                _ = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
+
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["withOrderPlacement"] = False  # type: ignore
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        runner._setup()
+        dummy_order = Order(
+            agent_id=100,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(AssertionError):
+                _ = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
