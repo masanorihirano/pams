@@ -26,13 +26,12 @@ from pams.logs import SessionBeginLog
 from pams.logs import SessionEndLog
 from pams.logs import SimulationBeginLog
 from pams.logs import SimulationEndLog
-from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
 
 
 class TestSequentialRunner(TestRunner):
-    runner_class: Type[Runner] = SequentialRunner
+    runner_class: Type[SequentialRunner] = SequentialRunner
     default_setting: Dict = {
         "simulation": {
             "markets": ["Market"],
