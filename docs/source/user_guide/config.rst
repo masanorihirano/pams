@@ -26,7 +26,8 @@ Json config
                     ["MarketName1", "MarketName2",  float], # fundamentalVolatility is required in both markets
                     ...
                 ]
-            }
+            },
+            "numParallel": int (Optional; default 1; only for MultiThreadedRunner),
         },
         "FundamentalPriceShock": {
             "class": "FundamentalPriceShock",
