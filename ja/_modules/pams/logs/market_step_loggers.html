@@ -275,17 +275,17 @@
         </div>
         <article role="main">
           <h1>pams.logs.market_step_loggers のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Logger</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">MarketStepEndLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarketStepEndLog</span>
 
 
-<div class="viewcode-block" id="MarketStepPrintLogger"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger">[ドキュメント]</a><span class="k">class</span> <span class="nc">MarketStepPrintLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="MarketStepPrintLogger"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepPrintLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger of the market step class.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MarketStepPrintLogger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="MarketStepPrintLogger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;print the market log.</span>
 
 <span class="sd">        Args:</span>
@@ -299,14 +299,14 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="MarketStepSaver"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver">[ドキュメント]</a><span class="k">class</span> <span class="nc">MarketStepSaver</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="MarketStepSaver"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepSaver</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Saver of the market step class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="MarketStepSaver.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="MarketStepSaver.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;stack the market log.</span>
 
 <span class="sd">        Args:</span>

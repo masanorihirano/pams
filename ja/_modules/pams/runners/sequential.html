@@ -275,47 +275,47 @@
         </div>
         <article role="main">
           <h1>pams.runners.sequential のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">TextIOWrapper</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIOWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">..agents.base</span> <span class="kn">import</span> <span class="n">Agent</span>
-<span class="kn">from</span> <span class="nn">..events</span> <span class="kn">import</span> <span class="n">EventABC</span>
-<span class="kn">from</span> <span class="nn">..events</span> <span class="kn">import</span> <span class="n">EventHook</span>
-<span class="kn">from</span> <span class="nn">..index_market</span> <span class="kn">import</span> <span class="n">IndexMarket</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">CancelLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">ExecutionLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">Log</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">Logger</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">MarketStepBeginLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">MarketStepEndLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">OrderLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">SessionBeginLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">SessionEndLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">SimulationBeginLog</span>
-<span class="kn">from</span> <span class="nn">..logs.base</span> <span class="kn">import</span> <span class="n">SimulationEndLog</span>
-<span class="kn">from</span> <span class="nn">..market</span> <span class="kn">import</span> <span class="n">Market</span>
-<span class="kn">from</span> <span class="nn">..order</span> <span class="kn">import</span> <span class="n">Cancel</span>
-<span class="kn">from</span> <span class="nn">..order</span> <span class="kn">import</span> <span class="n">Order</span>
-<span class="kn">from</span> <span class="nn">..session</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">..simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
-<span class="kn">from</span> <span class="nn">..utils.class_finder</span> <span class="kn">import</span> <span class="n">find_class</span>
-<span class="kn">from</span> <span class="nn">..utils.json_extends</span> <span class="kn">import</span> <span class="n">json_extends</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Runner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..agents.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..events</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..events</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventHook</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..index_market</span><span class="w"> </span><span class="kn">import</span> <span class="n">IndexMarket</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarketStepBeginLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarketStepEndLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionBeginLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionEndLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationBeginLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationEndLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..market</span><span class="w"> </span><span class="kn">import</span> <span class="n">Market</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cancel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.class_finder</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.json_extends</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_extends</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Runner</span>
 
 
-<div class="viewcode-block" id="SequentialRunner"><a class="viewcode-back" href="../../../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner">[ドキュメント]</a><span class="k">class</span> <span class="nc">SequentialRunner</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
+<div class="viewcode-block" id="SequentialRunner"><a class="viewcode-back" href="../../../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">SequentialRunner</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sequential runner class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">settings</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -336,7 +336,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">prng</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">simulator_class</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_generate_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;generate markets. (Internal method)</span>
 
 <span class="sd">        Args:</span>
@@ -433,7 +433,7 @@
                     <span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">market_settings</span><span class="p">})</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_generate_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;generate agents. (Internal method)</span>
 
 <span class="sd">        Args:</span>
@@ -528,7 +528,7 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_fundamental_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_fundamental_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set fundamental correlation. (Internal method)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;fundamentalCorrelations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
             <span class="n">corr_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;fundamentalCorrelations&quot;</span><span class="p">]</span>
@@ -563,7 +563,7 @@
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> for simulation.fundamentalCorrelations is not supported&quot;</span>
                     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_generate_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;generate sessions. (Internal method)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;sessions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sessions is missing under &#39;simulation&#39; config&quot;</span><span class="p">)</span>
@@ -623,14 +623,14 @@
                         <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">event_setting</span><span class="p">})</span>
                     <span class="p">)</span>
 
-                    <span class="k">def</span> <span class="nf">event_hook_setup</span><span class="p">(</span><span class="n">_event</span><span class="p">:</span> <span class="n">EventABC</span><span class="p">):</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">event_hook_setup</span><span class="p">(</span><span class="n">_event</span><span class="p">:</span> <span class="n">EventABC</span><span class="p">):</span>
                         <span class="n">event_hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]</span> <span class="o">=</span> <span class="n">_event</span><span class="o">.</span><span class="n">hook_registration</span><span class="p">()</span>
                         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">event_hooks</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_event</span><span class="p">(</span><span class="n">event_hook</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">event_hook_setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_event&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">}))</span>
 
-    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;runner setup. (Internal method)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;simulation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation is required in json file&quot;</span><span class="p">)</span>
@@ -668,7 +668,7 @@
 
         <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_collect_orders_from_normal_agents</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_orders_from_normal_agents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;collect orders from normal_agents. (Internal method)</span>
@@ -701,7 +701,7 @@
                 <span class="n">n_orders</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">all_orders</span>
 
-    <span class="k">def</span> <span class="nf">_handle_orders</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_orders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;handle orders. (Internal method)</span>
@@ -814,7 +814,7 @@
                                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">all_orders</span>
 
-    <span class="k">def</span> <span class="nf">_update_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;update markets. (Internal method)</span>
 
 <span class="sd">        Args:</span>
@@ -828,7 +828,7 @@
         <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_orders_from_normal_agents</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_orders</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">local_orders</span><span class="o">=</span><span class="n">local_orders</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_iterate_market_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_iterate_market_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;iterate market updates. (Internal method)</span>
 
 <span class="sd">        Args:</span>
@@ -860,7 +860,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_step_for_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_times_on_markets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span><span class="p">)</span>  <span class="c1"># t++</span>
 
-    <span class="k">def</span> <span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;main process. (Internal method)&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="p">:</span> <span class="n">Log</span> <span class="o">=</span> <span class="n">SimulationBeginLog</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">)</span>  <span class="c1"># must be blocking</span>

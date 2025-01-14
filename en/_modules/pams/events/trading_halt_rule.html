@@ -275,21 +275,21 @@
         </div>
         <article role="main">
           <h1>Source code for pams.events.trading_halt_rule</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">..logs</span> <span class="kn">import</span> <span class="n">ExecutionLog</span>
-<span class="kn">from</span> <span class="nn">..market</span> <span class="kn">import</span> <span class="n">Market</span>
-<span class="kn">from</span> <span class="nn">..session</span> <span class="kn">import</span> <span class="n">Session</span>
-<span class="kn">from</span> <span class="nn">..simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">EventABC</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">EventHook</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..market</span><span class="w"> </span><span class="kn">import</span> <span class="n">Market</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventHook</span>
 
 
-<div class="viewcode-block" id="TradingHaltRule"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule">[docs]</a><span class="k">class</span> <span class="nc">TradingHaltRule</span><span class="p">(</span><span class="n">EventABC</span><span class="p">):</span>
+<div class="viewcode-block" id="TradingHaltRule"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TradingHaltRule</span><span class="p">(</span><span class="n">EventABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A trading halt is a market regulation that suspends the trading of some assets.</span>
 
 <span class="sd">    When the one of targetMarkets violate halting line, all of them will be halted.</span>
@@ -297,7 +297,7 @@
 <span class="sd">    The current implementation sets :func:`pams.market.Market.is_running` = false when the price changed beyond the prespecified threshold range.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
@@ -319,7 +319,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">target_markets</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_change_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 
-<div class="viewcode-block" id="TradingHaltRule.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
+<div class="viewcode-block" id="TradingHaltRule.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;event setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
@@ -357,7 +357,7 @@
         <span class="k">if</span> <span class="s2">&quot;enabled&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_enabled</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TradingHaltRule.hook_registration"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hook_registration">[docs]</a>    <span class="k">def</span> <span class="nf">hook_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]:</span>
+<div class="viewcode-block" id="TradingHaltRule.hook_registration"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hook_registration">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hook_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">:</span>
             <span class="n">event_hooked_after_execution</span> <span class="o">=</span> <span class="n">EventHook</span><span class="p">(</span>
                 <span class="n">event</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook_type</span><span class="o">=</span><span class="s2">&quot;execution&quot;</span><span class="p">,</span> <span class="n">is_before</span><span class="o">=</span><span class="kc">False</span>
@@ -376,7 +376,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="TradingHaltRule.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_after_execution">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_after_execution</span><span class="p">(</span>
+<div class="viewcode-block" id="TradingHaltRule.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_after_execution">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_after_execution</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="n">Simulator</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="n">ExecutionLog</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;event to stop the trading.&quot;&quot;&quot;</span>
@@ -397,7 +397,7 @@
                             <span class="k">raise</span> <span class="ne">AssertionError</span>
                         <span class="n">simulator</span><span class="o">.</span><span class="n">current_session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="TradingHaltRule.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_before_step_for_market">[docs]</a>    <span class="k">def</span> <span class="nf">hooked_before_step_for_market</span><span class="p">(</span>
+<div class="viewcode-block" id="TradingHaltRule.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_before_step_for_market">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_before_step_for_market</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="n">Simulator</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;event to start the trading.&quot;&quot;&quot;</span>

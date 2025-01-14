@@ -275,23 +275,23 @@
         </div>
         <article role="main">
           <h1>pams.agents.market_share_fcn_agent のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">pams.agents.fcn_agent</span> <span class="kn">import</span> <span class="n">FCNAgent</span>
-<span class="kn">from</span> <span class="nn">pams.market</span> <span class="kn">import</span> <span class="n">Market</span>
-<span class="kn">from</span> <span class="nn">pams.order</span> <span class="kn">import</span> <span class="n">Cancel</span>
-<span class="kn">from</span> <span class="nn">pams.order</span> <span class="kn">import</span> <span class="n">Order</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents.fcn_agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">FCNAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.market</span><span class="w"> </span><span class="kn">import</span> <span class="n">Market</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cancel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
 
 
-<div class="viewcode-block" id="MarketShareFCNAgent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent">[ドキュメント]</a><span class="k">class</span> <span class="nc">MarketShareFCNAgent</span><span class="p">(</span><span class="n">FCNAgent</span><span class="p">):</span>
+<div class="viewcode-block" id="MarketShareFCNAgent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketShareFCNAgent</span><span class="p">(</span><span class="n">FCNAgent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Market Share FCN Agent class</span>
 
 <span class="sd">    This agent submits orders based on market shares.</span>
 <span class="sd">    This class inherits from the :class:`pams.agents.FCNAgent` class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="MarketShareFCNAgent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent.submit_orders">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
+<div class="viewcode-block" id="MarketShareFCNAgent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent.submit_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;submit orders based on FCN-based calculation and market shares.</span>
 
 <span class="sd">        .. seealso::</span>
@@ -311,7 +311,7 @@
             <span class="n">market</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_prng</span><span class="p">()</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">filter_markets</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MarketShareFCNAgent.get_sum_trade_volume"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent.get_sum_trade_volume">[ドキュメント]</a>    <span class="k">def</span> <span class="nf">get_sum_trade_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="MarketShareFCNAgent.get_sum_trade_volume"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent.get_sum_trade_volume">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_sum_trade_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get sum of trade volume.</span>
 
 <span class="sd">        Args:</span>

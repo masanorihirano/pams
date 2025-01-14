@@ -275,20 +275,20 @@
         </div>
         <article role="main">
           <h1>Source code for pams.fundamentals</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Iterable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">cholesky</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="n">cholesky</span>
 
 
-<div class="viewcode-block" id="Fundamentals"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals">[docs]</a><span class="k">class</span> <span class="nc">Fundamentals</span><span class="p">:</span>
+<div class="viewcode-block" id="Fundamentals"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Fundamentals</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fundamental generator for simulator.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -311,7 +311,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_chunk_size</span> <span class="o">=</span> <span class="mi">100</span>
 
-<div class="viewcode-block" id="Fundamentals.add_market"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.add_market">[docs]</a>    <span class="k">def</span> <span class="nf">add_market</span><span class="p">(</span>
+<div class="viewcode-block" id="Fundamentals.add_market"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.add_market">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_market</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">initial</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -345,7 +345,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prices</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">initial</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_at</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">start_at</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Fundamentals.remove_market"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.remove_market">[docs]</a>    <span class="k">def</span> <span class="nf">remove_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Fundamentals.remove_market"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.remove_market">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;remove a market from the list of markets whose fundamental prices are generated in this class.</span>
 
 <span class="sd">        Args:</span>
@@ -361,7 +361,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_at</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">market_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">market_id</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Fundamentals.change_volatility"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.change_volatility">[docs]</a>    <span class="k">def</span> <span class="nf">change_volatility</span><span class="p">(</span>
+<div class="viewcode-block" id="Fundamentals.change_volatility"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.change_volatility">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">change_volatility</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">volatility</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;change volatility.</span>
@@ -379,7 +379,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">volatilities</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">volatility</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">=</span> <span class="n">time</span></div>
 
-<div class="viewcode-block" id="Fundamentals.change_drift"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.change_drift">[docs]</a>    <span class="k">def</span> <span class="nf">change_drift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">drift</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Fundamentals.change_drift"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.change_drift">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">change_drift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">drift</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;change drift.</span>
 
 <span class="sd">        Args:</span>
@@ -393,7 +393,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">drifts</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">drift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">=</span> <span class="n">time</span></div>
 
-<div class="viewcode-block" id="Fundamentals.set_correlation"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.set_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">set_correlation</span><span class="p">(</span>
+<div class="viewcode-block" id="Fundamentals.set_correlation"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.set_correlation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_correlation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">market_id1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">market_id2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">corr</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set correlation between fundamental prices of markets.</span>
@@ -417,7 +417,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">correlation</span><span class="p">[(</span><span class="n">market_id1</span><span class="p">,</span> <span class="n">market_id2</span><span class="p">)]</span> <span class="o">=</span> <span class="n">corr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">=</span> <span class="n">time</span></div>
 
-<div class="viewcode-block" id="Fundamentals.remove_correlation"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.remove_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">remove_correlation</span><span class="p">(</span>
+<div class="viewcode-block" id="Fundamentals.remove_correlation"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.remove_correlation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_correlation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">market_id1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">market_id2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;remove correlation.</span>
@@ -438,7 +438,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">correlation</span><span class="o">.</span><span class="n">pop</span><span class="p">((</span><span class="n">market_id1</span><span class="p">,</span> <span class="n">market_id2</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">=</span> <span class="n">time</span></div>
 
-    <span class="k">def</span> <span class="nf">_generate_log_return</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_log_return</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">generate_target_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get log returns. (Internal method)</span>
@@ -507,7 +507,7 @@
             <span class="p">]</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_generate_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;execute to next step. (Internal method)</span>
 <span class="sd">        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or :func:`pams.Fundamentals.get_fundamental_prices`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -537,7 +537,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span> <span class="o">+=</span> <span class="n">length</span>
 
-<div class="viewcode-block" id="Fundamentals.get_fundamental_price"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_price">[docs]</a>    <span class="k">def</span> <span class="nf">get_fundamental_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Fundamentals.get_fundamental_price"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_price">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_fundamental_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get a fundamental price.</span>
 
 <span class="sd">        Args:</span>
@@ -551,7 +551,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_generate_next</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prices</span><span class="p">[</span><span class="n">market_id</span><span class="p">][</span><span class="n">time</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Fundamentals.get_fundamental_prices"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_prices">[docs]</a>    <span class="k">def</span> <span class="nf">get_fundamental_prices</span><span class="p">(</span>
+<div class="viewcode-block" id="Fundamentals.get_fundamental_prices"><a class="viewcode-back" href="../../reference/generated/fundamentals/pams.Fundamentals.html#pams.Fundamentals.get_fundamental_prices">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_fundamental_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;get some fundamental prices.</span>

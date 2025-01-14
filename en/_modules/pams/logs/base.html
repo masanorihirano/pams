@@ -275,16 +275,16 @@
         </div>
         <article role="main">
           <h1>Source code for pams.logs.base</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">pams.order</span> <span class="kn">import</span> <span class="n">OrderKind</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderKind</span>
 
 
-<div class="viewcode-block" id="Log"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log">[docs]</a><span class="k">class</span> <span class="nc">Log</span><span class="p">:</span>
+<div class="viewcode-block" id="Log"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Log</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Log class.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Log.read_and_write"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write">[docs]</a>    <span class="k">def</span> <span class="nf">read_and_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Log.read_and_write"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_and_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;writing a log. (The actual writing timing depends on the logger.)</span>
 
 <span class="sd">        Args:</span>
@@ -295,7 +295,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Log.read_and_write_with_direct_process"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write_with_direct_process">[docs]</a>    <span class="k">def</span> <span class="nf">read_and_write_with_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Log.read_and_write_with_direct_process"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.Log.html#pams.logs.Log.read_and_write_with_direct_process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_and_write_with_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="s2">&quot;Logger&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;direct writing a log. (This method is intended to call logger to write the log immediately.)</span>
 
 <span class="sd">        Args:</span>
@@ -307,13 +307,13 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">write_and_direct_process</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="OrderLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.OrderLog.html#pams.logs.OrderLog">[docs]</a><span class="k">class</span> <span class="nc">OrderLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="OrderLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.OrderLog.html#pams.logs.OrderLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OrderLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Order log class.</span>
 
 <span class="sd">    This log is usually generated when an order is accepted by markets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -350,14 +350,14 @@
         <span class="c1"># TODO: Type validation</span>
 
 
-<div class="viewcode-block" id="CancelLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.CancelLog.html#pams.logs.CancelLog">[docs]</a><span class="k">class</span> <span class="nc">CancelLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="CancelLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.CancelLog.html#pams.logs.CancelLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CancelLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Cancel type log class.</span>
 
 <span class="sd">    This log is usually generated when a cancel order is accepted by markets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ToDo: check ttl is necessary or not</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -397,13 +397,13 @@
         <span class="c1"># TODO: Type validation</span>
 
 
-<span class="k">class</span> <span class="nc">ExpirationLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExpirationLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Expiration type log class.</span>
 
 <span class="sd">    This log is usually generated when an order is expired on markets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">order_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -442,13 +442,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttl</span>
 
 
-<div class="viewcode-block" id="ExecutionLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog">[docs]</a><span class="k">class</span> <span class="nc">ExecutionLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="ExecutionLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ExecutionLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Execution type log class.</span>
 
 <span class="sd">    This log is usually generated when an order is executed on markets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -482,10 +482,10 @@
         <span class="c1"># TODO: Type validation</span>
 
 
-<div class="viewcode-block" id="SimulationBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SimulationBeginLog.html#pams.logs.SimulationBeginLog">[docs]</a><span class="k">class</span> <span class="nc">SimulationBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SimulationBeginLog.html#pams.logs.SimulationBeginLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimulationBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulation beginning log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -494,10 +494,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span></div>
 
 
-<div class="viewcode-block" id="SimulationEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SimulationEndLog.html#pams.logs.SimulationEndLog">[docs]</a><span class="k">class</span> <span class="nc">SimulationEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SimulationEndLog.html#pams.logs.SimulationEndLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimulationEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulation ending log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -506,10 +506,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span></div>
 
 
-<div class="viewcode-block" id="SessionBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SessionBeginLog.html#pams.logs.SessionBeginLog">[docs]</a><span class="k">class</span> <span class="nc">SessionBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="SessionBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SessionBeginLog.html#pams.logs.SessionBeginLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SessionBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Session beginning log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -520,10 +520,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
 
-<div class="viewcode-block" id="SessionEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SessionEndLog.html#pams.logs.SessionEndLog">[docs]</a><span class="k">class</span> <span class="nc">SessionEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="SessionEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.SessionEndLog.html#pams.logs.SessionEndLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SessionEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Session ending log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -534,10 +534,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span></div>
 
 
-<div class="viewcode-block" id="MarketStepBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.MarketStepBeginLog.html#pams.logs.MarketStepBeginLog">[docs]</a><span class="k">class</span> <span class="nc">MarketStepBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="MarketStepBeginLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.MarketStepBeginLog.html#pams.logs.MarketStepBeginLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepBeginLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Market step beginning log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -550,10 +550,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span></div>
 
 
-<div class="viewcode-block" id="MarketStepEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html#pams.logs.MarketStepEndLog">[docs]</a><span class="k">class</span> <span class="nc">MarketStepEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<div class="viewcode-block" id="MarketStepEndLog"><a class="viewcode-back" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html#pams.logs.MarketStepEndLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepEndLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Market step ending log class.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="s2">&quot;Session&quot;</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">&quot;Market&quot;</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">):</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
 
 <span class="sd">        Args:</span>
@@ -566,7 +566,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span></div>
 
 
-<div class="viewcode-block" id="Logger"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger">[docs]</a><span class="k">class</span> <span class="nc">Logger</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Logger</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger class.</span>
 
 <span class="sd">    Logger is designed to handling parallelized market simulations.</span>
@@ -583,11 +583,11 @@
 
     <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span>  <span class="c1"># type: ignore  # NOQA</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize logger.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pending_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_set_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set simulator.</span>
 
 <span class="sd">        Args:</span>
@@ -598,7 +598,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span> <span class="o">=</span> <span class="n">simulator</span>
 
-<div class="viewcode-block" id="Logger.write"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;Log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.write"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;Log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set a log to pending list.</span>
 
 <span class="sd">        Args:</span>
@@ -609,7 +609,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pending_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Logger.bulk_write"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.bulk_write">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.bulk_write"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.bulk_write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;set some logs to pending list.</span>
 
 <span class="sd">        Args:</span>
@@ -620,7 +620,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pending_logs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Logger.write_and_direct_process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.write_and_direct_process">[docs]</a>    <span class="k">def</span> <span class="nf">write_and_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;Log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.write_and_direct_process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.write_and_direct_process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_and_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;Log&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;direct writing a log.</span>
 
 <span class="sd">        Args:</span>
@@ -631,7 +631,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">logs</span><span class="o">=</span><span class="p">[</span><span class="n">log</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Logger.bulk_write_and_direct_process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.bulk_write_and_direct_process">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_write_and_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.bulk_write_and_direct_process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.bulk_write_and_direct_process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">bulk_write_and_direct_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;direct writing some logs.</span>
 
 <span class="sd">        Args:</span>
@@ -642,11 +642,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">logs</span><span class="o">=</span><span class="n">logs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">logs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pending_logs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pending_logs</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Logger.process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Log&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;logging execution. For each log type, each processing method are implemented.</span>
 
 <span class="sd">        For usual implementation, please use</span>
@@ -693,7 +693,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Logger.process_order_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_order_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_order_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_order_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_order_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_order_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;OrderLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process order log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -703,7 +703,7 @@
 <span class="sd">            None&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_cancel_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_cancel_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_cancel_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_cancel_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_cancel_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_cancel_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;CancelLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process cancel log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -714,7 +714,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_expiration_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_expiration_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_expiration_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;ExpirationLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_expiration_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_expiration_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_expiration_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;ExpirationLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process expiration log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -725,7 +725,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_execution_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_execution_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_execution_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_execution_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_execution_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_execution_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;ExecutionLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process execution log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -736,7 +736,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_simulation_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_simulation_begin_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_simulation_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SimulationBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_simulation_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_simulation_begin_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_simulation_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SimulationBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process simulation begin log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -747,7 +747,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_simulation_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_simulation_end_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_simulation_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SimulationEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_simulation_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_simulation_end_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_simulation_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SimulationEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process simulation end log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -758,7 +758,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_session_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_session_begin_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_session_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SessionBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_session_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_session_begin_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_session_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SessionBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process session begin log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -769,7 +769,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_session_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_session_end_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_session_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SessionEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_session_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_session_end_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_session_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;SessionEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process session end log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -780,7 +780,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_market_step_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_market_step_begin_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_market_step_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;MarketStepBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_market_step_begin_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_market_step_begin_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_begin_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;MarketStepBeginLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process market step begin log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>
@@ -791,7 +791,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Logger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_market_step_end_log">[docs]</a>    <span class="k">def</span> <span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;MarketStepEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Logger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.Logger.html#pams.logs.Logger.process_market_step_end_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="s2">&quot;MarketStepEndLog&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;process market step end log. Called from :func:`process`.</span>
 
 <span class="sd">        Args:</span>

@@ -293,8 +293,8 @@
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pams.utils.json_random</span> <span class="kn">import</span> <span class="n">JsonRandom</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pams.utils.json_random</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonRandom</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jr</span> <span class="o">=</span> <span class="n">JsonRandom</span><span class="p">(</span><span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">jr</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
 <span class="go">[16.39426798457884, 10.25010755222667, 12.750293183691193, 12.232107381488227, 17.364712141640126, 16.766994874229113, 18.921795677048454, 10.869388326294162, 14.219218196852704, 10.297972194380703]</span>
