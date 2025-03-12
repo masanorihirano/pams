@@ -6,7 +6,6 @@ from typing import Dict
 from typing import List
 from typing import Type
 from typing import Union
-from typing import cast
 from unittest import mock
 
 import pytest
@@ -17,23 +16,15 @@ from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.agents import Agent
-from pams.logs import CancelLog
-from pams.logs import ExecutionLog
-from pams.logs import Logger
-from pams.logs import MarketStepBeginLog
-from pams.logs import MarketStepEndLog
-from pams.logs import OrderLog
-from pams.logs import SessionBeginLog
-from pams.logs import SessionEndLog
-from pams.logs import SimulationBeginLog
-from pams.logs import SimulationEndLog
-from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
 
+from .dummy import DummyLogger
+from .dummy import DummyLogger2
+
 
 class TestSequentialRunner(TestRunner):
-    runner_class: Type[Runner] = SequentialRunner
+    runner_class: Type[SequentialRunner] = SequentialRunner
     default_setting: Dict = {
         "simulation": {
             "markets": ["Market"],
@@ -83,7 +74,7 @@ class TestSequentialRunner(TestRunner):
             "CI2002",
             "config.json",
         )
-        runner = SequentialRunner(settings=config, prng=random.Random(42))
+        runner = self.runner_class(settings=config, prng=random.Random(42))
         runner._setup()
         runner.simulator._update_times_on_markets(markets=runner.simulator.markets)
         start_time = time.time()
@@ -92,9 +83,9 @@ class TestSequentialRunner(TestRunner):
                 session=runner.simulator.sessions[0]
             )
         end_time = time.time()
-        time_per_step = (end_time - start_time) / 1000
+        time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
-        assert time_per_step < 0.003
+        assert time_per_step < 0.0003
 
     def test_generate_markets(self) -> None:
         setting = {
@@ -107,11 +98,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["market"])
@@ -147,11 +135,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Market": {"extends": "MarketBase"},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         assert len(runner.simulator.markets) == 1
@@ -181,11 +166,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Market": {"extends": "MarketBase"},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         assert len(runner.simulator.markets) == 10
@@ -218,11 +200,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Market": {"extends": "MarketBase", "from": 10, "to": 19},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         assert len(runner.simulator.markets) == 10
@@ -256,11 +235,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
@@ -276,11 +252,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
@@ -294,11 +267,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
@@ -313,11 +283,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
@@ -333,11 +300,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.2,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         assert runner.simulator.fundamentals.prices == {0: [300.0]}
@@ -348,11 +312,8 @@ class TestSequentialRunner(TestRunner):
             "simulation": {"markets": ["Market"]},
             "Market": {"class": "Market", "tickSize": 0.01, "outstandingShares": 2000},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
@@ -368,11 +329,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"class": "FCNAgent", "markets": ["Market"]},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -408,11 +366,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"extends": "AgentBase"},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         runner._generate_agents(agent_type_names=["Agent"])
@@ -437,11 +392,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"markets": ["Market"]},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -456,11 +408,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"class": "Market", "markets": ["Market"]},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -476,11 +425,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"class": "FCNAgent"},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -502,11 +448,8 @@ class TestSequentialRunner(TestRunner):
                 "markets": ["Market"],
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -522,11 +465,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"class": "FCNAgent", "from": 0, "markets": ["Market"]},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -542,11 +482,8 @@ class TestSequentialRunner(TestRunner):
             },
             "Agent": {"class": "FCNAgent", "from": 10, "to": 19, "markets": ["Market"]},
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         runner._generate_agents(agent_type_names=["Agent"])
@@ -584,11 +521,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.1,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         runner._set_fundamental_correlation()
@@ -605,11 +539,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.1,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         runner._set_fundamental_correlation()
@@ -634,11 +565,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.1,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(NotImplementedError):
@@ -663,11 +591,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.1,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -691,11 +616,8 @@ class TestSequentialRunner(TestRunner):
                 "outstandingShares": 2000,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
@@ -721,11 +643,8 @@ class TestSequentialRunner(TestRunner):
                 "fundamentalVolatility": 0.1,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_markets(market_type_names=["Market"])
         runner._set_fundamental_correlation()
@@ -773,11 +692,8 @@ class TestSequentialRunner(TestRunner):
                 "enabled": True,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._generate_sessions()
         assert len(runner.simulator.sessions) == 2
@@ -839,11 +755,8 @@ class TestSequentialRunner(TestRunner):
                 "enabled": True,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_sessions()
@@ -870,11 +783,8 @@ class TestSequentialRunner(TestRunner):
                 "enabled": True,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_sessions()
@@ -901,11 +811,8 @@ class TestSequentialRunner(TestRunner):
                 "enabled": True,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_sessions()
@@ -925,11 +832,8 @@ class TestSequentialRunner(TestRunner):
                 ]
             }
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_sessions()
@@ -968,19 +872,15 @@ class TestSequentialRunner(TestRunner):
                 "enabled": True,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._generate_sessions()
 
     def test_setup(self) -> None:
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(setting_mode="dict", logger=None, simulator_class=None),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
         )
         runner._setup()
         assert len(runner.simulator.agents) == 10
@@ -1011,121 +911,88 @@ class TestSequentialRunner(TestRunner):
 
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["markets"]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["markets"] = {}
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["markets"] = [10]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["agents"]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["agents"] = {}
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["agents"] = [10]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["sessions"]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["sessions"] = {}
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["sessions"] = [10]
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
             runner._setup()
@@ -1212,11 +1079,8 @@ class TestSequentialRunner(TestRunner):
                 "orderThresholdPrice": 1.0,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._setup()
 
@@ -1256,11 +1120,8 @@ class TestSequentialRunner(TestRunner):
                 )
 
         setting["simulation"]["sessions"][0]["withOrderPlacement"] = False  # type: ignore
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._setup()
         dummy_order = Order(
@@ -1311,11 +1172,8 @@ class TestSequentialRunner(TestRunner):
                 "orderMargin": [0.0, 0.1],
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._setup()
         runner.simulator.markets[0]._update_time(next_fundamental_price=200.0)
@@ -1328,11 +1186,8 @@ class TestSequentialRunner(TestRunner):
                 session=runner.simulator.sessions[0], local_orders=local_orders
             )
 
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._setup()
         runner.simulator.markets[0]._update_time(next_fundamental_price=200.0)
@@ -1447,11 +1302,8 @@ class TestSequentialRunner(TestRunner):
                 "orderThresholdPrice": 1.0,
             },
         }
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(
-                setting_mode="dict", logger=None, simulator_class=None, setting=setting
-            ),
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         runner._setup()
         runner.simulator.markets[0]._is_running = True
@@ -1619,22 +1471,10 @@ class TestSequentialRunner(TestRunner):
                 )
 
     def test_iterate_market_update(self) -> None:
-        class DummyLogger(Logger):
-            def __init__(self) -> None:
-                super().__init__()
-                self.n_market_step_begin = 0
-                self.n_market_end_begin = 0
-
-            def process_market_step_begin_log(self, log: MarketStepBeginLog) -> None:
-                self.n_market_step_begin += 1
-
-            def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
-                self.n_market_end_begin += 1
 
         logger = DummyLogger()
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        runner = self.test__init__(
+            setting_mode="dict", logger=logger, simulator_class=None
         )
         runner._setup()
         runner.simulator._update_times_on_markets(runner.simulator.markets)
@@ -1645,50 +1485,9 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_market_end_begin == runner.simulator.sessions[0].iteration_steps
 
     def test_run(self) -> None:
-        class DummyLogger(Logger):
-            def __init__(self) -> None:
-                super().__init__()
-                self.n_order_log = 0
-                self.n_cancel_log = 0
-                self.n_execution_log = 0
-                self.n_simulation_begin_log = 0
-                self.n_simulation_end_log = 0
-                self.n_session_begin_log = 0
-                self.n_session_end_log = 0
-                self.n_market_step_begin = 0
-                self.n_market_step_end = 0
-
-            def process_order_log(self, log: OrderLog) -> None:
-                self.n_order_log += 1
-
-            def process_cancel_log(self, log: CancelLog) -> None:
-                self.n_cancel_log += 1
-
-            def process_execution_log(self, log: ExecutionLog) -> None:
-                self.n_execution_log += 1
-
-            def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
-                self.n_simulation_begin_log += 1
-
-            def process_simulation_end_log(self, log: SimulationEndLog) -> None:
-                self.n_simulation_end_log += 1
-
-            def process_session_begin_log(self, log: SessionBeginLog) -> None:
-                self.n_session_begin_log += 1
-
-            def process_session_end_log(self, log: SessionEndLog) -> None:
-                self.n_session_end_log += 1
-
-            def process_market_step_begin_log(self, log: MarketStepBeginLog) -> None:
-                self.n_market_step_begin += 1
-
-            def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
-                self.n_market_step_end += 1
-
-        logger = DummyLogger()
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        logger = DummyLogger2()
+        runner = self.test__init__(
+            setting_mode="dict", logger=logger, simulator_class=None
         )
         runner._setup()
         runner._run()
@@ -1702,3 +1501,49 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_market_step_end == sum(
             [session.iteration_steps for session in runner.simulator.sessions]
         )
+
+    def test_collect_orders_from_normal_agents_error_1(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        runner._setup()
+
+        dummy_order = Order(
+            agent_id=100,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(ValueError):
+                _ = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
+
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["withOrderPlacement"] = False  # type: ignore
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        runner._setup()
+        dummy_order = Order(
+            agent_id=100,
+            market_id=2,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=300.0,
+        )
+
+        with mock.patch(
+            "pams.agents.fcn_agent.FCNAgent.submit_orders", return_value=[dummy_order]
+        ):
+            with pytest.raises(AssertionError):
+                _ = runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
