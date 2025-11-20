@@ -1,8 +1,8 @@
 import copy
 import time
 from typing import Dict
-from typing import Type
 from typing import Optional
+from typing import Type
 
 import pytest
 

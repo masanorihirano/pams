@@ -4,9 +4,9 @@ import random
 import time
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import Union
-from typing import Optional
 from unittest import mock
 
 import pytest
