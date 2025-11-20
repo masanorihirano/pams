@@ -101,7 +101,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
 
 
 class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRunner):
-    runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRuner
+    runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
     # TODO(masanori): because of the speed of parallelization, the time per step is not guaranteed to be less than the threshold.
 
