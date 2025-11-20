@@ -54,7 +54,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         if self.num_parallel > max_normal_orders:
             warnings.warn(
                 f"When {self.__class__.__name__} is used, the maximum number of parallel agents"
-                f" is limited by max_normal_orders ({max_normal_orders}) evne if numParallel"
+                f" is limited by max_normal_orders ({max_normal_orders}) even if numParallel"
                 f" ({self.num_parallel}) is set to a larger value."
             )
         self.thread_pool = self._parallel_pool_provider(max_workers=self.num_parallel)
