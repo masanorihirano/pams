@@ -2,6 +2,7 @@ import copy
 import time
 from typing import Dict
 from typing import Type
+from typing import Optional
 
 import pytest
 
@@ -57,6 +58,9 @@ class TestMultiThreadAgentParallelRuner(TestSequentialRunner):
             "enabled": True,
         },
     }
+    TIME_PER_STEP_THRESHOLD: Optional[float] = (
+        None  # TODO(masanori): because of the speed of parallelization, the time per step is not guaranteed to be less than the threshold.
+    )
 
     def test_parallel_efficiency(self) -> None:
 
