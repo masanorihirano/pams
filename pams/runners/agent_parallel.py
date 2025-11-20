@@ -101,8 +101,13 @@ class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRuner):
     In this runner, only normal agents are parallelized in each steps.
     This means that the number of agents that can be parallelized is limited by MAX_NORMAL_ORDERS.
 
-    Note: When you are using MultiProcessAgentParallelRuner, the definition of self-defined classes are saved to a diffenrent file.
-          This is because of the limitation of python multiprocessing.
+    .. note::
+        When you are using MultiProcessAgentParallelRuner, the definition of self-defined classes are saved to a diffenrent file.
+        This is because of the limitation of python multiprocessing.
+
+    .. warning::
+        This class is too slow compared to the MultiThreadAgentParallelRuner class.
+        If you want to use parallelization, it is recommended to use the MultiThreadAgentParallelRuner class.
     """
 
     _parallel_pool_provider: Union[
