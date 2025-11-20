@@ -102,7 +102,7 @@ class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRuner):
     This means that the number of agents that can be parallelized is limited by MAX_NORMAL_ORDERS.
 
     .. note::
-        When you are using MultiProcessAgentParallelRuner, the definition of self-defined classes are saved to a diffenrent file.
+        When you are using MultiProcessAgentParallelRuner, the definition of self-defined classes are saved to a different file.
         This is because of the limitation of python multiprocessing.
 
     .. warning::
