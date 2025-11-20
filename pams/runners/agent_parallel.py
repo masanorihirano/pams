@@ -20,7 +20,7 @@ from ..session import Session
 from .sequential import SequentialRunner
 
 
-class MultiThreadAgentParallelRuner(SequentialRunner):
+class MultiThreadAgentParallelRunner(SequentialRunner):
     """Multi Thread Agent Parallel runner class. This is experimental.
 
     In this runner, only normal agents are parallelized in each steps.
@@ -95,7 +95,7 @@ class MultiThreadAgentParallelRuner(SequentialRunner):
         return all_orders
 
 
-class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRuner):
+class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRunner):
     """Multi Process Agent Parallel runner class. This is experimental.
 
     In this runner, only normal agents are parallelized in each steps.
@@ -106,8 +106,8 @@ class MultiProcessAgentParallelRuner(MultiThreadAgentParallelRuner):
         This is because of the limitation of python multiprocessing.
 
     .. warning::
-        This class is too slow compared to the MultiThreadAgentParallelRuner class.
-        If you want to use parallelization, it is recommended to use the MultiThreadAgentParallelRuner class.
+        This class is too slow compared to the MultiThreadAgentParallelRunner class.
+        If you want to use parallelization, it is recommended to use the MultiThreadAgentParallelRunner class.
     """
 
     _parallel_pool_provider: Union[

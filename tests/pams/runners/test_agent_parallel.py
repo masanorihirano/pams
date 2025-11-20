@@ -7,7 +7,7 @@ from typing import Type
 import pytest
 
 from pams.runners import MultiProcessAgentParallelRuner
-from pams.runners import MultiThreadAgentParallelRuner
+from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
@@ -15,8 +15,8 @@ from .dummy import FCNDelayAgent
 from .dummy import wait_time
 
 
-class TestMultiThreadAgentParallelRuner(TestSequentialRunner):
-    runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRuner
+class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
+    runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRunner
     default_setting: Dict = {
         "simulation": {
             "markets": ["Market"],
@@ -100,7 +100,7 @@ class TestMultiThreadAgentParallelRuner(TestSequentialRunner):
             runner.main()
 
 
-class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRuner):
+class TestMultiProcessAgentParallelRuner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRuner
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
     # TODO(masanori): because of the speed of parallelization, the time per step is not guaranteed to be less than the threshold.
