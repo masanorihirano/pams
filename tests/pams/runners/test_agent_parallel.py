@@ -6,7 +6,7 @@ from typing import Type
 
 import pytest
 
-from pams.runners import MultiProcessAgentParallelRuner
+from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
