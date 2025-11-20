@@ -87,11 +87,8 @@ class TestSequentialRunner(TestRunner):
         end_time = time.time()
         time_per_step = (end_time - start_time) / 10000
         print("time/step", time_per_step)
-        assert (
-            time_per_step < self.TIME_PER_STEP_THRESHOLD
-            if self.TIME_PER_STEP_THRESHOLD is not None
-            else True
-        )
+        if self.TIME_PER_STEP_THRESHOLD is not None:
+            assert time_per_step < self.TIME_PER_STEP_THRESHOLD
 
     def test_generate_markets(self) -> None:
         setting = {
