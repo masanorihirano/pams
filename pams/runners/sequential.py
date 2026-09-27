@@ -83,6 +83,7 @@ class SequentialRunner(Runner):
             n_markets = 1
             id_from = 0
             id_to = 0
+            uses_range = False
             if "numMarkets" in market_settings:
                 n_markets = int(market_settings["numMarkets"])
                 id_to = n_markets - 1
@@ -95,9 +96,14 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_markets = int(market_settings["to"]) - int(market_settings["from"])
                 id_from = int(market_settings["from"])
                 id_to = int(market_settings["to"])
+                if id_to < id_from:
+                    raise ValueError(
+                        f"{name}.to must be greater than or equal to {name}.from"
+                    )
+                n_markets = id_to - id_from + 1
+                uses_range = True
             if "numMarkets" in market_settings:
                 del market_settings["numMarkets"]
             if "from" in market_settings:
@@ -141,7 +147,7 @@ class SequentialRunner(Runner):
                     prng=random.Random(self._prng.randint(0, 2**31)),
                     simulator=self.simulator,
                     logger=self.logger,
-                    name=prefix + (str(i) if n_markets != 1 else ""),
+                    name=prefix + (str(i) if uses_range or n_markets != 1 else ""),
                 )
                 i_market += 1
                 self.simulator._add_market(market=market, group_name=name)
@@ -180,6 +186,7 @@ class SequentialRunner(Runner):
             n_agents = 1
             id_from = 0
             id_to = 0
+            uses_range = False
             if "numAgents" in agent_settings:
                 n_agents = int(agent_settings["numAgents"])
                 id_to = n_agents - 1
@@ -192,9 +199,14 @@ class SequentialRunner(Runner):
                     raise ValueError(
                         f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
                     )
-                n_agents = int(agent_settings["to"]) - int(agent_settings["from"])
                 id_from = int(agent_settings["from"])
                 id_to = int(agent_settings["to"])
+                if id_to < id_from:
+                    raise ValueError(
+                        f"{name}.to must be greater than or equal to {name}.from"
+                    )
+                n_agents = id_to - id_from + 1
+                uses_range = True
             if "numAgents" in agent_settings:
                 del agent_settings["numAgents"]
             if "from" in agent_settings:
@@ -237,7 +249,7 @@ class SequentialRunner(Runner):
                     prng=random.Random(self._prng.randint(0, 2**31)),
                     simulator=self.simulator,
                     logger=self.logger,
-                    name=prefix + (str(i) if n_agents != 1 else ""),
+                    name=prefix + (str(i) if uses_range or n_agents != 1 else ""),
                 )
                 i_agent += 1
                 self.simulator._add_agent(agent=agent, group_name=name)
