@@ -341,6 +341,13 @@ class TestTradingHaltRule(TestEventABC):
             event.hooked_before_step_for_market(simulator=sim, market=market)
             assert not market.is_running
         market._update_time(next_fundamental_price=300.0)
+        # resuming requires the current session
+        sim.current_session = None
+        with pytest.raises(AssertionError):
+            event.hooked_before_step_for_market(simulator=sim, market=market)
+        assert event.is_halting
+        assert not market.is_running
+        sim.current_session = session
         event.hooked_before_step_for_market(simulator=sim, market=market)
         assert market.is_running
         assert not event.is_halting
