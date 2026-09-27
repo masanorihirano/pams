@@ -13,6 +13,7 @@ from pams import MARKET_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
+from pams.logs.base import ExecutionLog
 from pams.logs.base import ExpirationLog
 from pams.logs.base import Logger
 from pams.simulator import Simulator
@@ -812,6 +813,69 @@ class TestMarket:
         assert market.remain_executable_orders()
         logs = market._execution()
         assert len(logs) == 2
+
+    def test_execution_logs_written_once(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(order)
+        logs = market._execution()
+        assert len(logs) == 2
+        assert all(isinstance(log, ExecutionLog) for log in logs)
+        assert sum([log.volume for log in logs]) == 2
+        execution_logs = [
+            log for log in logger.pending_logs if isinstance(log, ExecutionLog)
+        ]
+        assert len(execution_logs) == len(logs)
+        assert [id(log) for log in execution_logs] == [id(log) for log in logs]
+        n_pending_logs = len(logger.pending_logs)
+        assert market._execution() == []
+        assert len(logger.pending_logs) == n_pending_logs
+
+    def test_execute_orders_log_written_once(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(buy_order)
+        log = market._execute_orders(
+            price=10.0, volume=1, buy_order=buy_order, sell_order=sell_order
+        )
+        execution_logs = [
+            log_ for log_ in logger.pending_logs if isinstance(log_, ExecutionLog)
+        ]
+        assert execution_logs == [log]
 
     def test_expiration_orrder_pattern01(self) -> None:
         logger = Logger()

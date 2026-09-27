@@ -15,7 +15,6 @@ from typing import cast
 from .logs.base import CancelLog
 from .logs.base import ExecutionLog
 from .logs.base import ExpirationLog
-from .logs.base import Log
 from .logs.base import Logger
 from .logs.base import OrderLog
 from .order import Cancel
@@ -940,8 +939,6 @@ class Market:
         )
         if self.remain_executable_orders():
             raise AssertionError
-        if self.logger is not None:
-            self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs
 
     def change_fundamental_price(self, scale: float) -> None:
