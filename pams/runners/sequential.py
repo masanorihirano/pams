@@ -458,7 +458,7 @@ class SequentialRunner(Runner):
                     self.simulator._trigger_event_after_cancel(cancel_log=log_)
                 else:
                     raise NotImplementedError
-                if session.with_order_execution:
+                if session.with_order_execution and market.is_running:
                     logs: List[ExecutionLog] = market._execution()
                     self.simulator._update_agents_for_execution(execution_logs=logs)
                     for execution_log in logs:
@@ -518,7 +518,7 @@ class SequentialRunner(Runner):
                             self.simulator._trigger_event_after_cancel(cancel_log=log_)
                         else:
                             raise NotImplementedError
-                        if session.with_order_execution:
+                        if session.with_order_execution and market.is_running:
                             logs = market._execution()
                             self.simulator._update_agents_for_execution(
                                 execution_logs=logs
