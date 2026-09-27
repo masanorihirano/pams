@@ -292,7 +292,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelLog</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionLog</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExpirationLog</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Log</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderLog</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cancel</span>
@@ -1217,8 +1216,6 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remain_executable_orders</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">bulk_write</span><span class="p">(</span><span class="n">logs</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">],</span> <span class="n">logs</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">logs</span>
 
 <div class="viewcode-block" id="Market.change_fundamental_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.change_fundamental_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">change_fundamental_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
