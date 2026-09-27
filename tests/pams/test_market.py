@@ -187,6 +187,68 @@ class TestMarket:
             with pytest.raises(AssertionError):
                 m._cancel_order(cancel_dummy)
 
+    @pytest.mark.parametrize(
+        "history, expected",
+        [
+            ([None, None, None], None),
+            ([1.0, None, None], 1.0),
+            ([1.0, 2.0, None], 2.0),
+            ([0.0, None, None], 0.0),
+            ([None, 0.0, None], 0.0),
+            ([1.0, -1.0, None], -1.0),
+            ([-5.0, 5.0, None], 5.0),
+        ],
+    )
+    def test_set_time_carries_last_prices(
+        self, history: List[Optional[float]], expected: Optional[float]
+    ) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        m._update_time(next_fundamental_price=1.0)
+        m._last_executed_prices[: len(history)] = history
+        m._mid_prices[: len(history)] = history
+        m._market_prices[: len(history)] = history
+        m._set_time(time=3, next_fundamental_price=1.0)
+        assert m._last_executed_prices[3] == expected
+        assert m._mid_prices[3] == expected
+        assert m._market_prices[3] == expected
+
+    @pytest.mark.parametrize(
+        "executed, mid, expected",
+        [
+            ([None, 0.0], [None, 2.0], 0.0),
+            ([None, None], [None, 0.0], 0.0),
+            ([None, -1.0], [None, 2.0], -1.0),
+        ],
+    )
+    def test_set_time_market_price_with_non_positive_prices(
+        self,
+        executed: List[Optional[float]],
+        mid: List[Optional[float]],
+        expected: Optional[float],
+    ) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        m._update_time(next_fundamental_price=1.0)
+        m._is_running = True
+        m._last_executed_prices[:2] = executed
+        m._mid_prices[:2] = mid
+        m._market_prices[:2] = [1.0, 3.0]
+        m._set_time(time=2, next_fundamental_price=1.0)
+        assert m._market_prices[2] == expected
+
     def test_repr_(self) -> None:
         m = self.base_class(
             market_id=0,

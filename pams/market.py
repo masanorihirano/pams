@@ -572,21 +572,21 @@ class Market:
                 ),
             )
             self._last_executed_prices[self.time] = (
-                executed_prices[-1] if sum(executed_prices) > 0 else None
+                executed_prices[-1] if len(executed_prices) > 0 else None
             )
             mid_prices: List[float] = cast(
                 List[float],
                 list(filter(lambda x: x is not None, self._mid_prices[: self.time])),
             )
             self._mid_prices[self.time] = (
-                mid_prices[-1] if sum(mid_prices) > 0 else None
+                mid_prices[-1] if len(mid_prices) > 0 else None
             )
             market_prices: List[float] = cast(
                 List[float],
                 list(filter(lambda x: x is not None, self._market_prices[: self.time])),
             )
             self._market_prices[self.time] = (
-                market_prices[-1] if sum(market_prices) > 0 else None
+                market_prices[-1] if len(market_prices) > 0 else None
             )
             if self.is_running:
                 if self._last_executed_prices[self.time - 1] is not None:
