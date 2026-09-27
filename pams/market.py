@@ -1,7 +1,6 @@
 import heapq
 import math
 import random
-import sys
 import warnings
 from typing import Any
 from typing import Dict
@@ -499,11 +498,14 @@ class Market:
 
         A price is regarded as on a tick if ``price / tick_size`` is an integer up to
         floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).
-        The tolerance is 16 machine epsilons relative to the tick level (and at least 16
-        machine epsilons of a tick). It absorbs the rounding errors of the representation of
-        price and tick size, the division, and a few arithmetic operations on the price,
-        while it is far below half a tick for any realistic tick level (< 0.01 tick up to
-        a tick level of about 2.8e12), so genuinely off-tick prices are still detected.
+        The tolerance is 4 ULPs of the tick level (``4 * math.ulp(max(1.0, abs(ratio)))``,
+        in tick units), capped at 0.25 tick. Converting an on-tick price (a decimal literal
+        or ``tick_level * tick_size``) gives an error of at most about 1 ULP and each further
+        addition or subtraction of ticks adds about 1 ULP, so a few arithmetic operations
+        on the price are absorbed, while off-tick prices more than 4 ULPs away from a tick
+        (e.g., 500000000001.001 with tick size 1.0) are still detected. The cap keeps
+        half-tick prices off tick at huge tick levels (>= 2**49), where 4 ULPs would reach
+        half a tick.
 
         Args:
             price (float): price.
@@ -513,7 +515,7 @@ class Market:
         """
         ratio: float = price / self.tick_size
         tick_level: int = round(ratio)
-        tolerance: float = 16 * sys.float_info.epsilon * max(1.0, abs(ratio))
+        tolerance: float = min(4 * math.ulp(max(1.0, abs(ratio))), 0.25)
         if abs(ratio - tick_level) <= tolerance:
             return tick_level
         return None
