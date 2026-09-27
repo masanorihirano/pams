@@ -1702,3 +1702,27 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_market_step_end == sum(
             [session.iteration_steps for session in runner.simulator.sessions]
         )
+
+    def test_run_execution_logs_processed_once(self) -> None:
+        class ExecutionCountLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.execution_logs: List[ExecutionLog] = []
+
+            def process_execution_log(self, log: ExecutionLog) -> None:
+                self.execution_logs.append(log)
+
+        logger = ExecutionCountLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner._run()
+        assert len(logger.execution_logs) > 0
+        assert len(logger.execution_logs) == len(
+            set([id(log) for log in logger.execution_logs])
+        )
+        assert sum([log.volume for log in logger.execution_logs]) == sum(
+            [sum(market._executed_volumes) for market in runner.simulator.markets]
+        )
