@@ -49,7 +49,7 @@ class EventHook:
         """
         if hook_type not in ["order", "cancel", "execution", "session", "market"]:
             raise ValueError(
-                "hook type have to be order, execution, session, or market"
+                "hook type have to be order, cancel, execution, session, or market"
             )
         if hook_type == "execution" and is_before:
             raise ValueError("execution can be hooked only after it")

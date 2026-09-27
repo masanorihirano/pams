@@ -509,7 +509,10 @@ class TestSequentialRunner(TestRunner):
             ),
         )
         runner._generate_markets(market_type_names=["Market"])
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match=r"Agent\.numAgents and \(Agent\.from or Agent\.to\) cannot be used",
+        ):
             runner._generate_agents(agent_type_names=["Agent"])
 
         setting = {
@@ -1072,7 +1075,9 @@ class TestSequentialRunner(TestRunner):
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError, match=r"simulation\.agents is required in json file"
+        ):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)

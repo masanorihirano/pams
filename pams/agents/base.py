@@ -87,7 +87,7 @@ class Agent(ABC):
             json_value=settings["cashAmount"]
         )
         if "assetVolume" not in settings:
-            raise ValueError("cashAmount is required property of agent settings")
+            raise ValueError("assetVolume is required property of agent settings")
 
         for market_id in accessible_markets_ids:
             self.set_market_accessible(market_id=market_id)
