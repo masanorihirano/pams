@@ -94,6 +94,8 @@ class OrderMistakeShock(EventABC):
             return []
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
+        if order.market_id != self.target_market.market_id:
+            return
         if not self.triggerd:
             market: "Market" = self.simulator.id2market[order.market_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
