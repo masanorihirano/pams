@@ -816,14 +816,14 @@ class Market:
             if None not in sell_book or None not in buy_book:
                 raise AssertionError
             if sell_book[None] != buy_book[None]:
+                # the excess market orders of the larger side are matched with
+                # the limit orders of the smaller side, which provide the price.
                 if sell_book[None] < buy_book[None]:
-                    additional_required_orders = buy_book[None] - sell_book[None]
                     sell_book.pop(None)
-                    return len(sell_book) >= additional_required_orders
+                    return len(sell_book) > 0
                 else:
-                    additional_required_orders = sell_book[None] - buy_book[None]
                     buy_book.pop(None)
-                    return len(buy_book) >= additional_required_orders
+                    return len(buy_book) > 0
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)

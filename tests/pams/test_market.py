@@ -751,6 +751,234 @@ class TestMarket:
         logs = market._execution()
         assert len(logs) == 2
 
+    def _make_running_market(self) -> Market:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        return market
+
+    @pytest.mark.parametrize("is_buy_larger", [True, False])
+    def test_execution_order_unequal_market_volumes(self, is_buy_larger: bool) -> None:
+        # larger market side: 10, smaller market side: 1 + one limit level of 100
+        market = self._make_running_market()
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=not is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=1,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=not is_buy_larger,
+                kind=LIMIT_ORDER,
+                volume=100,
+                price=300,
+            )
+        )
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 2
+        assert sum(log.volume for log in logs) == 10
+        assert all(log.price == 300 for log in logs)
+        assert not market.remain_executable_orders()
+
+    @pytest.mark.parametrize("is_buy_larger", [True, False])
+    def test_execution_order_unequal_market_volumes_small_limit(
+        self, is_buy_larger: bool
+    ) -> None:
+        # larger market side: 10, smaller market side: 5 + limit volume 1
+        market = self._make_running_market()
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=not is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=5,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=not is_buy_larger,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300,
+            )
+        )
+        assert market.remain_executable_orders()
+        logs = market._execution()
+        assert sum(log.volume for log in logs) == 6
+        assert all(log.price == 300 for log in logs)
+        assert not market.remain_executable_orders()
+
+    @pytest.mark.parametrize("is_buy_larger", [True, False])
+    def test_execution_order_unequal_market_volumes_no_limit(
+        self, is_buy_larger: bool
+    ) -> None:
+        # the smaller market side has no limit order to provide a price.
+        market = self._make_running_market()
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy_larger,
+                kind=LIMIT_ORDER,
+                volume=5,
+                price=300,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=not is_buy_larger,
+                kind=MARKET_ORDER,
+                volume=1,
+            )
+        )
+        assert not market.remain_executable_orders()
+        logs = market._execution()
+        assert len(logs) == 0
+
+    @pytest.mark.parametrize(
+        "buy_price, sell_price, expected",
+        [(10, 10, True), (10, 9, True), (9, 10, False), (10, None, False)],
+    )
+    def test_execution_order_equal_market_volumes(
+        self, buy_price: int, sell_price: Optional[int], expected: bool
+    ) -> None:
+        market = self._make_running_market()
+        market._add_order(
+            Order(agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=3)
+        )
+        market._add_order(
+            Order(agent_id=0, market_id=0, is_buy=False, kind=MARKET_ORDER, volume=3)
+        )
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=buy_price,
+            )
+        )
+        if sell_price is not None:
+            market._add_order(
+                Order(
+                    agent_id=0,
+                    market_id=0,
+                    is_buy=False,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=sell_price,
+                )
+            )
+        assert market.remain_executable_orders() == expected
+        logs = market._execution()
+        assert sum(log.volume for log in logs) == (4 if expected else 0)
+        assert not market.remain_executable_orders()
+
+    @staticmethod
+    def _is_executable_reference(market: Market) -> bool:
+        # walk both books in priority order (market orders first) like _execution
+        buy_book = market.buy_order_book.get_price_volume()
+        sell_book = market.sell_order_book.get_price_volume()
+        buys = [(None, buy_book[None])] if None in buy_book else []
+        buys += sorted(
+            [(p, v) for p, v in buy_book.items() if p is not None], reverse=True
+        )
+        sells = [(None, sell_book[None])] if None in sell_book else []
+        sells += sorted([(p, v) for p, v in sell_book.items() if p is not None])
+        i, j, buy_volume, sell_volume = 0, 0, 0, 0
+        buy_price: Optional[float] = None
+        sell_price: Optional[float] = None
+        while True:
+            if buy_volume == 0:
+                if i == len(buys):
+                    return False
+                buy_price, buy_volume = buys[i]
+                i += 1
+            if sell_volume == 0:
+                if j == len(sells):
+                    return False
+                sell_price, sell_volume = sells[j]
+                j += 1
+            if buy_price is not None and sell_price is not None:
+                return sell_price <= buy_price
+            if buy_price is not None or sell_price is not None:
+                return True
+            volume = min(buy_volume, sell_volume)
+            buy_volume -= volume
+            sell_volume -= volume
+
+    def test_remain_executable_orders_random(self) -> None:
+        prng = random.Random(42)
+        n_executed = 0
+        for _ in range(2000):
+            market = self._make_running_market()
+            for _ in range(prng.randint(1, 8)):
+                kind = MARKET_ORDER if prng.random() < 0.5 else LIMIT_ORDER
+                market._add_order(
+                    Order(
+                        agent_id=0,
+                        market_id=0,
+                        is_buy=bool(prng.getrandbits(1)),
+                        kind=kind,
+                        volume=prng.randint(1, 10),
+                        price=prng.randint(1, 3) if kind == LIMIT_ORDER else None,
+                    )
+                )
+            executable = self._is_executable_reference(market)
+            assert market.remain_executable_orders() == executable
+            logs = market._execution()
+            assert executable == (len(logs) > 0)
+            assert not market.remain_executable_orders()
+            assert not self._is_executable_reference(market)
+            n_executed += int(executable)
+        assert 0 < n_executed < 2000
+
     def test_expiration_orrder_pattern01(self) -> None:
         logger = Logger()
         market = self.base_class(
