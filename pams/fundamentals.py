@@ -286,6 +286,10 @@ class Fundamentals:
         Returns:
             List[float]: fundamental prices in specified range of time steps.
         """
-        while max([x for x in times]) >= self._generated_until:
+        times = list(times)
+        if len(times) == 0:
+            return []
+        max_time: int = max(times)
+        while max_time >= self._generated_until:
             self._generate_next()
         return [self.prices[market_id][x] for x in times]

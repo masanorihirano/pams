@@ -123,6 +123,7 @@ class Market:
         """
         if times is None:
             times = range(self.time + 1)
+        times = list(times)
         if sum([t > self.time for t in times]) > 0:
             raise AssertionError("Cannot refer the future parameters")
         result = [parameters[t] for t in times]
