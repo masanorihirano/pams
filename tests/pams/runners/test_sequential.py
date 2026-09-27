@@ -1702,3 +1702,26 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_market_step_end == sum(
             [session.iteration_steps for session in runner.simulator.sessions]
         )
+
+    def test_run_logger_can_access_simulator(self) -> None:
+        class SimulatorAccessingLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.accessed_simulators: List = []
+
+            def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
+                assert self.simulator is log.simulator
+                self.accessed_simulators.append(self.simulator)
+
+            def process_simulation_end_log(self, log: SimulationEndLog) -> None:
+                assert self.simulator is log.simulator
+                self.accessed_simulators.append(self.simulator)
+
+        logger = SimulatorAccessingLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner._run()
+        assert logger.accessed_simulators == [runner.simulator, runner.simulator]

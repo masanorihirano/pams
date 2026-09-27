@@ -74,7 +74,32 @@ class TestRunner:
             simulator_class if simulator_class is not None else Simulator,
         )
         assert runner.registered_classes == []
+        if logger is not None:
+            assert runner.simulator.logger is logger
+            assert logger.simulator is runner.simulator
+        else:
+            assert runner.simulator.logger is None
         return runner
+
+    @pytest.mark.parametrize("logger", [None, Logger()])
+    def test__init__prng_only_simulator_class(self, logger: Optional[Logger]) -> None:
+        class PrngOnlySimulator(Simulator):
+            def __init__(self, prng: random.Random) -> None:
+                super().__init__(prng=prng)
+
+        runner = self.runner_class(
+            settings=self.default_setting.copy(),
+            prng=random.Random(42),
+            logger=logger,
+            simulator_class=PrngOnlySimulator,
+        )
+        assert isinstance(runner.simulator, PrngOnlySimulator)
+        assert runner.logger == logger
+        if logger is not None:
+            assert runner.simulator.logger is logger
+            assert logger.simulator is runner.simulator
+        else:
+            assert runner.simulator.logger is None
 
     def test_main(self) -> None:
         runner = self.test__init__(
