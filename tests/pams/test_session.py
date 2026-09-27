@@ -1,4 +1,7 @@
 import random
+import warnings
+from typing import Any
+from typing import Dict
 
 import pytest
 
@@ -207,3 +210,50 @@ class TestSession:
         }
         with pytest.warns(Warning):
             s.setup(settings=setting)
+
+    @pytest.mark.parametrize(
+        "order_limit_setting, expected_max_high_frequency_orders",
+        [({}, 1), ({"maxHighFrequencyOrders": 3}, 3), ({"maxHifreqOrders": 3}, 3)],
+    )
+    def test_setup_legacy_hifreq_submit_rate(
+        self,
+        order_limit_setting: Dict[str, Any],
+        expected_max_high_frequency_orders: int,
+    ) -> None:
+        def make_session() -> Session:
+            return Session(
+                session_id=1,
+                prng=random.Random(42),
+                session_start_time=10,
+                simulator=Simulator(prng=random.Random(42)),
+                name="session_test",
+                logger=Logger(),
+            )
+
+        base_setting: Dict[str, Any] = {
+            "sessionName": "session_test",
+            "iterationSteps": 10,
+            "withOrderPlacement": False,
+            "withOrderExecution": False,
+            "withPrint": False,
+            "maxNormalOrders": 2,
+            **order_limit_setting,
+        }
+        legacy = make_session()
+        with pytest.warns(
+            UserWarning, match="hifreqSubmitRate is replaced to highFrequencySubmitRate"
+        ):
+            legacy.setup(settings={**base_setting, "hifreqSubmitRate": 0.25})
+        assert legacy.high_frequency_submission_rate == 0.25
+        assert legacy.max_high_frequency_orders == expected_max_high_frequency_orders
+
+        modern = make_session()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            modern.setup(settings={**base_setting, "highFrequencySubmitRate": 0.25})
+        assert (
+            legacy.high_frequency_submission_rate
+            == modern.high_frequency_submission_rate
+        )
+        assert legacy.max_high_frequency_orders == modern.max_high_frequency_orders
+        assert legacy.max_normal_orders == modern.max_normal_orders
