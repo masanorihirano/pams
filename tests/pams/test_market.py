@@ -2,6 +2,7 @@ import copy
 import math
 import random
 import time
+import warnings
 from typing import List
 from typing import Optional
 from unittest import mock
@@ -433,6 +434,139 @@ class TestMarket:
             )
             with pytest.raises(AssertionError):
                 m._add_order(order=order_sell)
+
+    def _create_market_with_tick_size(self, tick_size: float) -> Market:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m.tick_size = tick_size
+        m._update_time(next_fundamental_price=1.0)
+        return m
+
+    @pytest.mark.parametrize(
+        "tick_size, tick_level",
+        [
+            (1.0, 3),
+            (1.0, 123456789),
+            (0.1, 3),
+            (0.1, 7),
+            (0.1, 12345),
+            (0.01, 29),
+            (0.01, 57),
+            (0.01, 1234567),
+            (0.00001, 30000),
+            (0.00001, 70001),
+            (0.00001, 10000000),
+            (0.00001, 123456789),
+        ],
+    )
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_add_order_on_tick_price(
+        self, tick_size: float, tick_level: int, is_buy: bool
+    ) -> None:
+        m = self._create_market_with_tick_size(tick_size=tick_size)
+        # prices written as decimal literals, as users / configs typically do
+        decimals = max(0, -math.floor(math.log10(tick_size)))
+        prices = [
+            float(f"{tick_level * tick_size:.{decimals}f}"),
+            tick_level * tick_size,
+            m.convert_to_price(tick_level=tick_level),
+        ]
+        for price in prices:
+            assert m.convert_to_tick_level_rounded_lower(price=price) == tick_level
+            assert m.convert_to_tick_level_rounded_upper(price=price) == tick_level
+            assert m.convert_to_tick_level(price=price, is_buy=is_buy) == tick_level
+            order = Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("error")
+                m._add_order(order=order)
+            assert order.price == m.convert_to_price(tick_level=tick_level)
+            # idempotence: converting the modified price again is stable
+            assert order.price is not None
+            for side in [True, False]:
+                assert (
+                    m.convert_to_tick_level(price=order.price, is_buy=side)
+                    == tick_level
+                )
+
+    @pytest.mark.parametrize(
+        "tick_size, price, lower, upper",
+        [
+            (1.0, 1.1, 1, 2),
+            (1.0, 2.5, 2, 3),
+            (1.0, 3.000001, 3, 4),
+            (1.0, 1000000000.5, 1000000000, 1000000001),
+            (1.0, 500000000001.5, 500000000001, 500000000002),
+            (1.0, -2.5, -3, -2),
+            (0.1, 0.35, 3, 4),
+            (0.1, 0.71, 7, 8),
+            (0.01, 0.295, 29, 30),
+            (0.01, 1.2345, 123, 124),
+            (0.00001, 1.000005, 100000, 100001),
+            (0.00001, 0.300001, 30000, 30001),
+            (0.00001, 1234.567891, 123456789, 123456790),
+            (0.00001, 1000.000000001, 100000000, 100000001),
+        ],
+    )
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_add_order_off_tick_price(
+        self, tick_size: float, price: float, lower: int, upper: int, is_buy: bool
+    ) -> None:
+        m = self._create_market_with_tick_size(tick_size=tick_size)
+        assert m.convert_to_tick_level_rounded_lower(price=price) == lower
+        assert m.convert_to_tick_level_rounded_upper(price=price) == upper
+        expected_level = lower if is_buy else upper
+        assert m.convert_to_tick_level(price=price, is_buy=is_buy) == expected_level
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=is_buy,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=price,
+        )
+        with pytest.warns(UserWarning):
+            m._add_order(order=order)
+        assert order.price == m.convert_to_price(tick_level=expected_level)
+        # the modified price is on tick, so converting it again is stable
+        assert order.price is not None
+        for side in [True, False]:
+            assert (
+                m.convert_to_tick_level(price=order.price, is_buy=side)
+                == expected_level
+            )
+
+    def test_add_order_on_tick_price_same_level(self) -> None:
+        m = self._create_market_with_tick_size(tick_size=0.1)
+        m._is_running = True
+        for price in [0.3, 3 * 0.1, 0.1 + 0.2]:
+            order = Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+            )
+            m._add_order(order=order)
+        assert m.get_buy_order_book() == {m.convert_to_price(tick_level=3): 3}
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=3, price=0.3
+        )
+        m._add_order(order=order)
+        logs = m._execution()
+        assert sum(log.volume for log in logs) == 3
 
     def test_execution(self) -> None:
         random.seed(42)
