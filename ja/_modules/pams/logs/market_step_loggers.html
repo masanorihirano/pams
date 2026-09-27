@@ -283,46 +283,46 @@
 
 
 <div class="viewcode-block" id="MarketStepPrintLogger"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepPrintLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logger of the market step class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Logger of the market step class."""</span>
 
 <div class="viewcode-block" id="MarketStepPrintLogger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;print the market log.</span>
+<span class="w">        </span><span class="sd">"""print the market log.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (:class:`pams.logs.MarketStepEndLog`): matket log.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="MarketStepSaver"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">MarketStepSaver</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Saver of the market step class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Saver of the market step class."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="MarketStepSaver.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver.process_market_step_end_log">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;stack the market log.</span>
+<span class="w">        </span><span class="sd">"""stack the market log.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (:class:`pams.logs.MarketStepEndLog`): market log.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
-                <span class="s2">&quot;market_time&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">(),</span>
-                <span class="s2">&quot;market_id&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
-                <span class="s2">&quot;market_name&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;market_price&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">(),</span>
-                <span class="s2">&quot;fundamental_price&quot;</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(),</span>
+                <span class="s2">"session_id"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="s2">"market_time"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">(),</span>
+                <span class="s2">"market_id"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
+                <span class="s2">"market_name"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">"market_price"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">(),</span>
+                <span class="s2">"fundamental_price"</span><span class="p">:</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(),</span>
             <span class="p">}</span>
         <span class="p">)</span></div></div>
 </pre></div>

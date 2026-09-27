@@ -313,7 +313,7 @@
 
 
 <div class="viewcode-block" id="SequentialRunner"><a class="viewcode-back" href="../../../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">SequentialRunner</span><span class="p">(</span><span class="n">Runner</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sequential runner class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Sequential runner class."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -322,7 +322,7 @@
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">simulator_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Simulator</span><span class="p">]</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialize.</span>
+<span class="w">        </span><span class="sd">"""initialize.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.</span>
@@ -332,85 +332,85 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">prng</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">simulator_class</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;generate markets. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""generate markets. (Internal method)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_type_names (List[str]): name list of market type.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">i_market</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">market_type_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config"</span><span class="p">)</span>
             <span class="n">market_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="n">market_settings</span> <span class="o">=</span> <span class="n">json_extends</span><span class="p">(</span>
                 <span class="n">whole_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
                 <span class="n">parent_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">target_json</span><span class="o">=</span><span class="n">market_settings</span><span class="p">,</span>
-                <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">],</span>
+                <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"from"</span><span class="p">,</span> <span class="s2">"to"</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="c1"># TODO: warn &quot;from&quot; and &quot;to&quot; is included in parent setting and not set to this setting.</span>
+            <span class="c1"># TODO: warn "from" and "to" is included in parent setting and not set to this setting.</span>
             <span class="n">n_markets</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">id_from</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">id_to</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="s2">&quot;numMarkets&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;numMarkets&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"numMarkets"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"numMarkets"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="n">n_markets</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span> <span class="ow">or</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span> <span class="ow">or</span> <span class="s2">&quot;to&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">market_settings</span> <span class="ow">or</span> <span class="s2">"to"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span> <span class="ow">or</span> <span class="s2">"to"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;both </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from and </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to are required in json file if you use&quot;</span>
+                        <span class="sa">f</span><span class="s2">"both </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from and </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to are required in json file if you use"</span>
                     <span class="p">)</span>
-                <span class="k">if</span> <span class="s2">&quot;numMarkets&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"numMarkets"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time"</span>
                     <span class="p">)</span>
-                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
-                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
-                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="s2">&quot;numMarkets&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;numMarkets&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
+                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
+                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"numMarkets"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"numMarkets"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"to"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">]</span>
             <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
-            <span class="k">if</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
-                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"prefix"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;class&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"-"</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">market_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span>
                 <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">market_class</span><span class="p">,</span> <span class="n">Market</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;market class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Market class&quot;</span>
+                    <span class="sa">f</span><span class="s2">"market class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Market class"</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;fundamentalPrice&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">fundamental_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalPrice&quot;</span><span class="p">])</span>
-            <span class="k">elif</span> <span class="s2">&quot;marketPrice&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">fundamental_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;marketPrice&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"fundamentalPrice"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">fundamental_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"fundamentalPrice"</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="s2">"marketPrice"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">fundamental_price</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"marketPrice"</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;fundamentalPrice or marketPrice is required for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"fundamentalPrice or marketPrice is required for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
             <span class="n">fundamental_drift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="k">if</span> <span class="s2">&quot;fundamentalDrift&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">fundamental_drift</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalDrift&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"fundamentalDrift"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">fundamental_drift</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"fundamentalDrift"</span><span class="p">])</span>
             <span class="n">fundamental_volatility</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="k">if</span> <span class="s2">&quot;fundamentalVolatility&quot;</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
-                <span class="n">fundamental_volatility</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">&quot;fundamentalVolatility&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"fundamentalVolatility"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
+                <span class="n">fundamental_volatility</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"fundamentalVolatility"</span><span class="p">])</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">id_from</span><span class="p">,</span> <span class="n">id_to</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">market</span> <span class="o">=</span> <span class="n">market_class</span><span class="p">(</span>
@@ -418,7 +418,7 @@
                     <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>
                     <span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
                     <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">i_market</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -430,72 +430,72 @@
                         <span class="n">volatility</span><span class="o">=</span><span class="n">fundamental_volatility</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">market_settings</span><span class="p">})</span>
+                    <span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"settings"</span><span class="p">:</span> <span class="n">market_settings</span><span class="p">})</span>
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;generate agents. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""generate agents. (Internal method)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent_type_names (List[str]): name list of agent type.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">i_agent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">agent_type_names</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> setting is missing in config"</span><span class="p">)</span>
             <span class="n">agent_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="n">agent_settings</span> <span class="o">=</span> <span class="n">json_extends</span><span class="p">(</span>
                 <span class="n">whole_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
                 <span class="n">parent_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
                 <span class="n">target_json</span><span class="o">=</span><span class="n">agent_settings</span><span class="p">,</span>
-                <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">],</span>
+                <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"from"</span><span class="p">,</span> <span class="s2">"to"</span><span class="p">],</span>
             <span class="p">)</span>
-            <span class="c1"># TODO: warn &quot;from&quot; and &quot;to&quot; is included in parent setting and not set to this setting.</span>
+            <span class="c1"># TODO: warn "from" and "to" is included in parent setting and not set to this setting.</span>
             <span class="n">n_agents</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">id_from</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">id_to</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="s2">&quot;numAgents&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;numAgents&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"numAgents"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"numAgents"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="n">n_agents</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span> <span class="ow">or</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span> <span class="ow">or</span> <span class="s2">&quot;to&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">agent_settings</span> <span class="ow">or</span> <span class="s2">"to"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span> <span class="ow">or</span> <span class="s2">"to"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;both </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from and </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to are required in json file if you use&quot;</span>
+                        <span class="sa">f</span><span class="s2">"both </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from and </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to are required in json file if you use"</span>
                     <span class="p">)</span>
-                <span class="k">if</span> <span class="s2">&quot;numAgents&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">"numAgents"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time"</span>
                     <span class="p">)</span>
-                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
-                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">])</span>
-                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="s2">&quot;numAgents&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;numAgents&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;from&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;to&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">]</span>
+                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
+                <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
+                <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">"numAgents"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"numAgents"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"to"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">]</span>
             <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span>
-            <span class="k">if</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
-                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"prefix"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"prefix"</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"-"</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="s2">&quot;class&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">agent_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span>
                 <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent_class</span><span class="p">,</span> <span class="n">Agent</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;agent class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Agent class&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;markets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;markets is required in </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">accessible_market_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">&quot;markets&quot;</span><span class="p">]</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"agent class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Agent class"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"markets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"markets is required in </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">accessible_market_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"markets"</span><span class="p">]</span>
             <span class="n">accessible_market_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="nb">list</span><span class="p">(</span>
@@ -514,7 +514,7 @@
                     <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>
                     <span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
                     <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">i_agent</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_agent</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -522,24 +522,24 @@
                     <span class="p">(</span>
                         <span class="n">agent</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span>
                         <span class="p">{</span>
-                            <span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">agent_settings</span><span class="p">,</span>
-                            <span class="s2">&quot;accessible_markets_ids&quot;</span><span class="p">:</span> <span class="n">accessible_market_ids</span><span class="p">,</span>
+                            <span class="s2">"settings"</span><span class="p">:</span> <span class="n">agent_settings</span><span class="p">,</span>
+                            <span class="s2">"accessible_markets_ids"</span><span class="p">:</span> <span class="n">accessible_market_ids</span><span class="p">,</span>
                         <span class="p">},</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_fundamental_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;set fundamental correlation. (Internal method)&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;fundamentalCorrelations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
-            <span class="n">corr_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;fundamentalCorrelations&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""set fundamental correlation. (Internal method)"""</span>
+        <span class="k">if</span> <span class="s2">"fundamentalCorrelations"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
+            <span class="n">corr_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"fundamentalCorrelations"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">corr_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;pairwise&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"pairwise"</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
                         <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
                     <span class="p">):</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;simulation.fundamentalCorrelations.pairwise has invalid format data&quot;</span>
+                            <span class="s2">"simulation.fundamentalCorrelations.pairwise has invalid format data"</span>
                         <span class="p">)</span>
                     <span class="k">for</span> <span class="p">(</span><span class="n">market1_name</span><span class="p">,</span> <span class="n">market2_name</span><span class="p">,</span> <span class="n">corr</span><span class="p">)</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                         <span class="n">market1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">name2market</span><span class="p">[</span><span class="n">market1_name</span><span class="p">]</span>
@@ -550,8 +550,8 @@
                                 <span class="o">==</span> <span class="mf">0.0</span>
                             <span class="p">):</span>
                                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                                    <span class="sa">f</span><span class="s2">&quot;For applying fundamental correlation fo </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span>
-                                    <span class="sa">f</span><span class="s2">&quot;fundamentalVolatility for </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is required&quot;</span>
+                                    <span class="sa">f</span><span class="s2">"For applying fundamental correlation fo </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
+                                    <span class="sa">f</span><span class="s2">"fundamentalVolatility for </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is required"</span>
                                 <span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">fundamentals</span><span class="o">.</span><span class="n">set_correlation</span><span class="p">(</span>
                             <span class="n">market_id1</span><span class="o">=</span><span class="n">market1</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
@@ -560,53 +560,53 @@
                         <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> for simulation.fundamentalCorrelations is not supported&quot;</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> for simulation.fundamentalCorrelations is not supported"</span>
                     <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_sessions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;generate sessions. (Internal method)&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;sessions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sessions is missing under &#39;simulation&#39; config&quot;</span><span class="p">)</span>
-        <span class="n">session_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;sessions&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">"""generate sessions. (Internal method)"""</span>
+        <span class="k">if</span> <span class="s2">"sessions"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sessions is missing under 'simulation' config"</span><span class="p">)</span>
+        <span class="n">session_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"sessions"</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session_settings</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.sessions must be list[dict]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.sessions must be list[dict]"</span><span class="p">)</span>
         <span class="n">i_session</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">i_event</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">session_setting</span> <span class="ow">in</span> <span class="n">session_settings</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;sessionName&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"sessionName"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;for each element in simulation.sessions must have sessionName&quot;</span>
+                    <span class="s2">"for each element in simulation.sessions must have sessionName"</span>
                 <span class="p">)</span>
             <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span>
                 <span class="n">session_id</span><span class="o">=</span><span class="n">i_session</span><span class="p">,</span>
                 <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>
                 <span class="n">session_start_time</span><span class="o">=</span><span class="n">session_start_time</span><span class="p">,</span>
                 <span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">session_setting</span><span class="p">[</span><span class="s2">&quot;sessionName&quot;</span><span class="p">]),</span>
+                <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">session_setting</span><span class="p">[</span><span class="s2">"sessionName"</span><span class="p">]),</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">i_session</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="s2">&quot;iterationSteps&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">"iterationSteps"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;iterationSteps is required in each element of simulation.sessions&quot;</span>
+                    <span class="s2">"iterationSteps is required in each element of simulation.sessions"</span>
                 <span class="p">)</span>
-            <span class="n">session_start_time</span> <span class="o">+=</span> <span class="n">session_setting</span><span class="p">[</span><span class="s2">&quot;iterationSteps&quot;</span><span class="p">]</span>
+            <span class="n">session_start_time</span> <span class="o">+=</span> <span class="n">session_setting</span><span class="p">[</span><span class="s2">"iterationSteps"</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_session</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">session</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">session_setting</span><span class="p">}))</span>
-            <span class="k">if</span> <span class="s2">&quot;events&quot;</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
-                <span class="n">event_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">session_setting</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">session</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"settings"</span><span class="p">:</span> <span class="n">session_setting</span><span class="p">}))</span>
+            <span class="k">if</span> <span class="s2">"events"</span> <span class="ow">in</span> <span class="n">session_setting</span><span class="p">:</span>
+                <span class="n">event_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">session_setting</span><span class="p">[</span><span class="s2">"events"</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">event_name</span> <span class="ow">in</span> <span class="n">event_names</span><span class="p">:</span>
                     <span class="n">event_setting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="n">event_name</span><span class="p">]</span>
                     <span class="n">event_setting</span> <span class="o">=</span> <span class="n">json_extends</span><span class="p">(</span>
                         <span class="n">whole_json</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span>
                         <span class="n">parent_name</span><span class="o">=</span><span class="n">event_name</span><span class="p">,</span>
                         <span class="n">target_json</span><span class="o">=</span><span class="n">event_setting</span><span class="p">,</span>
-                        <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;numMarkets&quot;</span><span class="p">,</span> <span class="s2">&quot;from&quot;</span><span class="p">,</span> <span class="s2">&quot;to&quot;</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">],</span>
+                        <span class="n">excludes_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">"numMarkets"</span><span class="p">,</span> <span class="s2">"from"</span><span class="p">,</span> <span class="s2">"to"</span><span class="p">,</span> <span class="s2">"prefix"</span><span class="p">],</span>
                     <span class="p">)</span>
-                    <span class="k">if</span> <span class="s2">&quot;class&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_setting</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;class is required in </span><span class="si">{</span><span class="n">event_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">event_class_name</span> <span class="o">=</span> <span class="n">event_setting</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_setting</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is required in </span><span class="si">{</span><span class="n">event_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+                    <span class="n">event_class_name</span> <span class="o">=</span> <span class="n">event_setting</span><span class="p">[</span><span class="s2">"class"</span><span class="p">]</span>
                     <span class="n">event_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">EventABC</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
                         <span class="n">name</span><span class="o">=</span><span class="n">event_class_name</span><span class="p">,</span>
                         <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">,</span>
@@ -620,7 +620,7 @@
                     <span class="p">)</span>
                     <span class="n">i_event</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;settings&quot;</span><span class="p">:</span> <span class="n">event_setting</span><span class="p">})</span>
+                        <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"settings"</span><span class="p">:</span> <span class="n">event_setting</span><span class="p">})</span>
                     <span class="p">)</span>
 
                     <span class="k">def</span><span class="w"> </span><span class="nf">event_hook_setup</span><span class="p">(</span><span class="n">_event</span><span class="p">:</span> <span class="n">EventABC</span><span class="p">):</span>
@@ -628,42 +628,42 @@
                         <span class="k">for</span> <span class="n">event_hook</span> <span class="ow">in</span> <span class="n">event_hooks</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_event</span><span class="p">(</span><span class="n">event_hook</span><span class="p">)</span>
 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">event_hook_setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;_event&quot;</span><span class="p">:</span> <span class="n">event</span><span class="p">}))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">event_hook_setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"_event"</span><span class="p">:</span> <span class="n">event</span><span class="p">}))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;runner setup. (Internal method)&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;simulation&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation is required in json file&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">"""runner setup. (Internal method)"""</span>
+        <span class="k">if</span> <span class="s2">"simulation"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation is required in json file"</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;markets&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.markets is required in json file&quot;</span><span class="p">)</span>
-        <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;markets&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"markets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.markets is required in json file"</span><span class="p">)</span>
+        <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"markets"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market_type_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">market_type_names</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.markets in json file have to be list[str]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.markets in json file have to be list[str]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_markets</span><span class="p">(</span><span class="n">market_type_names</span><span class="o">=</span><span class="n">market_type_names</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_fundamental_correlation</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="s2">&quot;agents&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;agents.markets is required in json file&quot;</span><span class="p">)</span>
-        <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;agents&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"agents"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"agents.markets is required in json file"</span><span class="p">)</span>
+        <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"agents"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">agent_type_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">agent_type_names</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.agents in json file have to be list[str]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.agents in json file have to be list[str]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_agents</span><span class="p">(</span><span class="n">agent_type_names</span><span class="o">=</span><span class="n">agent_type_names</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;sessions&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.sessions is required in json file&quot;</span><span class="p">)</span>
-        <span class="n">session_settings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;sessions&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"sessions"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.sessions is required in json file"</span><span class="p">)</span>
+        <span class="n">session_settings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"sessions"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session_settings</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
             <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">session_settings</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;simulation.sessions in json file have to be List[Dict]&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.sessions in json file have to be List[Dict]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_sessions</span><span class="p">()</span>
 
         <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">]</span>
@@ -671,7 +671,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_collect_orders_from_normal_agents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;collect orders from normal_agents. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""collect orders from normal_agents. (Internal method)</span>
 <span class="sd">        orders are corrected until the total number of orders reaches max_normal_orders</span>
 
 <span class="sd">        Args:</span>
@@ -679,7 +679,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[List[Union[Order, Cancel]]]: orders lists.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">normal_frequency_agents</span>
         <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
         <span class="n">n_orders</span> <span class="o">=</span> <span class="mi">0</span>
@@ -690,10 +690,10 @@
             <span class="n">orders</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">submit_orders</span><span class="p">(</span><span class="n">markets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;currently order is not accepted&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;spoofing order is not allowed. please check agent_id in order&quot;</span>
+                        <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
                     <span class="p">)</span>
                 <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
                 <span class="c1"># TODO: currently the original impl is used</span>
@@ -704,7 +704,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_orders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;handle orders. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""handle orders. (Internal method)</span>
 <span class="sd">        processing local orders and correct and process the orders from high frequency agents.</span>
 
 <span class="sd">        Args:</span>
@@ -713,13 +713,13 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[List[Union[Order, Cancel]]]: order lists.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sequential_orders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">local_orders</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_orders</span><span class="p">))</span>
         <span class="n">all_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">sequential_orders</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">orders</span> <span class="ow">in</span> <span class="n">sequential_orders</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;currently order is not accepted&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
                 <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
@@ -762,7 +762,7 @@
                 <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;currently order is not accepted&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="nb">sum</span><span class="p">(</span>
                             <span class="p">[</span>
@@ -773,7 +773,7 @@
                         <span class="o">&gt;</span> <span class="mi">0</span>
                     <span class="p">):</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">&quot;spoofing order is not allowed. please check agent_id in order&quot;</span>
+                            <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
                         <span class="p">)</span>
                     <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
                     <span class="c1"># TODO: currently the original impl is used</span>
@@ -815,28 +815,28 @@
         <span class="k">return</span> <span class="n">all_orders</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;update markets. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""update markets. (Internal method)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
             <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span>
         <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_orders_from_normal_agents</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_handle_orders</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">local_orders</span><span class="o">=</span><span class="n">local_orders</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_iterate_market_updates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;iterate market updates. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""iterate market updates. (Internal method)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span>
         <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">:</span>
             <span class="n">market</span><span class="o">.</span><span class="n">_is_running</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span>
@@ -861,7 +861,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_times_on_markets</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span><span class="p">)</span>  <span class="c1"># t++</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;main process. (Internal method)&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""main process. (Internal method)"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">log</span><span class="p">:</span> <span class="n">Log</span> <span class="o">=</span> <span class="n">SimulationBeginLog</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">)</span>  <span class="c1"># must be blocking</span>
             <span class="n">log</span><span class="o">.</span><span class="n">read_and_write</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>

@@ -296,20 +296,20 @@
 
 
 <div class="viewcode-block" id="FCNAgent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent">[ドキュメント]</a><span class="k">class</span><span class="w"> </span><span class="nc">FCNAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;FCN (Fundamental, Chartist, Noise) Agent class</span>
+<span class="w">    </span><span class="sd">"""FCN (Fundamental, Chartist, Noise) Agent class</span>
 
 <span class="sd">    This class inherits from the :class:`pams.agents.Agent` class.</span>
 
 <span class="sd">    An order decision mechanism proposed in Chiarella &amp; Iori (2004).</span>
 <span class="sd">    It employs two simple margin-based random tradings. Given an expected future price p, submit an order of price</span>
 
-<span class="sd">    - &quot;fixed&quot; : :math:`p (1 ± k)` where :math:`0 \leq k \leq 1`</span>
-<span class="sd">    - &quot;normal&quot; : :math:`p + N(0, k)` where :math:`k &gt; 0`</span>
+<span class="sd">    - "fixed" : :math:`p (1 ± k)` where :math:`0 \leq k \leq 1`</span>
+<span class="sd">    - "normal" : :math:`p + N(0, k)` where :math:`k &gt; 0`</span>
 
 <span class="sd">    References:</span>
 <span class="sd">        - Chiarella, C., &amp; Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.</span>
 <span class="sd">          Quantitative Finance, 2(5), 346–353. https://doi.org/10.1088/1469-7688/2/5/303</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># NOQA</span>
+<span class="sd">    """</span>  <span class="c1"># NOQA</span>
 
     <span class="n">fundamental_weight</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">chart_weight</span><span class="p">:</span> <span class="nb">float</span>
@@ -324,7 +324,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">agent_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
-        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
+        <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -332,14 +332,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_chart_following</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="FCNAgent.is_finite"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.is_finite">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_finite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;determine if it is a valid value.</span>
+<span class="w">        </span><span class="sd">"""determine if it is a valid value.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            x (float): value.</span>
 
 <span class="sd">        Return:</span>
 <span class="sd">            bool: whether or not it is a valid (not NaN, finite) value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FCNAgent.setup"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.setup">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span>
@@ -349,64 +349,64 @@
         <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;agent setup.  Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">"""agent setup.  Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            settings (Dict[str, Any]): agent configuration. This can include the parameters &quot;fundamentalWeight&quot;, &quot;chartWeight&quot;,</span>
-<span class="sd">                                       &quot;noiseWeight&quot;, &quot;noiseScale&quot;, &quot;timeWindowSize&quot;, &quot;orderMargin&quot;, &quot;marginType&quot;,</span>
-<span class="sd">                                       and &quot;meanReversionTime&quot;.</span>
+<span class="sd">            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight",</span>
+<span class="sd">                                       "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType",</span>
+<span class="sd">                                       and "meanReversionTime".</span>
 <span class="sd">            accessible_markets_ids (List[int]): list of market IDs.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="o">=</span><span class="n">accessible_markets_ids</span><span class="p">)</span>
         <span class="n">json_random</span><span class="p">:</span> <span class="n">JsonRandom</span> <span class="o">=</span> <span class="n">JsonRandom</span><span class="p">(</span><span class="n">prng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fundamental_weight</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span>
-            <span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;fundamentalWeight&quot;</span><span class="p">]</span>
+            <span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"fundamentalWeight"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chart_weight</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;chartWeight&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">noise_weight</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;noiseWeight&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">noise_scale</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;noiseScale&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart_weight</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"chartWeight"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_weight</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"noiseWeight"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise_scale</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"noiseScale"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-            <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;timeWindowSize&quot;</span><span class="p">])</span>
+            <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"timeWindowSize"</span><span class="p">])</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">order_margin</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;orderMargin&quot;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;marginType&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;fixed&quot;</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_margin</span> <span class="o">=</span> <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"orderMargin"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"marginType"</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"fixed"</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">margin_type</span> <span class="o">=</span> <span class="n">MARGIN_FIXED</span>
-        <span class="k">elif</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;marginType&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"marginType"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"normal"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">margin_type</span> <span class="o">=</span> <span class="n">MARGIN_NORMAL</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;marginType have to be normal or fixed (not specified is also allowed.)&quot;</span>
+                <span class="s2">"marginType have to be normal or fixed (not specified is also allowed.)"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;meanReversionTime&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"meanReversionTime"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mean_reversion_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-                <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;meanReversionTime&quot;</span><span class="p">])</span>
+                <span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"meanReversionTime"</span><span class="p">])</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mean_reversion_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span></div>
 
 <div class="viewcode-block" id="FCNAgent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.submit_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;submit orders based on FCN-based calculation.</span>
+<span class="w">        </span><span class="sd">"""submit orders based on FCN-based calculation.</span>
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">            - :func:`pams.agents.Agent.submit_orders`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">submit_orders_by_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span> <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">],</span> <span class="p">[]</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">orders</span></div>
 
 <div class="viewcode-block" id="FCNAgent.submit_orders_by_market"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent.submit_orders_by_market">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders_by_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;submit orders by market (internal usage).</span>
+<span class="w">        </span><span class="sd">"""submit orders by market (internal usage).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market (Market): market to order.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Union[Order, Cancel]]: order list.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">orders</span>
@@ -517,18 +517,18 @@
         <span class="k">return</span> <span class="n">orders</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;string representation of FCN agent class.</span>
+<span class="w">        </span><span class="sd">"""string representation of FCN agent class.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: string representation of this class.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, rnd=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;chart_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chart_weight</span><span class="si">}</span><span class="s2">, fundamental_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fundamental_weight</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;noise_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_weight</span><span class="si">}</span><span class="s2">, is_chart_following:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_chart_following</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;margin_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_type</span><span class="si">}</span><span class="s2">, mean_reversion_time:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_reversion_time</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;noise_scale=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_scale</span><span class="si">}</span><span class="s2">, time_window_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;order_margin=</span><span class="si">{</span><span class="s1">&#39;MARGIN_FIXED&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">order_margin</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MARGIN_FIXED</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;MARGIN_NORMAL&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, rnd=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"chart_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chart_weight</span><span class="si">}</span><span class="s2">, fundamental_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fundamental_weight</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"noise_weight=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_weight</span><span class="si">}</span><span class="s2">, is_chart_following:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_chart_following</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"margin_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_type</span><span class="si">}</span><span class="s2">, mean_reversion_time:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_reversion_time</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"noise_scale=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">noise_scale</span><span class="si">}</span><span class="s2">, time_window_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_window_size</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"order_margin=</span><span class="si">{</span><span class="s1">'MARGIN_FIXED'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">order_margin</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MARGIN_FIXED</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'MARGIN_NORMAL'</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span></div>
 </pre></div>
         </article>

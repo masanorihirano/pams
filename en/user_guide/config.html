@@ -279,114 +279,114 @@
           <section id="json-config">
 <h1>Json config<a class="headerlink" href="#json-config" title="Permalink to this heading">#</a></h1>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
-    &quot;simulation&quot;: {
-        &quot;markets&quot;: [&quot;MarketName&quot;, ...],
-        &quot;agents&quot;: [&quot;AgentName&quot;, ...],
-        &quot;sessions&quot;: [
+    "simulation": {
+        "markets": ["MarketName", ...],
+        "agents": ["AgentName", ...],
+        "sessions": [
             {
-                &quot;sessionName&quot;: str (or anything that can be converted into str),
-                &quot;iterationSteps&quot;: int,
-                &quot;withOrderPlacement&quot;: bool,
-                &quot;withOrderExecution&quot;: bool,
-                &quot;withPrint&quot;: bool,
-                &quot;highFrequencySubmitRate&quot;: float (Optional; default 1.0),
-                &quot;maxNormalOrders&quot;: int (&gt;=0; Optional; default 1),
-                &quot;maxHighFrequencyOrders&quot;: int (&gt;=0; Optional; default 1),
-                &quot;events&quot;: [&quot;EventName&quot;] (Optional)
+                "sessionName": str (or anything that can be converted into str),
+                "iterationSteps": int,
+                "withOrderPlacement": bool,
+                "withOrderExecution": bool,
+                "withPrint": bool,
+                "highFrequencySubmitRate": float (Optional; default 1.0),
+                "maxNormalOrders": int (&gt;=0; Optional; default 1),
+                "maxHighFrequencyOrders": int (&gt;=0; Optional; default 1),
+                "events": ["EventName"] (Optional)
             },
             ...
         ],
-        &quot;fundamentalCorrelations&quot;: { # Optional
-            &quot;pairwise&quot;: [
-                [&quot;MarketName1&quot;, &quot;MarketName2&quot;,  float], # fundamentalVolatility is required in both markets
+        "fundamentalCorrelations": { # Optional
+            "pairwise": [
+                ["MarketName1", "MarketName2",  float], # fundamentalVolatility is required in both markets
                 ...
             ]
         }
     },
-    &quot;FundamentalPriceShock&quot;: {
-        &quot;class&quot;: &quot;FundamentalPriceShock&quot;,
-        &quot;target&quot;: &quot;MarketName&quot;,
-        &quot;triggerTime&quot;: int,
-        &quot;priceChangeRate&quot;: float,
-        &quot;shockTimeLength&quot;: int (Optional, default: 1),
-        &quot;enabled&quot;: bool (Optional, default: True)
+    "FundamentalPriceShock": {
+        "class": "FundamentalPriceShock",
+        "target": "MarketName",
+        "triggerTime": int,
+        "priceChangeRate": float,
+        "shockTimeLength": int (Optional, default: 1),
+        "enabled": bool (Optional, default: True)
     },
-    &quot;PriceLimitRule&quot;: {
-        &quot;class&quot;: &quot;PriceLimitRule&quot;,
-        &quot;targetMarkets&quot;: [&quot;Market&quot;],
-        &quot;triggerChangeRate&quot;: float required,
-        &quot;enabled&quot;: bool (Optional, default: True)
+    "PriceLimitRule": {
+        "class": "PriceLimitRule",
+        "targetMarkets": ["Market"],
+        "triggerChangeRate": float required,
+        "enabled": bool (Optional, default: True)
     },
-    &quot;TradingHaltRule&quot;: {
-            &quot;class&quot;: &quot;TradingHaltRule&quot;,
-            &quot;targetMarkets&quot;: [&quot;Market&quot;],
-            &quot;triggerChangeRate&quot;: float required,
-            &quot;haltingTimeLength&quot;: int required,
-            &quot;enabled&quot;: bool (Optional, default: True)
+    "TradingHaltRule": {
+            "class": "TradingHaltRule",
+            "targetMarkets": ["Market"],
+            "triggerChangeRate": float required,
+            "haltingTimeLength": int required,
+            "enabled": bool (Optional, default: True)
     },
-    &quot;OrderMistakeShock&quot;: {
-        &quot;class&quot;: &quot;OrderMistakeShock&quot;,
-        &quot;target&quot;: &quot;Market&quot;,
-        &quot;triggerTime&quot;: int required,
-        &quot;priceChangeRate&quot;: float required,
-        &quot;orderVolume&quot;: int required,
-        &quot;orderTimeLength&quot;: int required,
-        &quot;enabled&quot;: bool (Optional, default: True)
+    "OrderMistakeShock": {
+        "class": "OrderMistakeShock",
+        "target": "Market",
+        "triggerTime": int required,
+        "priceChangeRate": float required,
+        "orderVolume": int required,
+        "orderTimeLength": int required,
+        "enabled": bool (Optional, default: True)
     },
-    &quot;Market&quot;: {
-        &quot;extends&quot;: string (Optional),
-        &quot;class&quot;: string,
-        &quot;tickSize&quot;: float,
-        &quot;numMarket&quot;: int (Optional; default  1),
-        &quot;from&quot;: int (Optional; cannot be extended),
-        &quot;to&quot;: int (Optional; cannot be extended; End is included),
-        &quot;prefix&quot;: str (Optional; default is set to dict key),
-        &quot;tickSize&quot;: float required,
-        &quot;marketPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
-        &quot;fundamentalPrice&quot;: float optional (marketPrice or fundamentalPrice must be specified),
-        &quot;fundamentalDrift&quot;: float (Optional; default: 0.0),
-        &quot;fundamentalVolatility&quot;: float (Optional; default 0.0),
-        &quot;outstandingShares&quot;: int optional (default 0)
+    "Market": {
+        "extends": string (Optional),
+        "class": string,
+        "tickSize": float,
+        "numMarket": int (Optional; default  1),
+        "from": int (Optional; cannot be extended),
+        "to": int (Optional; cannot be extended; End is included),
+        "prefix": str (Optional; default is set to dict key),
+        "tickSize": float required,
+        "marketPrice": float optional (marketPrice or fundamentalPrice must be specified),
+        "fundamentalPrice": float optional (marketPrice or fundamentalPrice must be specified),
+        "fundamentalDrift": float (Optional; default: 0.0),
+        "fundamentalVolatility": float (Optional; default 0.0),
+        "outstandingShares": int optional (default 0)
     },
-    &quot;Agents&quot;: {
-        &quot;class&quot;: string,
-        &quot;numAgents&quot;: int (Optional; default  1),
-        &quot;from&quot;: int (Optional; cannot be extended),
-        &quot;to&quot;: int (Optional; cannot be extended; End is included),
-        &quot;prefix&quot;: str (Optional; default is set to dict key),
-        &quot;markets&quot;: [&quot;Market&quot;, ...] (Required),
-        &quot;assetVolume&quot;: int (JsonRandom applicable),
-        &quot;cashAmount&quot;: float (JsonRandom applicable)
+    "Agents": {
+        "class": string,
+        "numAgents": int (Optional; default  1),
+        "from": int (Optional; cannot be extended),
+        "to": int (Optional; cannot be extended; End is included),
+        "prefix": str (Optional; default is set to dict key),
+        "markets": ["Market", ...] (Required),
+        "assetVolume": int (JsonRandom applicable),
+        "cashAmount": float (JsonRandom applicable)
     },
-    &quot;FCNAgent&quot;: {
-        &quot;class&quot;: &quot;FCNAgent&quot;,
-        &quot;extends&quot;: &quot;Agents&quot;,
-        &quot;fundamentalWeight&quot;: JsonRandomFormat,
-        &quot;chartWeight&quot;: JsonRandomFormat,
-        &quot;noiseWeight&quot;: JsonRandomFormat,
-        &quot;meanReversionTime&quot;:JsonRandomFormat,
-        &quot;noiseScale&quot;: JsonRandomFormat,
-        &quot;timeWindowSize&quot;: JsonRandomFormat,
-        &quot;orderMargin&quot;: JsonRandomFormat,
-        &quot;marginType&quot;: &quot;fixed&quot; or &quot;normal&quot; (Optional; default fixed)
+    "FCNAgent": {
+        "class": "FCNAgent",
+        "extends": "Agents",
+        "fundamentalWeight": JsonRandomFormat,
+        "chartWeight": JsonRandomFormat,
+        "noiseWeight": JsonRandomFormat,
+        "meanReversionTime":JsonRandomFormat,
+        "noiseScale": JsonRandomFormat,
+        "timeWindowSize": JsonRandomFormat,
+        "orderMargin": JsonRandomFormat,
+        "marginType": "fixed" or "normal" (Optional; default fixed)
     },
-        &quot;MarketShareFCNAgents&quot;: {
-        &quot;class&quot;: &quot;MarketShareFCNAgent&quot;,
-        &quot;extends&quot;: &quot;FCNAgent&quot;
+        "MarketShareFCNAgents": {
+        "class": "MarketShareFCNAgent",
+        "extends": "FCNAgent"
     },
-    &quot;ArbitrageAgent&quot;: {
-        &quot;class&quot;: &quot;ArbitrageAgent&quot;,
-        &quot;extends&quot;: &quot;Agents&quot;,
-        &quot;orderVolume&quot;: int,
-        &quot;orderThresholdPrice&quot;: float,
-        &quot;orderTimeLength&quot;: int (Optional, default 1),
+    "ArbitrageAgent": {
+        "class": "ArbitrageAgent",
+        "extends": "Agents",
+        "orderVolume": int,
+        "orderThresholdPrice": float,
+        "orderTimeLength": int (Optional, default 1),
     },
-    &quot;MarketMakerAgent&quot;: {
-        &quot;class&quot;: &quot;MarketMakerAgent&quot;,
-        &quot;extends&quot;: &quot;Agents&quot;,
-        &quot;targetMarket&quot;: string required,
-        &quot;netInterestSpread&quot;: float required,
-        &quot;orderTimeLength&quot;: int optional; default 2,
+    "MarketMakerAgent": {
+        "class": "MarketMakerAgent",
+        "extends": "Agents",
+        "targetMarket": string required,
+        "netInterestSpread": float required,
+        "orderTimeLength": int optional; default 2,
     }
 }
 </pre></div>

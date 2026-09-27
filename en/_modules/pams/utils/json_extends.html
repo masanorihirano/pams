@@ -286,9 +286,9 @@
     <span class="n">target_json</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
     <span class="n">excludes_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;extend target json. If &quot;extends&quot; keys are included in target_json, this try to extend the json dict recursively.</span>
-<span class="sd">     For the extension, the value for &quot;extends&quot; field  is found in whole_json and target_json is extended using the dict under</span>
-<span class="sd">     the found part of whole_json. This process is recursively repeated. &quot;parent_name&quot; is only used for avoiding circle</span>
+<span class="w">    </span><span class="sd">"""extend target json. If "extends" keys are included in target_json, this try to extend the json dict recursively.</span>
+<span class="sd">     For the extension, the value for "extends" field  is found in whole_json and target_json is extended using the dict under</span>
+<span class="sd">     the found part of whole_json. This process is recursively repeated. "parent_name" is only used for avoiding circle</span>
 <span class="sd">     extension of target_json and it should be parent key of taregt_json.</span>
 
 <span class="sd">    Args:</span>
@@ -302,24 +302,24 @@
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from pams.utils.json_extends import json_extends</span>
-<span class="sd">        &gt;&gt;&gt; whole_json = {&quot;parent&quot;: {&quot;parent_attr&quot;: &quot;1&quot;, &quot;override_attr&quot;: &quot;1&quot;}}</span>
-<span class="sd">        &gt;&gt;&gt; target_json = {&quot;extends&quot;: &quot;parent&quot;, &quot;child_attr&quot;: &quot;0&quot;, &quot;override_attr&quot;: &quot;0&quot;}</span>
-<span class="sd">        &gt;&gt;&gt; json_extends(whole_json=whole_json, parent_name=&quot;child&quot;, target_json=target_json)</span>
-<span class="sd">        {&#39;parent_attr&#39;: &#39;1&#39;, &#39;override_attr&#39;: &#39;0&#39;, &#39;child_attr&#39;: &#39;0&#39;}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        &gt;&gt;&gt; whole_json = {"parent": {"parent_attr": "1", "override_attr": "1"}}</span>
+<span class="sd">        &gt;&gt;&gt; target_json = {"extends": "parent", "child_attr": "0", "override_attr": "0"}</span>
+<span class="sd">        &gt;&gt;&gt; json_extends(whole_json=whole_json, parent_name="child", target_json=target_json)</span>
+<span class="sd">        {'parent_attr': '1', 'override_attr': '0', 'child_attr': '0'}</span>
+<span class="sd">    """</span>
     <span class="c1"># ToDo: add a code example to doc.</span>
     <span class="n">excludes_fields_</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">excludes_fields</span> <span class="k">if</span> <span class="n">excludes_fields</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">target_json</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">extending_history</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">parent_name</span><span class="p">]</span>
-    <span class="k">while</span> <span class="s2">&quot;extends&quot;</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
-        <span class="n">extends_class</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;extends&quot;</span><span class="p">]</span>
-        <span class="n">results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;extends&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="s2">"extends"</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+        <span class="n">extends_class</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">"extends"</span><span class="p">]</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"extends"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">extends_class</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">whole_json</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s2"> cannot extends </span><span class="si">{</span><span class="n">extends_class</span><span class="si">}</span><span class="s2"> because </span><span class="si">{</span><span class="n">extends_class</span><span class="si">}</span><span class="s2"> is missing&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s2"> cannot extends </span><span class="si">{</span><span class="n">extends_class</span><span class="si">}</span><span class="s2"> because </span><span class="si">{</span><span class="n">extends_class</span><span class="si">}</span><span class="s2"> is missing"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">extends_class</span> <span class="ow">in</span> <span class="n">extending_history</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s2"> has extending loop&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s2"> has extending loop"</span><span class="p">)</span>
         <span class="n">extending_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extends_class</span><span class="p">)</span>
         <span class="n">extending_dict</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">whole_json</span><span class="p">[</span><span class="n">extends_class</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>

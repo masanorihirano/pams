@@ -286,14 +286,14 @@
 
 
 <div class="viewcode-block" id="JsonRandom"><a class="viewcode-back" href="../../../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">JsonRandom</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;random generator from json.</span>
+<span class="w">    </span><span class="sd">"""random generator from json.</span>
 
 <span class="sd">    The following direction can be used for config as randomized values:</span>
 <span class="sd">     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int, this automatically converted into int. This always satisfy :math:`a \leq x &lt; b`</span>
-<span class="sd">     - :code:`{&quot;const&quot;: [a]}`: constant value. Always set to a.</span>
-<span class="sd">     - :code:`{&quot;uniform&quot;: [a, b]}`: same as [a, b]</span>
-<span class="sd">     - :code:`{&quot;normal&quot;: [u, s]}`: normal distribution whose mean and deviation is u and s.</span>
-<span class="sd">     - :code:`{&quot;expon&quot;: [lam]}`: exponential distribution whose mean and deviation is lam.</span>
+<span class="sd">     - :code:`{"const": [a]}`: constant value. Always set to a.</span>
+<span class="sd">     - :code:`{"uniform": [a, b]}`: same as [a, b]</span>
+<span class="sd">     - :code:`{"normal": [u, s]}`: normal distribution whose mean and deviation is u and s.</span>
+<span class="sd">     - :code:`{"expon": [lam]}`: exponential distribution whose mean and deviation is lam.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from pams.utils.json_random import JsonRandom</span>
@@ -301,29 +301,29 @@
 <span class="sd">        &gt;&gt;&gt; jr = JsonRandom(prng=random.Random(42))</span>
 <span class="sd">        &gt;&gt;&gt; [jr.random([10, 20]) for x in range(10)]</span>
 <span class="sd">        [16.39426798457884, 10.25010755222667, 12.750293183691193, 12.232107381488227, 17.364712141640126, 16.766994874229113, 18.921795677048454, 10.869388326294162, 14.219218196852704, 10.297972194380703]</span>
-<span class="sd">        &gt;&gt;&gt; [jr.random({&quot;const&quot;: [10]}) for x in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; [jr.random({"const": [10]}) for x in range(10)]</span>
 <span class="sd">        [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]</span>
-<span class="sd">        &gt;&gt;&gt; [jr.random({&quot;uniform&quot;: [10, 20]}) for x in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; [jr.random({"uniform": [10, 20]}) for x in range(10)]</span>
 <span class="sd">        [12.186379748036034, 15.053552881033625, 10.265359696838637, 11.988376506866485, 16.49884437779523, 15.449414806032166, 12.204406220406966, 15.892656838759088, 18.094304566778266, 10.064987596780611]</span>
-<span class="sd">        &gt;&gt;&gt; [jr.random({&quot;normal&quot;: [0, 1]}) for x in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; [jr.random({"normal": [0, 1]}) for x in range(10)]</span>
 <span class="sd">        [0.5317762204008692, -1.453545298008678, -0.3122773171445598, 0.49036253259352475, 0.8734043853794468, -0.2406296726551354, 0.3765998586879102, 0.24821344932841446, 0.7823268087036421, -1.1132222142481727]</span>
-<span class="sd">        &gt;&gt;&gt; [jr.random({&quot;expon&quot;: [3]}) for x in range(10)]</span>
+<span class="sd">        &gt;&gt;&gt; [jr.random({"expon": [3]}) for x in range(10)]</span>
 <span class="sd">        [0.642818017709456, 0.9452346835236866, 1.869586994011895, 0.08175668259806873, 2.9143451561160503, 1.7824008841046926, 0.5611413226153803, 1.4412784552296345, 0.4465202669419299, 1.6479086846872075]</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># NOQA</span>
+<span class="sd">    """</span>  <span class="c1"># NOQA</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+<span class="w">        </span><span class="sd">"""initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            prng (random.Random): pseudo random number generator for this event.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;get next uniform.</span>
+<span class="w">        </span><span class="sd">"""get next uniform.</span>
 
 <span class="sd">        Its probability density function is</span>
 <span class="sd">        :math:`p(x) = \frac{1}{max - min}`</span>
@@ -335,11 +335,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: uniform.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_value</span> <span class="o">-</span> <span class="n">min_value</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;get next normal.</span>
+<span class="w">        </span><span class="sd">"""get next normal.</span>
 
 <span class="sd">        Its probability density function is</span>
 <span class="sd">        :math:`p(x) = \frac{1}{\\sqrt{2 \\pi \\sigma^2}e^{- \frac{(x - \\mu)^2}{2 \\sigma^2}}}`</span>
@@ -351,11 +351,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: normal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;get next exponential.</span>
+<span class="w">        </span><span class="sd">"""get next exponential.</span>
 
 <span class="sd">        Its probability density function is</span>
 <span class="sd">        :math:`p(x) = \\lambda exp(- \\lambda x)`</span>
@@ -366,22 +366,22 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: exponential.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">lam</span> <span class="o">*</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
 <div class="viewcode-block" id="JsonRandom.random"><a class="viewcode-back" href="../../../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom.random">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_value</span><span class="p">:</span> <span class="n">JsonValue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;get a random value.</span>
+<span class="w">        </span><span class="sd">"""get a random value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            json_value (JsonValue): random type. This can include the parameter &quot;const&quot;, &quot;uniform&quot;, &quot;normal&quot;, and &quot;expon&quot;.</span>
+<span class="sd">            json_value (JsonValue): random type. This can include the parameter "const", "uniform", "normal", and "expon".</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: random value.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Uniform distribution must be [min, max] but &quot;</span>
+                    <span class="s2">"Uniform distribution must be [min, max] but "</span>
                     <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">json_value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -390,66 +390,66 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Multiple specification of distribution type: &quot;</span>
+                    <span class="s2">"Multiple specification of distribution type: "</span>
                     <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                 <span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;const&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;const&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"const"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"const"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Constant must be [value] (list) but &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                        <span class="s2">"Constant must be [value] (list) but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Constant must be [value] but &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
+                        <span class="s2">"Constant must be [value] but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">return</span> <span class="n">value</span>
-            <span class="k">if</span> <span class="s2">&quot;uniform&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;uniform&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"uniform"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"uniform"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Uniform distribution must be [min, max] (list) but &quot;</span>
+                        <span class="s2">"Uniform distribution must be [min, max] (list) but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Uniform distribution must be [min, max] but &quot;</span>
+                        <span class="s2">"Uniform distribution must be [min, max] but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">min_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">max_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_uniform</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">max_value</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;normal&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;normal&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"normal"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"normal"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Normal distribution must be [mu, sigma] (list) but &quot;</span>
+                        <span class="s2">"Normal distribution must be [mu, sigma] (list) but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Normal distribution must be [mu, sigma] but &quot;</span>
+                        <span class="s2">"Normal distribution must be [mu, sigma] but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">mu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_normal</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
-            <span class="k">if</span> <span class="s2">&quot;expon&quot;</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">&quot;expon&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"expon"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"expon"</span><span class="p">]</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Exponential distribution must be [lambda] (list) but &quot;</span>
+                        <span class="s2">"Exponential distribution must be [lambda] (list) but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">&quot;Exponential distribution must be [lambda] but &quot;</span>
+                        <span class="s2">"Exponential distribution must be [lambda] but "</span>
                         <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                     <span class="p">)</span>
                 <span class="n">lam</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_exponential</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="n">lam</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown distribution type: &quot;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Unknown distribution type: "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span></div></div>
 </pre></div>
         </article>

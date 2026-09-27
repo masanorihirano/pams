@@ -285,18 +285,18 @@
 
 
 <div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Session management class.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Session management class."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">,</span>
         <span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
+        <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;initialization.</span>
+<span class="w">        </span><span class="sd">"""initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session_id (int): session ID.</span>
@@ -314,11 +314,11 @@
 <span class="sd">        Note:</span>
 <span class="sd">             `prng` should not be shared with other classes and be used only in this class.</span>
 <span class="sd">             It is because sometimes agent process runs one of parallelized threads.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Simulator&quot;</span> <span class="o">=</span> <span class="n">simulator</span>  <span class="c1"># type: ignore  # NOQA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span> <span class="o">=</span> <span class="n">simulator</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
@@ -332,83 +332,83 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">, name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;iteration_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span><span class="si">}</span><span class="s2">, session_start_time=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;max_normal_orders=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_normal_orders</span><span class="si">}</span><span class="s2">, max_high_frequency_orders=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;with_order_placement=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_order_placement</span><span class="si">}</span><span class="s2">, with_order_execution=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_order_execution</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;high_frequency_submission_rate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span><span class="si">}</span><span class="s2">, with_print=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_print</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;logger=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">, name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"iteration_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span><span class="si">}</span><span class="s2">, session_start_time=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"max_normal_orders=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_normal_orders</span><span class="si">}</span><span class="s2">, max_high_frequency_orders=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"with_order_placement=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_order_placement</span><span class="si">}</span><span class="s2">, with_order_execution=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_order_execution</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"high_frequency_submission_rate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span><span class="si">}</span><span class="s2">, with_print=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">with_print</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"logger=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Session.setup"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;setup session configuration from setting format.</span>
+<span class="w">        </span><span class="sd">"""setup session configuration from setting format.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.</span>
-<span class="sd">                                       This must include the parameters &quot;iterationSteps&quot;, &quot;withOrderPlacement&quot;, &quot;withOrderExecution&quot;, and &quot;withPrint&quot;.</span>
-<span class="sd">                                       This can include the parameter &quot;maxNormalOrders&quot;, &quot;maxHighFrequencyOrders&quot;, and &quot;highFrequencySubmitRate&quot;.</span>
+<span class="sd">                                       This must include the parameters "iterationSteps", "withOrderPlacement", "withOrderExecution", and "withPrint".</span>
+<span class="sd">                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "highFrequencySubmitRate".</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;iterationSteps&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"iterationSteps"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;for each element in simulation.sessions must have iterationSteps&quot;</span>
+                <span class="s2">"for each element in simulation.sessions must have iterationSteps"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;iterationSteps&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;iterationSteps must be int&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;iterationSteps&quot;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="s2">&quot;withOrderPlacement&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"iterationSteps"</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"iterationSteps must be int"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"iterationSteps"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">"withOrderPlacement"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;for each element in simulation.sessions must have withOrderPlacement&quot;</span>
+                <span class="s2">"for each element in simulation.sessions must have withOrderPlacement"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withOrderPlacement&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;withOrderPlacement must be boolean&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">with_order_placement</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withOrderPlacement&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;withOrderExecution&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"withOrderPlacement"</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"withOrderPlacement must be boolean"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">with_order_placement</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"withOrderPlacement"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"withOrderExecution"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;for each element in simulation.sessions must have withOrderExecution&quot;</span>
+                <span class="s2">"for each element in simulation.sessions must have withOrderExecution"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withOrderExecution&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;withOrderExecution must be boolean&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withOrderExecution&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;withPrint&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"withOrderExecution"</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"withOrderExecution must be boolean"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"withOrderExecution"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"withPrint"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;for each element in simulation.sessions must have withPrint&quot;</span>
+                <span class="s2">"for each element in simulation.sessions must have withPrint"</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withPrint&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;withPrint must be boolean&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">with_print</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;withPrint&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;maxNormalOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"withPrint"</span><span class="p">],</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"withPrint must be boolean"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">with_print</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"withPrint"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"maxNormalOrders"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_normal_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxNormalOrders&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;maxHighFrequencyOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_normal_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"maxNormalOrders"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">"maxHighFrequencyOrders"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxHighFrequencyOrders&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;maxHifreqOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"maxHighFrequencyOrders"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"maxHifreqOrders"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;maxHifreqOrders is replaced to maxHighFrequencyOrders in pams. Please delete it.&quot;</span>
+                    <span class="s2">"maxHifreqOrders is replaced to maxHighFrequencyOrders in pams. Please delete it."</span>
                 <span class="p">)</span>
-        <span class="k">elif</span> <span class="s2">&quot;maxHifreqOrders&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s2">"maxHifreqOrders"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;maxHifreqOrders is replaced to maxHighFrequencyOrders in pams.&quot;</span>
+                <span class="s2">"maxHifreqOrders is replaced to maxHighFrequencyOrders in pams."</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;maxHifreqOrders&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"maxHifreqOrders"</span><span class="p">]</span>
         <span class="c1"># TODO: check malOrders + maxHighFrequencyOrders &gt;= 1</span>
-        <span class="k">if</span> <span class="s2">&quot;highFrequencySubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">"highFrequencySubmitRate"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;highFrequencySubmitRate&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"highFrequencySubmitRate"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"hifreqSubmitRate"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it.&quot;</span>
+                    <span class="s2">"hifreqSubmitRate is replaced to highFrequencySubmitRate in pams. Please delete it."</span>
                 <span class="p">)</span>
-        <span class="k">elif</span> <span class="s2">&quot;hifreqSubmitRate&quot;</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="s2">"hifreqSubmitRate"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;hifreqSubmitRate is replaced to highFrequencySubmitRate in pams.&quot;</span>
+                <span class="s2">"hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."</span>
             <span class="p">)</span>
             <span class="c1"># TODO: check non-negative</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;hifreqSubmitRate&quot;</span><span class="p">]</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"hifreqSubmitRate"</span><span class="p">]</span></div></div>
 </pre></div>
         </article>
       </div>
