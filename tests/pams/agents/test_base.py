@@ -129,7 +129,7 @@ class TestAgent:
         )
         settings3 = {"cashAmount": [9000, 10000]}
         with pytest.raises(
-            ValueError, match="assetVolume is required property of agent settings"
+            ValueError, match="assetVolume is a required property of agent settings"
         ):
             agent.setup(settings=settings3, accessible_markets_ids=[1, 2, 3])
         agent = DummyAgent(
@@ -141,6 +141,6 @@ class TestAgent:
         )
         settings4 = {"assetVolume": 50}
         with pytest.raises(
-            ValueError, match="cashAmount is required property of agent settings"
+            ValueError, match="cashAmount is a required property of agent settings"
         ):
             agent.setup(settings=settings4, accessible_markets_ids=[1, 2, 3])

@@ -155,7 +155,7 @@ class TestEventHook:
         )
         with pytest.raises(
             ValueError,
-            match="hook type have to be order, cancel, execution, session, or market",
+            match="hook type must be one of order, cancel, execution, session, or market",
         ):
             EventHook(event=event, hook_type="dummy", is_before=False)
 
