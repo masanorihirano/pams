@@ -876,22 +876,96 @@ class Market:
             list(cast(Dict[float, int], buy_book).keys())
         )
 
-    def _execution(self) -> List[ExecutionLog]:
-        """execute for market. (Usually, only triggered by runner)
+    @staticmethod
+    def _get_execution_price(buy_order: Order, sell_order: Order) -> Optional[float]:
+        """Get the execution price of a matched pair of orders (internal method).
+
+        If only one of the orders is a market order, the price of the other order is
+        used. If both are limit orders, the price of the earlier order is used. When
+        both orders are placed at the same time, the order with the smaller order ID is
+        regarded as the earlier one.
+
+        Args:
+            buy_order (:class:`pams.order.Order`): buy order.
+            sell_order (:class:`pams.order.Order`): sell order.
 
         Returns:
-            List[:class:`pams.logs.base.ExecutionLog`]: execution logs.
+            float, Optional: execution price. None if both orders are market orders.
+
         """
-        if not self.remain_executable_orders():
-            return []
+        if buy_order.price is None:
+            return sell_order.price
+        if sell_order.price is None:
+            return buy_order.price
+        if buy_order.placed_at == sell_order.placed_at:
+            if buy_order.order_id is None or sell_order.order_id is None:
+                raise AssertionError
+            if buy_order.order_id < sell_order.order_id:
+                return buy_order.price
+            if buy_order.order_id > sell_order.order_id:
+                return sell_order.price
+            raise AssertionError
+        return (
+            buy_order.price
+            if cast(int, buy_order.placed_at) < cast(int, sell_order.placed_at)
+            else sell_order.price
+        )
+
+    @staticmethod
+    def _pop_next_order(
+        order_book: OrderBook, popped_orders: List[Order]
+    ) -> Optional[Order]:
+        """Pop the next order to be executed from the order book (internal method).
+
+        The popped order is appended to ``popped_orders`` so that it can be pushed back
+        to the order book afterwards.
+
+        Args:
+            order_book (:class:`pams.order_book.OrderBook`): buy or sell order book.
+            popped_orders (List[:class:`pams.order.Order`]): orders popped so far.
+
+        Returns:
+            :class:`pams.order.Order`, Optional: the popped order. None if the order
+            book is empty.
+
+        """
+        if len(order_book.priority_queue) == 0:
+            return None
+        order: Order = heapq.heappop(order_book.priority_queue)
+        popped_orders.append(order)
+        if order.volume == 0:
+            raise AssertionError
+        return order
+
+    def _collect_pending_executions(
+        self, popped_buy_orders: List[Order], popped_sell_orders: List[Order]
+    ) -> Tuple[List[Tuple[int, Order, Order]], Optional[float]]:
+        """Collect pending executions by matching the best orders (internal method).
+
+        Orders are popped from the order books and appended to ``popped_buy_orders``
+        and ``popped_sell_orders`` until one of the order books is exhausted or the
+        prices of the current buy and sell orders do not cross. The popped orders are
+        not pushed back to the order books in this method.
+
+        Args:
+            popped_buy_orders (List[:class:`pams.order.Order`]): list to which the
+                popped buy orders are appended.
+            popped_sell_orders (List[:class:`pams.order.Order`]): list to which the
+                popped sell orders are appended.
+
+        Returns:
+            Tuple[List[Tuple[int, Order, Order]], Optional[float]]: pending executions
+            as tuples of volume, buy order and sell order, and the execution price
+            (None if it is not determined).
+
+        """
         pending: List[Tuple[int, Order, Order]] = []
 
-        popped_buy_orders: List[Order] = []
-        popped_sell_orders: List[Order] = []
-
+        # The caller has checked remain_executable_orders(), so the book is not empty.
         buy_order: Order = heapq.heappop(self.buy_order_book.priority_queue)
         popped_buy_orders.append(buy_order)
         sell_order: Order
+        next_order: Optional[Order]
         buy_order_volume_tmp: int = buy_order.volume
         sell_order_volume_tmp: int = 0
         price: Optional[float] = None
@@ -899,21 +973,21 @@ class Market:
             if buy_order_volume_tmp != 0 and sell_order_volume_tmp != 0:
                 raise AssertionError
             if buy_order_volume_tmp == 0:
-                if len(self.buy_order_book.priority_queue) == 0:
+                next_order = self._pop_next_order(
+                    order_book=self.buy_order_book, popped_orders=popped_buy_orders
+                )
+                if next_order is None:
                     break
-                buy_order = heapq.heappop(self.buy_order_book.priority_queue)
-                popped_buy_orders.append(buy_order)
+                buy_order = next_order
                 buy_order_volume_tmp = buy_order.volume
-                if buy_order_volume_tmp == 0:
-                    raise AssertionError
             if sell_order_volume_tmp == 0:
-                if len(self.sell_order_book.priority_queue) == 0:
+                next_order = self._pop_next_order(
+                    order_book=self.sell_order_book, popped_orders=popped_sell_orders
+                )
+                if next_order is None:
                     break
-                sell_order = heapq.heappop(self.sell_order_book.priority_queue)
-                popped_sell_orders.append(sell_order)
+                sell_order = next_order
                 sell_order_volume_tmp = sell_order.volume
-                if sell_order_volume_tmp == 0:
-                    raise AssertionError
             if (
                 buy_order.price is not None
                 and sell_order.price is not None
@@ -929,34 +1003,34 @@ class Market:
                 raise AssertionError
             if sell_order_volume_tmp < 0:
                 raise AssertionError
-            if buy_order.price is None or sell_order.price is None:
-                if buy_order.price is None and sell_order.price is None:
-                    pending.append((volume, buy_order, sell_order))
-                else:
-                    price = (
-                        buy_order.price
-                        if buy_order.price is not None
-                        else sell_order.price
-                    )
-                    pending.append((volume, buy_order, sell_order))
-            else:
-                if buy_order.placed_at == sell_order.placed_at:
-                    if buy_order.order_id is None or sell_order.order_id is None:
-                        raise AssertionError
-                    if buy_order.order_id < sell_order.order_id:
-                        price = buy_order.price
-                    elif buy_order.order_id > sell_order.order_id:
-                        price = sell_order.price
-                    else:
-                        raise AssertionError
-                else:
-                    price = (
-                        buy_order.price
-                        if cast(int, buy_order.placed_at)
-                        < cast(int, sell_order.placed_at)
-                        else sell_order.price
-                    )
-                pending.append((volume, buy_order, sell_order))
+            pair_price: Optional[float] = self._get_execution_price(
+                buy_order=buy_order, sell_order=sell_order
+            )
+            if pair_price is not None:
+                price = pair_price
+            pending.append((volume, buy_order, sell_order))
+        return pending, price
+
+    def _execution(self) -> List[ExecutionLog]:
+        """Execute for market (usually, only triggered by runner).
+
+        The best buy and sell orders are matched as long as their prices cross, and all
+        the matched volumes are executed at a single price, which is determined by the
+        last matched pair including a limit order.
+
+        Returns:
+            List[:class:`pams.logs.base.ExecutionLog`]: execution logs.
+
+        """
+        if not self.remain_executable_orders():
+            return []
+        popped_buy_orders: List[Order] = []
+        popped_sell_orders: List[Order] = []
+        pending: List[Tuple[int, Order, Order]]
+        price: Optional[float]
+        pending, price = self._collect_pending_executions(
+            popped_buy_orders=popped_buy_orders, popped_sell_orders=popped_sell_orders
+        )
         if price is None:
             raise AssertionError
         # TODO: faster impl
