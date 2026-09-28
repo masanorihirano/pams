@@ -158,7 +158,6 @@ class EventABC(ABC):
         Returns:
             List[EventHook]: The list of event hook ( :class:`EventHook` )
         """
-        pass
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         """This method is hooked before order placements if you set the event hook.

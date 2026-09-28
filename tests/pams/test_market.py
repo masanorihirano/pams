@@ -1419,6 +1419,26 @@ class TestMarket:
         )
         return price_determined and not (both_market and market_left)
 
+    def test_remain_executable_orders_without_market_order_volume(self) -> None:
+        sim = Simulator(prng=random.Random(42))
+        market = Market(
+            market_id=0, prng=random.Random(42), simulator=sim, name="market"
+        )
+        market_order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1
+        )
+        # both best orders are market orders but the order books report no
+        # market-order volume: this inconsistency is rejected.
+        with mock.patch("pams.order_book.OrderBook.__len__", return_value=1):
+            with mock.patch(
+                "pams.order_book.OrderBook.get_best_order", return_value=market_order
+            ):
+                with mock.patch(
+                    "pams.order_book.OrderBook.get_price_volume", return_value={}
+                ):
+                    with pytest.raises(AssertionError):
+                        market.remain_executable_orders()
+
     def test_remain_executable_orders_random(self) -> None:
         prng = random.Random(42)
         n_executed = 0
