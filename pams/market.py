@@ -84,8 +84,11 @@ class Market:
 
         Args:
             settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "tickSize" and either "marketPrice" or "fundamentalPrice".
+                                       This must include the parameters "tickSize" and either "marketPrice"
+                                       or "fundamentalPrice".
                                        This can include the parameter "outstandingShares" and "tradeVolume".
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
@@ -123,7 +126,7 @@ class Market:
         if times is None:
             times = range(self.time + 1)
         times = list(times)
-        if sum([t > self.time for t in times]) > 0:
+        if sum(t > self.time for t in times) > 0:
             raise AssertionError("Cannot refer the future parameters")
         result = [parameters[t] for t in times]
         if not allow_none and None in result:
@@ -549,7 +552,9 @@ class Market:
         return math.ceil(price / self.tick_size)
 
     def convert_to_tick_level(self, price: float, is_buy: bool) -> int:
-        """convert price to tick level. If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.
+        """convert price to tick level.
+
+        If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.
 
         Args:
             price (float): price.
@@ -560,8 +565,7 @@ class Market:
         """
         if is_buy:
             return self.convert_to_tick_level_rounded_lower(price=price)
-        else:
-            return self.convert_to_tick_level_rounded_upper(price=price)
+        return self.convert_to_tick_level_rounded_upper(price=price)
 
     def convert_to_price(self, tick_level: int) -> float:
         """convert tick to price.
@@ -794,7 +798,8 @@ class Market:
             )
             if tick_level is None:
                 warnings.warn(
-                    "order price does not accord to the tick size. price will be modified"
+                    "order price does not accord to the tick size. price will be modified",
+                    stacklevel=2,
                 )
                 tick_level = self.convert_to_tick_level(
                     price=order.price, is_buy=order.is_buy
@@ -846,38 +851,30 @@ class Market:
         if sell_best.price is not None or buy_best.price is not None:
             if sell_best.price is not None and buy_best.price is not None:
                 return sell_best.price <= buy_best.price
-            else:
-                return True
-        else:
-            sell_book: Dict[
-                Optional[float], int
-            ] = self.sell_order_book.get_price_volume()
-            buy_book: Dict[
-                Optional[float], int
-            ] = self.buy_order_book.get_price_volume()
-            if None not in sell_book or None not in buy_book:
-                raise AssertionError
-            if sell_book[None] != buy_book[None]:
-                # the excess market orders of the larger side have to be absorbed
-                # by the limit orders of the other side. Otherwise, as in a batch
-                # auction, the execution price cannot be determined and no execution
-                # happens (special quote).
-                if sell_book[None] < buy_book[None]:
-                    additional_required_volume = buy_book[None] - sell_book[None]
-                    sell_book.pop(None)
-                    return sum(sell_book.values()) >= additional_required_volume
-                else:
-                    additional_required_volume = sell_book[None] - buy_book[None]
-                    buy_book.pop(None)
-                    return sum(buy_book.values()) >= additional_required_volume
-            else:
+            return True
+        sell_book: Dict[Optional[float], int] = self.sell_order_book.get_price_volume()
+        buy_book: Dict[Optional[float], int] = self.buy_order_book.get_price_volume()
+        if None not in sell_book or None not in buy_book:
+            raise AssertionError
+        if sell_book[None] != buy_book[None]:
+            # the excess market orders of the larger side have to be absorbed
+            # by the limit orders of the other side. Otherwise, as in a batch
+            # auction, the execution price cannot be determined and no execution
+            # happens (special quote).
+            if sell_book[None] < buy_book[None]:
+                additional_required_volume = buy_book[None] - sell_book[None]
                 sell_book.pop(None)
-                buy_book.pop(None)
-                if len(sell_book) == 0 or len(buy_book) == 0:
-                    return False
-                return min(list(cast(Dict[float, int], sell_book).keys())) <= max(
-                    list(cast(Dict[float, int], buy_book).keys())
-                )
+                return sum(sell_book.values()) >= additional_required_volume
+            additional_required_volume = sell_book[None] - buy_book[None]
+            buy_book.pop(None)
+            return sum(buy_book.values()) >= additional_required_volume
+        sell_book.pop(None)
+        buy_book.pop(None)
+        if len(sell_book) == 0 or len(buy_book) == 0:
+            return False
+        return min(list(cast(Dict[float, int], sell_book).keys())) <= max(
+            list(cast(Dict[float, int], buy_book).keys())
+        )
 
     def _execution(self) -> List[ExecutionLog]:
         """execute for market. (Usually, only triggered by runner)
@@ -973,17 +970,12 @@ class Market:
         ]
         heapq.heapify(self.buy_order_book.priority_queue)
         heapq.heapify(self.sell_order_book.priority_queue)
-        logs: List[ExecutionLog] = list(
-            map(
-                lambda x: self._execute_orders(
-                    price=cast(float, price),
-                    volume=x[0],
-                    buy_order=x[1],
-                    sell_order=x[2],
-                ),
-                pending,
+        logs: List[ExecutionLog] = [
+            self._execute_orders(
+                price=cast(float, price), volume=x[0], buy_order=x[1], sell_order=x[2]
             )
-        )
+            for x in pending
+        ]
         if self.remain_executable_orders():
             raise AssertionError
         return logs

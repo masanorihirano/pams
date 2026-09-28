@@ -1013,14 +1013,14 @@ class TestMarket:
         logs = market._execution()
         assert len(logs) == 2
         assert all(isinstance(log, ExecutionLog) for log in logs)
-        assert sum([log.volume for log in logs]) == 2
+        assert sum(log.volume for log in logs) == 2
         execution_logs = [
             log for log in logger.pending_logs if isinstance(log, ExecutionLog)
         ]
         assert len(execution_logs) == len(logs)
         assert [id(log) for log in execution_logs] == [id(log) for log in logs]
         n_pending_logs = len(logger.pending_logs)
-        assert market._execution() == []
+        assert not market._execution()
         assert len(logger.pending_logs) == n_pending_logs
 
     def test_execute_orders_log_written_once(self) -> None:
@@ -1418,6 +1418,26 @@ class TestMarket:
             sell_price is None and sell_volume > 0
         )
         return price_determined and not (both_market and market_left)
+
+    def test_remain_executable_orders_without_market_order_volume(self) -> None:
+        sim = Simulator(prng=random.Random(42))
+        market = Market(
+            market_id=0, prng=random.Random(42), simulator=sim, name="market"
+        )
+        market_order = Order(
+            agent_id=0, market_id=0, is_buy=True, kind=MARKET_ORDER, volume=1
+        )
+        # both best orders are market orders but the order books report no
+        # market-order volume: this inconsistency is rejected.
+        with mock.patch("pams.order_book.OrderBook.__len__", return_value=1):
+            with mock.patch(
+                "pams.order_book.OrderBook.get_best_order", return_value=market_order
+            ):
+                with mock.patch(
+                    "pams.order_book.OrderBook.get_price_volume", return_value={}
+                ):
+                    with pytest.raises(AssertionError):
+                        market.remain_executable_orders()
 
     def test_remain_executable_orders_random(self) -> None:
         prng = random.Random(42)

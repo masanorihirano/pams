@@ -41,7 +41,7 @@ class TestMarketStepPrintLogger:
 class TestMarketStepSaver:
     def test__init__(self) -> None:
         logger = MarketStepSaver()
-        assert logger.market_step_logs == []
+        assert not logger.market_step_logs
 
     def test_process_market_step_end_log(self) -> None:
         logger = MarketStepSaver()

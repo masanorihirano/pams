@@ -20,8 +20,10 @@ from ..utils.json_random import JsonRandom
 class Agent(ABC):
     """Agent class (abstract class)
 
-    Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents using the class you define.
-    Therefore, you don't need to call __init__ or any other method and simulator automatically call them if it is necessary.
+    Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents
+    using the class you define.
+    Therefore, you don't need to call __init__ or any other method and simulator automatically call them
+    if it is necessary.
 
     `submit_orders(self, markets: List[Market])` is required to be implemented.
 
@@ -70,13 +72,21 @@ class Agent(ABC):
             f"logger={self.logger}>"
         )
 
-    def setup(self, settings: Dict[str, Any], accessible_markets_ids: List[int], *args, **kwargs) -> None:  # type: ignore
+    def setup(  # type: ignore
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args,
+        **kwargs,
+    ) -> None:
         """agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration.  Usually, automatically set from json config of simulator.
                                        This must include the parameters "cashAmount" and "assetVolume".
             accessible_markets_ids (List[int]): list of market IDs.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
@@ -136,7 +146,7 @@ class Agent(ABC):
         """
         return market_id in self.asset_volumes
 
-    def submitted_order(self, log: OrderLog) -> None:
+    def submitted_order(self, log: OrderLog) -> None:  # noqa: B027
         """call back when an order submission is accepted by a market.
 
         Args:
@@ -147,7 +157,7 @@ class Agent(ABC):
         """
         pass
 
-    def executed_order(self, log: ExecutionLog) -> None:
+    def executed_order(self, log: ExecutionLog) -> None:  # noqa: B027
         """call back when a submitted order is executed in a market.
 
         Args:
@@ -158,7 +168,7 @@ class Agent(ABC):
         """
         pass
 
-    def canceled_order(self, log: CancelLog) -> None:
+    def canceled_order(self, log: CancelLog) -> None:  # noqa: B027
         """call back when cancel order is accepted by a market.
 
         Args:

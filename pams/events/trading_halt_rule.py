@@ -72,7 +72,7 @@ class TradingHaltRule(EventABC):
             None
         """
         if "referenceMarket" in settings:
-            warnings.warn("referenceMarket is obsolete")
+            warnings.warn("referenceMarket is obsolete", stacklevel=2)
         if "targetMarkets" not in settings:
             raise ValueError("targetMarkets is required for TradingHaltRule")
         if not isinstance(settings["targetMarkets"], list):
@@ -113,8 +113,7 @@ class TradingHaltRule(EventABC):
                     )
                 )
             return [event_hooked_after_execution] + event_hooked_before_step_for_market
-        else:
-            return []
+        return []
 
     def hooked_after_execution(
         self, simulator: Simulator, execution_log: ExecutionLog

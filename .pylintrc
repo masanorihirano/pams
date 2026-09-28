@@ -36,7 +36,15 @@ disable =
 [FORMAT]
 # black wraps code at 88 characters but leaves long docstrings and strings.
 max-line-length = 120
+# URLs and doctest output lines (lists of numbers) are not wrapped.
+ignore-long-lines = ^\s*(# )?<?https?://\S+>?$|^\s*\[[-0-9.e, ]+\]\s*$
+
+[VARIABLES]
+# *args / **kwargs of setup() are part of the public interface.
+ignored-argument-names = _.*|^ignored_|^unused_|^args$|^kwargs$
 
 [BASIC]
 # test constants such as ``WAIT_TIME`` and short loop variables are fine.
 good-names = i, j, k, n, t, x, y, fp, id, _
+# sample packages are named after papers / models (e.g. ``samples/CI2002``).
+module-rgx = ^[A-Za-z_][A-Za-z0-9_]*$

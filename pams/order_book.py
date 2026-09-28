@@ -92,8 +92,7 @@ class OrderBook:
         """
         if len(self.priority_queue) > 0:
             return self.priority_queue[0]
-        else:
-            return None
+        return None
 
     def get_best_price(self) -> Optional[float]:
         """get the order price with the highest priority.
@@ -103,8 +102,7 @@ class OrderBook:
         """
         if len(self.priority_queue) > 0:
             return self.priority_queue[0].price
-        else:
-            return None
+        return None
 
     def change_order_volume(self, order: Order, delta: int) -> None:
         """change order volume.
@@ -175,6 +173,7 @@ class OrderBook:
 
     def _update_time(self) -> None:
         """update time. (Usually, it is called from market.)
+
         Advance the time step and check expired orders.
         """
         self.time += 1
@@ -194,28 +193,17 @@ class OrderBook:
         Returns:
             Dict[Optional[float], int]: order book dict. Dict key is order price and the value is volumes.
         """
-        keys: List[Optional[float]] = list(
-            set(map(lambda x: x.price, self.priority_queue))
-        )
+        keys: List[Optional[float]] = list({x.price for x in self.priority_queue})
         has_market_order: bool = None in keys
         if has_market_order:
             keys.remove(None)
         keys.sort(reverse=self.is_buy)
         if has_market_order:
             keys.insert(0, None)
-        result: Dict[Optional[float], int] = dict(
-            [
-                (
-                    key,
-                    sum(
-                        [
-                            order.volume
-                            for order in self.priority_queue
-                            if order.price == key
-                        ]
-                    ),
-                )
-                for key in keys
-            ]
-        )
+        result: Dict[Optional[float], int] = {
+            key: sum(
+                order.volume for order in self.priority_queue if order.price == key
+            )
+            for key in keys
+        }
         return result

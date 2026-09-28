@@ -11,8 +11,8 @@ class TestIndexMarket:
     def test_init__(self) -> None:
         sim = Simulator(prng=random.Random(32))
         im = IndexMarket(market_id=1, prng=random.Random(42), simulator=sim, name="im")
-        assert im._components == []
-        assert im.get_components() == []
+        assert not im._components
+        assert not im.get_components()
 
     def test_setup(self) -> None:
         sim = Simulator(prng=random.Random(32))

@@ -17,7 +17,7 @@ class TestOrderKind:
         o3 = OrderKind(kind_id=1, name="test3")
         assert o == o2
         assert o != o3
-        assert o != {}
+        assert o != {}  # pylint: disable=use-implicit-booleaness-not-comparison
         assert hash(o) == 0
         assert hash(o2) == 0
         assert hash(o3) == 1
@@ -83,7 +83,7 @@ class TestOrder:
         o = Order(
             agent_id=0, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10.1
         )
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             o.is_expired(time=10)
         o.placed_at = 0
         assert o.is_expired(time=10) is False
@@ -201,7 +201,7 @@ class TestOrder:
         assert o < o2
         assert o <= o2
         with pytest.raises(NotImplementedError):
-            assert o == {}
+            assert o == {}  # pylint: disable=use-implicit-booleaness-not-comparison
         o = Order(
             agent_id=0,
             market_id=0,
@@ -281,9 +281,11 @@ class TestOrder:
             order_id=2,
             placed_at=1,
         )
+        # pylint: disable=comparison-with-itself,unnecessary-negation,superfluous-parens
         assert not (o != o)
         assert o >= o
         assert o <= o
+        # pylint: enable=comparison-with-itself,unnecessary-negation,superfluous-parens
 
     def test__repr(self) -> None:
         o = Order(

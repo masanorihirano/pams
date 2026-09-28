@@ -203,7 +203,8 @@ class Simulator:
 
         Notes:
             be careful index matket have to be update after component markets.
-            Technically, the fundamental values for components markets can be calculated beforehand, but not allowed to avoid future data leakage.
+            Technically, the fundamental values for components markets can be calculated beforehand,
+            but not allowed to avoid future data leakage.
         """
         if not isinstance(market, IndexMarket):
             market._update_time(

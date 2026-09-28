@@ -22,34 +22,41 @@ from pams.logs import SimulationBeginLog
 from pams.logs import SimulationEndLog
 
 
+class CountingLogger(Logger):
+    """Logger that counts how many times the patched write/process is called."""
+
+    def __init__(self) -> None:
+        """Initialize the counter."""
+        super().__init__()
+        self.count = 0
+
+
 class TestLog:
     def test_read_and_write(self) -> None:
-        logger = Logger()
-        setattr(logger, "count", 0)
+        logger = CountingLogger()
 
-        def _write(log: Log) -> None:
-            logger.count += 1  # type: ignore
+        def _write(log: Log) -> None:  # pylint: disable=unused-argument
+            logger.count += 1
 
         logger.write = _write  # type: ignore
 
         log = Log()
         log.read_and_write(logger=logger)
 
-        assert logger.count == 1  # type: ignore
+        assert logger.count == 1
 
     def test_read_and_write_with_direct_process(self) -> None:
-        logger = Logger()
-        setattr(logger, "count", 0)
+        logger = CountingLogger()
 
-        def _process(logs: List[Log]) -> None:
-            logger.count += 1  # type: ignore
+        def _process(logs: List[Log]) -> None:  # pylint: disable=unused-argument
+            logger.count += 1
 
         logger.process = _process  # type: ignore
 
         log = Log()
         log.read_and_write_with_direct_process(logger=logger)
 
-        assert logger.count == 1  # type: ignore
+        assert logger.count == 1
 
 
 class TestOrderLog:
@@ -295,7 +302,7 @@ class TestMarketStepEndLog:
 class TestLogger:
     def test__init__(self) -> None:
         logger = Logger()
-        assert logger.pending_logs == []
+        assert not logger.pending_logs
 
     def test_set_simulator(self) -> None:
         sim = Simulator(prng=random.Random(42))
@@ -320,45 +327,42 @@ class TestLogger:
     def test_write_and_direct_process(self) -> None:
         log1 = Log()
 
-        logger = Logger()
-        setattr(logger, "count", 0)
+        logger = CountingLogger()
 
         def _process(logs: List[Log]) -> None:
-            logger.count += 1  # type: ignore
+            logger.count += 1
             assert logs == [log1]
 
         logger.process = _process  # type: ignore
 
         logger.write_and_direct_process(log=log1)
 
-        assert logger.count == 1  # type: ignore
+        assert logger.count == 1
 
     def test_bulk_write_and_direct_process(self) -> None:
         log1 = Log()
         log2 = Log()
 
-        logger = Logger()
-        setattr(logger, "count", 0)
+        logger = CountingLogger()
 
         def _process(logs: List[Log]) -> None:
-            logger.count += 1  # type: ignore
+            logger.count += 1
             assert logs == [log1, log2]
 
         logger.process = _process  # type: ignore
 
         logger.bulk_write_and_direct_process(logs=[log1, log2])
 
-        assert logger.count == 1  # type: ignore
+        assert logger.count == 1
 
     def test__process(self) -> None:
         log1 = Log()
         log2 = Log()
 
-        logger = Logger()
-        setattr(logger, "count", 0)
+        logger = CountingLogger()
 
         def _process(logs: List[Log]) -> None:
-            logger.count += 1  # type: ignore
+            logger.count += 1
             assert logs == [log1, log2]
 
         logger.process = _process  # type: ignore
@@ -368,8 +372,8 @@ class TestLogger:
 
         logger._process()
 
-        assert logger.count == 1  # type: ignore
-        assert logger.pending_logs == []
+        assert logger.count == 1
+        assert not logger.pending_logs
 
     def test_process(self) -> None:
         class DummyLogger(Logger):

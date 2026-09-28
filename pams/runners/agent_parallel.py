@@ -109,7 +109,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         """
         super().__init__(settings, prng, logger, simulator_class)
         warnings.warn(
-            f"{self.__class__.__name__} is experimental. Future changes may occur disruptively."
+            f"{self.__class__.__name__} is experimental. Future changes may occur disruptively.",
+            stacklevel=2,
         )
         self.num_parallel: int = max((os.cpu_count() or 1) - 1, 1)
         self.executor: Optional[Executor] = None
@@ -142,7 +143,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
             warnings.warn(
                 f"When {self.__class__.__name__} is used, the maximum number of parallel agents"
                 f" is limited by max_normal_orders ({max_normal_orders}) even if numParallel"
-                f" ({self.num_parallel}) is set to a larger value."
+                f" ({self.num_parallel}) is set to a larger value.",
+                stacklevel=2,
             )
         self._shutdown_executor()
         self.executor = self._parallel_pool_provider(max_workers=self.num_parallel)

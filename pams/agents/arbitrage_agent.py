@@ -54,13 +54,13 @@ class ArbitrageAgent(HighFrequencyAgent):
                                        This must include the parameters "orderVolume", "orderThresholdPrice".
                                        This can include the parameter "orderTimeLength".
             accessible_markets_ids (List[int]): list of market IDs.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
         """
-        super(ArbitrageAgent, self).setup(
-            settings, accessible_markets_ids, *args, **kwargs
-        )
+        super().setup(settings, accessible_markets_ids, *args, **kwargs)
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for ArbitrageAgent")
         if not isinstance(settings["orderVolume"], int):
@@ -95,7 +95,7 @@ class ArbitrageAgent(HighFrequencyAgent):
         market_index: float = index.get_index()
         market_price: float = index.get_market_price()
 
-        if len(set(map(lambda x: x.outstanding_shares, spots))) > 1:
+        if len({x.outstanding_shares for x in spots}) > 1:
             raise NotImplementedError(
                 "currently, the components must have the same outstanding shares"
             )

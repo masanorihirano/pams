@@ -7,6 +7,7 @@ from typing import cast
 @dataclass(frozen=True)
 class OrderKind:
     """Kind of order.
+
     This class has an order kind ID and an order name.
 
     You should use the following pre-defined order kinds:
@@ -86,7 +87,8 @@ class Order:
             is_buy (bool): whether the order is buy order or not.
             kind (:class:`pams.order.OrderKind`): kind of order.
             volume (int): order volume.
-            placed_at (int, Optional): time step that the order is placed. (Set by market. Please do not set it in agent)
+            placed_at (int, Optional): time step that the order is placed.
+                                       (Set by market. Please do not set it in agent)
             price (float, Optional): order price.
             order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)
             ttl (int, Optional): time to order expiration.
@@ -96,7 +98,7 @@ class Order:
         if kind == LIMIT_ORDER and price is None:
             raise ValueError("price have to be set when kind is LIMIT_ORDER")
         if price is not None and price <= 0:
-            warnings.warn("price should be positive")
+            warnings.warn("price should be positive", stacklevel=2)
         if volume <= 0:
             raise ValueError("volume have to be positive")
         if ttl is not None and ttl <= 0:
@@ -141,16 +143,16 @@ class Order:
             bool: whether the order is expired or not.
         """
         if self.placed_at is None:
-            raise Exception("this order is not yet placed to a market")
+            raise ValueError("this order is not yet placed to a market")
         if self.ttl is None:
             return False
-        else:
-            return self.placed_at + self.ttl < time
+        return self.placed_at + self.ttl < time
 
     def __repr__(self) -> str:
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.order_id}, kind={self.kind}, "
-            f"is_buy={self.is_buy}, price={self.price}, volume={self.volume}, agent={self.agent_id}, market={self.market_id}, "
+            f"is_buy={self.is_buy}, price={self.price}, volume={self.volume}, "
+            f"agent={self.agent_id}, market={self.market_id}, "
             f"placed_at={self.placed_at}, ttl={self.ttl}, is_canceled={self.is_canceled}>"
         )
 
@@ -184,51 +186,33 @@ class Order:
         def _compare_placed_at(a: Order, b: Order) -> bool:
             if a.placed_at is None and b.placed_at is None:
                 raise ValueError("orders still not placed cannot be compared")
-            elif a.placed_at is None:
-                return True if gt else False
-            elif b.placed_at is None:
-                return False if gt else True
-            else:
-                if a.placed_at != b.placed_at:
-                    return (
-                        (a.placed_at > b.placed_at)
-                        if gt
-                        else (a.placed_at < b.placed_at)
-                    )
-                else:
-                    if a.order_id is None or b.order_id is None:
-                        raise ValueError("orders still not placed cannot be compared")
-                    return (
-                        (a.order_id > b.order_id) if gt else (a.order_id < b.order_id)
-                    )
+            if a.placed_at is None:
+                return gt
+            if b.placed_at is None:
+                return not gt
+            if a.placed_at != b.placed_at:
+                return (
+                    (a.placed_at > b.placed_at) if gt else (a.placed_at < b.placed_at)
+                )
+            if a.order_id is None or b.order_id is None:
+                raise ValueError("orders still not placed cannot be compared")
+            return (a.order_id > b.order_id) if gt else (a.order_id < b.order_id)
 
         if self.kind == MARKET_ORDER and other.kind == MARKET_ORDER:
             return _compare_placed_at(a=self, b=other)
-        elif self.kind == MARKET_ORDER:
-            return False if gt else True
-        elif other.kind == MARKET_ORDER:
-            return True if gt else False
-        else:
-            if self.kind != LIMIT_ORDER or other.kind != LIMIT_ORDER:
-                raise NotImplementedError
-            else:
-                if self.price is None or other.price is None:
-                    raise AssertionError
-                if self.price != other.price:
-                    if self.is_buy:
-                        return (
-                            (self.price < other.price)
-                            if gt
-                            else (self.price > other.price)
-                        )
-                    else:
-                        return (
-                            (self.price > other.price)
-                            if gt
-                            else (self.price < other.price)
-                        )
-                else:
-                    return _compare_placed_at(a=self, b=other)
+        if self.kind == MARKET_ORDER:
+            return not gt
+        if other.kind == MARKET_ORDER:
+            return gt
+        if self.kind != LIMIT_ORDER or other.kind != LIMIT_ORDER:
+            raise NotImplementedError
+        if self.price is None or other.price is None:
+            raise AssertionError
+        if self.price != other.price:
+            if self.is_buy:
+                return (self.price < other.price) if gt else (self.price > other.price)
+            return (self.price > other.price) if gt else (self.price < other.price)
+        return _compare_placed_at(a=self, b=other)
 
     def __gt__(self, other: object) -> bool:
         return self._gt_lt(other, gt=True)
@@ -263,7 +247,10 @@ class Cancel:
         self.placed_at: Optional[int] = placed_at
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__module__}.{self.__class__.__name__} | placed_at={self.placed_at}, order={self.order}>"
+        return (
+            f"<{self.__class__.__module__}.{self.__class__.__name__} | "
+            f"placed_at={self.placed_at}, order={self.order}>"
+        )
 
     @property
     def agent_id(self) -> int:

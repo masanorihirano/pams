@@ -20,8 +20,8 @@ class TestJsonRandom:
         results = [
             jr._next_uniform(min_value=10.9, max_value=12.2) for _ in range(n_sample)
         ]
-        assert sum([x < 10.9 for x in results]) == 0
-        assert sum([x >= 12.2 for x in results]) == 0
+        assert sum(x < 10.9 for x in results) == 0
+        assert sum(x >= 12.2 for x in results) == 0
 
     def test_next_normal(self) -> None:
         jr = JsonRandom(prng=random.Random(42))
@@ -41,15 +41,15 @@ class TestJsonRandom:
         jr = JsonRandom(prng=random.Random(42))
         n_samples = 1000
         results = [jr.random([10.9, 12.2]) for _ in range(n_samples)]
-        assert sum([x < 10.9 for x in results]) == 0
-        assert sum([x >= 12.2 for x in results]) == 0
+        assert sum(x < 10.9 for x in results) == 0
+        assert sum(x >= 12.2 for x in results) == 0
         results = [jr.random({"const": [10.1]}) for _ in range(n_samples)]
-        assert sum([x != 10.1 for x in results]) == 0
+        assert sum(x != 10.1 for x in results) == 0
         results = [jr.random(10.1) for _ in range(n_samples)]
-        assert sum([x != 10.1 for x in results]) == 0
+        assert sum(x != 10.1 for x in results) == 0
         results = [jr.random({"uniform": [10.9, 12.2]}) for _ in range(n_samples)]
-        assert sum([x < 10.9 for x in results]) == 0
-        assert sum([x >= 12.2 for x in results]) == 0
+        assert sum(x < 10.9 for x in results) == 0
+        assert sum(x >= 12.2 for x in results) == 0
         results = [jr.random({"normal": [1.0, 2.0]}) for _ in range(n_samples)]
         assert abs(mean(results) - 1.0) < 2.0 * 2.0 / math.sqrt(n_samples)
         assert abs(stdev(results) - 2.0) < 2.0 * 2.0 / math.sqrt(n_samples)

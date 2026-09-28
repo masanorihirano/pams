@@ -178,7 +178,7 @@ class TestSequentialRunner(TestRunner):
         assert len(runner.simulator.markets) == 10
         market = runner.simulator.markets[0]
         assert market.name == "Market-0"
-        assert list(map(lambda x: x.name, runner.simulator.markets)) == [
+        assert [x.name for x in runner.simulator.markets] == [
             f"Market-{i}" for i in range(10)
         ]
         assert len(runner._pending_setups) == 10
@@ -212,7 +212,7 @@ class TestSequentialRunner(TestRunner):
         assert len(runner.simulator.markets) == 10
         market = runner.simulator.markets[0]
         assert market.name == "Test10"
-        assert list(map(lambda x: x.name, runner.simulator.markets)) == [
+        assert [x.name for x in runner.simulator.markets] == [
             f"Test{i + 10}" for i in range(10)
         ]
         assert len(runner._pending_setups) == 10
@@ -589,7 +589,7 @@ class TestSequentialRunner(TestRunner):
         agent = runner.simulator.agents[0]
         assert agent.agent_id == 0
         assert agent.name == "Agent-10"
-        assert list(map(lambda x: x.name, runner.simulator.agents)) == [
+        assert [x.name for x in runner.simulator.agents] == [
             f"Agent-{10 + i}" for i in range(10)
         ]
         assert len(runner._pending_setups) == 11
@@ -1672,10 +1672,10 @@ class TestSequentialRunner(TestRunner):
         assert logger.n_session_begin_log == len(runner.simulator.sessions)
         assert logger.n_session_end_log == len(runner.simulator.sessions)
         assert logger.n_market_step_begin == sum(
-            [session.iteration_steps for session in runner.simulator.sessions]
+            session.iteration_steps for session in runner.simulator.sessions
         )
         assert logger.n_market_step_end == sum(
-            [session.iteration_steps for session in runner.simulator.sessions]
+            session.iteration_steps for session in runner.simulator.sessions
         )
 
     def test_collect_orders_from_normal_agents_error_1(self) -> None:
@@ -1733,10 +1733,10 @@ class TestSequentialRunner(TestRunner):
         runner._run()
         assert len(logger.execution_logs) > 0
         assert len(logger.execution_logs) == len(
-            set([id(log) for log in logger.execution_logs])
+            {id(log) for log in logger.execution_logs}
         )
-        assert sum([log.volume for log in logger.execution_logs]) == sum(
-            [sum(market._executed_volumes) for market in runner.simulator.markets]
+        assert sum(log.volume for log in logger.execution_logs) == sum(
+            sum(market._executed_volumes) for market in runner.simulator.markets
         )
 
     def test_run_logger_can_access_simulator(self) -> None:

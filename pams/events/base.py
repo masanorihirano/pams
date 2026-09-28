@@ -1,6 +1,7 @@
 import random
 from abc import ABC
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Dict
 from typing import List
@@ -10,14 +11,26 @@ from typing import cast
 
 from pams.market import Market
 
+if TYPE_CHECKING:  # pragma: no cover
+    from pams.logs.base import CancelLog
+    from pams.logs.base import ExecutionLog
+    from pams.logs.base import OrderLog
+    from pams.order import Cancel
+    from pams.order import Order
+    from pams.session import Session
+    from pams.simulator import Simulator
+
 
 class EventHook:
     """Event Hook class.
 
     Event hook define when and what events are hooked from simulator.
-    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook using the evnet.
-    Event can be hooked before and after order placements, order cancellations, order executions, each session, and each step mor markets.
-    You can also filter hooking point by market time, classes, instances of markets. (Currently, only market class and instances are supported.)
+    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook
+    using the event.
+    Event can be hooked before and after order placements, order cancellations, order executions, each session,
+    and each step for markets.
+    You can also filter hooking point by market time, classes, instances of markets.
+    (Currently, only market class and instances are supported.)
 
     .. seealso:
         - :class:FundamentalPriceShock
@@ -41,7 +54,8 @@ class EventHook:
             time (List[int], Optional): event execution time.
             specific_class (Type, Optional): specific class. If this is specified, the hook_type must be "market".
                                              (In future, it could be expanded to other types.)
-            specific_instance (object, Optional): specific instance. If this is specified, the hook_type must be "market".
+            specific_instance (object, Optional): specific instance.
+                                                  If this is specified, the hook_type must be "market".
                                                   (In future, it could be expanded to other types.)
 
         Returns:
@@ -62,20 +76,12 @@ class EventHook:
                 raise ValueError(
                     "specific_class and specific_instance are not supported except for market"
                 )
-            else:
-                if hook_type == "market":
-                    if specific_class is not None and not issubclass(
-                        specific_class, Market
-                    ):
-                        raise ValueError("specific_class and hook_type is incompatible")
-                    if specific_instance is not None and not isinstance(
-                        specific_instance, Market
-                    ):
-                        raise ValueError(
-                            "specific_instance and hook_type is incompatible"
-                        )
-                else:
-                    raise AssertionError
+            if specific_class is not None and not issubclass(specific_class, Market):
+                raise ValueError("specific_class and hook_type is incompatible")
+            if specific_instance is not None and not isinstance(
+                specific_instance, Market
+            ):
+                raise ValueError("specific_instance and hook_type is incompatible")
         specific_class = cast(Optional[Type], specific_class)
         self.specific_class: Optional[Type] = specific_class
         self.specific_instance: Optional[object] = specific_instance
@@ -130,31 +136,34 @@ class EventABC(ABC):
             f"session={self.session}>"
         )
 
-    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
+    def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # noqa: B027
         """event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
         """
-        pass
 
     @abstractmethod
     def hook_registration(self) -> List[EventHook]:
         """Define when this event should be hooked by simulator.
+
         This method is automatically hooked by simulator at the beginning of simulation.
         You must implement this.
 
         Returns:
             List[EventHook]: The list of event hook ( :class:`EventHook` )
         """
-        pass
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         """This method is hooked before order placements if you set the event hook.
-        Please be careful that the order haven't yet been accepted by markets and it could be leakage of order information.
+
+        Please be careful that the order haven't yet been accepted by markets and it could be leakage of
+        order information.
 
         .. seealso:
             - ToDo: simulation flow
@@ -167,6 +176,7 @@ class EventABC(ABC):
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
         """This method is hooked after order placements if you set the event hook.
+
         Please be careful that the order haven't yet been executed if it could be executed immediately.
 
         .. seealso:
@@ -180,6 +190,7 @@ class EventABC(ABC):
 
     def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore  # NOQA
         """This method is hooked before order cancellations if you set the event hook.
+
         Please be careful that the cancel order haven't yet been executed.
 
         .. seealso:
@@ -203,7 +214,9 @@ class EventABC(ABC):
         """
         pass
 
-    def hooked_after_execution(self, simulator: "Simulator", execution_log: "ExecutionLog") -> None:  # type: ignore  # NOQA
+    def hooked_after_execution(  # type: ignore  # noqa: B027
+        self, simulator: "Simulator", execution_log: "ExecutionLog"
+    ) -> None:
         """This method is hooked after order executions if you set the event hook.
 
         .. seealso:
