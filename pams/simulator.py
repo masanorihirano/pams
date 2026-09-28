@@ -124,7 +124,7 @@ class Simulator:
         """Add market to the simulator (usually, this is called from runner).
 
         Args:
-            market (:class:`pamd.market.Market`): market.
+            market (:class:`pams.market.Market`): market.
             group_name (str, Optional): group name for market (default None).
 
         Returns:

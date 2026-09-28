@@ -771,7 +771,7 @@ class Market:
             sell_order (:class:`pams.order.Order`): sell order.
 
         Returns:
-            :class:`pams.logs.base.CancelLog`: execution log.
+            :class:`pams.logs.base.ExecutionLog`: execution log.
 
         """
         if not self.is_running:

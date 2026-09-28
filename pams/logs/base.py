@@ -438,7 +438,7 @@ class Logger:
         """Process order log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.OrderLog`]): order log
+            log (:class:`pams.logs.OrderLog`): order log
 
         Returns:
             None
@@ -450,7 +450,7 @@ class Logger:
         """Process cancel log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.CancelLog`]): cancel log
+            log (:class:`pams.logs.CancelLog`): cancel log
 
         Returns:
             None
@@ -462,7 +462,7 @@ class Logger:
         """Process expiration log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.ExpirationLog`]): expiration log
+            log (:class:`pams.logs.ExpirationLog`): expiration log
 
         Returns:
             None
@@ -474,7 +474,7 @@ class Logger:
         """Process execution log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.ExecutionLog`]): execution log
+            log (:class:`pams.logs.ExecutionLog`): execution log
 
         Returns:
             None
@@ -486,7 +486,7 @@ class Logger:
         """Process simulation begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SimulationBeginLog`]): simulation begin log
+            log (:class:`pams.logs.SimulationBeginLog`): simulation begin log
 
         Returns:
             None
@@ -498,7 +498,7 @@ class Logger:
         """Process simulation end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SimulationEndLog`]): simulation end log
+            log (:class:`pams.logs.SimulationEndLog`): simulation end log
 
         Returns:
             None
@@ -510,7 +510,7 @@ class Logger:
         """Process session begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SessionBeginLog`]): session begin log
+            log (:class:`pams.logs.SessionBeginLog`): session begin log
 
         Returns:
             None
@@ -522,7 +522,7 @@ class Logger:
         """Process session end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SessionEndLog`]): session end log
+            log (:class:`pams.logs.SessionEndLog`): session end log
 
         Returns:
             None
@@ -534,7 +534,7 @@ class Logger:
         """Process market step begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.MarketStepBeginLog`]): market step begin log
+            log (:class:`pams.logs.MarketStepBeginLog`): market step begin log
 
         Returns:
             None
@@ -546,7 +546,7 @@ class Logger:
         """Process market step end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.MarketStepEndLog`]): market step end log
+            log (:class:`pams.logs.MarketStepEndLog`): market step end log
 
         Returns:
             None

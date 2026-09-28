@@ -7,7 +7,7 @@ def find_class(name: str, optional_class_list: Optional[List[Type]] = None) -> T
     """Find class from pams name spaces.
 
     .. seealso::
-        If you want to use user-defined classes, please use :class:`pams.runners.class_register`.
+        If you want to use user-defined classes, please use :meth:`pams.runners.Runner.class_register`.
 
     Args:
         name (str): class name.
