@@ -12,13 +12,14 @@ class OrderBook:
     """Order book class."""
 
     def __init__(self, is_buy: bool) -> None:
-        """initialization.
+        """Initialization.
 
         Args:
             is_buy (bool): whether it is a buy order or not.
 
         Returns:
             None
+
         """
         self.priority_queue: List[Order] = []
         heapq.heapify(self.priority_queue)
@@ -27,16 +28,18 @@ class OrderBook:
         self.expire_time_list: Dict[int, List[Order]] = {}
 
     def __repr__(self) -> str:
+        """Return the string representation of the order book."""
         return f"<{self.__class__.__module__}.{self.__class__.__name__} | is_buy={self.is_buy}>"
 
     def add(self, order: Order) -> None:
-        """add the book of order.
+        """Add the book of order.
 
         Args:
             order (:class:`pams.order.Order`): order.
 
         Returns:
             None
+
         """
         if order.is_buy != self.is_buy:
             raise ValueError("buy/sell is incorrect")
@@ -49,13 +52,16 @@ class OrderBook:
             self.expire_time_list[expiration_time].append(order)
 
     def _remove(self, order: Order) -> None:
-        """remove the book of order. (Internal method. Usually, it is not called from the outside of this class.)
+        """Remove the book of order (internal method).
+
+        Usually, it is not called from the outside of this class.
 
         Args:
             order (:class:`pams.order.Order`): order.
 
         Returns:
             None
+
         """
         if order == self.priority_queue[0]:
             x = heapq.heappop(self.priority_queue)
@@ -70,13 +76,14 @@ class OrderBook:
             self.expire_time_list[expiration_time].remove(order)
 
     def cancel(self, cancel: Cancel) -> None:
-        """cancel the book of order.
+        """Cancel the book of order.
 
         Args:
             cancel (:class:`pams.order.Cancel`): cancel order.
 
         Returns:
             None
+
         """
         cancel.order.is_canceled = True
         cancel.placed_at = self.time
@@ -85,27 +92,29 @@ class OrderBook:
             self._remove(cancel.order)
 
     def get_best_order(self) -> Optional[Order]:
-        """get the order with the highest priority.
+        """Get the order with the highest priority.
 
         Returns:
             :class:`pams.order.Order`, Optional: the order with the highest priority.
+
         """
         if len(self.priority_queue) > 0:
             return self.priority_queue[0]
         return None
 
     def get_best_price(self) -> Optional[float]:
-        """get the order price with the highest priority.
+        """Get the order price with the highest priority.
 
         Returns:
             float, Optional: the order price with the highest priority.
+
         """
         if len(self.priority_queue) > 0:
             return self.priority_queue[0].price
         return None
 
     def change_order_volume(self, order: Order, delta: int) -> None:
-        """change order volume.
+        """Change order volume.
 
         Args:
             order (:class:`pams.order.Order`): order.
@@ -113,6 +122,7 @@ class OrderBook:
 
         Returns:
             None
+
         """
         order.volume += delta
         # ToDo: check if volume is non-negative
@@ -122,10 +132,11 @@ class OrderBook:
             raise AssertionError
 
     def _check_expired_orders(self) -> List[ExpirationLog]:
-        """check and delete expired orders. (Internal Method)
+        """Check and delete expired orders (internal method).
 
         Returns:
             List[ExpirationLog]: the list of expiration logs.
+
         """
         delete_orders: List[Order] = sum(
             [value for key, value in self.expire_time_list.items() if key < self.time],
@@ -159,20 +170,21 @@ class OrderBook:
         return logs
 
     def _set_time(self, time: int) -> List[ExpirationLog]:
-        """set time step. (Usually, it is called from market.)
+        """Set time step (usually, it is called from market).
 
         Args:
             time (int): time step.
 
         Returns:
             List[ExpirationLog]: the list of expiration logs.
+
         """
         self.time = time
         logs: List[ExpirationLog] = self._check_expired_orders()
         return logs
 
     def _update_time(self) -> None:
-        """update time. (Usually, it is called from market.)
+        """Update time (usually, it is called from market).
 
         Advance the time step and check expired orders.
         """
@@ -180,18 +192,20 @@ class OrderBook:
         self._check_expired_orders()
 
     def __len__(self) -> int:
-        """get length of the order queue.
+        """Get length of the order queue.
 
         Returns:
             int: length of the order queue.
+
         """
         return len(self.priority_queue)
 
     def get_price_volume(self) -> Dict[Optional[float], int]:
-        """get price and volume (order book).
+        """Get price and volume (order book).
 
         Returns:
             Dict[Optional[float], int]: order book dict. Dict key is order price and the value is volumes.
+
         """
         keys: List[Optional[float]] = list({x.price for x in self.priority_queue})
         has_market_order: bool = None in keys

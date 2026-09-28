@@ -24,6 +24,10 @@ class IndexMarket(Market):
         name: str,
         logger: Optional[Logger] = None,
     ):
+        """Initialize the index market.
+
+        See :class:`pams.market.Market` for the arguments.
+        """
         super().__init__(
             market_id=market_id,
             prng=prng,
@@ -34,7 +38,7 @@ class IndexMarket(Market):
         self._components: List[Market] = []
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore
-        """setup market configuration from setting format.
+        """Setup market configuration from setting format.
 
         Args:
             settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.
@@ -45,6 +49,7 @@ class IndexMarket(Market):
 
         Returns:
             None
+
         """
         super().setup(settings, *args, **kwargs)
         if "markets" not in settings:
@@ -58,13 +63,14 @@ class IndexMarket(Market):
             self._add_market(market=market)
 
     def _add_market(self, market: Market) -> None:
-        """add market. (Internal method)
+        """Add market (internal method).
 
         Args:
             market (:class:`pams.market.Market`): market.
 
         Returns:
             None
+
         """
         if market in self._components:
             raise ValueError("market is already registered as components")
@@ -75,19 +81,20 @@ class IndexMarket(Market):
         self._components.append(market)
 
     def _add_markets(self, markets: List[Market]) -> None:
-        """add markets. (Internal method)
+        """Add markets (internal method).
 
         Args:
             markets (List[:class:`pams.market.Market`]): list of market.
 
         Returns:
             None
+
         """
         for market in markets:
             self._add_market(market=market)
 
     def compute_fundamental_index(self, time: Optional[int] = None) -> float:
-        """compute fundamental index.
+        """Compute fundamental index.
 
         Args:
             time (int, Optional): time step.
@@ -104,6 +111,7 @@ class IndexMarket(Market):
                  :func:`pams.index_market.IndexMarket.get_fundamental_price`)
             In usual usage, those become the same. But, in some special usage, it could be differ.
             This method return 1st one.
+
         """
         if time is None:
             time = self.get_time()
@@ -116,13 +124,14 @@ class IndexMarket(Market):
         return total_value / total_shares
 
     def compute_market_index(self, time: Optional[int] = None) -> float:
-        """compute market index.
+        """Compute market index.
 
         Args:
             time (int, Optional): time step.
 
         Returns:
             float: market index.
+
         """
         if time is None:
             time = self.get_time()
@@ -135,23 +144,25 @@ class IndexMarket(Market):
         return total_value / total_shares
 
     def get_components(self) -> List[Market]:
-        """get components.
+        """Get components.
 
         Returns:
             List[:class:`pams.market.Market`]: list of components.
+
         """
         return self._components
 
     def is_all_markets_running(self) -> bool:
-        """get whether all markets is running or not.
+        """Get whether all markets is running or not.
 
         Returns:
             bool: whether all markets is running or not.
+
         """
         return sum((not x.is_running for x in self._components)) == 0
 
     def get_fundamental_index(self, time: Optional[int] = None) -> float:
-        """get fundamental index.
+        """Get fundamental index.
 
         Args:
             time (int, Optional): time step.
@@ -168,27 +179,30 @@ class IndexMarket(Market):
                  :func:`pams.index_market.IndexMarket.get_fundamental_price`)
             In usual usage, those become the same. But, in some special usage, it could be differ.
             This method return 2nd one.
+
         """
         return self.get_fundamental_price(time=time)
 
     def get_market_index(self, time: Optional[int] = None) -> float:
-        """get computed market index.
+        """Get computed market index.
 
         Args:
             time (int, Optional): time step.
 
         Returns:
             float: market index.
+
         """
         return self.compute_market_index(time=time)
 
     def get_index(self, time: Optional[int] = None) -> float:
-        """get market index.
+        """Get market index.
 
         Args:
             time (int, Optional): time step.
 
         Returns:
             float: market index.
+
         """
         return self.get_market_index(time=time)

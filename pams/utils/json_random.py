@@ -33,16 +33,18 @@ class JsonRandom:
         [0.5317762204008692, -1.453545298008678, -0.3122773171445598, 0.49036253259352475, 0.8734043853794468, -0.2406296726551354, 0.3765998586879102, 0.24821344932841446, 0.7823268087036421, -1.1132222142481727]
         >>> [jr.random({"expon": [3]}) for x in range(10)]
         [0.642818017709456, 0.9452346835236866, 1.869586994011895, 0.08175668259806873, 2.9143451561160503, 1.7824008841046926, 0.5611413226153803, 1.4412784552296345, 0.4465202669419299, 1.6479086846872075]
+
     """  # NOQA
 
     def __init__(self, prng: random.Random) -> None:
-        """initialization.
+        """Initialization.
 
         Args:
             prng (random.Random): pseudo random number generator for this event.
 
         Returns:
             None
+
         """
         self.prng: random.Random = prng
 
@@ -97,8 +99,34 @@ class JsonRandom:
         """
         return lam * -math.log(self.prng.random())
 
+    def _get_distribution_args(
+        self, json_value: Dict, key: str, n_args: int, expected: str
+    ) -> List:
+        """Get the validated arguments of a distribution (internal method).
+
+        Args:
+            json_value (Dict): distribution, e.g. :code:`{"normal": [u, s]}`.
+            key (str): distribution type in ``json_value``.
+            n_args (int): required number of arguments.
+            expected (str): expected form used in error messages,
+                e.g. "Constant must be [value]".
+
+        Returns:
+            List: arguments of the distribution.
+
+        Raises:
+            ValueError: if the arguments are not a list of ``n_args`` elements.
+
+        """
+        args = json_value[key]
+        if not isinstance(args, list):
+            raise ValueError(expected + " (list) but " + json.dumps(json_value))
+        if len(args) != n_args:
+            raise ValueError(expected + " but " + json.dumps(json_value))
+        return args
+
     def random(self, json_value: JsonValue) -> float:
-        """get a random value.
+        """Get a random value.
 
         Args:
             json_value (JsonValue): random type.
@@ -106,6 +134,7 @@ class JsonRandom:
 
         Returns:
             float: random value.
+
         """
         if isinstance(json_value, list):
             if len(json_value) != 2:
@@ -123,59 +152,29 @@ class JsonRandom:
                     + json.dumps(json_value)
                 )
             if "const" in json_value:
-                args = json_value["const"]
-                if not isinstance(args, list):
-                    raise ValueError(
-                        "Constant must be [value] (list) but " + json.dumps(json_value)
-                    )
-                if len(args) != 1:
-                    raise ValueError(
-                        "Constant must be [value] but " + json.dumps(json_value)
-                    )
+                args = self._get_distribution_args(
+                    json_value, "const", 1, "Constant must be [value]"
+                )
                 value = float(args[0])
                 return value
             if "uniform" in json_value:
-                args = json_value["uniform"]
-                if not isinstance(args, list):
-                    raise ValueError(
-                        "Uniform distribution must be [min, max] (list) but "
-                        + json.dumps(json_value)
-                    )
-                if len(args) != 2:
-                    raise ValueError(
-                        "Uniform distribution must be [min, max] but "
-                        + json.dumps(json_value)
-                    )
+                args = self._get_distribution_args(
+                    json_value, "uniform", 2, "Uniform distribution must be [min, max]"
+                )
                 min_value = float(args[0])
                 max_value = float(args[1])
                 return self._next_uniform(min_value=min_value, max_value=max_value)
             if "normal" in json_value:
-                args = json_value["normal"]
-                if not isinstance(args, list):
-                    raise ValueError(
-                        "Normal distribution must be [mu, sigma] (list) but "
-                        + json.dumps(json_value)
-                    )
-                if len(args) != 2:
-                    raise ValueError(
-                        "Normal distribution must be [mu, sigma] but "
-                        + json.dumps(json_value)
-                    )
+                args = self._get_distribution_args(
+                    json_value, "normal", 2, "Normal distribution must be [mu, sigma]"
+                )
                 mu = float(args[0])
                 sigma = float(args[1])
                 return self._next_normal(mu=mu, sigma=sigma)
             if "expon" in json_value:
-                args = json_value["expon"]
-                if not isinstance(args, list):
-                    raise ValueError(
-                        "Exponential distribution must be [lambda] (list) but "
-                        + json.dumps(json_value)
-                    )
-                if len(args) != 1:
-                    raise ValueError(
-                        "Exponential distribution must be [lambda] but "
-                        + json.dumps(json_value)
-                    )
+                args = self._get_distribution_args(
+                    json_value, "expon", 1, "Exponential distribution must be [lambda]"
+                )
                 lam = float(args[0])
                 return self._next_exponential(lam=lam)
             raise ValueError("Unknown distribution type: " + json.dumps(json_value))

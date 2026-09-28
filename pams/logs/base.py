@@ -8,24 +8,26 @@ class Log:
     """Log class."""
 
     def read_and_write(self, logger: "Logger") -> None:
-        """writing a log. (The actual writing timing depends on the logger.)
+        """Writing a log (the actual writing timing depends on the logger).
 
         Args:
             logger (:class:`pams.logs.Logger`): logger.
 
         Returns:
             None
+
         """
         logger.write(log=self)
 
     def read_and_write_with_direct_process(self, logger: "Logger") -> None:
-        """direct writing a log. (This method is intended to call logger to write the log immediately.)
+        """Direct writing a log (this method is intended to call logger to write the log immediately).
 
         Args:
             logger (:class:`pams.logs.Logger`): logger.
 
         Returns:
             None
+
         """
         logger.write_and_direct_process(log=self)
 
@@ -48,7 +50,7 @@ class OrderLog(Log):
         price: Optional[float] = None,
         ttl: Optional[int] = None,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             order_id (int): order ID.
@@ -60,6 +62,7 @@ class OrderLog(Log):
             volume (int): order volume.
             price (float, Optional): order price.
             ttl (int, Optional): time to order expiration.
+
         """
         self.order_id: int = order_id
         self.market_id: int = market_id
@@ -93,7 +96,7 @@ class CancelLog(Log):
         price: Optional[float] = None,
         ttl: Optional[int] = None,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             order_id (int): order ID.
@@ -106,6 +109,7 @@ class CancelLog(Log):
             volume (int): order volume.
             price (float, Optional): order price.
             ttl (int, Optional): time to cancel expiration.
+
         """
         self.order_id: int = order_id
         self.market_id: int = market_id
@@ -139,7 +143,7 @@ class ExpirationLog(Log):
         price: Optional[float] = None,
         ttl: Optional[int] = None,
     ):
-        """initialize
+        """Initialize.
 
         Args:
             order_id (int): order ID.
@@ -152,6 +156,7 @@ class ExpirationLog(Log):
             volume (int): order volume.
             price (float, Optional): order price.
             ttl (int, Optional): time to order expiration.
+
         """
         self.order_id: Optional[int] = order_id
         self.market_id: int = market_id
@@ -182,7 +187,7 @@ class ExecutionLog(Log):
         price: float,
         volume: int,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             market_id (int): market ID.
@@ -193,6 +198,7 @@ class ExecutionLog(Log):
             sell_order_id (int): sell order ID.
             price (float): executed price.
             volume (int): executed volume.
+
         """
         self.market_id: int = market_id
         self.time: int = time
@@ -209,10 +215,11 @@ class SimulationBeginLog(Log):
     """Simulation beginning log class."""
 
     def __init__(self, simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.simulator = simulator
 
@@ -221,10 +228,11 @@ class SimulationEndLog(Log):
     """Simulation ending log class."""
 
     def __init__(self, simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.simulator = simulator
 
@@ -233,11 +241,12 @@ class SessionBeginLog(Log):
     """Session beginning log class."""
 
     def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             session (:class:`pams.Session`): session.
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.simulator = simulator
         self.session = session
@@ -247,11 +256,12 @@ class SessionEndLog(Log):
     """Session ending log class."""
 
     def __init__(self, session: "Session", simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             session (:class:`pams.Session`): session.
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.simulator = simulator
         self.session = session
@@ -261,12 +271,13 @@ class MarketStepBeginLog(Log):
     """Market step beginning log class."""
 
     def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             session (:class:`pams.Session`): session.
             market (:class:`pams.Market`): market.
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.session = session
         self.market = market
@@ -277,12 +288,13 @@ class MarketStepEndLog(Log):
     """Market step ending log class."""
 
     def __init__(self, session: "Session", market: "Market", simulator: "Simulator"):  # type: ignore  # NOQA
-        """initialize.
+        """Initialize.
 
         Args:
             session (:class:`pams.Session`): session.
             market (:class:`pams.Market`): market.
             simulator (:class:`pams.Simulator`): simulator.
+
         """
         self.session = session
         self.market = market
@@ -307,61 +319,66 @@ class Logger:
     simulator: "Simulator"  # type: ignore  # NOQA
 
     def __init__(self) -> None:
-        """initialize logger."""
+        """Initialize logger."""
         self.pending_logs: List[Log] = []
 
     def _set_simulator(self, simulator: "Simulator") -> None:  # type: ignore  # NOQA
-        """set simulator.
+        """Set simulator.
 
         Args:
             simulator (:class:`pams.Simulator`): simulator.
 
         Returns:
             None
+
         """
         self.simulator = simulator
 
     def write(self, log: "Log") -> None:
-        """set a log to pending list.
+        """Set a log to pending list.
 
         Args:
             log (:class:`pams.logs.Log`): log.
 
         Returns:
             None
+
         """
         self.pending_logs.append(log)
 
     def bulk_write(self, logs: List["Log"]) -> None:
-        """set some logs to pending list.
+        """Set some logs to pending list.
 
         Args:
             logs (List[:class:`pams.logs.Log`]): log list.
 
         Returns:
             None
+
         """
         self.pending_logs.extend(logs)
 
     def write_and_direct_process(self, log: "Log") -> None:
-        """direct writing a log.
+        """Direct writing a log.
 
         Args:
             log (:class:`pams.logs.Log`): log.
 
         Returns:
             None
+
         """
         self.process(logs=[log])
 
     def bulk_write_and_direct_process(self, logs: List["Log"]) -> None:
-        """direct writing some logs.
+        """Direct writing some logs.
 
         Args:
             logs (List[:class:`pams.logs.Log`]): log list.
 
         Returns:
             None
+
         """
         self.process(logs=logs)
 
@@ -370,7 +387,7 @@ class Logger:
         self.pending_logs = []
 
     def process(self, logs: List["Log"]) -> None:
-        """logging execution. For each log type, each processing method are implemented.
+        """Logging execution. For each log type, each processing method are implemented.
 
         For usual implementation, please use
 
@@ -391,6 +408,7 @@ class Logger:
 
         Returns:
             None
+
         """
         for log in logs:
             if isinstance(log, OrderLog):
@@ -417,111 +435,121 @@ class Logger:
                 raise NotImplementedError
 
     def process_order_log(self, log: "OrderLog") -> None:
-        """process order log. Called from :func:`process`.
+        """Process order log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.OrderLog`]): order log
+            log (:class:`pams.logs.OrderLog`): order log
 
         Returns:
             None
+
         """
         pass
 
     def process_cancel_log(self, log: "CancelLog") -> None:
-        """process cancel log. Called from :func:`process`.
+        """Process cancel log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.CancelLog`]): cancel log
+            log (:class:`pams.logs.CancelLog`): cancel log
 
         Returns:
             None
+
         """
         pass
 
     def process_expiration_log(self, log: "ExpirationLog") -> None:
-        """process expiration log. Called from :func:`process`.
+        """Process expiration log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.ExpirationLog`]): expiration log
+            log (:class:`pams.logs.ExpirationLog`): expiration log
 
         Returns:
             None
+
         """
         pass
 
     def process_execution_log(self, log: "ExecutionLog") -> None:
-        """process execution log. Called from :func:`process`.
+        """Process execution log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.ExecutionLog`]): execution log
+            log (:class:`pams.logs.ExecutionLog`): execution log
 
         Returns:
             None
+
         """
         pass
 
     def process_simulation_begin_log(self, log: "SimulationBeginLog") -> None:
-        """process simulation begin log. Called from :func:`process`.
+        """Process simulation begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SimulationBeginLog`]): simulation begin log
+            log (:class:`pams.logs.SimulationBeginLog`): simulation begin log
 
         Returns:
             None
+
         """
         pass
 
     def process_simulation_end_log(self, log: "SimulationEndLog") -> None:
-        """process simulation end log. Called from :func:`process`.
+        """Process simulation end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SimulationEndLog`]): simulation end log
+            log (:class:`pams.logs.SimulationEndLog`): simulation end log
 
         Returns:
             None
+
         """
         pass
 
     def process_session_begin_log(self, log: "SessionBeginLog") -> None:
-        """process session begin log. Called from :func:`process`.
+        """Process session begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SessionBeginLog`]): session begin log
+            log (:class:`pams.logs.SessionBeginLog`): session begin log
 
         Returns:
             None
+
         """
         pass
 
     def process_session_end_log(self, log: "SessionEndLog") -> None:
-        """process session end log. Called from :func:`process`.
+        """Process session end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.SessionEndLog`]): session end log
+            log (:class:`pams.logs.SessionEndLog`): session end log
 
         Returns:
             None
+
         """
         pass
 
     def process_market_step_begin_log(self, log: "MarketStepBeginLog") -> None:
-        """process market step begin log. Called from :func:`process`.
+        """Process market step begin log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.MarketStepBeginLog`]): market step begin log
+            log (:class:`pams.logs.MarketStepBeginLog`): market step begin log
 
         Returns:
             None
+
         """
         pass
 
     def process_market_step_end_log(self, log: "MarketStepEndLog") -> None:
-        """process market step end log. Called from :func:`process`.
+        """Process market step end log. Called from :func:`process`.
 
         Args:
-            log (:class:`pams.logs.MarketStepEndLog`]): market step end log
+            log (:class:`pams.logs.MarketStepEndLog`): market step end log
 
         Returns:
             None
+
         """
         pass
