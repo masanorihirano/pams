@@ -107,9 +107,9 @@ class TestFundamentals:
         coef = np.corrcoef(returns)
         assert abs(coef[1, 0] - corr) < 0.02
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"corr must be in \(-1\.0, 1\.0\)"):
             f.set_correlation(market_id1=1, market_id2=2, corr=1.0)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"corr must be in \(-1\.0, 1\.0\)"):
             f.set_correlation(market_id1=1, market_id2=2, corr=-1.0)
 
     def test_set_correlation2(self) -> None:

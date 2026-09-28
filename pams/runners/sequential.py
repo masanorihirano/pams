@@ -197,7 +197,7 @@ class SequentialRunner(Runner):
                     )
                 if "numAgents" in agent_settings:
                     raise ValueError(
-                        f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
+                        f"{name}.numAgents and ({name}.from or {name}.to) cannot be used at the same time"
                     )
                 id_from = int(agent_settings["from"])
                 id_to = int(agent_settings["to"])
@@ -382,7 +382,7 @@ class SequentialRunner(Runner):
         self._set_fundamental_correlation()
 
         if "agents" not in self.settings["simulation"]:
-            raise ValueError("agents.markets is required in json file")
+            raise ValueError("simulation.agents is required in json file")
         agent_type_names: List[str] = self.settings["simulation"]["agents"]
         if (
             not isinstance(agent_type_names, list)

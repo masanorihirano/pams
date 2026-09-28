@@ -131,7 +131,7 @@ class Fundamentals:
             None
         """
         if not (-1.0 < corr < 1.0):
-            raise ValueError("corr must be between 0.0 and 1.0")
+            raise ValueError("corr must be in (-1.0, 1.0)")
         if market_id1 == market_id2:
             raise ValueError("market_id1 and market_id2 must be different")
         if (market_id2, market_id1) in self.correlation:
