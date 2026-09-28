@@ -1192,6 +1192,23 @@ msgstr ""
 "発行済株式数です。``IndexMarket`` "
 "を構成する市場では必須で、インデックスにおけるその市場の重みとなります。JSONの整数でなければなりません。デフォルトでは設定されていません。"
 
+#: ../../source/user_guide/config.rst:557 ../../source/user_guide/config.rst:642
+msgid "``transactionCostRate`` |optional|"
+msgstr ""
+
+#: ../../source/user_guide/config.rst:558 ../../source/user_guide/config.rst:643
+msgid "number in [0, 1)"
+msgstr "[0, 1) の範囲の数値"
+
+#: ../../source/user_guide/config.rst:559
+msgid ""
+"Transaction cost paid by both the buyer and the seller of each execution, as"
+" a fraction of the executed value (price × volume), e.g. ``0.001`` for 0.1% "
+"(see below). Default: ``0.0``, i.e. no costs."
+msgstr ""
+"各約定において買い手と売り手の双方が支払う取引コストを、約定金額（価格 × 数量）に対する割合で指定します（例： 0.1% なら "
+"``0.001``。下記参照）。デフォルトは ``0.0`` で、この場合コストはかかりません。"
+
 #: ../../source/user_guide/config.rst:558
 msgid ""
 "If only one of ``marketPrice`` and ``fundamentalPrice`` is given, both "
@@ -1255,6 +1272,48 @@ msgid ""
 "all of these fills use the last (worst) of those prices."
 msgstr "新たに到着した注文は、板上でマッチングした注文（先に出されていた注文）の価格で約定します。成行注文は、マッチングした指値注文の価格で約定します。1つの注文が一度に複数の価格水準にまたがって約定する場合、それらの約定はすべて、そのうち最後の（最も不利な）価格で行われます。"
 
+msgid "How transaction costs are charged"
+msgstr "取引コストの課され方"
+
+#: ../../source/user_guide/config.rst:596
+msgid ""
+"When volume :math:`V` is executed at price :math:`P`, the buyer pays "
+":math:`(1 + c) P V` and the seller receives :math:`(1 - c) P V`, where "
+":math:`c` is ``transactionCostRate``. Nobody receives the costs: they are "
+"only subtracted from the agents' cash. Each :class:`~pams.logs.ExecutionLog`"
+" records them as ``buy_transaction_cost`` and ``sell_transaction_cost``, and"
+" agents can read the rate of a market as ``market.transaction_cost_rate``."
+msgstr ""
+"数量 :math:`V` が価格 :math:`P` で約定すると、買い手は :math:`(1 + c) P V` "
+"を支払い、売り手は :math:`(1 - c) P V` を受け取ります。ここで :math:`c` は "
+"``transactionCostRate`` です。コストを受け取る者はおらず、コストはエージェントの現金から差し引かれるだけです。各 "
+":class:`~pams.logs.ExecutionLog` はコストを ``buy_transaction_cost`` と "
+"``sell_transaction_cost`` として記録し、エージェントは市場の料率を "
+"``market.transaction_cost_rate`` で参照できます。"
+
+#: ../../source/user_guide/config.rst:602
+msgid ""
+"The built-in agents do not look at their cash (see :ref:`config-agents`), "
+"so for the same seed the prices and executions are the same with and "
+"without costs. Only the agents' cash differs."
+msgstr ""
+"組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
+"を参照）ため、同じシードであれば、価格と約定はコストの有無にかかわらず同じになります。異なるのはエージェントの現金だけです。"
+
+#: ../../source/user_guide/config.rst:605
+msgid ""
+"For other fee schedules, e.g. different rates for buyers and sellers or for "
+"makers and takers, or fixed fees, override "
+":meth:`~pams.Market.compute_transaction_costs` in your own market class "
+"(see :ref:`config-user-classes`). It returns the costs of the buyer and the "
+"seller of one execution. Negative costs are rebates, which are added to the "
+"cash."
+msgstr ""
+"買い手と売り手、あるいはメイカーとテイカーで料率を変える場合や固定手数料など、別の手数料体系を用いるには、独自の市場クラスで "
+":meth:`~pams.Market.compute_transaction_costs` "
+"をオーバーライドしてください（:ref:`config-user-classes` "
+"を参照）。このメソッドは、1回の約定における買い手と売り手のコストを返します。負のコストはリベートであり、現金に加算されます。"
+
 #: ../../source/user_guide/config.rst:592
 msgid "IndexMarket"
 msgstr ""
@@ -1306,6 +1365,11 @@ msgstr "少なくとも一方が必須です。これらはインデックスの
 #: ../../source/user_guide/config.rst:620
 msgid "Only needed when this index is itself a component of another index."
 msgstr "このインデックス自体が別のインデックスの構成市場である場合にのみ必要です。"
+
+#: ../../source/user_guide/config.rst:644
+msgid ""
+"As for ``Market``. Applies to executions in the index's own order book."
+msgstr "``Market`` と同じです。インデックス自身の板での約定に適用されます。"
 
 #: ../../source/user_guide/config.rst:621
 msgid "``requires`` |deprecated|"

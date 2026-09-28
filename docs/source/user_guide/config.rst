@@ -554,6 +554,10 @@ Market
      - int
      - Number of shares. Required for markets that are part of an ``IndexMarket``, where it is the weight of
        the market in the index. Must be a JSON integer. Not set by default.
+   * - ``transactionCostRate`` |optional|
+     - number in [0, 1)
+     - Transaction cost paid by both the buyer and the seller of each execution, as a fraction of the executed
+       value (price × volume), e.g. ``0.001`` for 0.1% (see below). Default: ``0.0``, i.e. no costs.
 
 If only one of ``marketPrice`` and ``fundamentalPrice`` is given, both prices start at that value.
 If both are given, the market price starts at ``marketPrice`` and the fundamental price at
@@ -585,6 +589,23 @@ If both are given, the market price starts at ``marketPrice`` and the fundamenta
    An incoming order is executed at the price of the order it matches in the book (the one placed earlier);
    a market order takes the price of the limit order it matches. If an order fills against several price levels
    at once, all of these fills use the last (worst) of those prices.
+
+.. dropdown:: How transaction costs are charged
+   :icon: info
+
+   When volume :math:`V` is executed at price :math:`P`, the buyer pays :math:`(1 + c) P V` and the seller
+   receives :math:`(1 - c) P V`, where :math:`c` is ``transactionCostRate``. Nobody receives the costs: they
+   are only subtracted from the agents' cash. Each :class:`~pams.logs.ExecutionLog` records them as
+   ``buy_transaction_cost`` and ``sell_transaction_cost``, and agents can read the rate of a market as
+   ``market.transaction_cost_rate``.
+
+   The built-in agents do not look at their cash (see :ref:`config-agents`), so for the same seed the prices
+   and executions are the same with and without costs. Only the agents' cash differs.
+
+   For other fee schedules, e.g. different rates for buyers and sellers or for makers and takers, or fixed
+   fees, override :meth:`~pams.Market.compute_transaction_costs` in your own market class (see
+   :ref:`config-user-classes`). It returns the costs of the buyer and the seller of one execution. Negative
+   costs are rebates, which are added to the cash.
 
 .. _config-indexmarket:
 
@@ -618,6 +639,9 @@ trades this gap.
    * - ``outstandingShares`` |conditional|
      - int
      - Only needed when this index is itself a component of another index.
+   * - ``transactionCostRate`` |optional|
+     - number in [0, 1)
+     - As for ``Market``. Applies to executions in the index's own order book.
    * - ``requires`` |deprecated|
      - any
      - Ignored with a warning.
