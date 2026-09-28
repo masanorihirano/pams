@@ -1213,6 +1213,42 @@ are split into at most ``numParallel`` tasks. An object held by an agent, such a
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
 ``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
 
+.. _config-parallel-tensorflow:
+
+TensorFlow runner
+~~~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the process runner for agents that use
+TensorFlow in ``submit_orders``, for example Keras models. TensorFlow is not installed with PAMS: install it yourself
+(for example ``pip install tensorflow``, or ``pip install tensorflow-cpu`` for the CPU-only build). The runner starts
+its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+TensorFlow once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``tensorflowIntraOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
+       worker process. Default: the number of CPUs divided by ``numParallel`` (at least 1), so that the worker
+       processes do not use more threads than the CPUs in total.
+   * - ``tensorflowInterOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run independent operations at the same time on each worker
+       process. Default: ``1``.
+   * - ``tensorflowGpuMemoryGrowth`` |optional|
+     - bool
+     - Whether memory growth is enabled for all the visible GPUs on each worker process. Default: ``true``, so that
+       the worker processes can share a GPU (by default, TensorFlow allocates almost all the memory of a GPU to the
+       first process that uses it).
+
+These keys do not configure TensorFlow on the main process. See :doc:`platform` for how to write agents for this
+runner.
+
 
 .. _config-troubleshooting:
 
