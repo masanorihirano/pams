@@ -10,16 +10,20 @@ jobs = 0
 disable =
     # the pydocstyle codes below are unknown to plain pylint.
     unknown-option-value,
-    # docstrings are not mandatory in tests and simple modules; their style is
-    # Google style (``Args:`` / ``Returns:`` sections), which conflicts with the
-    # numpy-style docstring rules D213, D406, D407 and D413.
+    # docstrings are not mandatory; their style is Google style (``Args:`` /
+    # ``Returns:`` sections) with a lower-cased summary ending with e.g.
+    # "(Internal method)", which conflicts with the numpy-style docstring rules
+    # D213, D406, D407, D413 and with D403 / D415.
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,
+    D100, D101, D102, D103, D104, D105, D106, D107,
     D213,
+    D403,
     D406,
     D407,
     D413,
+    D415,
     # runners and tests call internal (underscored) methods of simulators,
     # markets, and agents by design.
     protected-access,
