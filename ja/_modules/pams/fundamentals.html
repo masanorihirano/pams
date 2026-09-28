@@ -408,7 +408,7 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">&lt;</span> <span class="n">corr</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"corr must be between 0.0 and 1.0"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"corr must be in (-1.0, 1.0)"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market_id1</span> <span class="o">==</span> <span class="n">market_id2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"market_id1 and market_id2 must be different"</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">market_id2</span><span class="p">,</span> <span class="n">market_id1</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">correlation</span><span class="p">:</span>

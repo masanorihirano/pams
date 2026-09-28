@@ -359,12 +359,12 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"cashAmount"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"cashAmount is required property of agent settings"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"cashAmount is a required property of agent settings"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">=</span> <span class="n">JsonRandom</span><span class="p">(</span><span class="n">prng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">)</span><span class="o">.</span><span class="n">random</span><span class="p">(</span>
             <span class="n">json_value</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"cashAmount"</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="s2">"assetVolume"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"cashAmount is required property of agent settings"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"assetVolume is a required property of agent settings"</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">market_id</span> <span class="ow">in</span> <span class="n">accessible_markets_ids</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market_id</span><span class="p">)</span>

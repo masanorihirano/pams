@@ -326,7 +326,7 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">hook_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"order"</span><span class="p">,</span> <span class="s2">"cancel"</span><span class="p">,</span> <span class="s2">"execution"</span><span class="p">,</span> <span class="s2">"session"</span><span class="p">,</span> <span class="s2">"market"</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">"hook type have to be order, execution, session, or market"</span>
+                <span class="s2">"hook type must be one of order, cancel, execution, session, or market"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">hook_type</span> <span class="o">==</span> <span class="s2">"execution"</span> <span class="ow">and</span> <span class="n">is_before</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"execution can be hooked only after it"</span><span class="p">)</span>
