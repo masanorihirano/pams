@@ -1,0 +1,324 @@
+import copy
+import multiprocessing
+import os
+import pickle
+import random
+import subprocess
+import sys
+from concurrent.futures import Executor
+from multiprocessing.reduction import ForkingPickler
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Iterator
+from typing import List
+from typing import Optional
+from typing import Tuple
+from typing import Type
+
+import pytest
+
+import pams
+from pams.runners import MultiProcessAgentParallelRunner
+from pams.runners import SequentialRunner
+from pams.runners import TorchAgentParallelRunner
+from pams.runners.torch_parallel import _initialize_torch_worker
+
+from .dummy import DummyLogger2
+from .test_agent_parallel import _assert_same_results
+from .torch_dummy import TorchPricingAgent
+from .torch_dummy import get_torch_settings
+from .torch_dummy import inspect_tensor
+
+SETTING: Dict = {
+    "simulation": {
+        "markets": ["Market"],
+        "agents": ["TorchAgents", "FCNAgents"],
+        "sessions": [
+            {
+                "sessionName": 0,
+                "iterationSteps": 20,
+                "withOrderPlacement": True,
+                "withOrderExecution": True,
+                "withPrint": True,
+                "maxNormalOrders": 4,
+            }
+        ],
+        "numParallel": 2,
+    },
+    "Market": {"class": "Market", "tickSize": 0.00001, "marketPrice": 300.0},
+    "TorchAgents": {
+        "class": "TorchPricingAgent",
+        "numAgents": 8,
+        "markets": ["Market"],
+        "assetVolume": 50,
+        "cashAmount": 10000,
+    },
+    "FCNAgents": {
+        "class": "FCNAgent",
+        "numAgents": 4,
+        "markets": ["Market"],
+        "assetVolume": 50,
+        "cashAmount": 10000,
+        "fundamentalWeight": {"expon": [1.0]},
+        "chartWeight": {"expon": [0.0]},
+        "noiseWeight": {"expon": [1.0]},
+        "noiseScale": 0.001,
+        "timeWindowSize": [100, 200],
+        "orderMargin": [0.0, 0.1],
+    },
+}
+
+
+class SharingStrategyKeepingTorchAgentParallelRunner(TorchAgentParallelRunner):
+    torch_sharing_strategy: Optional[str] = None
+
+
+@pytest.fixture
+def torch() -> Iterator[Any]:
+    """Import PyTorch, or skip the test if it is not installed.
+
+    The sharing strategy of PyTorch, which the runners set on the main process, is restored after
+    the test.
+    """
+    torch = pytest.importorskip("torch")
+    sharing_strategy = torch.multiprocessing.get_sharing_strategy()
+    yield torch
+    torch.multiprocessing.set_sharing_strategy(sharing_strategy)
+
+
+@pytest.fixture(autouse=True)
+def shut_down_executors(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Shut down the executors created by the runners after each test.
+
+    The worker processes of the executors left running, e.g., by the tests that only set up the
+    runner, would otherwise keep PyTorch loaded until they are garbage-collected.
+    """
+    executors: List[Executor] = []
+    create_executor: Callable[
+        [MultiProcessAgentParallelRunner], Executor
+    ] = TorchAgentParallelRunner._create_executor
+
+    def create_and_track_executor(runner: MultiProcessAgentParallelRunner) -> Executor:
+        executor = create_executor(runner)
+        executors.append(executor)
+        return executor
+
+    monkeypatch.setattr(
+        TorchAgentParallelRunner, "_create_executor", create_and_track_executor
+    )
+    yield
+    for executor in executors:
+        executor.shutdown(wait=True)
+
+
+def test_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # None in sys.modules makes the import fail whether PyTorch is installed or not
+    monkeypatch.setitem(sys.modules, "torch", None)
+    monkeypatch.setitem(sys.modules, "torch.multiprocessing", None)
+    with pytest.raises(ImportError, match="requires PyTorch") as exc_info:
+        TorchAgentParallelRunner(settings=copy.deepcopy(SETTING))
+    assert "pip install torch" in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, ImportError)
+    # the worker processes fail in the same way
+    with pytest.raises(ImportError, match="requires PyTorch"):
+        _initialize_torch_worker(num_threads=1, sharing_strategy=None)
+
+
+def test_pams_does_not_import_torch() -> None:
+    # a new process is used because PyTorch may already be imported by the other tests
+    code = "import sys, pams, pams.runners; print('torch' in sys.modules)"
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=os.path.dirname(os.path.dirname(os.path.abspath(pams.__file__))),
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert result.stdout.strip() == "False"
+
+
+@pytest.mark.usefixtures("torch")
+class TestTorchAgentParallelRunner:
+    def _make_runners(
+        self,
+        setting: Dict,
+        seed: int = 42,
+        runner_class: Type[TorchAgentParallelRunner] = TorchAgentParallelRunner,
+    ) -> Tuple[SequentialRunner, TorchAgentParallelRunner]:
+        sequential_runner = SequentialRunner(
+            settings=copy.deepcopy(setting),
+            prng=random.Random(seed),
+            logger=DummyLogger2(),
+        )
+        parallel_runner = runner_class(
+            settings=copy.deepcopy(setting),
+            prng=random.Random(seed),
+            logger=DummyLogger2(),
+        )
+        sequential_runner.class_register(cls=TorchPricingAgent)
+        parallel_runner.class_register(cls=TorchPricingAgent)
+        return sequential_runner, parallel_runner
+
+    @pytest.mark.parametrize("num_parallel", [1, 3])
+    @pytest.mark.parametrize("max_normal_orders", [1, 4])
+    def test_same_result_as_sequential(
+        self, torch: Any, num_parallel: int, max_normal_orders: int
+    ) -> None:
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["numParallel"] = num_parallel
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = max_normal_orders
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="TorchPricingAgent",
+        )
+        assert parallel_runner.executor is None
+        # the models were sent to the workers through shared memory and were not modified there
+        for sequential_agent, parallel_agent in zip(
+            sequential_runner.simulator.normal_frequency_agents,
+            parallel_runner.simulator.normal_frequency_agents,
+        ):
+            if isinstance(parallel_agent, TorchPricingAgent):
+                assert isinstance(sequential_agent, TorchPricingAgent)
+                for sequential_parameter, parallel_parameter in zip(
+                    sequential_agent.model.parameters(),
+                    parallel_agent.model.parameters(),
+                ):
+                    assert parallel_parameter.is_shared()
+                    assert torch.equal(sequential_parameter, parallel_parameter)
+
+    def test_seed_changes_result(self) -> None:
+        # the equality above is meaningful only if the PyTorch agents depend on the seed
+        prices: List[List[float]] = []
+        for seed in [1, 2]:
+            runner, _ = self._make_runners(setting=SETTING, seed=seed)
+            runner._setup()
+            runner._run()
+            market = runner.simulator.markets[0]
+            prices.append(market.get_market_prices(range(market.get_time() + 1)))
+        assert prices[0] != prices[1]
+
+    def test_default_start_method(self) -> None:
+        assert TorchAgentParallelRunner.default_start_method == "spawn"
+        _, runner = self._make_runners(setting=SETTING)
+        assert runner.start_method == "spawn"
+        runner._setup()
+        assert runner.start_method == "spawn"
+        assert runner._get_mp_context().get_start_method() == "spawn"
+
+    def test_start_method_config(self) -> None:
+        # simulation.startMethod takes precedence over the default of the runner
+        start_method = next(
+            (
+                method
+                for method in multiprocessing.get_all_start_methods()
+                if method != "spawn"
+            ),
+            "spawn",
+        )
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["startMethod"] = start_method
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        assert runner.start_method == start_method
+        assert runner._get_mp_context().get_start_method() == start_method
+
+    @pytest.mark.parametrize("num_parallel", [1, 2, 3, 1000])
+    def test_torch_num_threads_default(self, torch: Any, num_parallel: int) -> None:
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["numParallel"] = num_parallel
+        _, runner = self._make_runners(setting=setting)
+        assert runner.torch_num_threads is None
+        runner.num_parallel = num_parallel
+        expected = max(torch.get_num_threads() // num_parallel, 1)
+        assert runner._get_worker_initargs() == (expected, "file_system")
+        if num_parallel <= 2:
+            # the workers are started only for a few values to keep the test fast
+            runner._setup()
+            assert runner.torch_num_threads is None
+            assert runner._get_worker_initializer() is _initialize_torch_worker
+            executor = runner._get_executor()
+            assert executor.submit(get_torch_settings).result()[0] == expected
+
+    def test_torch_num_threads_config(self, torch: Any) -> None:
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["torchNumThreads"] = 2
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        main_num_threads = torch.get_num_threads()
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert parallel_runner.torch_num_threads == 2
+        assert parallel_runner._get_worker_initargs() == (2, "file_system")
+        executor = parallel_runner._get_executor()
+        assert executor.submit(get_torch_settings).result()[0] == 2
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="TorchPricingAgent",
+        )
+        # the main process is not affected
+        assert torch.get_num_threads() == main_num_threads
+
+    @pytest.mark.parametrize("torch_num_threads", [0, -1, 1.5, "2", True, None])
+    def test_torch_num_threads_invalid(self, torch_num_threads: Any) -> None:
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["torchNumThreads"] = torch_num_threads
+        _, runner = self._make_runners(setting=setting)
+        with pytest.raises(ValueError, match="torchNumThreads"):
+            runner._setup()
+        assert runner.executor is None
+
+    def test_sharing_strategy(self, torch: Any) -> None:
+        # file_descriptor, the default on Linux, would send a file descriptor per tensor per task
+        assert TorchAgentParallelRunner.torch_sharing_strategy == "file_system"
+        torch.multiprocessing.set_sharing_strategy(
+            sorted(torch.multiprocessing.get_all_sharing_strategies())[0]
+        )
+        _, runner = self._make_runners(setting=SETTING)
+        runner._setup()
+        assert torch.multiprocessing.get_sharing_strategy() == "file_system"
+        executor = runner._get_executor()
+        assert executor.submit(get_torch_settings).result()[1] == "file_system"
+
+    def test_sharing_strategy_none(self, torch: Any) -> None:
+        # the first one in alphabetical order is file_descriptor on Linux
+        sharing_strategy = sorted(torch.multiprocessing.get_all_sharing_strategies())[0]
+        torch.multiprocessing.set_sharing_strategy(sharing_strategy)
+        sequential_runner, parallel_runner = self._make_runners(
+            setting=SETTING, runner_class=SharingStrategyKeepingTorchAgentParallelRunner
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert parallel_runner._get_worker_initargs()[1] is None
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="TorchPricingAgent",
+        )
+        assert torch.multiprocessing.get_sharing_strategy() == sharing_strategy
+
+    def test_tensors_are_shared_with_workers(self, torch: Any) -> None:
+        tensor = torch.arange(100_000, dtype=torch.float32)
+        # the tensors are pickled with their data by pickle, but by their handles of shared
+        # memory by ForkingPickler, which ProcessPoolExecutor uses
+        assert len(pickle.dumps(tensor)) > 400_000
+        assert not tensor.is_shared()
+        _, runner = self._make_runners(setting=SETTING)
+        runner._setup()
+        executor = runner._get_executor()
+        is_shared, total = executor.submit(inspect_tensor, tensor).result()
+        assert is_shared
+        assert total == float(tensor.sum())
+        # the tensor on the main process is moved to shared memory
+        assert tensor.is_shared()
+        assert len(ForkingPickler.dumps(tensor)) < 1000
