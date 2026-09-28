@@ -294,7 +294,7 @@ Arbitrage agent mainly aimed to take arbitrage chance between spot markets and i
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.ArbitrageAgent.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accessible_markets_ids</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/arbitrage_agent.html#ArbitrageAgent.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.agents.ArbitrageAgent.setup" title="Permalink to this definition">#</a></dt>
-<dd><p>agent setup. Usually be called from simulator/runner automatically.</p>
+<dd><p>Agent setup. Usually be called from simulator/runner automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -318,7 +318,7 @@ This can include the parameter “orderTimeLength”.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.ArbitrageAgent.submit_orders">
 <span class="sig-name descname"><span class="pre">submit_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/arbitrage_agent.html#ArbitrageAgent.submit_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.agents.ArbitrageAgent.submit_orders" title="Permalink to this definition">#</a></dt>
-<dd><p>submit orders to take arbitrage chance.
+<dd><p>Submit orders to take arbitrage chance.
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../order/pams.Order.html#pams.Order" title="pams.order.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">Order</span></code></a>, <a class="reference internal" href="../order/pams.Cancel.html#pams.Cancel" title="pams.order.Cancel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cancel</span></code></a>]]</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>

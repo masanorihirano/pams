@@ -289,13 +289,14 @@
 <span class="w">    </span><span class="sd">"""Logger of the market step class."""</span>
 
 <div class="viewcode-block" id="MarketStepPrintLogger.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html#pams.logs.MarketStepPrintLogger.process_market_step_end_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""print the market log.</span>
+<span class="w">        </span><span class="sd">"""Print the market log.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (:class:`pams.logs.MarketStepEndLog`): matket log.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">log</span><span class="o">.</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2"> "</span>
@@ -308,17 +309,19 @@
 <span class="w">    </span><span class="sd">"""Saver of the market step class."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize the saver with an empty list of market step logs."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="MarketStepSaver.process_market_step_end_log"><a class="viewcode-back" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html#pams.logs.MarketStepSaver.process_market_step_end_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""stack the market log.</span>
+<span class="w">        </span><span class="sd">"""Stack the market log.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            log (:class:`pams.logs.MarketStepEndLog`): market log.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_step_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>

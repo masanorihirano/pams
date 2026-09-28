@@ -302,6 +302,7 @@
 
 <span class="sd">    Note:</span>
 <span class="sd">        Currently, index markets must have the same weight for each constitutional stock.</span>
+
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -312,6 +313,10 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize the arbitrage agent.</span>
+
+<span class="sd">        See :class:`pams.agents.Agent` for the arguments.</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">agent_id</span><span class="o">=</span><span class="n">agent_id</span><span class="p">,</span> <span class="n">prng</span><span class="o">=</span><span class="n">prng</span><span class="p">,</span> <span class="n">simulator</span><span class="o">=</span><span class="n">simulator</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
         <span class="p">)</span>
@@ -327,7 +332,7 @@
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""agent setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">"""Agent setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
@@ -339,6 +344,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"orderVolume"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
@@ -355,13 +361,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"orderTimeLength"</span><span class="p">]</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""internal sub routine for submitting orders by market.</span>
+<span class="w">        </span><span class="sd">"""Internal sub routine for submitting orders by market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market (List[Market]): markets to order.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Union[Order, Cancel]]: order list.</span>
+
 <span class="sd">        """</span>
         <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">):</span>
@@ -439,7 +446,7 @@
         <span class="k">return</span> <span class="n">orders</span>
 
 <div class="viewcode-block" id="ArbitrageAgent.submit_orders"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent.submit_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""submit orders to take arbitrage chance.</span>
+<span class="w">        </span><span class="sd">"""Submit orders to take arbitrage chance.</span>
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">            - :func:`pams.agents.Agent.submit_orders`</span>
@@ -450,10 +457,11 @@
         <span class="k">return</span> <span class="n">orders</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""string representation of FCN agent class.</span>
+<span class="w">        </span><span class="sd">"""String representation of FCN agent class.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            str: string representation of this class.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, rnd=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="si">}</span><span class="s2">, "</span>

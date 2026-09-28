@@ -304,7 +304,7 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.bulk_write">
 <span class="sig-name descname"><span class="pre">bulk_write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.bulk_write"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.bulk_write" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>set some logs to pending list.</p>
+<dd><p>Set some logs to pending list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>logs</strong> (List[<a class="reference internal" href="../logs/pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>]) -- log list.</p>
@@ -321,7 +321,7 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.bulk_write_and_direct_process">
 <span class="sig-name descname"><span class="pre">bulk_write_and_direct_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.bulk_write_and_direct_process"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.bulk_write_and_direct_process" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>direct writing some logs.</p>
+<dd><p>Direct writing some logs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>logs</strong> (List[<a class="reference internal" href="../logs/pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>]) -- log list.</p>
@@ -338,7 +338,7 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process">
 <span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>logging execution. For each log type, each processing method are implemented.</p>
+<dd><p>Logging execution. For each log type, each processing method are implemented.</p>
 <p>For usual implementation, please use</p>
 <blockquote>
 <div><ul class="simple">
@@ -370,10 +370,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_cancel_log">
 <span class="sig-name descname"><span class="pre">process_cancel_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_cancel_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_cancel_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process cancel log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process cancel log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.CancelLog.html#pams.logs.CancelLog" title="pams.logs.CancelLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.CancelLog</span></code></a>]) -- cancel log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.CancelLog.html#pams.logs.CancelLog" title="pams.logs.CancelLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.CancelLog</span></code></a>) -- cancel log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -387,10 +387,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_execution_log">
 <span class="sig-name descname"><span class="pre">process_execution_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_execution_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_execution_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process execution log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process execution log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog" title="pams.logs.ExecutionLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExecutionLog</span></code></a>]) -- execution log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog" title="pams.logs.ExecutionLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExecutionLog</span></code></a>) -- execution log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -404,10 +404,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_expiration_log">
 <span class="sig-name descname"><span class="pre">process_expiration_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_expiration_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_expiration_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process expiration log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process expiration log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExpirationLog</span></code>]) -- expiration log</p>
+<dd class="field-odd"><p><strong>log</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExpirationLog</span></code>) -- expiration log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -421,10 +421,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_market_step_begin_log">
 <span class="sig-name descname"><span class="pre">process_market_step_begin_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_market_step_begin_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_market_step_begin_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process market step begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process market step begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html#pams.logs.MarketStepBeginLog" title="pams.logs.MarketStepBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.MarketStepBeginLog</span></code></a>]) -- market step begin log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html#pams.logs.MarketStepBeginLog" title="pams.logs.MarketStepBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.MarketStepBeginLog</span></code></a>) -- market step begin log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -438,10 +438,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_market_step_end_log">
 <span class="sig-name descname"><span class="pre">process_market_step_end_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_market_step_end_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_market_step_end_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process market step end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process market step end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html#pams.logs.MarketStepEndLog" title="pams.logs.MarketStepEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.MarketStepEndLog</span></code></a>]) -- market step end log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html#pams.logs.MarketStepEndLog" title="pams.logs.MarketStepEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.MarketStepEndLog</span></code></a>) -- market step end log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -455,10 +455,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_order_log">
 <span class="sig-name descname"><span class="pre">process_order_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_order_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_order_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process order log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process order log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.OrderLog.html#pams.logs.OrderLog" title="pams.logs.OrderLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.OrderLog</span></code></a>]) -- order log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.OrderLog.html#pams.logs.OrderLog" title="pams.logs.OrderLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.OrderLog</span></code></a>) -- order log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -472,10 +472,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_session_begin_log">
 <span class="sig-name descname"><span class="pre">process_session_begin_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_session_begin_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_session_begin_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process session begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process session begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html#pams.logs.SessionBeginLog" title="pams.logs.SessionBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SessionBeginLog</span></code></a>]) -- session begin log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html#pams.logs.SessionBeginLog" title="pams.logs.SessionBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SessionBeginLog</span></code></a>) -- session begin log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -489,10 +489,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_session_end_log">
 <span class="sig-name descname"><span class="pre">process_session_end_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_session_end_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_session_end_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process session end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process session end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SessionEndLog.html#pams.logs.SessionEndLog" title="pams.logs.SessionEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SessionEndLog</span></code></a>]) -- session end log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SessionEndLog.html#pams.logs.SessionEndLog" title="pams.logs.SessionEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SessionEndLog</span></code></a>) -- session end log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -506,10 +506,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_simulation_begin_log">
 <span class="sig-name descname"><span class="pre">process_simulation_begin_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_simulation_begin_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_simulation_begin_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process simulation begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process simulation begin log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html#pams.logs.SimulationBeginLog" title="pams.logs.SimulationBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SimulationBeginLog</span></code></a>]) -- simulation begin log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html#pams.logs.SimulationBeginLog" title="pams.logs.SimulationBeginLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SimulationBeginLog</span></code></a>) -- simulation begin log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -523,10 +523,10 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.process_simulation_end_log">
 <span class="sig-name descname"><span class="pre">process_simulation_end_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.process_simulation_end_log"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.process_simulation_end_log" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>process simulation end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
+<dd><p>Process simulation end log. Called from <a class="reference internal" href="#pams.logs.Logger.process" title="pams.logs.Logger.process"><code class="xref py py-func docutils literal notranslate"><span class="pre">process()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html#pams.logs.SimulationEndLog" title="pams.logs.SimulationEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SimulationEndLog</span></code></a>]) -- simulation end log</p>
+<dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html#pams.logs.SimulationEndLog" title="pams.logs.SimulationEndLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.SimulationEndLog</span></code></a>) -- simulation end log</p>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
@@ -540,7 +540,7 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.write">
 <span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.write"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.write" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>set a log to pending list.</p>
+<dd><p>Set a log to pending list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>) -- log.</p>
@@ -557,7 +557,7 @@ Therefore, this logger has 2 methods to handling logs -- <a class="reference int
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.logs.Logger.write_and_direct_process">
 <span class="sig-name descname"><span class="pre">write_and_direct_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#Logger.write_and_direct_process"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.Logger.write_and_direct_process" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>direct writing a log.</p>
+<dd><p>Direct writing a log.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>log</strong> (<a class="reference internal" href="../logs/pams.logs.Log.html#pams.logs.Log" title="pams.logs.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.Log</span></code></a>) -- log.</p>

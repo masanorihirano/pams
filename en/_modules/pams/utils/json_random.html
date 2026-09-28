@@ -313,16 +313,18 @@
 <span class="sd">        [0.5317762204008692, -1.453545298008678, -0.3122773171445598, 0.49036253259352475, 0.8734043853794468, -0.2406296726551354, 0.3765998586879102, 0.24821344932841446, 0.7823268087036421, -1.1132222142481727]</span>
 <span class="sd">        &gt;&gt;&gt; [jr.random({"expon": [3]}) for x in range(10)]</span>
 <span class="sd">        [0.642818017709456, 0.9452346835236866, 1.869586994011895, 0.08175668259806873, 2.9143451561160503, 1.7824008841046926, 0.5611413226153803, 1.4412784552296345, 0.4465202669419299, 1.6479086846872075]</span>
+
 <span class="sd">    """</span>  <span class="c1"># NOQA</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""initialization.</span>
+<span class="w">        </span><span class="sd">"""Initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            prng (random.Random): pseudo random number generator for this event.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
 
@@ -377,8 +379,34 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">lam</span> <span class="o">*</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_distribution_args</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">json_value</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_args</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">expected</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the validated arguments of a distribution (internal method).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            json_value (Dict): distribution, e.g. :code:`{"normal": [u, s]}`.</span>
+<span class="sd">            key (str): distribution type in ``json_value``.</span>
+<span class="sd">            n_args (int): required number of arguments.</span>
+<span class="sd">            expected (str): expected form used in error messages,</span>
+<span class="sd">                e.g. "Constant must be [value]".</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List: arguments of the distribution.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if the arguments are not a list of ``n_args`` elements.</span>
+
+<span class="sd">        """</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">expected</span> <span class="o">+</span> <span class="s2">" (list) but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_args</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">expected</span> <span class="o">+</span> <span class="s2">" but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">args</span>
+
 <div class="viewcode-block" id="JsonRandom.random"><a class="viewcode-back" href="../../../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom.random">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_value</span><span class="p">:</span> <span class="n">JsonValue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get a random value.</span>
+<span class="w">        </span><span class="sd">"""Get a random value.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            json_value (JsonValue): random type.</span>
@@ -386,6 +414,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: random value.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">json_value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
@@ -403,59 +432,29 @@
                     <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="s2">"const"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"const"</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Constant must be [value] (list) but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Constant must be [value] but "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_distribution_args</span><span class="p">(</span>
+                    <span class="n">json_value</span><span class="p">,</span> <span class="s2">"const"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Constant must be [value]"</span>
+                <span class="p">)</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">return</span> <span class="n">value</span>
             <span class="k">if</span> <span class="s2">"uniform"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"uniform"</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Uniform distribution must be [min, max] (list) but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Uniform distribution must be [min, max] but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_distribution_args</span><span class="p">(</span>
+                    <span class="n">json_value</span><span class="p">,</span> <span class="s2">"uniform"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"Uniform distribution must be [min, max]"</span>
+                <span class="p">)</span>
                 <span class="n">min_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">max_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_uniform</span><span class="p">(</span><span class="n">min_value</span><span class="o">=</span><span class="n">min_value</span><span class="p">,</span> <span class="n">max_value</span><span class="o">=</span><span class="n">max_value</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">"normal"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"normal"</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Normal distribution must be [mu, sigma] (list) but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Normal distribution must be [mu, sigma] but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_distribution_args</span><span class="p">(</span>
+                    <span class="n">json_value</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"Normal distribution must be [mu, sigma]"</span>
+                <span class="p">)</span>
                 <span class="n">mu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_normal</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">"expon"</span> <span class="ow">in</span> <span class="n">json_value</span><span class="p">:</span>
-                <span class="n">args</span> <span class="o">=</span> <span class="n">json_value</span><span class="p">[</span><span class="s2">"expon"</span><span class="p">]</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Exponential distribution must be [lambda] (list) but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"Exponential distribution must be [lambda] but "</span>
-                        <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_distribution_args</span><span class="p">(</span>
+                    <span class="n">json_value</span><span class="p">,</span> <span class="s2">"expon"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"Exponential distribution must be [lambda]"</span>
+                <span class="p">)</span>
                 <span class="n">lam</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_exponential</span><span class="p">(</span><span class="n">lam</span><span class="o">=</span><span class="n">lam</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Unknown distribution type: "</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_value</span><span class="p">))</span>

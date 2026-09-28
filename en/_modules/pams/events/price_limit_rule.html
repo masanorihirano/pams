@@ -294,7 +294,7 @@
 
 
 <div class="viewcode-block" id="PriceLimitRule"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PriceLimitRule</span><span class="p">(</span><span class="n">EventABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""This limits the price range.</span>
+<span class="w">    </span><span class="sd">"""Event that limits the price range.</span>
 
 <span class="sd">    The order having the price that is out of the price range, the price is overridden to the edge of range.</span>
 <span class="sd">    This event is only called via :func:`hooked_before_order` at designated step.</span>
@@ -308,6 +308,7 @@
         <span class="n">simulator</span><span class="p">:</span> <span class="n">Simulator</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Initialize the price limit rule (see :class:`pams.events.EventABC` for the arguments)."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
             <span class="n">prng</span><span class="o">=</span><span class="n">prng</span><span class="p">,</span>
@@ -321,7 +322,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_change_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
 
 <div class="viewcode-block" id="PriceLimitRule.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
-<span class="w">        </span><span class="sd">"""event setup. Usually be called from simulator/runner automatically.</span>
+<span class="w">        </span><span class="sd">"""Event setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
@@ -331,6 +332,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"referenceMarket"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"referenceMarket is obsoleted"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -371,6 +373,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Optional[float]: price after price limit.</span>
 <span class="sd">                             If the input order is market order, the return become None (market order).</span>
+
 <span class="sd">        """</span>
         <span class="n">reference_price</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_markets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>

@@ -319,7 +319,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""initialization.</span>
+<span class="w">        </span><span class="sd">"""Initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_id (int): market ID.</span>
@@ -330,6 +330,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span> <span class="o">=</span> <span class="n">prng</span>
@@ -354,13 +355,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outstanding_shares</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the string representation of the market."""</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">, name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
             <span class="sa">f</span><span class="s2">"tick_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="si">}</span><span class="s2">, outstanding_shares=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outstanding_shares</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Market.setup"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.setup">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
-<span class="w">        </span><span class="sd">"""setup market configuration from setting format.</span>
+<span class="w">        </span><span class="sd">"""Setup market configuration from setting format.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.</span>
@@ -372,6 +374,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"tickSize"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"tickSize is required"</span><span class="p">)</span>
@@ -393,7 +396,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span>
         <span class="n">allow_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""extract sequential parameters by time. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""Extract sequential parameters by time (internal method).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): range of time steps.</span>
@@ -402,6 +405,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Optional[T]]: extracted parameters.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">times</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -419,7 +423,7 @@
         <span class="n">parameters</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span>
         <span class="n">allow_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""extract a parameter by time. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""Extract a parameter by time (internal method).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
@@ -428,6 +432,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Optional[T]: extracted parameter.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
@@ -439,19 +444,20 @@
         <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="Market.get_time"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_time">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get time step."""</span>
+<span class="w">        </span><span class="sd">"""Get time step."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span></div>
 
 <div class="viewcode-block" id="Market.get_market_prices"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_market_prices">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_market_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get market prices.</span>
+<span class="w">        </span><span class="sd">"""Get market prices.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): range of time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[float]: extracted sequential data.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
@@ -461,13 +467,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_market_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_market_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_market_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get market price.</span>
+<span class="w">        </span><span class="sd">"""Get market price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: extracted data.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">float</span><span class="p">,</span>
@@ -477,52 +484,56 @@
 <div class="viewcode-block" id="Market.get_mid_prices"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_mid_prices">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_mid_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""get middle prices.</span>
+<span class="w">        </span><span class="sd">"""Get middle prices.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Optional[float]]: middle prices.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_sequential_data_by_time</span><span class="p">(</span>
             <span class="n">times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid_prices</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_mid_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_mid_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_mid_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get middle price.</span>
+<span class="w">        </span><span class="sd">"""Get middle price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float, Optional: middle price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_data_by_time</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid_prices</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_last_executed_prices"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_last_executed_prices">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_executed_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">"""get prices executed last steps.</span>
+<span class="w">        </span><span class="sd">"""Get prices executed last steps.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Optional[float]]: prices.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_sequential_data_by_time</span><span class="p">(</span>
             <span class="n">times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_executed_prices</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_last_executed_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_last_executed_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_executed_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get price executed last step.</span>
+<span class="w">        </span><span class="sd">"""Get price executed last step.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float, Optional: price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_data_by_time</span><span class="p">(</span>
             <span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_executed_prices</span><span class="p">,</span> <span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span>
@@ -531,13 +542,14 @@
 <div class="viewcode-block" id="Market.get_fundamental_prices"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_fundamental_prices">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_fundamental_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get fundamental prices.</span>
+<span class="w">        </span><span class="sd">"""Get fundamental prices.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[float]: fundamental prices.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
@@ -545,26 +557,28 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_fundamental_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_fundamental_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_fundamental_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get fundamental price.</span>
+<span class="w">        </span><span class="sd">"""Get fundamental price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: fundamental price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_data_by_time</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_prices</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Market.get_executed_volumes"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_executed_volumes">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_executed_volumes</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get executed volumes.</span>
+<span class="w">        </span><span class="sd">"""Get executed volumes.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[int]: volumes.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -574,13 +588,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_executed_volume"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_executed_volume">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_executed_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get executed volume.</span>
+<span class="w">        </span><span class="sd">"""Get executed volume.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: volume.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">int</span><span class="p">,</span>
@@ -592,13 +607,14 @@
 <div class="viewcode-block" id="Market.get_executed_total_prices"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_executed_total_prices">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_executed_total_prices</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get executed total prices.</span>
+<span class="w">        </span><span class="sd">"""Get executed total prices.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[float]: total prices.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
@@ -608,13 +624,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_executed_total_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_executed_total_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_executed_total_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get executed total price.</span>
+<span class="w">        </span><span class="sd">"""Get executed total price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: total price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">float</span><span class="p">,</span>
@@ -624,13 +641,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_n_buy_orders"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_n_buy_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_n_buy_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get the number of buy orders.</span>
+<span class="w">        </span><span class="sd">"""Get the number of buy orders.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[int]: number of buy orders.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -640,13 +658,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_n_buy_order"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_n_buy_order">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_n_buy_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get the number of buy order.</span>
+<span class="w">        </span><span class="sd">"""Get the number of buy order.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: number of buy order.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">int</span><span class="p">,</span>
@@ -656,13 +675,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_n_sell_orders"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_n_sell_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_n_sell_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get the number of sell orders.</span>
+<span class="w">        </span><span class="sd">"""Get the number of sell orders.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[int]: number of sell orders.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -672,13 +692,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.get_n_sell_order"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_n_sell_order">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_n_sell_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get the number of sell order.</span>
+<span class="w">        </span><span class="sd">"""Get the number of sell order.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (Union[int, None]): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: number of sell order.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">int</span><span class="p">,</span>
@@ -717,13 +738,14 @@
         <span class="p">]</span>
 
 <div class="viewcode-block" id="Market.get_vwap"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_vwap">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_vwap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get VWAP.</span>
+<span class="w">        </span><span class="sd">"""Get VWAP.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (int, Optional): time step.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: VWAP.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
@@ -737,47 +759,52 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get whether this market is running or not.</span>
+<span class="w">        </span><span class="sd">"""Get whether this market is running or not.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: whether this market is running or not.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_running</span>
 
 <div class="viewcode-block" id="Market.get_best_buy_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_best_buy_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_best_buy_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get the best buy price.</span>
+<span class="w">        </span><span class="sd">"""Get the best buy price.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float, Optional: the best buy price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">get_best_price</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Market.get_best_sell_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_best_sell_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_best_sell_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get the best sell price.</span>
+<span class="w">        </span><span class="sd">"""Get the best sell price.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float, Optional: the best sell price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">get_best_price</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Market.get_sell_order_book"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_sell_order_book">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_sell_order_book</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get sell order book.</span>
+<span class="w">        </span><span class="sd">"""Get sell order book.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[Optional[float], int]: sell order book.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Market.get_buy_order_book"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_buy_order_book">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_buy_order_book</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get buy order book.</span>
+<span class="w">        </span><span class="sd">"""Get buy order book.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Dict[Optional[float], int]: buy order book.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""get the tick level of the price if the price is on a tick.</span>
+<span class="w">        </span><span class="sd">"""Get the tick level of the price if the price is on a tick.</span>
 
 <span class="sd">        A price is regarded as on a tick if ``price / tick_size`` is an integer up to</span>
 <span class="sd">        floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).</span>
@@ -795,6 +822,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int, Optional: tick level if the price is on a tick, otherwise None.</span>
+
 <span class="sd">        """</span>
         <span class="n">ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span>
         <span class="n">tick_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
@@ -804,13 +832,14 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level_rounded_lower"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_lower">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level_rounded_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""convert price to tick level rounded lower.</span>
+<span class="w">        </span><span class="sd">"""Convert price to tick level rounded lower.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            price (float): price.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: price for tick level rounded lower.</span>
+
 <span class="sd">        """</span>
         <span class="n">tick_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -818,13 +847,14 @@
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level_rounded_upper"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_upper">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level_rounded_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""convert price to tick level rounded upper.</span>
+<span class="w">        </span><span class="sd">"""Convert price to tick level rounded upper.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            price (float): price.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: price for tick level rounded upper.</span>
+
 <span class="sd">        """</span>
         <span class="n">tick_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -832,7 +862,7 @@
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_buy</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""convert price to tick level.</span>
+<span class="w">        </span><span class="sd">"""Convert price to tick level.</span>
 
 <span class="sd">        If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</span>
 
@@ -842,24 +872,26 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            int: price for tick level.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">is_buy</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level_rounded_lower</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level_rounded_upper</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tick_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""convert tick to price.</span>
+<span class="w">        </span><span class="sd">"""Convert tick to price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            tick_level (int): tick level.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: price.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span> <span class="o">*</span> <span class="n">tick_level</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">next_fundamental_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""set time step. (Usually, only triggered by simulator)</span>
+<span class="w">        </span><span class="sd">"""Set time step (usually, only triggered by simulator).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            time (int): time step.</span>
@@ -867,6 +899,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
@@ -914,13 +947,14 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_market_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mid_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">next_fundamental_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""update time. (Usually, only triggered by simulator)</span>
+<span class="w">        </span><span class="sd">"""Update time (usually, only triggered by simulator).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            next_fundamental_price (float): next fundamental price.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExpirationLog</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">_set_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
@@ -951,13 +985,14 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_market_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_fundamental_price</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_cancel_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="n">Cancel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CancelLog</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""cancel order. (Usually, only triggered by simulator)</span>
+<span class="w">        </span><span class="sd">"""Cancel order (usually, only triggered by simulator).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cancel (:class:`pams.order.Cancel`): cancel class.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :class:`pams.logs.base.CancelLog`: cancel log.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span> <span class="o">!=</span> <span class="n">cancel</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"this cancel order is for a different market"</span><span class="p">)</span>
@@ -987,7 +1022,7 @@
         <span class="k">return</span> <span class="n">log</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_market_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""update market price. (Internal method)"""</span>
+<span class="w">        </span><span class="sd">"""Update market price (internal method)."""</span>
         <span class="n">best_buy_price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_buy_price</span><span class="p">()</span>
         <span class="n">best_sell_price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_sell_price</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">best_buy_price</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">best_sell_price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1007,7 +1042,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_execute_orders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">:</span> <span class="n">Order</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExecutionLog</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""execute orders. (Internal method)</span>
+<span class="w">        </span><span class="sd">"""Execute orders (internal method).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            price (float): price.</span>
@@ -1016,7 +1051,8 @@
 <span class="sd">            sell_order (:class:`pams.order.Order`): sell order.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            :class:`pams.logs.base.CancelLog`: execution log.</span>
+<span class="sd">            :class:`pams.logs.base.ExecutionLog`: execution log.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"market is not running"</span><span class="p">)</span>
@@ -1058,13 +1094,14 @@
         <span class="k">return</span> <span class="n">log</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Order</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderLog</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""add order. (Usually, only triggered by runner)</span>
+<span class="w">        </span><span class="sd">"""Add order (usually, only triggered by runner).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            order (:class:`pams.order.Order`): order.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            :class:`pams.logs.base.OrderLog`: order log.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">market_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"order is not for this market"</span><span class="p">)</span>
@@ -1112,7 +1149,7 @@
         <span class="k">return</span> <span class="n">log</span>
 
 <div class="viewcode-block" id="Market.remain_executable_orders"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.remain_executable_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remain_executable_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""check if there are remain executable orders in this market.</span>
+<span class="w">        </span><span class="sd">"""Check if there are remain executable orders in this market.</span>
 
 <span class="sd">        When both sides have market orders and their total volumes differ, the excess</span>
 <span class="sd">        market orders have to be absorbed by the limit orders of the other side.</span>
@@ -1121,6 +1158,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: whether some orders is executable or not.</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1156,44 +1194,118 @@
             <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">buy_book</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""execute for market. (Usually, only triggered by runner)</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_execution_price</span><span class="p">(</span><span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">:</span> <span class="n">Order</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get the execution price of a matched pair of orders (internal method).</span>
+
+<span class="sd">        If only one of the orders is a market order, the price of the other order is</span>
+<span class="sd">        used. If both are limit orders, the price of the earlier order is used. When</span>
+<span class="sd">        both orders are placed at the same time, the order with the smaller order ID is</span>
+<span class="sd">        regarded as the earlier one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            buy_order (:class:`pams.order.Order`): buy order.</span>
+<span class="sd">            sell_order (:class:`pams.order.Order`): sell order.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[:class:`pams.logs.base.ExecutionLog`]: execution logs.</span>
+<span class="sd">            float, Optional: execution price. None if both orders are market orders.</span>
+
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">remain_executable_orders</span><span class="p">():</span>
-            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
+        <span class="k">if</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
+        <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">==</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span>
+            <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&lt;</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
+            <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&gt;</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
+            <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pop_next_order</span><span class="p">(</span>
+        <span class="n">order_book</span><span class="p">:</span> <span class="n">OrderBook</span><span class="p">,</span> <span class="n">popped_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Order</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Pop the next order to be executed from the order book (internal method).</span>
+
+<span class="sd">        The popped order is appended to ``popped_orders`` so that it can be pushed back</span>
+<span class="sd">        to the order book afterwards.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            order_book (:class:`pams.order_book.OrderBook`): buy or sell order book.</span>
+<span class="sd">            popped_orders (List[:class:`pams.order.Order`]): orders popped so far.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            :class:`pams.order.Order`, Optional: the popped order. None if the order</span>
+<span class="sd">            book is empty.</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">order</span><span class="p">:</span> <span class="n">Order</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="n">order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
+        <span class="n">popped_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">volume</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span>
+        <span class="k">return</span> <span class="n">order</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_pending_executions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">popped_buy_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">],</span> <span class="n">popped_sell_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Order</span><span class="p">,</span> <span class="n">Order</span><span class="p">]],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Collect pending executions by matching the best orders (internal method).</span>
+
+<span class="sd">        Orders are popped from the order books and appended to ``popped_buy_orders``</span>
+<span class="sd">        and ``popped_sell_orders`` until one of the order books is exhausted or the</span>
+<span class="sd">        prices of the current buy and sell orders do not cross. The popped orders are</span>
+<span class="sd">        not pushed back to the order books in this method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            popped_buy_orders (List[:class:`pams.order.Order`]): list to which the</span>
+<span class="sd">                popped buy orders are appended.</span>
+<span class="sd">            popped_sell_orders (List[:class:`pams.order.Order`]): list to which the</span>
+<span class="sd">                popped sell orders are appended.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[List[Tuple[int, Order, Order]], Optional[float]]: pending executions</span>
+<span class="sd">            as tuples of volume, buy order and sell order, and the execution price</span>
+<span class="sd">            (None if it is not determined).</span>
+
+<span class="sd">        """</span>
         <span class="n">pending</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Order</span><span class="p">,</span> <span class="n">Order</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">popped_buy_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">popped_sell_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
-        <span class="n">popped_buy_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buy_order</span><span class="p">)</span>
+        <span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span>
         <span class="n">sell_order</span><span class="p">:</span> <span class="n">Order</span>
-        <span class="n">buy_order_volume_tmp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">volume</span>
+        <span class="n">next_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span>
+        <span class="c1"># Both remaining volumes start at 0, so that the first buy and sell orders are</span>
+        <span class="c1"># also popped by _pop_next_order, which checks that they have volume.</span>
+        <span class="n">buy_order_volume_tmp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">sell_order_volume_tmp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">buy_order_volume_tmp</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sell_order_volume_tmp</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span>
             <span class="k">if</span> <span class="n">buy_order_volume_tmp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">next_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_next_order</span><span class="p">(</span>
+                    <span class="n">order_book</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="p">,</span> <span class="n">popped_orders</span><span class="o">=</span><span class="n">popped_buy_orders</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">next_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="n">buy_order</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
-                <span class="n">popped_buy_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buy_order</span><span class="p">)</span>
+                <span class="n">buy_order</span> <span class="o">=</span> <span class="n">next_order</span>
                 <span class="n">buy_order_volume_tmp</span> <span class="o">=</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">volume</span>
-                <span class="k">if</span> <span class="n">buy_order_volume_tmp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span>
             <span class="k">if</span> <span class="n">sell_order_volume_tmp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">next_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_next_order</span><span class="p">(</span>
+                    <span class="n">order_book</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="p">,</span> <span class="n">popped_orders</span><span class="o">=</span><span class="n">popped_sell_orders</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">next_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">break</span>
-                <span class="n">sell_order</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
-                <span class="n">popped_sell_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sell_order</span><span class="p">)</span>
+                <span class="n">sell_order</span> <span class="o">=</span> <span class="n">next_order</span>
                 <span class="n">sell_order_volume_tmp</span> <span class="o">=</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">volume</span>
-                <span class="k">if</span> <span class="n">sell_order_volume_tmp</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="ow">and</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -1209,34 +1321,34 @@
                 <span class="k">raise</span> <span class="ne">AssertionError</span>
             <span class="k">if</span> <span class="n">sell_order_volume_tmp</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span>
-            <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">price</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
-                        <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                        <span class="k">else</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
-                    <span class="p">)</span>
-                    <span class="n">pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">==</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">AssertionError</span>
-                    <span class="k">if</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&lt;</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">:</span>
-                        <span class="n">price</span> <span class="o">=</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
-                    <span class="k">elif</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&gt;</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">:</span>
-                        <span class="n">price</span> <span class="o">=</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">AssertionError</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">price</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">buy_order</span><span class="o">.</span><span class="n">price</span>
-                        <span class="k">if</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
-                        <span class="o">&lt;</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
-                        <span class="k">else</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">price</span>
-                    <span class="p">)</span>
-                <span class="n">pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">))</span>
+            <span class="n">pair_price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_execution_price</span><span class="p">(</span>
+                <span class="n">buy_order</span><span class="o">=</span><span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">=</span><span class="n">sell_order</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">pair_price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="n">pair_price</span>
+            <span class="n">pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pending</span><span class="p">,</span> <span class="n">price</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Execute for market (usually, only triggered by runner).</span>
+
+<span class="sd">        The best buy and sell orders are matched as long as their prices cross, and all</span>
+<span class="sd">        the matched volumes are executed at a single price, which is determined by the</span>
+<span class="sd">        last matched pair including a limit order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[:class:`pams.logs.base.ExecutionLog`]: execution logs.</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">remain_executable_orders</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">popped_buy_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">popped_sell_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pending</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Order</span><span class="p">,</span> <span class="n">Order</span><span class="p">]]</span>
+        <span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+        <span class="n">pending</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_pending_executions</span><span class="p">(</span>
+            <span class="n">popped_buy_orders</span><span class="o">=</span><span class="n">popped_buy_orders</span><span class="p">,</span> <span class="n">popped_sell_orders</span><span class="o">=</span><span class="n">popped_sell_orders</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
         <span class="c1"># TODO: faster impl</span>
@@ -1261,13 +1373,14 @@
         <span class="k">return</span> <span class="n">logs</span>
 
 <div class="viewcode-block" id="Market.change_fundamental_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.change_fundamental_price">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">change_fundamental_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""change fundamental price.</span>
+<span class="w">        </span><span class="sd">"""Change fundamental price.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            scale (float): scale.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
         <span class="n">current_fundamental</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fundamental_price</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>

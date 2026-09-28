@@ -312,7 +312,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_cancel">
 <span class="sig-name descname"><span class="pre">hooked_after_cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_cancel"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_cancel" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked after order cancellations if you set the event hook.</p>
+<dd><p>Hook called after order cancellations if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -329,7 +329,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_execution">
 <span class="sig-name descname"><span class="pre">hooked_after_execution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_execution"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_execution" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked after order executions if you set the event hook.</p>
+<dd><p>Hook called after order executions if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -346,7 +346,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_order">
 <span class="sig-name descname"><span class="pre">hooked_after_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_order"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_order" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked after order placements if you set the event hook.</p>
+<dd><p>Hook called after order placements if you set the event hook.</p>
 <p>Please be careful that the order haven't yet been executed if it could be executed immediately.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
@@ -364,7 +364,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_session">
 <span class="sig-name descname"><span class="pre">hooked_after_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_session"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_session" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked after session ends if you set the event hook.</p>
+<dd><p>Hook called after session ends if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -381,7 +381,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_step_for_market">
 <span class="sig-name descname"><span class="pre">hooked_after_step_for_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_step_for_market"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_step_for_market" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked at each step after market processing if you set the event hook.</p>
+<dd><p>Hook called at each step after market processing if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -398,7 +398,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_cancel">
 <span class="sig-name descname"><span class="pre">hooked_before_cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_cancel"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_cancel" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked before order cancellations if you set the event hook.</p>
+<dd><p>Hook called before order cancellations if you set the event hook.</p>
 <p>Please be careful that the cancel order haven't yet been executed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
@@ -416,7 +416,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_order">
 <span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_order"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_order" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked before order placements if you set the event hook.</p>
+<dd><p>Hook called before order placements if you set the event hook.</p>
 <p>Please be careful that the order haven't yet been accepted by markets and it could be leakage of
 order information.</p>
 <dl class="field-list simple">
@@ -435,7 +435,7 @@ order information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_session">
 <span class="sig-name descname"><span class="pre">hooked_before_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_session"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_session" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked before session beginnings if you set the event hook.</p>
+<dd><p>Hook called before session beginnings if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -452,7 +452,7 @@ order information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_step_for_market">
 <span class="sig-name descname"><span class="pre">hooked_before_step_for_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_step_for_market"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_step_for_market" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked at each step before market processing if you set the event hook.</p>
+<dd><p>Hook called at each step before market processing if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -469,7 +469,7 @@ order information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.setup"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventABC.setup" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>event setup. Usually be called from simulator/runner automatically.</p>
+<dd><p>Event setup. Usually be called from simulator/runner automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

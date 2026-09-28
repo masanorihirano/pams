@@ -284,7 +284,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.events.</span></span><span class="sig-name descname"><span class="pre">OrderMistakeShock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This suddenly changes the market price.</p>
+<dd><p>Event that suddenly changes the market price.</p>
 <blockquote>
 <div><p>It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
 at an extremely cheap or expensive price.</p>
@@ -309,7 +309,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock.hooked_before_order">
 <span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock.hooked_before_order"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock.hooked_before_order" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked before order placements if you set the event hook.</p>
+<dd><p>Hook called before order placements if you set the event hook.</p>
 <p>Please be careful that the order haven't yet been accepted by markets and it could be leakage of
 order information.</p>
 <dl class="field-list simple">
@@ -328,7 +328,7 @@ order information.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock.setup"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock.setup" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>event setup. Usually be called from simulator/runner automatically.</p>
+<dd><p>Event setup. Usually be called from simulator/runner automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) -- agent configuration. Usually, automatically set from json config of simulator.

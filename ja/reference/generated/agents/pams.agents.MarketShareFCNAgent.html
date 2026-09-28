@@ -284,13 +284,13 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="pams.agents.MarketShareFCNAgent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.agents.</span></span><span class="sig-name descname"><span class="pre">MarketShareFCNAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/market_share_fcn_agent.html#MarketShareFCNAgent"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.agents.MarketShareFCNAgent" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>Market Share FCN Agent class</p>
+<dd><p>Market Share FCN Agent class.</p>
 <p>This agent submits orders based on market shares.
 This class inherits from the <a class="reference internal" href="pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.FCNAgent</span></code></a> class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.MarketShareFCNAgent.get_sum_trade_volume">
 <span class="sig-name descname"><span class="pre">get_sum_trade_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/market_share_fcn_agent.html#MarketShareFCNAgent.get_sum_trade_volume"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.agents.MarketShareFCNAgent.get_sum_trade_volume" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>get sum of trade volume.</p>
+<dd><p>Get sum of trade volume.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>market</strong> (<a class="reference internal" href="../market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.Market</span></code></a>) -- trading market.</p>
@@ -307,7 +307,7 @@ This class inherits from the <a class="reference internal" href="pams.agents.FCN
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.MarketShareFCNAgent.submit_orders">
 <span class="sig-name descname"><span class="pre">submit_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/market_share_fcn_agent.html#MarketShareFCNAgent.submit_orders"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.agents.MarketShareFCNAgent.submit_orders" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>submit orders based on FCN-based calculation and market shares.
+<dd><p>Submit orders based on FCN-based calculation and market shares.
 :rtype: <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="../order/pams.Order.html#pams.Order" title="pams.order.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">Order</span></code></a>, <a class="reference internal" href="../order/pams.Cancel.html#pams.Cancel" title="pams.order.Cancel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cancel</span></code></a>]]</p>
 <div class="admonition seealso">
 <p class="admonition-title">参考</p>

@@ -322,7 +322,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.TradingHaltRule.hooked_after_execution">
 <span class="sig-name descname"><span class="pre">hooked_after_execution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/trading_halt_rule.html#TradingHaltRule.hooked_after_execution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.TradingHaltRule.hooked_after_execution" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked after order executions if you set the event hook.</p>
+<dd><p>Hook called after order executions if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -339,7 +339,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.TradingHaltRule.hooked_before_step_for_market">
 <span class="sig-name descname"><span class="pre">hooked_before_step_for_market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/trading_halt_rule.html#TradingHaltRule.hooked_before_step_for_market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.TradingHaltRule.hooked_before_step_for_market" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked at each step before market processing if you set the event hook.</p>
+<dd><p>Hook called at each step before market processing if you set the event hook.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -356,7 +356,7 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.TradingHaltRule.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/trading_halt_rule.html#TradingHaltRule.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.TradingHaltRule.setup" title="Permalink to this definition">#</a></dt>
-<dd><p>event setup. Usually be called from simulator/runner automatically.</p>
+<dd><p>Event setup. Usually be called from simulator/runner automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration. Usually, automatically set from json config of simulator.

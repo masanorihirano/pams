@@ -299,7 +299,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""initialization.</span>
+<span class="w">        </span><span class="sd">"""Initialization.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session_id (int): session ID.</span>
@@ -317,6 +317,7 @@
 <span class="sd">        Note:</span>
 <span class="sd">             `prng` should not be shared with other classes and be used only in this class.</span>
 <span class="sd">             It is because sometimes agent process runs one of parallelized threads.</span>
+
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
@@ -334,6 +335,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">session_start_time</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the string representation of the session."""</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_id</span><span class="si">}</span><span class="s2">, name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
             <span class="sa">f</span><span class="s2">"iteration_steps=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iteration_steps</span><span class="si">}</span><span class="s2">, session_start_time=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session_start_time</span><span class="si">}</span><span class="s2">, "</span>
@@ -344,7 +346,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Session.setup"><a class="viewcode-back" href="../../reference/generated/session/pams.Session.html#pams.Session.setup">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
-<span class="w">        </span><span class="sd">"""setup session configuration from setting format.</span>
+<span class="w">        </span><span class="sd">"""Setup session configuration from setting format.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.</span>
@@ -357,6 +359,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
+
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"iterationSteps"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
