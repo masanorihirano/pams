@@ -770,6 +770,33 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span></div>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""get the tick level of the price if the price is on a tick.</span>
+
+<span class="sd">        A price is regarded as on a tick if ``price / tick_size`` is an integer up to</span>
+<span class="sd">        floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).</span>
+<span class="sd">        The tolerance is 4 ULPs of the tick level (``4 * math.ulp(max(1.0, abs(ratio)))``,</span>
+<span class="sd">        in tick units), capped at 0.25 tick. Converting an on-tick price (a decimal literal</span>
+<span class="sd">        or ``tick_level * tick_size``) gives an error of at most about 1 ULP and each further</span>
+<span class="sd">        addition or subtraction of ticks adds about 1 ULP, so a few arithmetic operations</span>
+<span class="sd">        on the price are absorbed, while off-tick prices more than 4 ULPs away from a tick</span>
+<span class="sd">        (e.g., 500000000001.001 with tick size 1.0) are still detected. The cap keeps</span>
+<span class="sd">        half-tick prices off tick at huge tick levels (&gt;= 2**49), where 4 ULPs would reach</span>
+<span class="sd">        half a tick.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            price (float): price.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int, Optional: tick level if the price is on a tick, otherwise None.</span>
+<span class="sd">        """</span>
+        <span class="n">ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span>
+        <span class="n">tick_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
+        <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">ulp</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ratio</span><span class="p">))),</span> <span class="mf">0.25</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ratio</span> <span class="o">-</span> <span class="n">tick_level</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">tolerance</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tick_level</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="Market.convert_to_tick_level_rounded_lower"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_lower">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level_rounded_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""convert price to tick level rounded lower.</span>
 
@@ -779,6 +806,9 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: price for tick level rounded lower.</span>
 <span class="sd">        """</span>
+        <span class="n">tick_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tick_level</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level_rounded_upper"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level_rounded_upper">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level_rounded_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -790,6 +820,9 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            int: price for tick level rounded upper.</span>
 <span class="sd">        """</span>
+        <span class="n">tick_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_level_if_on_tick</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tick_level</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_buy</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1032,14 +1065,18 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the order is already submitted"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"the order is already submitted"</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">order</span><span class="o">.</span><span class="n">price</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"order price does not accord to the tick size. price will be modified"</span>
+        <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tick_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tick_level_if_on_tick</span><span class="p">(</span>
+                <span class="n">price</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">price</span>
             <span class="p">)</span>
-            <span class="n">order</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">is_buy</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">is_buy</span><span class="p">)</span>
-                <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">"order price does not accord to the tick size. price will be modified"</span>
+                <span class="p">)</span>
+                <span class="n">tick_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level</span><span class="p">(</span>
+                    <span class="n">price</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">is_buy</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">is_buy</span>
+                <span class="p">)</span>
+            <span class="n">order</span><span class="o">.</span><span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_price</span><span class="p">(</span><span class="n">tick_level</span><span class="o">=</span><span class="n">tick_level</span><span class="p">)</span>
         <span class="n">order</span><span class="o">.</span><span class="n">order_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_order_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_next_order_id</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span> <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">is_buy</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
