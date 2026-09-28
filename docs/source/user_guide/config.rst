@@ -27,7 +27,7 @@ Json config
                     ...
                 ]
             },
-            "numParallel": int (Optional; default 1; only for MultiThreadedRunner),
+            "numParallel": int (Optional; default: the number of CPUs - 1; only for MultiThreadAgentParallelRunner and MultiProcessAgentParallelRunner),
         },
         "FundamentalPriceShock": {
             "class": "FundamentalPriceShock",
