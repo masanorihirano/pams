@@ -4,7 +4,7 @@ Install
 Requirements
 ~~~~~~~~~~~~~~~~
 
-- python3 (>= 3.8)
+- python3 (>= 3.9)
 
 Installation
 ~~~~~~~~~~~~~~~~
