@@ -8,6 +8,7 @@ from concurrent.futures import Executor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -460,6 +461,58 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             [agent] for agent in agents
         ]
         assert runner._split_agents_into_chunks(agents=[]) == []
+
+    def test_split_agents_into_chunks_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 10
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        split_batches: List[List[Agent]] = []
+
+        def split_agents_into_chunks(agents: List[Agent]) -> List[List[Agent]]:
+            split_batches.append(agents)
+            return [agents[:1], [], agents[1:]]
+
+        monkeypatch.setattr(
+            parallel_runner, "_split_agents_into_chunks", split_agents_into_chunks
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        assert len(split_batches) >= 10
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="FCNAgent",
+        )
+
+    @pytest.mark.parametrize(
+        "split_agents_into_chunks",
+        [
+            lambda agents: [agents[1:], agents[:1]],
+            lambda agents: [agents[::2], agents[1::2]],
+            lambda agents: [agents[1:]],
+            lambda agents: [agents, agents[:1]],
+            lambda agents: [agents[:1], [copy.copy(agent) for agent in agents[1:]]],
+        ],
+        ids=["rotated", "interleaved", "missing", "duplicated", "copied"],
+    )
+    def test_split_agents_into_chunks_invalid(
+        self,
+        split_agents_into_chunks: Callable[[List[Agent]], List[List[Agent]]],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        # chunks that change the order of the agents would change the results silently
+        _, runner = self._make_runners(setting=self.default_setting)
+        monkeypatch.setattr(
+            runner, "_split_agents_into_chunks", split_agents_into_chunks
+        )
+        runner._setup()
+        with pytest.raises(ValueError, match="_split_agents_into_chunks"):
+            runner._run()
+        assert runner.executor is None
 
 
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):

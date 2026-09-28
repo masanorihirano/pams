@@ -77,7 +77,7 @@ Subclasses of the parallel runners can customize the workers by overriding the f
   of a task are asked one by one on the same worker. The thread runner makes one task per agent, and the process
   runner makes at most ``numParallel`` tasks of consecutive agents because each task copies the whole simulation.
   The tasks must keep all the agents in the given order, so that the results stay the same as
-  :class:`pams.runners.SequentialRunner`.
+  :class:`pams.runners.SequentialRunner`; otherwise, the simulation fails with a ``ValueError``.
 
 For example, the following runner starts its worker processes by ``spawn`` and loads a model once in each worker
 process. The agents use ``my_runner.MODEL`` in ``submit_orders`` instead of keeping the model as their attribute,

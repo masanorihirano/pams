@@ -293,7 +293,9 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
             agents (List[Agent]): agents asked in parallel.
 
         Returns:
-            List[List[Agent]]: chunks. Their concatenation must be ``agents``.
+            List[List[Agent]]: chunks. Their concatenation must be ``agents`` in the same order so
+            that the results are the same as :class:`pams.runners.SequentialRunner`; otherwise,
+            a ValueError is raised.
 
         """
         return [[agent] for agent in agents]
@@ -349,6 +351,15 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
             batch: List[Agent] = agents[i_next_agent : i_next_agent + n_remaining]
             i_next_agent += len(batch)
             chunks: List[List[Agent]] = self._split_agents_into_chunks(agents=batch)
+            chunked_agents: List[Agent] = [agent for chunk in chunks for agent in chunk]
+            if len(chunked_agents) != len(batch) or any(
+                chunked_agent is not agent
+                for chunked_agent, agent in zip(chunked_agents, batch)
+            ):
+                raise ValueError(
+                    "the concatenation of the chunks returned by _split_agents_into_chunks"
+                    " must be the given agents in the same order"
+                )
             futures: List["Future[List[Tuple[List[Union[Order, Cancel]], Any]]]"] = [
                 executor.submit(_submit_orders_in_worker, chunk, markets)
                 for chunk in chunks
