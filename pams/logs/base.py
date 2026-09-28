@@ -181,6 +181,8 @@ class ExecutionLog(Log):
         sell_order_id: int,
         price: float,
         volume: int,
+        buy_transaction_cost: float = 0.0,
+        sell_transaction_cost: float = 0.0,
     ):
         """initialize.
 
@@ -193,6 +195,8 @@ class ExecutionLog(Log):
             sell_order_id (int): sell order ID.
             price (float): executed price.
             volume (int): executed volume.
+            buy_transaction_cost (float): transaction cost charged to the buyer (default 0.0).
+            sell_transaction_cost (float): transaction cost charged to the seller (default 0.0).
         """
         self.market_id: int = market_id
         self.time: int = time
@@ -202,6 +206,8 @@ class ExecutionLog(Log):
         self.sell_order_id: int = sell_order_id
         self.price: float = price
         self.volume: int = volume
+        self.buy_transaction_cost: float = buy_transaction_cost
+        self.sell_transaction_cost: float = sell_transaction_cost
         # TODO: Type validation
 
 
