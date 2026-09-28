@@ -83,6 +83,12 @@ class Runner(ABC):
         cannot be referred from pams package, especially from simulation runners.
         Therefore, the class registration to the runner is necessary.
 
+        .. note::
+            When the settings are given as a python dictionary, you can also set the class itself
+            instead of its name as the value of "class", e.g., ``{"class": UserDefinedAgent}``.
+            Such a class is used as is, and the registration is not necessary.
+            This is not available for JSON files because JSON cannot hold classes.
+
         Args:
             cls (Type): class to register.
 
