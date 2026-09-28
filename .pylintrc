@@ -8,8 +8,8 @@ jobs = 0
 
 [MESSAGES CONTROL]
 disable =
-    # docstrings are not mandatory. Their style (Google style with a
-    # lower-cased summary) is configured for ruff in pyproject.toml.
+    # docstrings are not mandatory. Their style (Google style) is configured
+    # for ruff in pyproject.toml and for Prospector in .prospector.yaml.
     missing-module-docstring,
     missing-class-docstring,
     missing-function-docstring,

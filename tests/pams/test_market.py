@@ -5,6 +5,7 @@ import time
 import warnings
 from typing import List
 from typing import Optional
+from typing import Tuple
 from unittest import mock
 
 import pytest
@@ -14,6 +15,7 @@ from pams import MARKET_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
+from pams import OrderBook
 from pams.logs.base import ExecutionLog
 from pams.logs.base import ExpirationLog
 from pams.logs.base import Logger
@@ -1382,11 +1384,15 @@ class TestMarket:
         buy_book = market.buy_order_book.get_price_volume()
         sell_book = market.sell_order_book.get_price_volume()
         both_market = None in buy_book and None in sell_book
-        buys = [(None, buy_book[None])] if None in buy_book else []
+        buys: List[Tuple[Optional[float], int]] = (
+            [(None, buy_book[None])] if None in buy_book else []
+        )
         buys += sorted(
             [(p, v) for p, v in buy_book.items() if p is not None], reverse=True
         )
-        sells = [(None, sell_book[None])] if None in sell_book else []
+        sells: List[Tuple[Optional[float], int]] = (
+            [(None, sell_book[None])] if None in sell_book else []
+        )
         sells += sorted([(p, v) for p, v in sell_book.items() if p is not None])
         i, j, buy_volume, sell_volume = 0, 0, 0, 0
         buy_price: Optional[float] = None
@@ -1475,6 +1481,196 @@ class TestMarket:
             assert not self._is_executable_reference(market)
             n_executed += int(executable)
         assert 0 < n_executed < 2000
+
+    @staticmethod
+    def _make_placed_order(
+        is_buy: bool, price: Optional[float], placed_at: int, order_id: Optional[int]
+    ) -> Order:
+        return Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=is_buy,
+            kind=MARKET_ORDER if price is None else LIMIT_ORDER,
+            volume=1,
+            placed_at=placed_at,
+            price=price,
+            order_id=order_id,
+        )
+
+    @pytest.mark.parametrize(
+        "buy, sell, expected",
+        [
+            # (price, placed_at, order_id) of the buy and sell orders
+            ((None, 1, 0), (None, 1, 1), None),  # both market orders
+            ((None, 1, 0), (90.0, 2, 1), 90.0),  # market buy
+            ((110.0, 2, 0), (None, 1, 1), 110.0),  # market sell
+            ((110.0, 1, 0), (90.0, 2, 1), 110.0),  # buy placed earlier
+            ((110.0, 2, 0), (90.0, 1, 1), 90.0),  # sell placed earlier
+            ((110.0, 1, 0), (90.0, 1, 1), 110.0),  # same time, buy has smaller ID
+            ((110.0, 1, 1), (90.0, 1, 0), 90.0),  # same time, sell has smaller ID
+        ],
+    )
+    def test_get_execution_price(
+        self,
+        buy: Tuple[Optional[float], int, int],
+        sell: Tuple[Optional[float], int, int],
+        expected: Optional[float],
+    ) -> None:
+        buy_order = self._make_placed_order(True, *buy)
+        sell_order = self._make_placed_order(False, *sell)
+        assert (
+            self.base_class._get_execution_price(
+                buy_order=buy_order, sell_order=sell_order
+            )
+            == expected
+        )
+
+    @pytest.mark.parametrize(
+        "buy_order_id, sell_order_id", [(None, 1), (0, None), (0, 0)]
+    )
+    def test_get_execution_price_same_time_invalid_order_ids(
+        self, buy_order_id: Optional[int], sell_order_id: Optional[int]
+    ) -> None:
+        # limit orders placed at the same time must have assigned, distinct order IDs
+        buy_order = self._make_placed_order(
+            is_buy=True, price=110.0, placed_at=1, order_id=buy_order_id
+        )
+        sell_order = self._make_placed_order(
+            is_buy=False, price=90.0, placed_at=1, order_id=sell_order_id
+        )
+        with pytest.raises(AssertionError):
+            self.base_class._get_execution_price(
+                buy_order=buy_order, sell_order=sell_order
+            )
+
+    def test_pop_next_order(self) -> None:
+        order_book = OrderBook(is_buy=True)
+        popped_orders: List[Order] = []
+        assert (
+            self.base_class._pop_next_order(
+                order_book=order_book, popped_orders=popped_orders
+            )
+            is None
+        )
+        assert not popped_orders
+
+        # OrderBook.add sets placed_at to the time of the order book (0)
+        orders = [
+            self._make_placed_order(
+                is_buy=True, price=price, placed_at=0, order_id=order_id
+            )
+            for order_id, price in enumerate([90.0, 110.0, 100.0])
+        ]
+        for order in orders:
+            order_book.add(order)
+        # the best buy orders are popped first and the heap order is kept
+        for expected in [orders[1], orders[2], orders[0]]:
+            assert (
+                self.base_class._pop_next_order(
+                    order_book=order_book, popped_orders=popped_orders
+                )
+                is expected
+            )
+        assert popped_orders == [orders[1], orders[2], orders[0]]
+        assert not order_book.priority_queue
+
+    def test_pop_next_order_without_volume(self) -> None:
+        order_book = OrderBook(is_buy=True)
+        order = self._make_placed_order(
+            is_buy=True, price=100.0, placed_at=0, order_id=0
+        )
+        order_book.add(order)
+        # an order without volume must not remain in the order book
+        order.volume = 0
+        popped_orders: List[Order] = []
+        with pytest.raises(AssertionError):
+            self.base_class._pop_next_order(
+                order_book=order_book, popped_orders=popped_orders
+            )
+        # the popped order is still recorded so that it can be pushed back
+        assert popped_orders == [order]
+        assert not order_book.priority_queue
+
+    def _make_market_with_best_order_without_volume(
+        self, is_buy: bool
+    ) -> Tuple[Market, Order, Order]:
+        # The best order of one side has no volume, while the next order of that side
+        # still crosses the order of the other side.
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        sign = 1 if is_buy else -1
+        order_without_volume = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=is_buy,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100 + 10 * sign,
+        )
+        market._add_order(order_without_volume)
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=10,
+                price=100 + 5 * sign,
+            )
+        )
+        other_order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=not is_buy,
+            kind=LIMIT_ORDER,
+            volume=5,
+            price=100,
+        )
+        market._add_order(other_order)
+        # an order without volume must not remain in the order book
+        order_without_volume.volume = 0
+        assert market.remain_executable_orders()
+        return market, order_without_volume, other_order
+
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_execution_best_order_without_volume(self, is_buy: bool) -> None:
+        # an order without volume is not skipped even if it is the first popped order
+        # of its side, but violates the invariant like the following ones
+        market, _, _ = self._make_market_with_best_order_without_volume(is_buy=is_buy)
+        with pytest.raises(AssertionError):
+            market._execution()
+
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_collect_pending_executions_best_order_without_volume(
+        self, is_buy: bool
+    ) -> None:
+        (
+            market,
+            order_without_volume,
+            other_order,
+        ) = self._make_market_with_best_order_without_volume(is_buy=is_buy)
+        popped_buy_orders: List[Order] = []
+        popped_sell_orders: List[Order] = []
+        with pytest.raises(AssertionError):
+            market._collect_pending_executions(
+                popped_buy_orders=popped_buy_orders,
+                popped_sell_orders=popped_sell_orders,
+            )
+        # the buy order is popped first, and the popped orders are recorded so that
+        # they can be pushed back
+        if is_buy:
+            assert popped_buy_orders == [order_without_volume]
+            assert not popped_sell_orders
+        else:
+            assert popped_buy_orders == [other_order]
+            assert popped_sell_orders == [order_without_volume]
 
     def test_expiration_orrder_pattern01(self) -> None:
         logger = Logger()

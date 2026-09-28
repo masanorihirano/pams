@@ -18,7 +18,7 @@ from ..utils.json_random import JsonRandom
 
 
 class Agent(ABC):
-    """Agent class (abstract class)
+    """Agent class (abstract class).
 
     Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents
     using the class you define.
@@ -39,7 +39,7 @@ class Agent(ABC):
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
-        """agent initialization. Usually call from simulator automatically.
+        """Agent initialization. Usually call from simulator automatically.
 
         Args:
             agent_id (int): agent id. This is also required to generate orders to identify who submit orders.
@@ -57,6 +57,7 @@ class Agent(ABC):
         Note:
              `prng` should not be shared with other classes and be used only in this class.
              It is because sometimes agent process runs one of parallelized threads.
+
         """
         self.agent_id: int = agent_id
         self.name: str = name
@@ -67,6 +68,7 @@ class Agent(ABC):
         self.logger: Optional[Logger] = logger
 
     def __repr__(self) -> str:
+        """Return the string representation of the agent."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, name={self.name}, "
             f"logger={self.logger}>"
@@ -79,7 +81,7 @@ class Agent(ABC):
         *args,
         **kwargs,
     ) -> None:
-        """agent setup. Usually be called from simulator/runner automatically.
+        """Agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration.  Usually, automatically set from json config of simulator.
@@ -90,6 +92,7 @@ class Agent(ABC):
 
         Returns:
             None
+
         """
         if "cashAmount" not in settings:
             raise ValueError("cashAmount is a required property of agent settings")
@@ -107,80 +110,87 @@ class Agent(ABC):
             self.set_asset_volume(market_id=market_id, volume=volume)
 
     def get_asset_volume(self, market_id: int) -> int:
-        """getter of the asset volume held by the agent.
+        """Getter of the asset volume held by the agent.
 
         Args:
             market_id (int): market ID.
 
         Returns:
             int: asset volume for the specified market ID.
+
         """
         if not self.is_market_accessible(market_id=market_id):
             raise ValueError(f"market {market_id} is not accessible")
         return self.asset_volumes[market_id]
 
     def get_cash_amount(self) -> float:
-        """getter of the cash amount held by the agent.
+        """Getter of the cash amount held by the agent.
 
         Returns:
             float: cash amount held by this agent.
+
         """
         return self.cash_amount
 
     def get_prng(self) -> random.Random:
-        """getter of the pseudo random number generator.
+        """Getter of the pseudo random number generator.
 
         Returns:
             random.Random: pseudo random number generator for this agent.
+
         """
         return self.prng
 
     def is_market_accessible(self, market_id: int) -> bool:
-        """determine if the market ID is included in the asset volume
+        """Determine if the market ID is included in the asset volume.
 
         Args:
             market_id (int): market ID.
 
         Returns:
             bool: whether the asset volume held by the agent contains the specified market or not.
+
         """
         return market_id in self.asset_volumes
 
     def submitted_order(self, log: OrderLog) -> None:  # noqa: B027
-        """call back when an order submission is accepted by a market.
+        """Call back when an order submission is accepted by a market.
 
         Args:
             log (OrderLog): log for order submission
 
         Returns:
             None
+
         """
         pass
 
     def executed_order(self, log: ExecutionLog) -> None:  # noqa: B027
-        """call back when a submitted order is executed in a market.
+        """Call back when a submitted order is executed in a market.
 
         Args:
             log (ExecutionLog): log for order execution
 
         Returns:
             None
+
         """
         pass
 
     def canceled_order(self, log: CancelLog) -> None:  # noqa: B027
-        """call back when cancel order is accepted by a market.
+        """Call back when cancel order is accepted by a market.
 
         Args:
             log (CancelLog): log for order cancellation
 
         Returns:
             None
+
         """
         pass
 
     def set_asset_volume(self, market_id: int, volume: int) -> None:
-        """setter of the asset volume held by agent.
+        """Setter of the asset volume held by agent.
 
         Args:
             market_id (int): market ID.
@@ -188,6 +198,7 @@ class Agent(ABC):
 
         Returns:
             None
+
         """
         if not self.is_market_accessible(market_id=market_id):
             raise ValueError(f"market {market_id} is not accessible")
@@ -196,24 +207,26 @@ class Agent(ABC):
         self.asset_volumes[market_id] = volume
 
     def set_cash_amount(self, cash_amount: float) -> None:
-        """setter of the cash amount held by agent.
+        """Setter of the cash amount held by agent.
 
         Args:
             cash_amount (float): cash amount held by this agent.
 
         Returns:
             None
+
         """
         self.cash_amount = cash_amount
 
     def set_market_accessible(self, market_id: int) -> None:
-        """set the specified market volume to 0.
+        """Set the specified market volume to 0.
 
         Args:
             market_id (int): market ID.
 
         Returns:
             None
+
         """
         if self.is_market_accessible(market_id=market_id):
             raise ValueError(f"market {market_id} is already accessible")
@@ -221,7 +234,7 @@ class Agent(ABC):
 
     @abstractmethod
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders (abstract method). This method automatically called from runners.
+        """Submit orders (abstract method). This method automatically called from runners.
 
         This method is called only when this agent has a chance to submit orders.
         Therefore, it is not guaranteed that this method is called at all the step of simulation.
@@ -234,11 +247,12 @@ class Agent(ABC):
 
         Note:
             You should implement this method if you inherit this agent.
+
         """
         pass
 
     def update_asset_volume(self, market_id: int, delta: int) -> None:
-        """increasing or decreasing the asset volume.
+        """Increasing or decreasing the asset volume.
 
         Args:
             market_id (int): market ID.
@@ -246,6 +260,7 @@ class Agent(ABC):
 
         Returns:
             None
+
         """
         if not self.is_market_accessible(market_id=market_id):
             raise ValueError(f"market {market_id} is not accessible")
@@ -254,12 +269,13 @@ class Agent(ABC):
         self.asset_volumes[market_id] += delta
 
     def update_cash_amount(self, delta: float) -> None:
-        """increasing or decreasing the cash amount.
+        """Increasing or decreasing the cash amount.
 
         Args:
             delta (float): amount of change in the cash amount.
 
         Returns:
             None
+
         """
         self.cash_amount += delta

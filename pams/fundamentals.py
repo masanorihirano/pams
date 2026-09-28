@@ -12,13 +12,14 @@ class Fundamentals:
     """Fundamental generator for simulator."""
 
     def __init__(self, prng: random.Random) -> None:
-        """initialize.
+        """Initialize.
 
         Args:
             prng (random.Random): pseudo random number generator for cholesky.
 
         Returns:
             None
+
         """
         self._prng = prng
         self._np_prng: np.random.Generator = np.random.default_rng(
@@ -42,7 +43,7 @@ class Fundamentals:
         volatility: float,
         start_at: int = 0,
     ) -> None:
-        """add a market whose fundamental prices are generated in this class.
+        """Add a market whose fundamental prices are generated in this class.
 
         Args:
             market_id (int): market ID to add.
@@ -53,6 +54,7 @@ class Fundamentals:
 
         Returns:
             None
+
         """
         if market_id in self.market_ids:
             raise ValueError(f"market {market_id} is already registered")
@@ -69,13 +71,14 @@ class Fundamentals:
         self._generated_until = min(start_at, self._generated_until)
 
     def remove_market(self, market_id: int) -> None:
-        """remove a market from the list of markets whose fundamental prices are generated in this class.
+        """Remove a market from the list of markets whose fundamental prices are generated in this class.
 
         Args:
             market_id (int): market ID to remove.
 
         Returns:
             None
+
         """
         self.market_ids.remove(market_id)
         self.drifts.pop(market_id)
@@ -87,7 +90,7 @@ class Fundamentals:
     def change_volatility(
         self, market_id: int, volatility: float, time: int = 0
     ) -> None:
-        """change volatility.
+        """Change volatility.
 
         Args:
             market_id (int): market ID.
@@ -96,6 +99,7 @@ class Fundamentals:
 
         Returns:
             None
+
         """
         if volatility < 0.0:
             raise ValueError("volatility must be non-negative")
@@ -103,7 +107,7 @@ class Fundamentals:
         self._generated_until = time
 
     def change_drift(self, market_id: int, drift: float, time: int = 0) -> None:
-        """change drift.
+        """Change drift.
 
         Args:
             market_id (int): market ID.
@@ -112,6 +116,7 @@ class Fundamentals:
 
         Returns:
             None
+
         """
         self.drifts[market_id] = drift
         self._generated_until = time
@@ -119,7 +124,7 @@ class Fundamentals:
     def set_correlation(
         self, market_id1: int, market_id2: int, corr: float, time: int = 0
     ) -> None:
-        """set correlation between fundamental prices of markets.
+        """Set correlation between fundamental prices of markets.
 
         Args:
             market_id1 (int): one of the market IDs to set correlation.
@@ -129,6 +134,7 @@ class Fundamentals:
 
         Returns:
             None
+
         """
         if not -1.0 < corr < 1.0:
             raise ValueError("corr must be in (-1.0, 1.0)")
@@ -143,7 +149,7 @@ class Fundamentals:
     def remove_correlation(
         self, market_id1: int, market_id2: int, time: int = 0
     ) -> None:
-        """remove correlation.
+        """Remove correlation.
 
         Args:
             market_id1 (int): one of the market IDs to remove correlation.
@@ -152,6 +158,7 @@ class Fundamentals:
 
         Returns:
             None
+
         """
         if market_id1 == market_id2:
             raise ValueError("market_id1 and market_id2 must be different")
@@ -164,7 +171,7 @@ class Fundamentals:
     def _generate_log_return(
         self, generate_target_ids: List[int], length: int
     ) -> np.ndarray:
-        """get log returns. (Internal method)
+        """Get log returns (internal method).
 
         Args:
             generate_target_ids (List[int]): target market ID list.
@@ -172,6 +179,7 @@ class Fundamentals:
 
         Returns:
             np.ndarray: log returns.
+
         """
         generate_target_ids_cholesky = list(
             filter(lambda x: self.volatilities[x] != 0.0, generate_target_ids)
@@ -215,7 +223,7 @@ class Fundamentals:
         )
         result_cholesky = np.dot(
             cholesky_matrix, dw_cholesky
-        ) + drifts_cholesky.T.reshape(-1, 1)
+        ) + drifts_cholesky.reshape(-1, 1)
 
         drifts_others = np.asarray(
             [[self.drifts[x] for _ in range(length)] for x in generate_target_ids_other]
@@ -231,7 +239,7 @@ class Fundamentals:
         )
 
     def _generate_next(self) -> None:
-        """execute to next step. (Internal method)
+        """Execute to next step (internal method).
 
         This method is called by :func:`pams.Fundamentals.get_fundamental_price` or
         :func:`pams.Fundamentals.get_fundamental_prices`.
@@ -253,9 +261,7 @@ class Fundamentals:
         current_prices = np.asarray(
             [self.prices[x][self._generated_until] for x in target_market_ids]
         )
-        prices = current_prices.T.reshape(-1, 1) * np.exp(
-            np.cumsum(log_return, axis=-1)
-        )
+        prices = current_prices.reshape(-1, 1) * np.exp(np.cumsum(log_return, axis=-1))
         for market_id, price_seq in zip(target_market_ids, prices):
             self.prices[market_id] = (
                 self.prices[market_id][: self._generated_until + 1] + price_seq.tolist()
@@ -263,7 +269,7 @@ class Fundamentals:
         self._generated_until += length
 
     def get_fundamental_price(self, market_id: int, time: int) -> float:
-        """get a fundamental price.
+        """Get a fundamental price.
 
         Args:
             market_id (int): market ID.
@@ -271,6 +277,7 @@ class Fundamentals:
 
         Returns:
             float: fundamental price at the specified time step.
+
         """
         while time >= self._generated_until:
             self._generate_next()
@@ -279,7 +286,7 @@ class Fundamentals:
     def get_fundamental_prices(
         self, market_id: int, times: Iterable[int]
     ) -> List[float]:
-        """get some fundamental prices.
+        """Get some fundamental prices.
 
         Args:
             market_id (int): market ID.
@@ -287,6 +294,7 @@ class Fundamentals:
 
         Returns:
             List[float]: fundamental prices in specified range of time steps.
+
         """
         times = list(times)
         if len(times) == 0:
