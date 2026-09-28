@@ -19,6 +19,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # a deadlock of the worker processes should not hold the runner for hours
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v7
