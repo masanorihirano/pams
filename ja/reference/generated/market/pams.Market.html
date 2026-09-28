@@ -750,6 +750,10 @@
 <dt class="sig sig-object py" id="pams.Market.remain_executable_orders">
 <span class="sig-name descname"><span class="pre">remain_executable_orders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.remain_executable_orders"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.Market.remain_executable_orders" title="この定義へのパーマリンク">#</a></dt>
 <dd><p>check if there are remain executable orders in this market.</p>
+<p>When both sides have market orders and their total volumes differ, the excess
+market orders have to be absorbed by the limit orders of the other side.
+Otherwise, the execution price cannot be determined and nothing is executed
+(special quote), even if some orders could be matched.</p>
 <dl class="field-list simple">
 <dt class="field-odd">戻り値<span class="colon">:</span></dt>
 <dd class="field-odd"><p>whether some orders is executable or not.</p>

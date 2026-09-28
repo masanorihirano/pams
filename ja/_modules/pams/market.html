@@ -1106,6 +1106,11 @@
 <div class="viewcode-block" id="Market.remain_executable_orders"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.remain_executable_orders">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remain_executable_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""check if there are remain executable orders in this market.</span>
 
+<span class="sd">        When both sides have market orders and their total volumes differ, the excess</span>
+<span class="sd">        market orders have to be absorbed by the limit orders of the other side.</span>
+<span class="sd">        Otherwise, the execution price cannot be determined and nothing is executed</span>
+<span class="sd">        (special quote), even if some orders could be matched.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: whether some orders is executable or not.</span>
 <span class="sd">        """</span>
@@ -1130,14 +1135,18 @@
             <span class="k">if</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sell_book</span> <span class="ow">or</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">buy_book</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span>
             <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">!=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+                <span class="c1"># the excess market orders of the larger side have to be absorbed</span>
+                <span class="c1"># by the limit orders of the other side. Otherwise, as in a batch</span>
+                <span class="c1"># auction, the execution price cannot be determined and no execution</span>
+                <span class="c1"># happens (special quote).</span>
                 <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-                    <span class="n">additional_required_orders</span> <span class="o">=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+                    <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                     <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">sell_book</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">additional_required_orders</span>
+                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sell_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">additional_required_orders</span> <span class="o">=</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+                    <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                     <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">buy_book</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">additional_required_orders</span>
+                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">buy_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                 <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
