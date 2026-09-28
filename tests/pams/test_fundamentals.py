@@ -107,9 +107,9 @@ class TestFundamentals:
         coef = np.corrcoef(returns)
         assert abs(coef[1, 0] - corr) < 0.02
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"corr must be in \(-1\.0, 1\.0\)"):
             f.set_correlation(market_id1=1, market_id2=2, corr=1.0)
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=r"corr must be in \(-1\.0, 1\.0\)"):
             f.set_correlation(market_id1=1, market_id2=2, corr=-1.0)
 
     def test_set_correlation2(self) -> None:
@@ -160,3 +160,29 @@ class TestFundamentals:
             f.set_correlation(market_id2=2, market_id1=2, corr=0.9)
         with pytest.raises(ValueError):
             f.remove_correlation(market_id1=2, market_id2=2)
+
+    def test_get_fundamental_prices_with_iterators(self) -> None:
+        f = Fundamentals(prng=random.Random(42))
+        f.add_market(market_id=0, initial=1000, drift=0.0, volatility=0.1)
+        # times spanning multiple generation chunks (chunk size is 100)
+        expected = [f.get_fundamental_price(market_id=0, time=t) for t in range(350)]
+
+        f = Fundamentals(prng=random.Random(42))
+        f.add_market(market_id=0, initial=1000, drift=0.0, volatility=0.1)
+        assert f.get_fundamental_prices(
+            market_id=0, times=(t for t in [0, 150, 349])
+        ) == [expected[0], expected[150], expected[349]]
+        assert f.get_fundamental_prices(market_id=0, times=iter([349, 5, 5])) == [
+            expected[349],
+            expected[5],
+            expected[5],
+        ]
+        assert f.get_fundamental_prices(market_id=0, times=range(350)) == expected
+        assert f.get_fundamental_prices(market_id=0, times=iter([])) == []
+        assert f.get_fundamental_prices(market_id=0, times=[]) == []
+
+        f = Fundamentals(prng=random.Random(42))
+        f.add_market(market_id=0, initial=1000, drift=0.0, volatility=0.1)
+        assert f.get_fundamental_prices(
+            market_id=0, times=(t for t in [320, 10, 320])
+        ) == [expected[320], expected[10], expected[320]]

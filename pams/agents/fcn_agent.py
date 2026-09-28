@@ -245,11 +245,15 @@ class FCNAgent(Agent):
         Returns:
             str: string representation of this class.
         """
+        margin_type = {
+            MARGIN_FIXED: "MARGIN_FIXED",
+            MARGIN_NORMAL: "MARGIN_NORMAL",
+        }.get(self.margin_type, self.margin_type)
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, rnd={self.prng}, "
             f"chart_weight={self.chart_weight}, fundamental_weight={self.fundamental_weight}, "
             f"noise_weight={self.noise_weight}, is_chart_following:{self.is_chart_following}, "
-            f"margin_type={self.margin_type}, mean_reversion_time:{self.mean_reversion_time}, "
+            f"margin_type={margin_type}, mean_reversion_time:{self.mean_reversion_time}, "
             f"noise_scale={self.noise_scale}, time_window_size={self.time_window_size}, "
-            f"order_margin={'MARGIN_FIXED' if self.order_margin == MARGIN_FIXED else 'MARGIN_NORMAL'}"
+            f"order_margin={self.order_margin}"
         )

@@ -115,3 +115,12 @@ Json config
             "orderTimeLength": int optional; default 2,
         }
     }
+
+Naming of markets and agents
+----------------------------
+
+Each market / agent gets a name built from ``prefix`` (default: the dict key) as follows:
+
+- Neither ``numMarkets`` / ``numAgents`` nor ``from`` / ``to`` specified, or the count is 1: the name is ``prefix`` itself (e.g. ``Market``).
+- ``numMarkets`` / ``numAgents`` greater than 1: the names are ``prefix`` + index, starting from 0. If ``prefix`` is not specified, ``-`` is inserted (e.g. ``Market-0``, ``Market-1``, ...).
+- ``from`` and ``to``: both are required, ``to`` is inclusive and must be greater than or equal to ``from``. The names are always ``prefix`` + index for every index from ``from`` to ``to``, even when ``from`` equals ``to``. If ``prefix`` is not specified and the range has more than one element, ``-`` is inserted (e.g. ``from: 0, to: 1`` gives ``Market-0``, ``Market-1``; ``from: 5, to: 5`` gives ``Market5``).

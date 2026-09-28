@@ -136,6 +136,29 @@ class TestEventHook:
             f"specific_class={specific_class}, specific_instance={specific_instance}, event={event}>"
         )
 
+    def test_invalid_hook_type_message(self) -> None:
+        sim = Simulator(prng=random.Random(4))
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=Logger(),
+        )
+        event = FundamentalPriceShock(
+            event_id=0,
+            prng=random.Random(42),
+            session=session,
+            simulator=sim,
+            name="event0",
+        )
+        with pytest.raises(
+            ValueError,
+            match="hook type must be one of order, cancel, execution, session, or market",
+        ):
+            EventHook(event=event, hook_type="dummy", is_before=False)
+
 
 class DummyEvent(EventABC):
     def hook_registration(self) -> List[EventHook]:

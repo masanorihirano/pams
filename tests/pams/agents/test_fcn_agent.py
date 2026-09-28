@@ -148,7 +148,14 @@ class TestFCNAgent(TestAgent):
         agent.setup(settings=settings4, accessible_markets_ids=[0, 1, 2])
         assert agent.mean_reversion_time == 100
 
-    def test__repr(self) -> None:
+    @pytest.mark.parametrize(
+        "margin_type, expected_label",
+        [("fixed", "MARGIN_FIXED"), ("normal", "MARGIN_NORMAL")],
+    )
+    @pytest.mark.parametrize("order_margin", [0.0, 0.1])
+    def test__repr(
+        self, margin_type: str, expected_label: str, order_margin: float
+    ) -> None:
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
         _prng = random.Random(42)
@@ -163,17 +170,19 @@ class TestFCNAgent(TestAgent):
             "noiseWeight": 3.0,
             "noiseScale": 0.001,
             "timeWindowSize": 100,
-            "orderMargin": 0.1,
-            "marginType": "fixed",
+            "orderMargin": order_margin,
+            "marginType": margin_type,
             "meanReversionTime": 200,
         }
         agent.setup(settings=settings1, accessible_markets_ids=[0, 1, 2])
         assert (
             str(agent)
             == f"<pams.agents.fcn_agent.FCNAgent | id=1, rnd={_prng}, chart_weight=2.0, fundamental_weight=1.0, "
-            f"noise_weight=3.0, is_chart_following:True, margin_type=0, mean_reversion_time:200, noise_scale=0.001, "
-            f"time_window_size=100, order_margin=MARGIN_NORMAL"
+            f"noise_weight=3.0, is_chart_following:True, margin_type={expected_label}, mean_reversion_time:200, "
+            f"noise_scale=0.001, time_window_size=100, order_margin={order_margin}"
         )
+        agent.margin_type = 99
+        assert "margin_type=99," in str(agent)
 
     @pytest.mark.parametrize("margin_type", [None, "fixed", "normal"])
     @pytest.mark.parametrize("seed", [1, 42, 100, 200])

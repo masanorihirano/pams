@@ -26,7 +26,7 @@ If you consider cite our work, please use the following [arxiv entry](https://ar
 ```bibtex
 @misc{Hirano2023-pams,
     title={{PAMS: Platform for Artificial Market Simulations}},
-    author={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
+    author={Hirano, Masanori and Takata, Ryosuke and Izumi, Kiyoshi},
     year={2023},
     doi = {10.48550/arXiv.2309.10729}
 }
@@ -37,7 +37,7 @@ If you prefer to cite this package directly, please use the following bibtex ent
 ```bibtex
 @misc{Hirano2022-pams,
     title={{PAMS: Platform for Artificial Market Simulations}},
-    author={Masanori HIRANO, Ryosuke TAKATA, Kiyoshi IZUMI},
+    author={Hirano, Masanori and Takata, Ryosuke and Izumi, Kiyoshi},
     year={2022},
     url = {https://github.com/masanorihirano/pams}
 }

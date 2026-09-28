@@ -2,6 +2,7 @@ import copy
 import math
 import random
 import time
+import warnings
 from typing import List
 from typing import Optional
 from unittest import mock
@@ -13,6 +14,7 @@ from pams import MARKET_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
+from pams.logs.base import ExecutionLog
 from pams.logs.base import ExpirationLog
 from pams.logs.base import Logger
 from pams.simulator import Simulator
@@ -187,6 +189,68 @@ class TestMarket:
             with pytest.raises(AssertionError):
                 m._cancel_order(cancel_dummy)
 
+    @pytest.mark.parametrize(
+        "history, expected",
+        [
+            ([None, None, None], None),
+            ([1.0, None, None], 1.0),
+            ([1.0, 2.0, None], 2.0),
+            ([0.0, None, None], 0.0),
+            ([None, 0.0, None], 0.0),
+            ([1.0, -1.0, None], -1.0),
+            ([-5.0, 5.0, None], 5.0),
+        ],
+    )
+    def test_set_time_carries_last_prices(
+        self, history: List[Optional[float]], expected: Optional[float]
+    ) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        m._update_time(next_fundamental_price=1.0)
+        m._last_executed_prices[: len(history)] = history
+        m._mid_prices[: len(history)] = history
+        m._market_prices[: len(history)] = history
+        m._set_time(time=3, next_fundamental_price=1.0)
+        assert m._last_executed_prices[3] == expected
+        assert m._mid_prices[3] == expected
+        assert m._market_prices[3] == expected
+
+    @pytest.mark.parametrize(
+        "executed, mid, expected",
+        [
+            ([None, 0.0], [None, 2.0], 0.0),
+            ([None, None], [None, 0.0], 0.0),
+            ([None, -1.0], [None, 2.0], -1.0),
+        ],
+    )
+    def test_set_time_market_price_with_non_positive_prices(
+        self,
+        executed: List[Optional[float]],
+        mid: List[Optional[float]],
+        expected: Optional[float],
+    ) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m._update_time(next_fundamental_price=1.0)
+        m._update_time(next_fundamental_price=1.0)
+        m._is_running = True
+        m._last_executed_prices[:2] = executed
+        m._mid_prices[:2] = mid
+        m._market_prices[:2] = [1.0, 3.0]
+        m._set_time(time=2, next_fundamental_price=1.0)
+        assert m._market_prices[2] == expected
+
     def test_repr_(self) -> None:
         m = self.base_class(
             market_id=0,
@@ -287,6 +351,37 @@ class TestMarket:
         )
         expected = [1, None]
         assert results == expected
+
+    def test_extract_sequential_data_by_time_with_iterators(self) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m.time = 4
+        parameters: List[Optional[int]] = [0, 1, 2, 3, 4]
+        assert m._extract_sequential_data_by_time(
+            times=(t for t in [1, 2]), parameters=parameters
+        ) == [1, 2]
+        assert m._extract_sequential_data_by_time(
+            times=iter([3, 0, 3, 1]), parameters=parameters
+        ) == [3, 0, 3, 1]
+        assert m._extract_sequential_data_by_time(
+            times=range(1, 4), parameters=parameters
+        ) == [1, 2, 3]
+        assert (
+            m._extract_sequential_data_by_time(times=iter([]), parameters=parameters)
+            == []
+        )
+        with pytest.raises(AssertionError):
+            m._extract_sequential_data_by_time(
+                times=(t for t in [1, 5]), parameters=parameters + [5]
+            )
+        m._market_prices = [1.0, 1.1, 1.2, 1.3, 1.4]
+        assert m.get_market_prices(iter([0])) == [1.0]
+        assert m.get_market_prices(t for t in [4, 2]) == [1.4, 1.2]
 
     def test_extract_data_by_time(self) -> None:
         m = self.base_class(
@@ -433,6 +528,147 @@ class TestMarket:
             )
             with pytest.raises(AssertionError):
                 m._add_order(order=order_sell)
+
+    def _create_market_with_tick_size(self, tick_size: float) -> Market:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m.tick_size = tick_size
+        m._update_time(next_fundamental_price=1.0)
+        return m
+
+    @pytest.mark.parametrize(
+        "tick_size, tick_level",
+        [
+            (1.0, 3),
+            (1.0, 123456789),
+            (1.0, 500000000001),
+            (0.1, 3),
+            (0.1, 7),
+            (0.1, 12345),
+            (0.01, 29),
+            (0.01, 57),
+            (0.01, 1234567),
+            (0.00001, 30000),
+            (0.00001, 70001),
+            (0.00001, 10000000),
+            (0.00001, 123456789),
+            (0.00001, 500000000001),
+        ],
+    )
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_add_order_on_tick_price(
+        self, tick_size: float, tick_level: int, is_buy: bool
+    ) -> None:
+        m = self._create_market_with_tick_size(tick_size=tick_size)
+        # prices written as decimal literals, as users / configs typically do
+        decimals = max(0, -math.floor(math.log10(tick_size)))
+        prices = [
+            float(f"{tick_level * tick_size:.{decimals}f}"),
+            tick_level * tick_size,
+            m.convert_to_price(tick_level=tick_level),
+        ]
+        for price in prices:
+            assert m.convert_to_tick_level_rounded_lower(price=price) == tick_level
+            assert m.convert_to_tick_level_rounded_upper(price=price) == tick_level
+            assert m.convert_to_tick_level(price=price, is_buy=is_buy) == tick_level
+            order = Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("error")
+                m._add_order(order=order)
+            assert order.price == m.convert_to_price(tick_level=tick_level)
+            # idempotence: converting the modified price again is stable
+            assert order.price is not None
+            for side in [True, False]:
+                assert (
+                    m.convert_to_tick_level(price=order.price, is_buy=side)
+                    == tick_level
+                )
+
+    @pytest.mark.parametrize(
+        "tick_size, price, lower, upper",
+        [
+            (1.0, 1.1, 1, 2),
+            (1.0, 2.5, 2, 3),
+            (1.0, 3.000001, 3, 4),
+            (1.0, 1000000000.5, 1000000000, 1000000001),
+            (1.0, 500000000001.5, 500000000001, 500000000002),
+            (1.0, 500000000001.001, 500000000001, 500000000002),
+            (1.0, 500000000001.0005, 500000000001, 500000000002),
+            (1.0, 499999999999.999, 499999999999, 500000000000),
+            (1.0, 123456789012.001, 123456789012, 123456789013),
+            (1.0, 2.0**49 + 0.5, 2**49, 2**49 + 1),
+            (1.0, -2.5, -3, -2),
+            (0.1, 0.35, 3, 4),
+            (0.1, 0.71, 7, 8),
+            (0.01, 0.295, 29, 30),
+            (0.01, 1.2345, 123, 124),
+            (0.01, 1234567.8900001, 123456789, 123456790),
+            (0.00001, 1.000005, 100000, 100001),
+            (0.00001, 0.300001, 30000, 30001),
+            (0.00001, 1234.567891, 123456789, 123456790),
+            (0.00001, 1000.000000001, 100000000, 100000001),
+        ],
+    )
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_add_order_off_tick_price(
+        self, tick_size: float, price: float, lower: int, upper: int, is_buy: bool
+    ) -> None:
+        m = self._create_market_with_tick_size(tick_size=tick_size)
+        assert m.convert_to_tick_level_rounded_lower(price=price) == lower
+        assert m.convert_to_tick_level_rounded_upper(price=price) == upper
+        expected_level = lower if is_buy else upper
+        assert m.convert_to_tick_level(price=price, is_buy=is_buy) == expected_level
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=is_buy,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=price,
+        )
+        with pytest.warns(UserWarning):
+            m._add_order(order=order)
+        assert order.price == m.convert_to_price(tick_level=expected_level)
+        # the modified price is on tick, so converting it again is stable
+        assert order.price is not None
+        for side in [True, False]:
+            assert (
+                m.convert_to_tick_level(price=order.price, is_buy=side)
+                == expected_level
+            )
+
+    def test_add_order_on_tick_price_same_level(self) -> None:
+        m = self._create_market_with_tick_size(tick_size=0.1)
+        m._is_running = True
+        for price in [0.3, 3 * 0.1, 0.1 + 0.2]:
+            order = Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+            )
+            m._add_order(order=order)
+        assert m.get_buy_order_book() == {m.convert_to_price(tick_level=3): 3}
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=3, price=0.3
+        )
+        m._add_order(order=order)
+        logs = m._execution()
+        assert sum(log.volume for log in logs) == 3
 
     def test_execution(self) -> None:
         random.seed(42)
@@ -750,6 +986,69 @@ class TestMarket:
         assert market.remain_executable_orders()
         logs = market._execution()
         assert len(logs) == 2
+
+    def test_execution_logs_written_once(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(order)
+        order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(order)
+        logs = market._execution()
+        assert len(logs) == 2
+        assert all(isinstance(log, ExecutionLog) for log in logs)
+        assert sum([log.volume for log in logs]) == 2
+        execution_logs = [
+            log for log in logger.pending_logs if isinstance(log, ExecutionLog)
+        ]
+        assert len(execution_logs) == len(logs)
+        assert [id(log) for log in execution_logs] == [id(log) for log in logs]
+        n_pending_logs = len(logger.pending_logs)
+        assert market._execution() == []
+        assert len(logger.pending_logs) == n_pending_logs
+
+    def test_execute_orders_log_written_once(self) -> None:
+        logger = Logger()
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=logger,
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(buy_order)
+        log = market._execute_orders(
+            price=10.0, volume=1, buy_order=buy_order, sell_order=sell_order
+        )
+        execution_logs = [
+            log_ for log_ in logger.pending_logs if isinstance(log_, ExecutionLog)
+        ]
+        assert execution_logs == [log]
 
     def test_expiration_orrder_pattern01(self) -> None:
         logger = Logger()
