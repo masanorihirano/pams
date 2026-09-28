@@ -69,8 +69,8 @@ Subclasses of the parallel runners can customize the workers by overriding the f
 - ``_get_worker_initializer()`` and ``_get_worker_initargs()``: a function called once on each worker (thread or
   process) before it runs any task, and its arguments. By default, nothing is called. With the process runner,
   the function must be defined at the top level of a module that the worker processes can import, and the
-  arguments must be picklable. If the function raises an error, the simulation fails with
-  :class:`concurrent.futures.BrokenExecutor`.
+  arguments must be picklable. If the function raises an error on a worker, the tasks on that worker raise a
+  ``RuntimeError`` caused by the error, and the simulation fails.
 - ``_create_executor()``: the :class:`concurrent.futures.Executor` that runs the tasks. The default uses the
   members above and ``numParallel`` workers.
 - ``_split_agents_into_chunks(agents)``: how the agents asked at the same time are split into tasks. The agents

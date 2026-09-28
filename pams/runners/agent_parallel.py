@@ -1,6 +1,7 @@
 import multiprocessing
 import os
 import random
+import threading
 import warnings
 from concurrent.futures import Executor
 from concurrent.futures import Future
@@ -26,6 +27,37 @@ from ..session import Session
 from ..simulator import Simulator
 from .sequential import SequentialRunner
 
+# state of the current worker thread or process, set by _initialize_worker
+_worker_state = threading.local()
+
+
+def _initialize_worker(
+    initializer: Optional[Callable[..., Any]], initargs: Tuple[Any, ...]
+) -> None:
+    """Call the worker initializer on a worker (internal function).
+
+    If the initializer raises an exception, the exception is kept and
+    :func:`_submit_orders_in_worker` raises an error on this worker instead of breaking the
+    executor. This is because a broken :class:`concurrent.futures.ProcessPoolExecutor` can hang
+    on Python 3.10 or earlier when large tasks, such as the pickled simulation, are waiting to be
+    sent to the worker processes.
+
+    Args:
+        initializer (Callable[..., Any], Optional): worker initializer. If it is None, nothing is
+            called.
+        initargs (Tuple[Any, ...]): arguments of the worker initializer.
+
+    Returns:
+        None
+
+    """
+    _worker_state.initializer_error = None
+    if initializer is not None:
+        try:
+            initializer(*initargs)
+        except Exception as e:
+            _worker_state.initializer_error = e
+
 
 def _submit_orders_in_worker(
     agents: List[Agent], markets: List[Market]
@@ -35,6 +67,8 @@ def _submit_orders_in_worker(
     This function is a module-level function so that it can be pickled and executed
     on a worker process of :class:`concurrent.futures.ProcessPoolExecutor`.
     The agents are asked one by one in the given order.
+    If the worker initializer failed on this worker, a RuntimeError is raised with the exception
+    raised by the initializer as its cause.
 
     Args:
         agents (List[Agent]): agents.
@@ -47,6 +81,13 @@ def _submit_orders_in_worker(
             another process.
 
     """
+    initializer_error: Optional[Exception] = getattr(
+        _worker_state, "initializer_error", None
+    )
+    if initializer_error is not None:
+        raise RuntimeError(
+            "the worker initializer failed on this worker"
+        ) from initializer_error
     results: List[Tuple[List[Union[Order, Cancel]], Any]] = []
     for agent in agents:
         orders: List[Union[Order, Cancel]] = agent.submit_orders(markets=markets)
@@ -169,8 +210,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
 
         This method is called by ``_setup`` and ``_get_executor``. Subclasses can override it to
         customize the executor. This runner creates a :class:`concurrent.futures.ThreadPoolExecutor`
-        with ``num_parallel`` workers and the initializer given by ``_get_worker_initializer`` and
-        ``_get_worker_initargs``.
+        with ``num_parallel`` workers and ``_initialize_worker`` as the initializer, which calls
+        the initializer given by ``_get_worker_initializer`` and ``_get_worker_initargs``.
 
         Returns:
             Executor: new executor.
@@ -178,8 +219,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         """
         return self._parallel_pool_provider(
             max_workers=self.num_parallel,
-            initializer=self._get_worker_initializer(),
-            initargs=self._get_worker_initargs(),
+            initializer=_initialize_worker,
+            initargs=(self._get_worker_initializer(), self._get_worker_initargs()),
         )
 
     def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
@@ -192,8 +233,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         process of :class:`pams.runners.MultiProcessAgentParallelRunner`, but never on the main
         thread. For the latter, the function and its arguments are pickled, so the function must be
         defined at the top level of a module that the worker processes can import.
-        If the function raises an exception, the executor is broken, and the simulation fails with
-        :class:`concurrent.futures.BrokenExecutor`.
+        If the function raises an exception on a worker, every task on the worker raises a
+        RuntimeError whose cause is the exception, and the simulation fails with it.
 
         Returns:
             Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,
@@ -470,7 +511,8 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
 
         This runner creates a :class:`concurrent.futures.ProcessPoolExecutor` with
         ``num_parallel`` worker processes started by the context given by ``_get_mp_context`` and
-        the initializer given by ``_get_worker_initializer`` and ``_get_worker_initargs``.
+        ``_initialize_worker`` as the initializer, which calls the initializer given by
+        ``_get_worker_initializer`` and ``_get_worker_initargs``.
 
         Returns:
             Executor: new executor.
@@ -479,8 +521,8 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         return ProcessPoolExecutor(
             max_workers=self.num_parallel,
             mp_context=self._get_mp_context(),
-            initializer=self._get_worker_initializer(),
-            initargs=self._get_worker_initargs(),
+            initializer=_initialize_worker,
+            initargs=(self._get_worker_initializer(), self._get_worker_initargs()),
         )
 
     def _split_agents_into_chunks(self, agents: List[Agent]) -> List[List[Agent]]:

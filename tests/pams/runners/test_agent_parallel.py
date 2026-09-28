@@ -4,7 +4,6 @@ import os
 import random
 import time
 import uuid
-from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
@@ -439,8 +438,14 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             runner, "_get_worker_initializer", lambda: fail_to_initialize_worker
         )
         runner._setup()
-        with pytest.raises(BrokenExecutor):
+        # the tasks raise the error instead of breaking the executor, which can hang
+        # ProcessPoolExecutor on Python 3.10 or earlier
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed"
+        ) as exc_info:
             runner._run()
+        # the cause is the error itself (thread) or its traceback (process)
+        assert "error in worker initializer" in str(exc_info.value.__cause__)
         assert runner.executor is None
 
     def test_split_agents_into_chunks(self) -> None:
