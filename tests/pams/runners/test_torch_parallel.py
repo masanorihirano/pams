@@ -308,17 +308,18 @@ class TestTorchAgentParallelRunner:
         assert torch.multiprocessing.get_sharing_strategy() == sharing_strategy
 
     def test_tensors_are_shared_with_workers(self, torch: Any) -> None:
-        tensor = torch.arange(100_000, dtype=torch.float32)
+        # float64 makes the sum exact whatever the number of threads of the workers is
+        tensor = torch.arange(100_000, dtype=torch.float64)
         # the tensors are pickled with their data by pickle, but by their handles of shared
         # memory by ForkingPickler, which ProcessPoolExecutor uses
-        assert len(pickle.dumps(tensor)) > 400_000
+        assert len(pickle.dumps(tensor)) > 800_000
         assert not tensor.is_shared()
         _, runner = self._make_runners(setting=SETTING)
         runner._setup()
         executor = runner._get_executor()
         is_shared, total = executor.submit(inspect_tensor, tensor).result()
         assert is_shared
-        assert total == float(tensor.sum())
+        assert total == float(sum(range(100_000)))
         # the tensor on the main process is moved to shared memory
         assert tensor.is_shared()
         assert len(ForkingPickler.dumps(tensor)) < 1000
