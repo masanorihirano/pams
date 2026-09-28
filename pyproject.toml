@@ -61,8 +61,6 @@ select = ["E", "F", "W", "B", "C4", "I", "D"]
 ignore = [
     "E203", "E231", "E501",  # same as flake8 (W503 does not exist in ruff)
     "D1",    # docstrings are not mandatory
-    "D403",  # the first word of a docstring summary is lower-cased in this project
-    "D415",  # ... and the summary ends with e.g. "(Internal method)"
 ]
 per-file-ignores = { "__init__.py" = ["F401"], "tests/**" = ["D"], "samples/**" = ["D"] }
 

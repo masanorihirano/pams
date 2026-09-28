@@ -45,7 +45,7 @@ class SequentialRunner(Runner):
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
@@ -55,6 +55,7 @@ class SequentialRunner(Runner):
 
         Returns:
             None
+
         """
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
@@ -238,7 +239,7 @@ class SequentialRunner(Runner):
                 )
 
     def _set_fundamental_correlation(self) -> None:
-        """set fundamental correlation. (Internal method)"""
+        """Set fundamental correlation (internal method)."""
         # pylint: disable=too-many-nested-blocks
         if "fundamentalCorrelations" in self.settings["simulation"]:
             corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
@@ -274,7 +275,7 @@ class SequentialRunner(Runner):
                     )
 
     def _generate_sessions(self) -> None:
-        """generate sessions. (Internal method)"""
+        """Generate sessions (internal method)."""
         if "sessions" not in self.settings["simulation"]:
             raise ValueError("sessions is missing under 'simulation' config")
         session_settings: Dict = self.settings["simulation"]["sessions"]
@@ -341,7 +342,7 @@ class SequentialRunner(Runner):
                     self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
-        """runner setup. (Internal method)"""
+        """Runner setup (internal method)."""
         if "simulation" not in self.settings:
             raise ValueError("simulation is required in json file")
 
@@ -381,7 +382,7 @@ class SequentialRunner(Runner):
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
-        """collect orders from normal_agents. (Internal method)
+        """Collect orders from normal_agents (internal method).
 
         orders are collected until the total number of orders reaches max_normal_orders
 
@@ -390,6 +391,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: orders lists.
+
         """
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
@@ -413,7 +415,7 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _process_order(self, session: Session, order: Union[Order, Cancel]) -> None:
-        """process one order or cancel order and the executions caused by it. (Internal method)
+        """Process one order or cancel order and the executions caused by it (internal method).
 
         Args:
             session (Session): session.
@@ -421,6 +423,7 @@ class SequentialRunner(Runner):
 
         Returns:
             None
+
         """
         if not session.with_order_placement:
             raise AssertionError("currently order is not accepted")
@@ -455,7 +458,7 @@ class SequentialRunner(Runner):
     def _handle_high_frequency_orders(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
-        """collect and process the orders from high frequency agents. (Internal method)
+        """Collect and process the orders from high frequency agents (internal method).
 
         High frequency agents are asked in random order until the number of agents submitting orders
         reaches max_high_frequency_orders. The orders are processed immediately.
@@ -465,6 +468,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: order lists submitted by high frequency agents.
+
         """
         all_orders: List[List[Union[Order, Cancel]]] = []
         n_high_freq_orders = 0
@@ -495,7 +499,7 @@ class SequentialRunner(Runner):
     def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
-        """handle orders. (Internal method)
+        """Handle orders (internal method).
 
         processing local orders and correct and process the orders from high frequency agents.
 
@@ -505,6 +509,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: order lists.
+
         """
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
         all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
@@ -518,13 +523,14 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _update_markets(self, session: Session) -> None:
-        """update markets. (Internal method)
+        """Update markets (internal method).
 
         Args:
             session (Session): session.
 
         Returns:
             None
+
         """
         local_orders: List[
             List[Union[Order, Cancel]]
@@ -532,13 +538,14 @@ class SequentialRunner(Runner):
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
-        """iterate market updates. (Internal method)
+        """Iterate market updates (internal method).
 
         Args:
             session (Session): session.
 
         Returns:
             None
+
         """
         markets: List[Market] = self.simulator.markets
         for market in markets:
@@ -564,7 +571,7 @@ class SequentialRunner(Runner):
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
 
     def _run(self) -> None:
-        """main process. (Internal method)"""
+        """Main process (internal method)."""
         if self.logger is not None:
             log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
             log.read_and_write(logger=self.logger)

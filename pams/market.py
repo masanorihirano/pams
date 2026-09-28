@@ -39,7 +39,7 @@ class Market:
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
-        """initialization.
+        """Initialization.
 
         Args:
             market_id (int): market ID.
@@ -50,6 +50,7 @@ class Market:
 
         Returns:
             None
+
         """
         self.market_id: int = market_id
         self._prng = prng
@@ -74,13 +75,14 @@ class Market:
         self.outstanding_shares: Optional[int] = None
 
     def __repr__(self) -> str:
+        """Return the string representation of the market."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.market_id}, name={self.name}, "
             f"tick_size={self.tick_size}, outstanding_shares={self.outstanding_shares}>"
         )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """setup market configuration from setting format.
+        """Setup market configuration from setting format.
 
         Args:
             settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.
@@ -92,6 +94,7 @@ class Market:
 
         Returns:
             None
+
         """
         if "tickSize" not in settings:
             raise ValueError("tickSize is required")
@@ -113,7 +116,7 @@ class Market:
         parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> List[Optional[T]]:
-        """extract sequential parameters by time. (Internal method)
+        """Extract sequential parameters by time (internal method).
 
         Args:
             times (Union[Iterable[int], None]): range of time steps.
@@ -122,6 +125,7 @@ class Market:
 
         Returns:
             List[Optional[T]]: extracted parameters.
+
         """
         if times is None:
             times = range(self.time + 1)
@@ -139,7 +143,7 @@ class Market:
         parameters: List[Optional[T]],
         allow_none: bool = False,
     ) -> Optional[T]:
-        """extract a parameter by time. (Internal method)
+        """Extract a parameter by time (internal method).
 
         Args:
             time (Union[int, None]): time step.
@@ -148,6 +152,7 @@ class Market:
 
         Returns:
             Optional[T]: extracted parameter.
+
         """
         if time is None:
             time = self.time
@@ -159,19 +164,20 @@ class Market:
         return result
 
     def get_time(self) -> int:
-        """get time step."""
+        """Get time step."""
         return self.time
 
     def get_market_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
-        """get market prices.
+        """Get market prices.
 
         Args:
             times (Union[Iterable[int], None]): range of time steps.
 
         Returns:
             List[float]: extracted sequential data.
+
         """
         return cast(
             List[float],
@@ -181,13 +187,14 @@ class Market:
         )
 
     def get_market_price(self, time: Union[int, None] = None) -> float:
-        """get market price.
+        """Get market price.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             float: extracted data.
+
         """
         return cast(
             float,
@@ -197,52 +204,56 @@ class Market:
     def get_mid_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[Optional[float]]:
-        """get middle prices.
+        """Get middle prices.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[Optional[float]]: middle prices.
+
         """
         return self._extract_sequential_data_by_time(
             times, self._mid_prices, allow_none=True
         )
 
     def get_mid_price(self, time: Union[int, None] = None) -> Optional[float]:
-        """get middle price.
+        """Get middle price.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             float, Optional: middle price.
+
         """
         return self._extract_data_by_time(time, self._mid_prices, allow_none=True)
 
     def get_last_executed_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[Optional[float]]:
-        """get prices executed last steps.
+        """Get prices executed last steps.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[Optional[float]]: prices.
+
         """
         return self._extract_sequential_data_by_time(
             times, self._last_executed_prices, allow_none=True
         )
 
     def get_last_executed_price(self, time: Union[int, None] = None) -> Optional[float]:
-        """get price executed last step.
+        """Get price executed last step.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             float, Optional: price.
+
         """
         return self._extract_data_by_time(
             time, self._last_executed_prices, allow_none=True
@@ -251,13 +262,14 @@ class Market:
     def get_fundamental_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
-        """get fundamental prices.
+        """Get fundamental prices.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[float]: fundamental prices.
+
         """
         return cast(
             List[float],
@@ -265,26 +277,28 @@ class Market:
         )
 
     def get_fundamental_price(self, time: Union[int, None] = None) -> float:
-        """get fundamental price.
+        """Get fundamental price.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             float: fundamental price.
+
         """
         return cast(float, self._extract_data_by_time(time, self._fundamental_prices))
 
     def get_executed_volumes(
         self, times: Union[Iterable[int], None] = None
     ) -> List[int]:
-        """get executed volumes.
+        """Get executed volumes.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[int]: volumes.
+
         """
         return cast(
             List[int],
@@ -294,13 +308,14 @@ class Market:
         )
 
     def get_executed_volume(self, time: Union[int, None] = None) -> int:
-        """get executed volume.
+        """Get executed volume.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             int: volume.
+
         """
         return cast(
             int,
@@ -312,13 +327,14 @@ class Market:
     def get_executed_total_prices(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
-        """get executed total prices.
+        """Get executed total prices.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[float]: total prices.
+
         """
         return cast(
             List[float],
@@ -328,13 +344,14 @@ class Market:
         )
 
     def get_executed_total_price(self, time: Union[int, None] = None) -> float:
-        """get executed total price.
+        """Get executed total price.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             float: total price.
+
         """
         return cast(
             float,
@@ -344,13 +361,14 @@ class Market:
         )
 
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
-        """get the number of buy orders.
+        """Get the number of buy orders.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[int]: number of buy orders.
+
         """
         return cast(
             List[int],
@@ -360,13 +378,14 @@ class Market:
         )
 
     def get_n_buy_order(self, time: Union[int, None] = None) -> int:
-        """get the number of buy order.
+        """Get the number of buy order.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             int: number of buy order.
+
         """
         return cast(
             int,
@@ -376,13 +395,14 @@ class Market:
         )
 
     def get_n_sell_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
-        """get the number of sell orders.
+        """Get the number of sell orders.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
             List[int]: number of sell orders.
+
         """
         return cast(
             List[int],
@@ -392,13 +412,14 @@ class Market:
         )
 
     def get_n_sell_order(self, time: Union[int, None] = None) -> int:
-        """get the number of sell order.
+        """Get the number of sell order.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
             int: number of sell order.
+
         """
         return cast(
             int,
@@ -437,13 +458,14 @@ class Market:
         ]
 
     def get_vwap(self, time: Optional[int] = None) -> float:
-        """get VWAP.
+        """Get VWAP.
 
         Args:
             time (int, Optional): time step.
 
         Returns:
             float: VWAP.
+
         """
         if time is None:
             time = self.time
@@ -457,47 +479,52 @@ class Market:
 
     @property
     def is_running(self) -> bool:
-        """get whether this market is running or not.
+        """Get whether this market is running or not.
 
         Returns:
             bool: whether this market is running or not.
+
         """
         return self._is_running
 
     def get_best_buy_price(self) -> Optional[float]:
-        """get the best buy price.
+        """Get the best buy price.
 
         Returns:
             float, Optional: the best buy price.
+
         """
         return self.buy_order_book.get_best_price()
 
     def get_best_sell_price(self) -> Optional[float]:
-        """get the best sell price.
+        """Get the best sell price.
 
         Returns:
             float, Optional: the best sell price.
+
         """
         return self.sell_order_book.get_best_price()
 
     def get_sell_order_book(self) -> Dict[Optional[float], int]:
-        """get sell order book.
+        """Get sell order book.
 
         Returns:
             Dict[Optional[float], int]: sell order book.
+
         """
         return self.sell_order_book.get_price_volume()
 
     def get_buy_order_book(self) -> Dict[Optional[float], int]:
-        """get buy order book.
+        """Get buy order book.
 
         Returns:
             Dict[Optional[float], int]: buy order book.
+
         """
         return self.buy_order_book.get_price_volume()
 
     def _get_tick_level_if_on_tick(self, price: float) -> Optional[int]:
-        """get the tick level of the price if the price is on a tick.
+        """Get the tick level of the price if the price is on a tick.
 
         A price is regarded as on a tick if ``price / tick_size`` is an integer up to
         floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).
@@ -515,6 +542,7 @@ class Market:
 
         Returns:
             int, Optional: tick level if the price is on a tick, otherwise None.
+
         """
         ratio: float = price / self.tick_size
         tick_level: int = round(ratio)
@@ -524,13 +552,14 @@ class Market:
         return None
 
     def convert_to_tick_level_rounded_lower(self, price: float) -> int:
-        """convert price to tick level rounded lower.
+        """Convert price to tick level rounded lower.
 
         Args:
             price (float): price.
 
         Returns:
             int: price for tick level rounded lower.
+
         """
         tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
         if tick_level is not None:
@@ -538,13 +567,14 @@ class Market:
         return math.floor(price / self.tick_size)
 
     def convert_to_tick_level_rounded_upper(self, price: float) -> int:
-        """convert price to tick level rounded upper.
+        """Convert price to tick level rounded upper.
 
         Args:
             price (float): price.
 
         Returns:
             int: price for tick level rounded upper.
+
         """
         tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
         if tick_level is not None:
@@ -552,7 +582,7 @@ class Market:
         return math.ceil(price / self.tick_size)
 
     def convert_to_tick_level(self, price: float, is_buy: bool) -> int:
-        """convert price to tick level.
+        """Convert price to tick level.
 
         If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.
 
@@ -562,24 +592,26 @@ class Market:
 
         Returns:
             int: price for tick level.
+
         """
         if is_buy:
             return self.convert_to_tick_level_rounded_lower(price=price)
         return self.convert_to_tick_level_rounded_upper(price=price)
 
     def convert_to_price(self, tick_level: int) -> float:
-        """convert tick to price.
+        """Convert tick to price.
 
         Args:
             tick_level (int): tick level.
 
         Returns:
             float: price.
+
         """
         return self.tick_size * tick_level
 
     def _set_time(self, time: int, next_fundamental_price: float) -> None:
-        """set time step. (Usually, only triggered by simulator)
+        """Set time step (usually, only triggered by simulator).
 
         Args:
             time (int): time step.
@@ -587,6 +619,7 @@ class Market:
 
         Returns:
             None
+
         """
         self.time = time
         logs: List[ExpirationLog] = self.buy_order_book._set_time(time)
@@ -634,13 +667,14 @@ class Market:
                     self._market_prices[self.time] = self._mid_prices[self.time]
 
     def _update_time(self, next_fundamental_price: float) -> None:
-        """update time. (Usually, only triggered by simulator)
+        """Update time (usually, only triggered by simulator).
 
         Args:
             next_fundamental_price (float): next fundamental price.
 
         Returns:
             None
+
         """
         self.time += 1
         logs: List[ExpirationLog] = self.buy_order_book._set_time(self.time)
@@ -671,13 +705,14 @@ class Market:
                 self._market_prices[self.time] = next_fundamental_price
 
     def _cancel_order(self, cancel: Cancel) -> CancelLog:
-        """cancel order. (Usually, only triggered by simulator)
+        """Cancel order (usually, only triggered by simulator).
 
         Args:
             cancel (:class:`pams.order.Cancel`): cancel class.
 
         Returns:
             :class:`pams.logs.base.CancelLog`: cancel log.
+
         """
         if self.market_id != cancel.order.market_id:
             raise ValueError("this cancel order is for a different market")
@@ -707,7 +742,7 @@ class Market:
         return log
 
     def _update_market_price(self) -> None:
-        """update market price. (Internal method)"""
+        """Update market price (internal method)."""
         best_buy_price: Optional[float] = self.get_best_buy_price()
         best_sell_price: Optional[float] = self.get_best_sell_price()
         if best_buy_price is None or best_sell_price is None:
@@ -727,7 +762,7 @@ class Market:
     def _execute_orders(
         self, price: float, volume: int, buy_order: Order, sell_order: Order
     ) -> ExecutionLog:
-        """execute orders. (Internal method)
+        """Execute orders (internal method).
 
         Args:
             price (float): price.
@@ -737,6 +772,7 @@ class Market:
 
         Returns:
             :class:`pams.logs.base.CancelLog`: execution log.
+
         """
         if not self.is_running:
             raise AssertionError("market is not running")
@@ -778,13 +814,14 @@ class Market:
         return log
 
     def _add_order(self, order: Order) -> OrderLog:
-        """add order. (Usually, only triggered by runner)
+        """Add order (usually, only triggered by runner).
 
         Args:
             order (:class:`pams.order.Order`): order.
 
         Returns:
             :class:`pams.logs.base.OrderLog`: order log.
+
         """
         if order.market_id != self.market_id:
             raise ValueError("order is not for this market")
@@ -832,7 +869,7 @@ class Market:
         return log
 
     def remain_executable_orders(self) -> bool:
-        """check if there are remain executable orders in this market.
+        """Check if there are remain executable orders in this market.
 
         When both sides have market orders and their total volumes differ, the excess
         market orders have to be absorbed by the limit orders of the other side.
@@ -841,6 +878,7 @@ class Market:
 
         Returns:
             bool: whether some orders is executable or not.
+
         """
         if len(self.sell_order_book) == 0:
             return False
@@ -1055,13 +1093,14 @@ class Market:
         return logs
 
     def change_fundamental_price(self, scale: float) -> None:
-        """change fundamental price.
+        """Change fundamental price.
 
         Args:
             scale (float): scale.
 
         Returns:
             None
+
         """
         time: int = self.time
         current_fundamental: float = self.get_fundamental_price(time=time)
