@@ -5,6 +5,7 @@ import time
 import warnings
 from typing import List
 from typing import Optional
+from typing import Tuple
 from unittest import mock
 
 import pytest
@@ -1382,11 +1383,15 @@ class TestMarket:
         buy_book = market.buy_order_book.get_price_volume()
         sell_book = market.sell_order_book.get_price_volume()
         both_market = None in buy_book and None in sell_book
-        buys = [(None, buy_book[None])] if None in buy_book else []
+        buys: List[Tuple[Optional[float], int]] = (
+            [(None, buy_book[None])] if None in buy_book else []
+        )
         buys += sorted(
             [(p, v) for p, v in buy_book.items() if p is not None], reverse=True
         )
-        sells = [(None, sell_book[None])] if None in sell_book else []
+        sells: List[Tuple[Optional[float], int]] = (
+            [(None, sell_book[None])] if None in sell_book else []
+        )
         sells += sorted([(p, v) for p, v in sell_book.items() if p is not None])
         i, j, buy_volume, sell_volume = 0, 0, 0, 0
         buy_price: Optional[float] = None
