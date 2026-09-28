@@ -1238,11 +1238,13 @@ the other runners ignore:
    * - ``jaxPreallocate`` |optional|
      - bool
      - Whether JAX preallocates GPU memory on each worker process (``XLA_PYTHON_CLIENT_PREALLOCATE``). Default:
-       ``false``, so that the worker processes can share a GPU (by default, JAX preallocates 75% of it).
+       ``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; otherwise ``false``, so that the worker
+       processes can share a GPU (by default, JAX preallocates 75% of it).
    * - ``jaxMemoryFraction`` |optional|
      - number in (0, 1]
      - The fraction of GPU memory that JAX can use on each worker process (``XLA_PYTHON_CLIENT_MEM_FRACTION``).
-       Default: the default of JAX (0.75).
+       Default: ``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in the environment if it is set;
+       otherwise the default of JAX (0.75).
 
 These keys do not configure JAX on the main process. See :doc:`platform` for how to write agents for this runner.
 

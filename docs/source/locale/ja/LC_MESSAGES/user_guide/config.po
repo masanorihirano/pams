@@ -2533,31 +2533,38 @@ msgstr ""
 #, python-format
 msgid ""
 "Whether JAX preallocates GPU memory on each worker process "
-"(``XLA_PYTHON_CLIENT_PREALLOCATE``). Default: ``false``, so that the "
-"worker processes can share a GPU (by default, JAX preallocates 75% of "
-"it)."
+"(``XLA_PYTHON_CLIENT_PREALLOCATE``). Default: "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; "
+"otherwise ``false``, so that the worker processes can share a GPU (by "
+"default, JAX preallocates 75% of it)."
 msgstr ""
 "各ワーカープロセスで JAX が GPU "
-"メモリを事前確保するかどうかです（``XLA_PYTHON_CLIENT_PREALLOCATE``）。デフォルト：``false``。ワーカープロセスが"
-" GPU を共有できるようにするためです（JAX はデフォルトで GPU メモリの 75% を事前確保します）。"
+"メモリを事前確保するかどうかです（``XLA_PYTHON_CLIENT_PREALLOCATE``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` が設定されていればその値、設定されていなければ "
+"``false``。ワーカープロセスが GPU を共有できるようにするためです（JAX はデフォルトで GPU メモリの 75% "
+"を事前確保します）。"
 
-#: ../../source/user_guide/config.rst:1242
+#: ../../source/user_guide/config.rst:1243
 msgid "``jaxMemoryFraction`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:1243
+#: ../../source/user_guide/config.rst:1244
 msgid "number in (0, 1]"
 msgstr "(0, 1] の数値"
 
-#: ../../source/user_guide/config.rst:1244
+#: ../../source/user_guide/config.rst:1245
 msgid ""
 "The fraction of GPU memory that JAX can use on each worker process "
-"(``XLA_PYTHON_CLIENT_MEM_FRACTION``). Default: the default of JAX (0.75)."
+"(``XLA_PYTHON_CLIENT_MEM_FRACTION``). Default: "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in "
+"the environment if it is set; otherwise the default of JAX (0.75)."
 msgstr ""
 "各ワーカープロセスで JAX が使える GPU "
-"メモリの割合です（``XLA_PYTHON_CLIENT_MEM_FRACTION``）。デフォルト：JAX のデフォルト（0.75）。"
+"メモリの割合です（``XLA_PYTHON_CLIENT_MEM_FRACTION``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` （または "
+"``XLA_CLIENT_MEM_FRACTION``）が設定されていればその値、設定されていなければ JAX のデフォルト（0.75）。"
 
-#: ../../source/user_guide/config.rst:1247
+#: ../../source/user_guide/config.rst:1249
 msgid ""
 "These keys do not configure JAX on the main process. See :doc:`platform` "
 "for how to write agents for this runner."

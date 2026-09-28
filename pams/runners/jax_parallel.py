@@ -64,7 +64,8 @@ def _initialize_jax_worker(
     """
     os.environ.update(environment)
     if "XLA_PYTHON_CLIENT_MEM_FRACTION" in environment:
-        # recent versions of JAX raise an error if the new name is also set
+        # all versions of JAX read XLA_PYTHON_CLIENT_MEM_FRACTION. Recent versions prefer its new
+        # name XLA_CLIENT_MEM_FRACTION and raise an error if both are set.
         os.environ.pop("XLA_CLIENT_MEM_FRACTION", None)
     jax = _import_jax()
     if platforms is not None:
@@ -95,17 +96,21 @@ class JaxAgentParallelRunner(MultiProcessAgentParallelRunner):
     ``simulation.startMethod`` in the config still takes precedence.
 
     Each worker process configures JAX once before it runs any task, by the following keys in
-    ``simulation`` of the config:
+    ``simulation`` of the config. Each key overrides the corresponding environment variable, which
+    the worker processes otherwise inherit from the main process:
 
     - ``jaxPlatforms`` (str, Optional): platforms that JAX uses on the worker processes, e.g.,
       ``"cpu"`` or ``"cuda"``, i.e., ``jax_platforms`` of JAX. If it is not set, ``JAX_PLATFORMS``
       in the environment is used if it is set; otherwise, JAX chooses the platform.
-    - ``jaxPreallocate`` (bool): whether JAX preallocates the memory of GPUs on each worker process,
-      i.e., ``XLA_PYTHON_CLIENT_PREALLOCATE``. The default is false, so that several worker
-      processes can share a GPU, because JAX preallocates 75% of the memory of the GPU by default.
+    - ``jaxPreallocate`` (bool, Optional): whether JAX preallocates the memory of GPUs on each
+      worker process, i.e., ``XLA_PYTHON_CLIENT_PREALLOCATE``. If it is not set,
+      ``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment is used if it is set; otherwise, it is
+      false, so that several worker processes can share a GPU, because JAX preallocates 75% of the
+      memory of the GPU by default.
     - ``jaxMemoryFraction`` (float, Optional): fraction of the memory of the GPU that JAX on each
       worker process can use, in (0, 1], i.e., ``XLA_PYTHON_CLIENT_MEM_FRACTION``. If it is not set,
-      the default of JAX (0.75) is used.
+      ``XLA_PYTHON_CLIENT_MEM_FRACTION`` or ``XLA_CLIENT_MEM_FRACTION`` in the environment is used if
+      it is set; otherwise, the default of JAX (0.75) is used.
 
     Then, the initializer given by ``_get_worker_initializer`` is called as in
     :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., to load a read-only model once per
@@ -160,7 +165,7 @@ class JaxAgentParallelRunner(MultiProcessAgentParallelRunner):
         _import_jax()
         super().__init__(settings, prng, logger, simulator_class)
         self.jax_platforms: Optional[str] = None
-        self.jax_preallocate: bool = False
+        self.jax_preallocate: Optional[bool] = None
         self.jax_memory_fraction: Optional[float] = None
 
     def _setup(self) -> None:
@@ -204,18 +209,24 @@ class JaxAgentParallelRunner(MultiProcessAgentParallelRunner):
     def _get_worker_environment(self) -> Dict[str, str]:
         """Get the environment variables set on each worker process (internal method).
 
-        The variables are set before JAX is initialized on the worker process. Subclasses can
-        override this method to set other variables, e.g., ``XLA_FLAGS``.
+        The variables are set before JAX is initialized on the worker process, and the other
+        variables are inherited from the main process. Subclasses can override this method to set
+        other variables, e.g., ``XLA_FLAGS``.
 
         Returns:
-            Dict[str, str]: environment variables. ``XLA_PYTHON_CLIENT_PREALLOCATE`` is always set
-            by ``simulation.jaxPreallocate``, and ``XLA_PYTHON_CLIENT_MEM_FRACTION`` is set if
+            Dict[str, str]: environment variables. ``XLA_PYTHON_CLIENT_PREALLOCATE`` is set by
+            ``simulation.jaxPreallocate`` if it is set, or to false if neither it nor the variable
+            in the environment is set. ``XLA_PYTHON_CLIENT_MEM_FRACTION`` is set if
             ``simulation.jaxMemoryFraction`` is set.
 
         """
-        environment: Dict[str, str] = {
-            "XLA_PYTHON_CLIENT_PREALLOCATE": "true" if self.jax_preallocate else "false"
-        }
+        environment: Dict[str, str] = {}
+        if self.jax_preallocate is not None:
+            environment["XLA_PYTHON_CLIENT_PREALLOCATE"] = (
+                "true" if self.jax_preallocate else "false"
+            )
+        elif "XLA_PYTHON_CLIENT_PREALLOCATE" not in os.environ:
+            environment["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
         if self.jax_memory_fraction is not None:
             environment["XLA_PYTHON_CLIENT_MEM_FRACTION"] = str(
                 self.jax_memory_fraction

@@ -267,7 +267,7 @@ def test_config_default(monkeypatch: pytest.MonkeyPatch) -> None:
     runner = _make_runner(setting=DEFAULT_SETTING)
     runner._setup()
     assert runner.jax_platforms is None
-    assert runner.jax_preallocate is False
+    assert runner.jax_preallocate is None
     assert runner.jax_memory_fraction is None
     assert runner._get_worker_environment() == {
         "XLA_PYTHON_CLIENT_PREALLOCATE": "false"
@@ -308,6 +308,30 @@ def test_config(monkeypatch: pytest.MonkeyPatch) -> None:
     # the main process is not configured
     assert "XLA_PYTHON_CLIENT_PREALLOCATE" not in os.environ
     assert os.environ["XLA_CLIENT_MEM_FRACTION"] == "0.25"
+    runner._shutdown_executor()
+
+
+def test_config_inherited_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("XLA_PYTHON_CLIENT_PREALLOCATE", "true")
+    monkeypatch.setenv("XLA_PYTHON_CLIENT_MEM_FRACTION", "0.3")
+    monkeypatch.delenv("XLA_CLIENT_MEM_FRACTION", raising=False)
+    # the worker processes inherit the environment variables if the keys are not set
+    runner = _make_runner(setting=DEFAULT_SETTING)
+    runner._setup()
+    assert runner._get_worker_environment() == {}
+    config = runner._get_executor().submit(jax_dummy.get_jax_worker_config).result()
+    assert config["XLA_PYTHON_CLIENT_PREALLOCATE"] == "true"
+    assert config["XLA_PYTHON_CLIENT_MEM_FRACTION"] == "0.3"
+    runner._shutdown_executor()
+    # the keys override the environment variables
+    setting = copy.deepcopy(DEFAULT_SETTING)
+    setting["simulation"]["jaxPreallocate"] = False
+    setting["simulation"]["jaxMemoryFraction"] = 0.5
+    runner = _make_runner(setting=setting)
+    runner._setup()
+    config = runner._get_executor().submit(jax_dummy.get_jax_worker_config).result()
+    assert config["XLA_PYTHON_CLIENT_PREALLOCATE"] == "false"
+    assert config["XLA_PYTHON_CLIENT_MEM_FRACTION"] == "0.5"
     runner._shutdown_executor()
 
 
