@@ -48,6 +48,9 @@ skip = [
     "tests/examples"
 ]
 
+[tool.pydocstyle]
+convention = "google"
+
 [tool.mypy]
 disallow_untyped_defs = true
 ignore_missing_imports = true
