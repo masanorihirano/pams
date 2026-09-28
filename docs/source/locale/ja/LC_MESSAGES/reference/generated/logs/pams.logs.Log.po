@@ -1,0 +1,69 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/logs/pams.logs.Log.rst:7
+msgid "Log"
+msgstr ""
+
+#: of pams.logs.base.Log:1
+msgid "Log class."
+msgstr "ログクラス。"
+
+#: of pams.logs.base.Log.read_and_write:1
+msgid "writing a log. (The actual writing timing depends on the logger.)"
+msgstr "ログを書き込みます。（実際の書き込みタイミングはロガーに依存します。）"
+
+#: of pams.logs.base.Log.read_and_write
+#: pams.logs.base.Log.read_and_write_with_direct_process
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.logs.base.Log.read_and_write:4
+#: pams.logs.base.Log.read_and_write_with_direct_process:4
+msgid "logger."
+msgstr "ロガー。"
+
+#: of pams.logs.base.Log.read_and_write
+#: pams.logs.base.Log.read_and_write_with_direct_process
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.logs.base.Log.read_and_write:7
+#: pams.logs.base.Log.read_and_write_with_direct_process:7
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.logs.base.Log.read_and_write
+#: pams.logs.base.Log.read_and_write_with_direct_process
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.logs.base.Log.read_and_write:8
+#: pams.logs.base.Log.read_and_write_with_direct_process:8
+msgid "None"
+msgstr ""
+
+#: of pams.logs.base.Log.read_and_write_with_direct_process:1
+msgid ""
+"direct writing a log. (This method is intended to call logger to write the "
+"log immediately.)"
+msgstr "ログを直接書き込みます。（このメソッドは、ロガーを呼び出してログを即座に書き込むためのものです。）"
+
