@@ -46,9 +46,9 @@ def _initialize_jax_worker(
     """Configure JAX on a worker process and call the worker initializer (internal function).
 
     The environment variables are set before JAX initializes its backends, which happens when JAX
-    is used for the first time on the process, e.g., when a jax array is created. Therefore, JAX
-    must not be used when the modules imported by the worker process, including the main module,
-    are imported.
+    runs for the first time on the process, e.g., when a jax array is created. Therefore, JAX must
+    not run when the modules imported by the worker process, including the main module, are
+    imported.
 
     Args:
         environment (Dict[str, str]): environment variables set on the worker process.
@@ -128,9 +128,12 @@ class JaxAgentParallelRunner(MultiProcessAgentParallelRunner):
         numbers, including the keys of :mod:`jax.random`, from ``agent.prng``.
 
     .. note::
-        Do not use JAX at the top level of the modules imported by the worker processes, such as the
-        main module, and do not pass jax arrays to the worker initializer; otherwise, JAX is
-        initialized before it is configured, and the settings above are ignored.
+        Do not run JAX, e.g., create jax arrays, at the top level of the modules imported by the
+        worker processes, such as the main module, and do not pass jax arrays to the worker
+        initializer; otherwise, JAX is initialized before it is configured, and the settings above
+        are ignored. The main process is not configured by the settings above, so set
+        ``XLA_PYTHON_CLIENT_PREALLOCATE=false`` in the environment too if the agents use JAX on a GPU
+        when they are created on the main process.
     """
 
     default_start_method: Optional[str] = "spawn"
