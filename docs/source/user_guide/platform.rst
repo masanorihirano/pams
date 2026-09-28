@@ -71,8 +71,9 @@ Subclasses of the parallel runners can customize the workers by overriding the f
   the function must be defined at the top level of a module that the worker processes can import, and the
   arguments must be picklable. If the function raises an error on a worker, the tasks on that worker raise a
   ``RuntimeError`` caused by the error, and the simulation fails.
-- ``_create_executor()``: the :class:`concurrent.futures.Executor` that runs the tasks. The default uses the
-  members above and ``numParallel`` workers.
+- ``_create_executor()``: the :class:`concurrent.futures.Executor` that runs the tasks. The default creates
+  ``_parallel_pool_provider`` (:class:`concurrent.futures.ThreadPoolExecutor` or
+  :class:`concurrent.futures.ProcessPoolExecutor`) with the members above and ``numParallel`` workers.
 - ``_split_agents_into_chunks(agents)``: how the agents asked at the same time are split into tasks. The agents
   of a task are asked one by one on the same worker. The thread runner makes one task per agent, and the process
   runner makes at most ``numParallel`` tasks of consecutive agents because each task copies the whole simulation.

@@ -209,9 +209,10 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         """Create a new executor (internal method).
 
         This method is called by ``_setup`` and ``_get_executor``. Subclasses can override it to
-        customize the executor. This runner creates a :class:`concurrent.futures.ThreadPoolExecutor`
-        with ``num_parallel`` workers and ``_initialize_worker`` as the initializer, which calls
-        the initializer given by ``_get_worker_initializer`` and ``_get_worker_initargs``.
+        customize the executor. This runner creates ``_parallel_pool_provider``, i.e.,
+        :class:`concurrent.futures.ThreadPoolExecutor`, with ``num_parallel`` workers and
+        ``_initialize_worker`` as the initializer, which calls the initializer given by
+        ``_get_worker_initializer`` and ``_get_worker_initargs``.
 
         Returns:
             Executor: new executor.
@@ -450,9 +451,7 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         :class:`pams.runners.MultiThreadAgentParallelRunner`.
     """
 
-    _parallel_pool_provider: Union[
-        Type[ThreadPoolExecutor], Type[ProcessPoolExecutor]
-    ] = ProcessPoolExecutor
+    _parallel_pool_provider: Type[ProcessPoolExecutor] = ProcessPoolExecutor
 
     #: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is
     #: not set in the config. None means the default start method of the platform. Subclasses can
@@ -520,16 +519,17 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
     def _create_executor(self) -> Executor:
         """Create a new executor (internal method).
 
-        This runner creates a :class:`concurrent.futures.ProcessPoolExecutor` with
-        ``num_parallel`` worker processes started by the context given by ``_get_mp_context`` and
-        ``_initialize_worker`` as the initializer, which calls the initializer given by
-        ``_get_worker_initializer`` and ``_get_worker_initargs``.
+        This runner creates ``_parallel_pool_provider``, i.e.,
+        :class:`concurrent.futures.ProcessPoolExecutor`, with ``num_parallel`` worker processes
+        started by the context given by ``_get_mp_context`` and ``_initialize_worker`` as the
+        initializer, which calls the initializer given by ``_get_worker_initializer`` and
+        ``_get_worker_initargs``.
 
         Returns:
             Executor: new executor.
 
         """
-        return ProcessPoolExecutor(
+        return self._parallel_pool_provider(
             max_workers=self.num_parallel,
             mp_context=self._get_mp_context(),
             initializer=_initialize_worker,

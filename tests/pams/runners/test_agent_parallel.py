@@ -45,6 +45,14 @@ class SpawnMultiProcessAgentParallelRunner(MultiProcessAgentParallelRunner):
     default_start_method = "spawn"
 
 
+class CustomThreadPoolExecutor(ThreadPoolExecutor):
+    pass
+
+
+class CustomProcessPoolExecutor(ProcessPoolExecutor):
+    pass
+
+
 def _order_keys(orders: List[Union[Order, Cancel]]) -> List[Any]:
     return [
         (order.agent_id, order.order.order_id)
@@ -160,6 +168,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         RaisingAgent,
         WorkerInitializationCheckingAgent,
     ]
+    custom_pool_provider: Type[Executor] = CustomThreadPoolExecutor
 
     def _make_runners(
         self, setting: Dict, seed: int = 42
@@ -363,6 +372,22 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         with pytest.warns(UserWarning, match="is experimental"):
             self.runner_class(settings=copy.deepcopy(self.default_setting))
 
+    def test_parallel_pool_provider_is_used(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        monkeypatch.setattr(
+            runner, "_parallel_pool_provider", self.custom_pool_provider
+        )
+        runner._setup()
+        executor = runner.executor
+        assert type(executor) is self.custom_pool_provider
+        assert executor.submit(sum, [1, 2]).result() == 3
+        runner._shutdown_executor()
+
     def test_create_executor_is_used(self, monkeypatch: pytest.MonkeyPatch) -> None:
         created_executors: List[Executor] = []
 
@@ -517,6 +542,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
 
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
+    custom_pool_provider: Type[Executor] = CustomProcessPoolExecutor
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
     # because of the cost of pickling, the time per step is not guaranteed
     # to be less than the threshold.
