@@ -7,14 +7,14 @@ license = "epl-1.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 tqdm = "^4.64.1"
 # numpy 1.x does not support Python 3.13+ (on Windows it crashes on import), so
 # Python 3.13+ uses numpy 2. On 3.13 and 3.14 the minimum numpy and scipy are the
 # first releases with wheels for that Python (3.13: numpy 2.1.0, scipy 1.14.1;
 # 3.14: numpy 2.3.2, scipy 1.16.1).
-numpy = [{version = "^1.25.1", python = ">=3.8,<3.13"},{version = "^2.1.0", python = ">=3.13,<3.14"},{version = "^2.3.2", python = ">=3.14,<4.0"}]
-scipy = [{version = "^1.9.2", python = ">=3.8,<3.13"},{version = "^1.14.1", python = ">=3.13,<3.14"},{version = "^1.16.1", python = ">=3.14,<4.0"}]
+numpy = [{version = "^1.25.1", python = ">=3.10,<3.13"},{version = "^2.1.0", python = ">=3.13,<3.14"},{version = "^2.3.2", python = ">=3.14,<4.0"}]
+scipy = [{version = "^1.9.2", python = ">=3.10,<3.13"},{version = "^1.14.1", python = ">=3.13,<3.14"},{version = "^1.16.1", python = ">=3.14,<4.0"}]
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.12.1"
