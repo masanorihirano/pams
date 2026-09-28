@@ -1,0 +1,42 @@
+# Pylint configuration used by Codacy (and available for local runs with
+# ``pylint --rcfile .pylintrc``). Formatting is enforced by black/isort/flake8
+# (see pyproject.toml), so this file only tunes the code-quality checks.
+
+[MAIN]
+py-version = 3.9
+jobs = 0
+
+[MESSAGES CONTROL]
+disable =
+    # docstrings are not mandatory. Their style (Google style with a
+    # lower-cased summary) is configured for ruff in pyproject.toml.
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    # runners and tests call internal (underscored) methods of simulators,
+    # markets, and agents by design.
+    protected-access,
+    # TODO comments are tracked in the code base.
+    fixme,
+    # abstract methods and dummy classes consist of a docstring and ``pass``.
+    unnecessary-pass,
+    # design-size checks are not meaningful for simulation agents/markets/tests.
+    too-many-arguments,
+    too-many-positional-arguments,
+    too-many-instance-attributes,
+    too-many-locals,
+    too-many-branches,
+    too-many-statements,
+    too-many-return-statements,
+    too-many-public-methods,
+    too-few-public-methods,
+    too-many-lines,
+    duplicate-code,
+
+[FORMAT]
+# black wraps code at 88 characters but leaves long docstrings and strings.
+max-line-length = 120
+
+[BASIC]
+# test constants such as ``WAIT_TIME`` and short loop variables are fine.
+good-names = i, j, k, n, t, x, y, fp, id, _
