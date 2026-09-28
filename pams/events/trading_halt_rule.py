@@ -17,7 +17,22 @@ class TradingHaltRule(EventABC):
 
     When the one of targetMarkets violate halting line, all of them will be halted.
     If you want to halt them separately, please make event separately.
-    The current implementation sets :func:`pams.market.Market.is_running` = false when the price changed beyond the prespecified threshold range.
+    The current implementation sets :func:`pams.market.Market.is_running` = false for all targetMarkets
+    when the price changed beyond the prespecified threshold range.
+    Markets not included in targetMarkets are not affected, and the session setting
+    (:attr:`pams.Session.with_order_execution`) is never changed by this rule.
+
+    After the halt starts at time t, the halted markets resume trading at time t + haltingTimeLength + 1,
+    only if the session at that time allows order execution.
+    If the halt continues over a session boundary, it is continued in the next session.
+
+    Note:
+        This rule is hooked after execution, i.e., after all executions caused by one order are processed.
+        Therefore, a halt prevents the subsequent executions, but not the executions caused by the triggering order.
+        While halted, orders and cancels are still accepted, but the market price is not updated.
+        Sharing a market among multiple TradingHaltRule events is not supported.
+        Like other events, this rule is hooked from the beginning of the simulation,
+        even if it is configured only in a later session.
     """
 
     def __init__(
@@ -39,6 +54,8 @@ class TradingHaltRule(EventABC):
         self.halting_time_length: int = 1
         self.halting_time_started: int = 0
         self.activation_count: int = 0
+        self.is_halting: bool = False
+        self.halted_markets: List[Market] = []
         self.target_markets: Dict[str, Market] = {}
         self.trigger_change_rate: float = 0.0
 
@@ -104,35 +121,40 @@ class TradingHaltRule(EventABC):
     ) -> None:
         """event to stop the trading."""
         market: Market = simulator.id2market[execution_log.market_id]
+        if market not in self.target_markets.values():
+            return
+        if self.is_halting or not market.is_running:
+            return
         reference_price = market.get_market_price(0)
-        if market.is_running:
-            price_change: float = reference_price - market.get_market_price()
-            threshold_change: float = (
-                reference_price * self.trigger_change_rate * (self.activation_count + 1)
-            )
-            if abs(price_change) >= abs(threshold_change):
-                for m in self.target_markets.values():
-                    if m == market:
-                        m._is_running = False
-                        self.halting_time_started = m.time
-                        self.activation_count += 1
-                        if simulator.current_session is None:
-                            raise AssertionError
-                        simulator.current_session.with_order_execution = False
+        price_change: float = reference_price - market.get_market_price()
+        threshold_change: float = (
+            reference_price * self.trigger_change_rate * (self.activation_count + 1)
+        )
+        if abs(price_change) >= abs(threshold_change):
+            self.is_halting = True
+            self.halting_time_started = market.get_time()
+            self.activation_count += 1
+            self.halted_markets = list(self.target_markets.values())
+            for m in self.halted_markets:
+                m._is_running = False
 
     def hooked_before_step_for_market(
         self, simulator: Simulator, market: Market
     ) -> None:
         """event to start the trading."""
-        # TODO: when halting is continued over session
+        if not self.is_halting:
+            return
         if market.get_time() > self.halting_time_started + self.halting_time_length:
-            for m in self.target_markets.values():
-                if m == market:
-                    if simulator.current_session is None:
-                        raise AssertionError
-                    simulator.current_session.with_order_execution = True
-                    m._is_running = True
-                    self.halting_time_started = 0
+            if simulator.current_session is None:
+                raise AssertionError
+            for m in self.halted_markets:
+                m._is_running = simulator.current_session.with_order_execution
+            self.is_halting = False
+            self.halted_markets = []
+        else:
+            # keep halting even if the running state is reset at the beginning of a session
+            for m in self.halted_markets:
+                m._is_running = False
 
 
 TradingHaltRule.hook_registration.__doc__ = EventABC.hook_registration.__doc__

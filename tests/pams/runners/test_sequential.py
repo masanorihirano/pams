@@ -1737,3 +1737,26 @@ class TestSequentialRunner(TestRunner):
         assert sum([log.volume for log in logger.execution_logs]) == sum(
             [sum(market._executed_volumes) for market in runner.simulator.markets]
         )
+
+    def test_run_logger_can_access_simulator(self) -> None:
+        class SimulatorAccessingLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.accessed_simulators: List = []
+
+            def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
+                assert self.simulator is log.simulator
+                self.accessed_simulators.append(self.simulator)
+
+            def process_simulation_end_log(self, log: SimulationEndLog) -> None:
+                assert self.simulator is log.simulator
+                self.accessed_simulators.append(self.simulator)
+
+        logger = SimulatorAccessingLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner._run()
+        assert logger.accessed_simulators == [runner.simulator, runner.simulator]

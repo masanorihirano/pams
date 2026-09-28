@@ -61,6 +61,10 @@ class Runner(ABC):
         self.simulator: Simulator = simulator_class(
             prng=random.Random(self._prng.randint(0, 2**31))
         )
+        # simulator_class may only accept ``prng``, so the logger is attached afterwards.
+        if self.logger is not None:
+            self.simulator.logger = self.logger
+            self.logger._set_simulator(simulator=self.simulator)
         self.registered_classes: List[Type] = []
 
     def main(self) -> None:
