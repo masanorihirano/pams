@@ -118,7 +118,9 @@ created, and the runner raises an ``ImportError`` if PyTorch is not installed. I
 
 - starts the worker processes by ``spawn`` unless ``simulation.startMethod`` is set, because ``fork`` is unsafe with
   PyTorch: CUDA cannot be initialized in a forked process, and a process forked while PyTorch runs its thread pools
-  can deadlock.
+  can deadlock. Because of ``spawn``, the code that runs the runner must be under ``if __name__ == "__main__":`` and
+  the user-defined classes must be in an importable ``.py`` file on every platform, including Linux (see
+  :ref:`config-parallel`).
 - sets the number of threads of PyTorch on each worker process to ``simulation.torchNumThreads`` (default: the number
   of threads of PyTorch on the main process divided by the smaller of ``numParallel`` and the largest
   ``maxNormalOrders`` of the sessions, at least 1), so that the workers do not oversubscribe the CPUs. For small
@@ -150,10 +152,11 @@ tensor instead of its data. Keep the following in mind.
 
 The runner does not choose the device. The worker processes see the same devices as the main process, and each worker
 process using CUDA creates its own CUDA context, which takes hundreds of megabytes of the GPU memory. Keep the tensors
-held by agents on the CPU, because CUDA tensors would be sent by CUDA IPC, which Windows does not support, and move
-them to the device on the worker processes, or load the model once per worker process instead. For example, the
-following runner loads a model on each worker process. A subclass overriding the worker initializer must still call
-``_initialize_torch_worker`` with the arguments of this runner.
+held by agents on the CPU, because CUDA tensors would be sent by CUDA IPC, which Windows does not support. Moving them
+to the device in ``submit_orders`` copies them in every task, because each task gets new copies of the agents. To
+copy a model to the device only once per worker process, load it in the worker initializer into a module-level
+variable and use that variable in ``submit_orders``, as the following runner does. A subclass overriding the worker
+initializer must still call ``_initialize_torch_worker`` with the arguments of this runner.
 
 .. code-block:: python
 

@@ -74,7 +74,8 @@ class TorchAgentParallelRunner(MultiProcessAgentParallelRunner):
       can be changed by ``simulation.startMethod``. ``fork`` is unsafe for PyTorch: CUDA cannot be
       initialized in a forked process, and only the forking thread is copied to a forked process,
       so a worker forked after PyTorch has started its thread pools on the main process can
-      deadlock.
+      deadlock. Because of ``spawn``, the code running this runner must be under
+      ``if __name__ == "__main__":`` on every platform, including Linux.
     - sets the number of threads of PyTorch on each worker process by
       :func:`torch.set_num_threads` to ``simulation.torchNumThreads``. By default, PyTorch uses
       about as many threads as the CPU cores in every process, so ``numParallel`` workers would
@@ -127,8 +128,11 @@ class TorchAgentParallelRunner(MultiProcessAgentParallelRunner):
         main process, and agents choose the device in :func:`pams.agents.Agent.submit_orders`.
         Every worker process using CUDA creates its own CUDA context, which takes hundreds of
         megabytes of the GPU memory. CUDA tensors held by agents would be sent by CUDA IPC, which
-        is not supported on Windows, so keep the tensors held by agents on the CPU and move them to
-        the GPU on the worker processes, e.g., once per worker process by the worker initializer.
+        is not supported on Windows, so keep the tensors held by agents on the CPU. Moving them to
+        the GPU in :func:`pams.agents.Agent.submit_orders` copies them in every task, because
+        each task gets new copies of the agents. To copy a model to the GPU only once per worker
+        process, load it by the worker initializer into a module-level variable and use it in
+        :func:`pams.agents.Agent.submit_orders`.
     """
 
     #: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is
