@@ -1,21 +1,41 @@
 from typing import List
 from typing import Optional
 from typing import Type
+from typing import Union
 
 
-def find_class(name: str, optional_class_list: Optional[List[Type]] = None) -> Type:
+def find_class(
+    name: Union[str, Type], optional_class_list: Optional[List[Type]] = None
+) -> Type:
     """find class from pams name spaces.
 
+    If a class is given instead of a class name, the class is returned as is without searching.
+
     .. seealso::
-        If you want to use user-defined classes, please use :class:`pams.runners.class_register`.
+        If you want to use user-defined classes, please use :func:`pams.runners.Runner.class_register`
+        or set the class itself instead of its name.
 
     Args:
-        name (str): class name.
+        name (Union[str, Type]): class name or class.
         optional_class_list (List[Type], Optional): optional class list.
 
     Returns:
         Type: class type.
+
+    Examples:
+        >>> from pams.agents import FCNAgent
+        >>> from pams.utils import find_class
+        >>> find_class(name="FCNAgent") is FCNAgent
+        True
+        >>> find_class(name=FCNAgent) is FCNAgent
+        True
     """
+    if isinstance(name, type):
+        return name
+    if not isinstance(name, str):
+        raise ValueError(
+            f"class must be a class name (str) or a class, but {name!r} is given"
+        )
     _1 = __import__("pams", globals(), locals())
     _2 = __import__("pams.agents", globals(), locals(), ["*"])
     _3 = __import__("pams.events", globals(), locals(), ["*"])
