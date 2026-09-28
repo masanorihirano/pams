@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2022, Masanori HIRANO
 # This file is distributed under the same license as the pams package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
@@ -19,17 +19,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ../../source/reference/simulators.rst:4
-msgid "Simulator"
-msgstr "シミュレーター"
-
-#: ../../source/reference/simulators.rst:9:<autosummary>:1
-msgid ""
-":py:obj:`Simulator <pams.Simulator>`\\ \\(prng\\[\\, logger\\, "
-"fundamental\\_class\\]\\)"
+#: ../../source/reference/generated/logs/pams.logs.CancelLog.rst:7
+msgid "CancelLog"
 msgstr ""
 
-#: ../../source/reference/simulators.rst:9:<autosummary>:1
-msgid "Simulator class."
-msgstr "シミュレータークラス。"
+#: of pams.logs.base.CancelLog:1
+msgid "Cancel type log class."
+msgstr "取消タイプのログクラス。"
+
+#: of pams.logs.base.CancelLog:3
+msgid "This log is usually generated when a cancel order is accepted by markets."
+msgstr "このログは通常、取消注文が市場に受理されたときに生成されます。"
 

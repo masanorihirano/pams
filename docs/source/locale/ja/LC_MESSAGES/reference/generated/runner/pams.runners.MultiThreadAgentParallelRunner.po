@@ -1,0 +1,93 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.rst:7
+msgid "MultiThreadAgentParallelRunner"
+msgstr ""
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:1
+msgid "Multi Thread Agent Parallel runner class. This is experimental."
+msgstr "マルチスレッドのエージェント並列ランナークラス。これは実験的機能です。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:3
+msgid ""
+"In this runner, only :func:`pams.agents.Agent.submit_orders` of normal (non "
+"high-frequency) agents is parallelized in each step using "
+":class:`concurrent.futures.ThreadPoolExecutor`. Order handling, executions, "
+"high-frequency agents, events, and logging are processed sequentially on the"
+" main thread in the same way as :class:`pams.runners.SequentialRunner`."
+msgstr ""
+"このランナーでは、各ステップにおいて、通常（高頻度でない）エージェントの :func:`pams.agents.Agent.submit_orders`"
+" のみを :class:`concurrent.futures.ThreadPoolExecutor` "
+"を用いて並列化します。注文の処理、約定、高頻度エージェント、イベント、ログ出力は、:class:`pams.runners.SequentialRunner`"
+" と同様にメインスレッド上で逐次的に処理されます。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:10
+msgid ""
+"The simulation results are identical to those of "
+":class:`pams.runners.SequentialRunner` with the same settings and the same "
+"seed, because agents are asked to submit orders in the same order and the "
+"same number of agents are asked as :class:`pams.runners.SequentialRunner` "
+"does. Agents are asked in batches: at first, ``maxNormalOrders`` agents are "
+"asked in parallel, and if some of them submit no orders, the same number of "
+"the next agents are asked in parallel, and so on, until the number of agents"
+" submitting orders reaches ``maxNormalOrders``. This means that the number "
+"of agents that can be parallelized is limited by ``maxNormalOrders`` of the "
+"session."
+msgstr ""
+"エージェントに注文を求める順序も、注文を求めるエージェントの数も :class:`pams.runners.SequentialRunner` "
+"と同じであるため、シミュレーション結果は、同じ設定・同じシードで実行した :class:`pams.runners.SequentialRunner` "
+"の結果と同一になります。エージェントへの問い合わせはバッチ単位で行います：まず ``maxNormalOrders`` "
+"体のエージェントに並列に問い合わせ、そのうち注文を出さなかったエージェントがいれば、その数だけ次のエージェントに並列に問い合わせます。これを、注文を出したエージェントの数が"
+" ``maxNormalOrders`` に達するまで繰り返します。つまり、並列化できるエージェントの数はセッションの "
+"``maxNormalOrders`` によって制限されます。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:20
+msgid ""
+"The number of workers can be set by ``simulation.numParallel`` in the "
+"config. The default is the number of CPUs minus one (at least one)."
+msgstr ""
+"ワーカー数は設定ファイルの ``simulation.numParallel`` "
+"で設定できます。デフォルトはCPU数から1を引いた値（ただし最小1）です。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:24
+msgid ""
+":func:`pams.agents.Agent.submit_orders` is called on worker threads "
+"concurrently. The built-in agents only read markets and use their own pseudo"
+" random number generators, which is thread-safe in this runner because the "
+"main thread waits for all the workers before handling orders. User-defined "
+"agents must not modify shared objects such as markets, the simulator, the "
+"logger, or other agents in :func:`pams.agents.Agent.submit_orders`."
+msgstr ""
+":func:`pams.agents.Agent.submit_orders` "
+"はワーカースレッド上で並行して呼び出されます。組み込みエージェントは、市場の読み取りと各自の疑似乱数生成器の使用しか行いません。メインスレッドは注文を処理する前にすべてのワーカーの終了を待つため、このランナーではこれらの操作はスレッドセーフです。ユーザー定義エージェントは、:func:`pams.agents.Agent.submit_orders`"
+" の中で市場、シミュレーター、ロガー、他のエージェントなどの共有オブジェクトを変更してはいけません。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:31
+msgid ""
+"Because of the GIL of python, this runner does not speed up CPU-bound agents"
+" such as the built-in agents. This runner is beneficial when "
+":func:`pams.agents.Agent.submit_orders` waits for I/O (e.g., network access "
+"to external models or services)."
+msgstr ""
+"PythonのGILのため、このランナーでは組み込みエージェントのようなCPUバウンドなエージェントは高速化されません。このランナーは、:func:`pams.agents.Agent.submit_orders`"
+" がI/Oを待つ場合（例えば外部のモデルやサービスへのネットワークアクセス）に有効です。"
+
