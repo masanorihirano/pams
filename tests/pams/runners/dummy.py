@@ -1,11 +1,9 @@
-import os
 import threading
 import time
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from pams import LIMIT_ORDER
@@ -182,20 +180,21 @@ class RaisingAgent(Agent):
 # The functions below are defined at the top level so that the agent-parallel runners can pickle
 # them and call them on worker processes.
 
-# (process id, thread id) of each initialized worker -> the token given to the initializer
-WORKER_TOKENS: Dict[Tuple[int, int], str] = {}
+# token given to the initializer of the current worker thread (or the main thread of a worker
+# process). Thread-local storage is used because thread ids can be reused after threads end.
+WORKER_STATE = threading.local()
 # overwritten only on the main process by the tests; worker processes see it only when forked
 PARENT_MARKER: Optional[str] = None
 
 
 def initialize_worker(token: str) -> None:
     """Record that the current worker is initialized with the token."""
-    WORKER_TOKENS[(os.getpid(), threading.get_ident())] = token
+    WORKER_STATE.token = token
 
 
 def get_worker_token() -> Optional[str]:
     """Get the token of the current worker, or None if it is not initialized."""
-    return WORKER_TOKENS.get((os.getpid(), threading.get_ident()))
+    return getattr(WORKER_STATE, "token", None)
 
 
 def fail_to_initialize_worker() -> None:
