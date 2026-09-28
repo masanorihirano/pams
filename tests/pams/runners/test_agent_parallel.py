@@ -251,6 +251,22 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             runner.main()
         assert runner.executor is None
 
+    def test_cancel_order_for_inaccessible_market_is_rejected(self) -> None:
+        runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        # every agent cancels its order placed in OtherMarkets-1, which it cannot access
+        self._set_orders_to_submit(runner=runner, market_id=2, cancels=True)
+        with pytest.raises(
+            ValueError,
+            match=r"^cancel order for an inaccessible market is not allowed\. "
+            r"Agents-[0-4] cannot access OtherMarkets-1\. ",
+        ):
+            runner._run()
+        assert runner.executor is None
+        placed_orders = runner.simulator.markets[2].buy_order_book.priority_queue
+        assert len(placed_orders) == len(runner.simulator.agents)
+        assert all(not order.is_canceled for order in placed_orders)
+
     def test_num_parallel_default(self) -> None:
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["numParallel"]

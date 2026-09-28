@@ -1,9 +1,12 @@
 import time
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Union
 
 from pams import LIMIT_ORDER
 from pams.agents import Agent
+from pams.agents import HighFrequencyAgent
 from pams.agents.fcn_agent import FCNAgent
 from pams.logs import CancelLog
 from pams.logs import ExecutionLog
@@ -171,3 +174,29 @@ class RaisingAgent(Agent):
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         raise RuntimeError("error in submit_orders")
+
+
+class GivenOrdersAgent(Agent):
+    """Agent that submits the orders set to ``orders_to_submit``.
+
+    This agent is used to check the orders for markets that the agent cannot access.
+    ``orders_to_submit`` is set on the main process and copied to worker processes, so that
+    this agent works on :class:`pams.runners.MultiProcessAgentParallelRunner` as well.
+    """
+
+    def setup(
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
+        self.orders_to_submit: List[Union[Order, Cancel]] = []
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        return list(self.orders_to_submit)
+
+
+class HighFrequencyGivenOrdersAgent(GivenOrdersAgent, HighFrequencyAgent):
+    """High frequency version of :class:`GivenOrdersAgent`."""

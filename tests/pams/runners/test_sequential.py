@@ -1,6 +1,7 @@
 import copy
 import os.path
 import random
+import re
 import time
 from typing import Dict
 from typing import List
@@ -23,6 +24,8 @@ from tests.pams.runners.test_base import TestRunner
 from .dummy import DummyLogger
 from .dummy import DummyLogger2
 from .dummy import ExecutionCountLogger
+from .dummy import GivenOrdersAgent
+from .dummy import HighFrequencyGivenOrdersAgent
 from .dummy import SimulatorAccessingLogger
 
 
@@ -1752,3 +1755,207 @@ class TestSequentialRunner(TestRunner):
         runner._setup()
         runner._run()
         assert logger.accessed_simulators == [runner.simulator, runner.simulator]
+
+    def _setup_market_access_runner(self, agent_class: str) -> SequentialRunner:
+        # agents can access Market (market_id 0) but not OtherMarkets-0 and OtherMarkets-1
+        # (market_id 1 and 2). market_id 3 does not exist.
+        setting = {
+            "simulation": {
+                "markets": ["Market", "OtherMarkets"],
+                "agents": ["Agents"],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 10,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                        "maxHighFrequencyOrders": 3,
+                    }
+                ],
+            },
+            "Market": {"class": "Market", "tickSize": 0.00001, "marketPrice": 300.0},
+            "OtherMarkets": {"extends": "Market", "numMarkets": 2},
+            "Agents": {
+                "class": agent_class,
+                "numAgents": 5,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+            },
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        assert isinstance(runner, SequentialRunner)
+        runner.class_register(cls=GivenOrdersAgent)
+        runner.class_register(cls=HighFrequencyGivenOrdersAgent)
+        runner._setup()
+        runner.simulator._update_times_on_markets(runner.simulator.markets)
+        return runner
+
+    @staticmethod
+    def _set_orders_to_submit(
+        runner: SequentialRunner, market_id: int, cancels: bool
+    ) -> None:
+        # every agent submits an order, or a cancel order of its placed order, for market_id
+        for agent in runner.simulator.agents:
+            assert isinstance(agent, GivenOrdersAgent)
+            order = Order(
+                agent_id=agent.agent_id,
+                market_id=market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            if not cancels:
+                agent.orders_to_submit = [order]
+                continue
+            if market_id in runner.simulator.id2market:
+                # place the order directly even if the agent cannot access the market
+                runner.simulator.id2market[market_id]._add_order(order=order)
+            agent.orders_to_submit = [Cancel(order=order)]
+
+    @pytest.mark.parametrize("cancels", [False, True])
+    def test_collect_orders_from_normal_agents_market_access(
+        self, cancels: bool
+    ) -> None:
+        runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
+        session = runner.simulator.sessions[0]
+        order_kind = "cancel order" if cancels else "order"
+
+        self._set_orders_to_submit(runner=runner, market_id=0, cancels=cancels)
+        all_orders = runner._collect_orders_from_normal_agents(session=session)
+        assert len(all_orders) == 3
+        for orders in all_orders:
+            assert len(orders) == 1
+            assert orders[0].market_id == 0
+            assert isinstance(orders[0], Cancel if cancels else Order)
+
+        self._set_orders_to_submit(runner=runner, market_id=2, cancels=cancels)
+        with pytest.raises(
+            ValueError,
+            match=rf"^{order_kind} for an inaccessible market is not allowed\. "
+            r"Agents-[0-4] cannot access OtherMarkets-1\. "
+            r"please add OtherMarkets to markets of Agents or check market_id in order$",
+        ):
+            runner._collect_orders_from_normal_agents(session=session)
+
+        self._set_orders_to_submit(runner=runner, market_id=3, cancels=cancels)
+        with pytest.raises(
+            ValueError,
+            match=rf"^{order_kind} for a nonexistent market is not allowed\. "
+            r"Agents-[0-4] submitted it for market_id 3\. "
+            r"please check market_id in order$",
+        ):
+            runner._collect_orders_from_normal_agents(session=session)
+
+    @pytest.mark.parametrize("cancels", [False, True])
+    def test_handle_high_frequency_orders_market_access(self, cancels: bool) -> None:
+        runner = self._setup_market_access_runner(
+            agent_class="HighFrequencyGivenOrdersAgent"
+        )
+        session = runner.simulator.sessions[0]
+        order_kind = "cancel order" if cancels else "order"
+        n_agents = len(runner.simulator.high_frequency_agents)
+        assert n_agents == 5
+
+        market = runner.simulator.markets[0]
+        self._set_orders_to_submit(runner=runner, market_id=0, cancels=cancels)
+        all_orders = runner._handle_high_frequency_orders(session=session)
+        assert len(all_orders) == 3
+        # the orders of 3 agents are processed
+        n_placed_orders = n_agents - 3 if cancels else 3
+        assert len(market.buy_order_book.priority_queue) == n_placed_orders
+
+        other_market = runner.simulator.markets[2]
+        self._set_orders_to_submit(runner=runner, market_id=2, cancels=cancels)
+        n_placed_orders = n_agents if cancels else 0
+        assert len(other_market.buy_order_book.priority_queue) == n_placed_orders
+        with pytest.raises(
+            ValueError,
+            match=rf"^{order_kind} for an inaccessible market is not allowed\. "
+            r"Agents-[0-4] cannot access OtherMarkets-1\. "
+            r"please add OtherMarkets to markets of Agents or check market_id in order$",
+        ):
+            runner._handle_high_frequency_orders(session=session)
+        # the orders are rejected before they are processed
+        assert len(other_market.buy_order_book.priority_queue) == n_placed_orders
+
+        self._set_orders_to_submit(runner=runner, market_id=3, cancels=cancels)
+        with pytest.raises(
+            ValueError,
+            match=rf"^{order_kind} for a nonexistent market is not allowed\. "
+            r"Agents-[0-4] submitted it for market_id 3\. "
+            r"please check market_id in order$",
+        ):
+            runner._handle_high_frequency_orders(session=session)
+
+    @pytest.mark.parametrize(
+        "agent_class", ["GivenOrdersAgent", "HighFrequencyGivenOrdersAgent"]
+    )
+    def test_spoofing_order_is_checked_first(self, agent_class: str) -> None:
+        runner = self._setup_market_access_runner(agent_class=agent_class)
+        session = runner.simulator.sessions[0]
+        for agent in runner.simulator.agents:
+            assert isinstance(agent, GivenOrdersAgent)
+            # an order of another agent for an inaccessible market
+            agent.orders_to_submit = [
+                Order(
+                    agent_id=agent.agent_id + 1,
+                    market_id=2,
+                    is_buy=True,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=300.0,
+                )
+            ]
+        with pytest.raises(
+            ValueError,
+            match="^"
+            + re.escape("spoofing order is not allowed. please check agent_id in order")
+            + "$",
+        ):
+            if agent_class == "GivenOrdersAgent":
+                runner._collect_orders_from_normal_agents(session=session)
+            else:
+                runner._handle_high_frequency_orders(session=session)
+
+    def test_run_with_order_for_inaccessible_market(self) -> None:
+        runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
+        self._set_orders_to_submit(runner=runner, market_id=1, cancels=False)
+        with pytest.raises(
+            ValueError,
+            match=r"^order for an inaccessible market is not allowed\. "
+            r"Agents-[0-4] cannot access OtherMarkets-0\. ",
+        ):
+            runner._run()
+        for market in runner.simulator.markets:
+            assert len(market.buy_order_book.priority_queue) == 0
+
+    def test_run_market_maker_without_access_to_target_market(self) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["markets"] = ["Market", "OtherMarket"]
+        setting["simulation"]["agents"] = ["FCNAgents", "MarketMaker"]
+        setting["OtherMarket"] = {"extends": "Market"}
+        setting["MarketMaker"] = {
+            "class": "MarketMakerAgent",
+            "markets": ["Market"],
+            "targetMarket": "OtherMarket",
+            "assetVolume": 50,
+            "cashAmount": 10000,
+            "netInterestSpread": 0.02,
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        # previously, a KeyError was raised when the first order was executed
+        with pytest.raises(
+            ValueError,
+            match=r"^order for an inaccessible market is not allowed\. "
+            r"MarketMaker cannot access OtherMarket\. "
+            r"please add OtherMarket to markets of MarketMaker or check market_id in order$",
+        ):
+            runner.main()
