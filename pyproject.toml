@@ -57,7 +57,7 @@ skip = [
 # Mirrors the black / isort / flake8 settings above so that ruff (used by Codacy)
 # agrees with the linters run in CI.
 line-length = 88
-target-version = "py39"
+target-version = "py310"
 extend-exclude = ["docs", "examples", "tests/examples"]
 
 [tool.ruff.lint]
@@ -65,6 +65,7 @@ select = ["E", "F", "W", "B", "C4", "I", "D"]
 ignore = [
     "E203", "E231", "E501",  # same as flake8 (W503 does not exist in ruff)
     "D1",    # docstrings are not mandatory
+    "B905",  # zip(strict=) needs 3.10+; strict=True would add a runtime check
 ]
 per-file-ignores = { "__init__.py" = ["F401"], "tests/**" = ["D"], "samples/**" = ["D"] }
 
