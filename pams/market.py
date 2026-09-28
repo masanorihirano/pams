@@ -829,6 +829,11 @@ class Market:
     def remain_executable_orders(self) -> bool:
         """check if there are remain executable orders in this market.
 
+        When both sides have market orders and their total volumes differ, the excess
+        market orders have to be absorbed by the limit orders of the other side.
+        Otherwise, the execution price cannot be determined and nothing is executed
+        (special quote), even if some orders could be matched.
+
         Returns:
             bool: whether some orders is executable or not.
         """
@@ -853,14 +858,18 @@ class Market:
             if None not in sell_book or None not in buy_book:
                 raise AssertionError
             if sell_book[None] != buy_book[None]:
+                # the excess market orders of the larger side have to be absorbed
+                # by the limit orders of the other side. Otherwise, as in a batch
+                # auction, the execution price cannot be determined and no execution
+                # happens (special quote).
                 if sell_book[None] < buy_book[None]:
-                    additional_required_orders = buy_book[None] - sell_book[None]
+                    additional_required_volume = buy_book[None] - sell_book[None]
                     sell_book.pop(None)
-                    return len(sell_book) >= additional_required_orders
+                    return sum(sell_book.values()) >= additional_required_volume
                 else:
-                    additional_required_orders = sell_book[None] - buy_book[None]
+                    additional_required_volume = sell_book[None] - buy_book[None]
                     buy_book.pop(None)
-                    return len(buy_book) >= additional_required_orders
+                    return sum(buy_book.values()) >= additional_required_volume
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)
