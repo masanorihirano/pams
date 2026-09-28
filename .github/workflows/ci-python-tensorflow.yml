@@ -38,8 +38,10 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install poetry
           poetry install
-          # the CPU-only build of TensorFlow, installed into the environment of poetry
-          poetry run pip install tensorflow-cpu
+          # the CPU-only build of TensorFlow, installed into the environment of poetry;
+          # numpy is kept at 1.x, which pams requires on Python < 3.13
+          poetry run pip install tensorflow-cpu "numpy<2"
+          poetry run pip check
           # fail here instead of skipping the tests if TensorFlow cannot be imported
           poetry run python -c "import tensorflow as tf; print(tf.__version__)"
       - name: Test
