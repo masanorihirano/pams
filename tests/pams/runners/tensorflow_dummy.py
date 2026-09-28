@@ -51,6 +51,19 @@ def get_price_model(seed: int) -> Any:
     return model
 
 
+def load_price_model(seed: int) -> None:
+    """Load the price model into the cache of this module, as a worker initializer.
+
+    The model is also called once, so TensorFlow is initialized on the worker process.
+    """
+    get_price_model(seed)(np.zeros((1, N_FEATURES), dtype=np.float32), training=False)
+
+
+def get_n_cached_price_models() -> int:
+    """Get the number of the price models cached on the current process."""
+    return get_price_model.cache_info().currsize
+
+
 def get_features(market: Market) -> List[float]:
     """Get the features of the market in percent.
 

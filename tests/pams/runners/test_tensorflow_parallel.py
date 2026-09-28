@@ -6,9 +6,12 @@ import random
 import subprocess
 import sys
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
+from typing import Type
 from unittest import mock
 
 import pytest
@@ -16,12 +19,16 @@ import pytest
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import SequentialRunner
 from pams.runners import TensorFlowAgentParallelRunner
+from pams.runners.agent_parallel import _initialize_worker
 from pams.runners.tensorflow_parallel import _initialize_tensorflow_worker
 
 from .dummy import DummyLogger2
+from .dummy import initialize_worker
 from .tensorflow_dummy import TensorFlowAgent
 from .tensorflow_dummy import TensorFlowModelHoldingAgent
+from .tensorflow_dummy import get_n_cached_price_models
 from .tensorflow_dummy import get_tensorflow_config
+from .tensorflow_dummy import load_price_model
 from .test_agent_parallel import _assert_same_results
 
 # the tests using TensorFlow run only if TensorFlow is installed, e.g., by
@@ -38,6 +45,16 @@ def fake_tensorflow(monkeypatch: pytest.MonkeyPatch) -> mock.MagicMock:
     tensorflow.config.list_physical_devices.return_value = ["GPU:0", "GPU:1"]
     monkeypatch.setitem(sys.modules, "tensorflow", tensorflow)
     return tensorflow
+
+
+class ModelLoadingTensorFlowAgentParallelRunner(TensorFlowAgentParallelRunner):
+    """TensorFlowAgentParallelRunner loading the model of TensorFlowAgent once per worker."""
+
+    def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
+        return load_price_model
+
+    def _get_worker_initargs(self) -> Tuple[Any, ...]:
+        return (self.settings["TensorFlowAgents"]["modelSeed"],)
 
 
 class TestTensorFlowAgentParallelRunner:
@@ -75,9 +92,14 @@ class TestTensorFlowAgentParallelRunner:
     }
 
     def _make_runner(
-        self, setting: Dict, seed: int = 42
+        self,
+        setting: Dict,
+        seed: int = 42,
+        runner_class: Type[
+            TensorFlowAgentParallelRunner
+        ] = TensorFlowAgentParallelRunner,
     ) -> TensorFlowAgentParallelRunner:
-        runner = TensorFlowAgentParallelRunner(
+        runner = runner_class(
             settings=copy.deepcopy(setting),
             prng=random.Random(seed),
             logger=DummyLogger2(),
@@ -105,7 +127,7 @@ class TestTensorFlowAgentParallelRunner:
         assert isinstance(exc_info.value.__cause__, ImportError)
         # the worker initializer fails in the same way on the worker processes
         with pytest.raises(ImportError, match="requires TensorFlow"):
-            _initialize_tensorflow_worker(1, 1, True)
+            _initialize_tensorflow_worker(1, 1, True, None, ())
 
     def test_start_method_default(self, fake_tensorflow: mock.MagicMock) -> None:
         assert TensorFlowAgentParallelRunner.default_start_method == "spawn"
@@ -115,7 +137,6 @@ class TestTensorFlowAgentParallelRunner:
         runner._setup()
         assert runner.start_method == "spawn"
         assert runner._get_mp_context().get_start_method() == "spawn"
-        assert runner._get_worker_initializer() is _initialize_tensorflow_worker
         runner._shutdown_executor()
 
     @pytest.mark.parametrize("start_method", multiprocessing.get_all_start_methods())
@@ -147,10 +168,8 @@ class TestTensorFlowAgentParallelRunner:
         runner._shutdown_executor()
         assert runner.intra_op_parallelism_threads is None
         # the CPUs are divided among the worker processes
-        assert runner._get_worker_initargs() == (
-            max((os.cpu_count() or 1) // runner.num_parallel, 1),
-            1,
-            True,
+        assert runner._get_intra_op_parallelism_threads() == max(
+            (os.cpu_count() or 1) // runner.num_parallel, 1
         )
 
     def test_config(self, fake_tensorflow: mock.MagicMock) -> None:
@@ -164,7 +183,40 @@ class TestTensorFlowAgentParallelRunner:
         assert runner.intra_op_parallelism_threads == 3
         assert runner.inter_op_parallelism_threads == 2
         assert runner.gpu_memory_growth is False
-        assert runner._get_worker_initargs() == (3, 2, False)
+        assert runner._get_intra_op_parallelism_threads() == 3
+
+    @pytest.mark.parametrize("initializer", [None, initialize_worker])
+    def test_create_executor(
+        self,
+        initializer: Optional[Callable[..., Any]],
+        fake_tensorflow: mock.MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["tensorflowIntraOpThreads"] = 3
+        setting["simulation"]["tensorflowInterOpThreads"] = 2
+        setting["simulation"]["tensorflowGpuMemoryGrowth"] = False
+        runner = self._make_runner(setting=setting)
+        assert runner._get_worker_initializer() is None
+        assert runner._get_worker_initargs() == ()
+        initargs: Tuple[Any, ...] = () if initializer is None else ("token",)
+        monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
+        monkeypatch.setattr(runner, "_get_worker_initargs", lambda: initargs)
+        pool_provider = mock.MagicMock()
+        monkeypatch.setattr(runner, "_parallel_pool_provider", pool_provider)
+        runner._setup()
+        assert runner.executor is pool_provider.return_value
+        runner._shutdown_executor()
+        pool_provider.assert_called_once()
+        kwargs = pool_provider.call_args.kwargs
+        assert kwargs["max_workers"] == 3
+        assert kwargs["mp_context"].get_start_method() == "spawn"
+        # TensorFlow is configured before the initializer of the subclasses is called
+        assert kwargs["initializer"] is _initialize_worker
+        assert kwargs["initargs"] == (
+            _initialize_tensorflow_worker,
+            (3, 2, False, initializer, initargs),
+        )
 
     @pytest.mark.parametrize(
         "key,value",
@@ -189,7 +241,7 @@ class TestTensorFlowAgentParallelRunner:
     def test_initialize_tensorflow_worker(
         self, gpu_memory_growth: bool, fake_tensorflow: mock.MagicMock
     ) -> None:
-        _initialize_tensorflow_worker(3, 2, gpu_memory_growth)
+        _initialize_tensorflow_worker(3, 2, gpu_memory_growth, None, ())
         threading = fake_tensorflow.config.threading
         threading.set_intra_op_parallelism_threads.assert_called_once_with(3)
         threading.set_inter_op_parallelism_threads.assert_called_once_with(2)
@@ -203,6 +255,15 @@ class TestTensorFlowAgentParallelRunner:
         else:
             set_memory_growth.assert_not_called()
 
+    def test_initialize_tensorflow_worker_with_initializer(
+        self, fake_tensorflow: mock.MagicMock
+    ) -> None:
+        # a child of the mock records its calls in the order of those of TensorFlow
+        initializer = fake_tensorflow.initializer
+        _initialize_tensorflow_worker(3, 2, True, initializer, ("token", 1))
+        initializer.assert_called_once_with("token", 1)
+        assert fake_tensorflow.mock_calls[-1] == mock.call.initializer("token", 1)
+
     def test_initialize_tensorflow_worker_after_initialization(
         self, fake_tensorflow: mock.MagicMock
     ) -> None:
@@ -211,15 +272,25 @@ class TestTensorFlowAgentParallelRunner:
         )
         threading = fake_tensorflow.config.threading
         threading.set_intra_op_parallelism_threads.side_effect = error
+        initializer = mock.MagicMock()
         with pytest.raises(RuntimeError, match="already initialized") as exc_info:
-            _initialize_tensorflow_worker(1, 1, True)
+            _initialize_tensorflow_worker(1, 1, True, initializer, ())
         assert exc_info.value.__cause__ is error
+        initializer.assert_not_called()
 
     @requires_tensorflow
     @pytest.mark.parametrize(
-        "agent_class", ["TensorFlowAgent", "TensorFlowModelHoldingAgent"]
+        "agent_class,runner_class",
+        [
+            ("TensorFlowAgent", TensorFlowAgentParallelRunner),
+            ("TensorFlowModelHoldingAgent", TensorFlowAgentParallelRunner),
+            ("TensorFlowAgent", ModelLoadingTensorFlowAgentParallelRunner),
+        ],
+        ids=["cached-model", "held-model", "model-loaded-by-initializer"],
     )
-    def test_same_result_as_sequential(self, agent_class: str) -> None:
+    def test_same_result_as_sequential(
+        self, agent_class: str, runner_class: Type[TensorFlowAgentParallelRunner]
+    ) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["TensorFlowAgents"]["class"] = agent_class
         sequential_runner = SequentialRunner(
@@ -229,7 +300,7 @@ class TestTensorFlowAgentParallelRunner:
         )
         sequential_runner.class_register(cls=TensorFlowAgent)
         sequential_runner.class_register(cls=TensorFlowModelHoldingAgent)
-        parallel_runner = self._make_runner(setting=setting)
+        parallel_runner = self._make_runner(setting=setting, runner_class=runner_class)
         sequential_runner._setup()
         parallel_runner._setup()
         sequential_runner._run()
@@ -269,3 +340,27 @@ class TestTensorFlowAgentParallelRunner:
         assert (intra_op_threads, inter_op_threads) == expected_threads
         expected_growths: List[bool] = [True] * len(gpu_memory_growths)
         assert gpu_memory_growths == expected_growths
+
+    @requires_tensorflow
+    def test_worker_initializer(self) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["numParallel"] = 1
+        setting["simulation"]["tensorflowIntraOpThreads"] = 3
+        setting["simulation"]["tensorflowInterOpThreads"] = 2
+        runner = self._make_runner(
+            setting=setting, runner_class=ModelLoadingTensorFlowAgentParallelRunner
+        )
+        runner._setup()
+        try:
+            executor = runner._get_executor()
+            n_cached_models = executor.submit(get_n_cached_price_models).result()
+            intra_op_threads, inter_op_threads, _ = executor.submit(
+                get_tensorflow_config
+            ).result()
+        finally:
+            runner._shutdown_executor()
+        # the initializer loaded the model before the first task
+        assert n_cached_models == 1
+        # the initializer ran TensorFlow after TensorFlow had been configured;
+        # otherwise, the configuration would have failed
+        assert (intra_op_threads, inter_op_threads) == (3, 2)

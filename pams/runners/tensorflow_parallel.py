@@ -1,5 +1,6 @@
 import os
 import random
+from concurrent.futures import Executor
 from io import TextIOWrapper
 from types import ModuleType
 from typing import Any
@@ -13,6 +14,7 @@ from typing import Union
 from ..logs.base import Logger
 from ..simulator import Simulator
 from .agent_parallel import MultiProcessAgentParallelRunner
+from .agent_parallel import _initialize_worker
 
 
 def _import_tensorflow() -> ModuleType:
@@ -39,17 +41,23 @@ def _initialize_tensorflow_worker(
     intra_op_parallelism_threads: int,
     inter_op_parallelism_threads: int,
     gpu_memory_growth: bool,
+    initializer: Optional[Callable[..., Any]],
+    initargs: Tuple[Any, ...],
 ) -> None:
-    """Configure TensorFlow on a worker process (internal function).
+    """Configure TensorFlow on a worker process and call the initializer (internal function).
 
-    This function is the worker initializer of
-    :class:`pams.runners.TensorFlowAgentParallelRunner`. It is called once on each worker process
-    before the process runs any task, i.e., before TensorFlow is initialized on the process.
+    This function is called once on each worker process of
+    :class:`pams.runners.TensorFlowAgentParallelRunner` before the process runs any task. TensorFlow
+    can be configured only before it is initialized on the process, i.e., before it runs any
+    operation.
 
     Args:
         intra_op_parallelism_threads (int): number of threads used to run one operation.
         inter_op_parallelism_threads (int): number of threads used to run independent operations.
         gpu_memory_growth (bool): whether to enable memory growth for all the visible GPUs.
+        initializer (Callable[..., Any], Optional): worker initializer called after TensorFlow is
+            configured. If it is None, nothing is called.
+        initargs (Tuple[Any, ...]): arguments of the worker initializer.
 
     Returns:
         None
@@ -73,6 +81,8 @@ def _initialize_tensorflow_worker(
             " used on the main process, or if TensorFlow is used at the top level of the main"
             " module, which the worker processes import when they are started by spawn."
         ) from e
+    if initializer is not None:
+        initializer(*initargs)
 
 
 def _check_num_threads(key: str, value: Any) -> int:
@@ -94,31 +104,32 @@ def _check_num_threads(key: str, value: Any) -> int:
 
 
 class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
-    """Multi Process Agent Parallel runner class for agents using TensorFlow. This is experimental.
+    """TensorFlow Agent Parallel runner class. This is experimental.
 
     This runner is :class:`pams.runners.MultiProcessAgentParallelRunner` whose worker processes are
     prepared for agents that use `TensorFlow <https://www.tensorflow.org/>`_ in
-    :func:`pams.agents.Agent.submit_orders`. The simulation results are identical to those of
-    :class:`pams.runners.SequentialRunner` with the same settings and the same seed as long as the
-    agents are deterministic (see below).
+    :func:`pams.agents.Agent.submit_orders`, e.g., Keras models. The simulation results are
+    identical to those of :class:`pams.runners.SequentialRunner` with the same settings and the same
+    seed as long as the agents are deterministic (see below).
 
     TensorFlow is an optional dependency of PAMS: ``import pams`` does not import it, and this
     runner imports it when it is created. If TensorFlow is not installed, an ImportError is raised.
     Install it by ``pip install tensorflow`` (or ``pip install tensorflow-cpu`` for the CPU-only
     build).
 
-    The worker processes are started by ``spawn`` by default, because TensorFlow is not fork-safe.
-    Once TensorFlow runs an operation, the process has thread pools (and CUDA contexts for GPUs),
-    but a process started by ``fork`` has only a copy of the thread calling fork. In the forked
-    process, operations that use the thread pools of TensorFlow hang, GPUs cannot be used, and
-    TensorFlow cannot be configured anymore. Such a fork happens easily, e.g., when agents build
-    their models on the main process or a :class:`pams.runners.SequentialRunner` is run before on
-    the same process. A spawned process starts a new interpreter and initializes TensorFlow by
-    itself. ``simulation.startMethod`` can still select another start method: ``forkserver`` is also
-    safe if TensorFlow is not used at the top level of the main module, and ``fork`` works only if
+    The worker processes are started by ``spawn`` by default, i.e., :attr:`default_start_method` is
+    ``"spawn"``, because TensorFlow is not fork-safe. Once TensorFlow runs an operation, the process
+    has thread pools (and CUDA contexts for GPUs), but a process started by ``fork`` has only a copy
+    of the thread calling fork. In the forked process, operations that use the thread pools of
+    TensorFlow, e.g., a large matrix multiplication, hang, GPUs cannot be used, and TensorFlow
+    cannot be configured anymore. Such a fork happens easily, e.g., when agents build their models
+    on the main process or a :class:`pams.runners.SequentialRunner` is run before on the same
+    process. A spawned process starts a new interpreter and initializes TensorFlow by itself.
+    ``simulation.startMethod`` in the config still takes precedence: ``forkserver`` is also safe if
+    TensorFlow is not used at the top level of the main module, and ``fork`` works only if
     TensorFlow is not used on the main process before the simulation.
 
-    Each worker process is configured once before it runs any task, by the following keys of
+    Each worker process configures TensorFlow once before it runs any task, by the following keys of
     ``simulation`` in the config:
 
     - ``tensorflowIntraOpThreads`` (int ≥ 1): number of threads that TensorFlow uses to run one
@@ -133,17 +144,23 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
       fail with out of memory errors when they share the GPU. Set it to false to keep the default
       behavior of TensorFlow, e.g., when each worker process uses its own GPU.
 
+    Then, the initializer given by ``_get_worker_initializer`` is called as in
+    :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., to load a read-only model once per
+    worker process. These keys do not configure TensorFlow on the main process.
+
     .. note::
         As :class:`pams.runners.MultiProcessAgentParallelRunner`, this runner pickles the agents and
-        the markets, i.e., the whole simulation, for each task. ``tf.Tensor`` and
-        ``tf.Variable`` held by agents are pickled as copies of their values, and Keras 3
-        models are pickled by saving them in the ``.keras`` format, which takes about 10 to 20 ms
-        each way even for a small model, in every task. Objects made by ``tf.function`` cannot be
-        pickled. Therefore, agents should not hold models as their attributes. Instead, an agent
-        should hold a key of its model, such as the path of a saved model, and get the model from
-        a cache at the top level of a module, e.g., a function decorated by
-        :func:`functools.lru_cache` that loads the model. Then, each worker process loads the model
-        once, at its first task, and reuses it in the later tasks.
+        the markets, i.e., the whole simulation, for each task. ``tf.Tensor`` and ``tf.Variable``
+        held by agents are pickled as copies of their values, and Keras 3 models are pickled by
+        saving them in the ``.keras`` format, which takes tens of milliseconds even for a small
+        model, in every task and even in the tasks of other agents. Objects made by
+        ``tf.function`` cannot be pickled even if they are defined at the top level of a module.
+        Therefore, agents should not hold models as their attributes. Instead, an agent should hold
+        a key of its model, such as the path of a saved model, and get the model from a cache at the
+        top level of a module, e.g., a function decorated by :func:`functools.lru_cache` that loads
+        the model. Then, each worker process loads the model once, at its first task or in the
+        worker initializer, and reuses it in the later tasks, and
+        :class:`pams.runners.SequentialRunner` can run the same agents.
 
     .. note::
         Only the orders and the state of the agent's pseudo random number generator (``prng``) are
@@ -221,33 +238,44 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
                 self.gpu_memory_growth = gpu_memory_growth
         super()._setup()
 
-    def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
-        """Get the function called once on each worker before it runs any task (internal method).
+    def _get_intra_op_parallelism_threads(self) -> int:
+        """Get the number of intra-op threads on each worker process (internal method).
 
         Returns:
-            Callable[..., Any], Optional: ``_initialize_tensorflow_worker``, which configures
-            TensorFlow on each worker process.
+            int: ``intra_op_parallelism_threads`` if it is set by
+            ``simulation.tensorflowIntraOpThreads``; otherwise, the number of CPUs divided by
+            ``num_parallel`` (at least 1).
 
         """
-        return _initialize_tensorflow_worker
+        if self.intra_op_parallelism_threads is not None:
+            return self.intra_op_parallelism_threads
+        return max((os.cpu_count() or 1) // self.num_parallel, 1)
 
-    def _get_worker_initargs(self) -> Tuple[Any, ...]:
-        """Get the arguments of the worker initializer (internal method).
+    def _create_executor(self) -> Executor:
+        """Create a new executor (internal method).
+
+        In addition to :func:`pams.runners.MultiProcessAgentParallelRunner._create_executor`, each
+        worker process configures TensorFlow by ``simulation.tensorflowIntraOpThreads``,
+        ``simulation.tensorflowInterOpThreads`` and ``simulation.tensorflowGpuMemoryGrowth``
+        before it calls the initializer given by ``_get_worker_initializer`` and
+        ``_get_worker_initargs``.
 
         Returns:
-            Tuple[Any, ...]: the number of intra-op threads, the number of inter-op threads, and
-            whether to enable memory growth for GPUs. If ``intra_op_parallelism_threads`` is None,
-            the number of CPUs divided by ``num_parallel`` (at least 1) is used as the number of
-            intra-op threads.
+            Executor: new executor.
 
         """
-        intra_op_parallelism_threads: int = (
-            self.intra_op_parallelism_threads
-            if self.intra_op_parallelism_threads is not None
-            else max((os.cpu_count() or 1) // self.num_parallel, 1)
-        )
-        return (
-            intra_op_parallelism_threads,
-            self.inter_op_parallelism_threads,
-            self.gpu_memory_growth,
+        return self._parallel_pool_provider(
+            max_workers=self.num_parallel,
+            mp_context=self._get_mp_context(),
+            initializer=_initialize_worker,
+            initargs=(
+                _initialize_tensorflow_worker,
+                (
+                    self._get_intra_op_parallelism_threads(),
+                    self.inter_op_parallelism_threads,
+                    self.gpu_memory_growth,
+                    self._get_worker_initializer(),
+                    self._get_worker_initargs(),
+                ),
+            ),
         )
