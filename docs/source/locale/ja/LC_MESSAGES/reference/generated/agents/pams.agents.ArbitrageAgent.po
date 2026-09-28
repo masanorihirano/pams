@@ -89,7 +89,7 @@ msgstr "裁定機会を捉えるために注文を発注します。"
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:3
 msgid "order list."
-msgstr ""
+msgstr "注文のリスト。"
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:7
 msgid ":func:`pams.agents.Agent.submit_orders`"

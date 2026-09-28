@@ -71,7 +71,7 @@ msgstr "FCNに基づく計算と市場シェアにより注文を出します。
 
 #: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent.submit_orders:3
 msgid "order list."
-msgstr ""
+msgstr "注文のリスト。"
 
 #: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent.submit_orders:7
 msgid ":func:`pams.agents.FCNAgent.submit_orders`"
