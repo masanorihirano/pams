@@ -17,6 +17,9 @@ class MarketShareFCNAgent(FCNAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """Submit orders based on FCN-based calculation and market shares.
 
+        Returns:
+            List[Union[Order, Cancel]]: order list.
+
         .. seealso::
             - :func:`pams.agents.FCNAgent.submit_orders`
         """
