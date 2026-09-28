@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import random
 import warnings
@@ -6,7 +7,9 @@ from concurrent.futures import Future
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from io import TextIOWrapper
+from multiprocessing.context import BaseContext
 from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -147,19 +150,66 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 stacklevel=2,
             )
         self._shutdown_executor()
-        self.executor = self._parallel_pool_provider(max_workers=self.num_parallel)
+        self.executor = self._create_executor()
+
+    def _create_executor(self) -> Executor:
+        """Create a new executor (internal method).
+
+        This method is called by ``_setup`` and ``_get_executor`` to create the executor. Subclasses
+        can override this method to customize the executor. The default creates an executor of
+        ``_parallel_pool_provider`` with ``num_parallel`` workers, ``_get_worker_initializer()``,
+        and ``_get_worker_initargs()``.
+
+        Returns:
+            Executor: new executor.
+
+        """
+        return self._parallel_pool_provider(
+            max_workers=self.num_parallel,
+            initializer=self._get_worker_initializer(),
+            initargs=self._get_worker_initargs(),
+        )
+
+    def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
+        """Get the function called once on each worker when it starts (internal method).
+
+        Subclasses can override this method to prepare resources once per worker instead of once
+        per call of :func:`pams.agents.Agent.submit_orders`, e.g., to load a neural network model.
+        The function is called with the arguments returned by ``_get_worker_initargs`` on each
+        worker thread for :class:`pams.runners.MultiThreadAgentParallelRunner` and on each worker
+        process for :class:`pams.runners.MultiProcessAgentParallelRunner`. For the latter, the
+        function and the arguments must be picklable, i.e., the function should be defined at the
+        top level of a module importable from the worker processes. The function is not called on
+        the main thread.
+
+        Returns:
+            Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,
+            nothing is called.
+
+        """
+        return None
+
+    def _get_worker_initargs(self) -> Tuple[Any, ...]:
+        """Get the arguments of the worker initializer (internal method).
+
+        Returns:
+            Tuple[Any, ...]: arguments passed to the function returned by
+            ``_get_worker_initializer``. The default is an empty tuple.
+
+        """
+        return ()
 
     def _get_executor(self) -> Executor:
         """Get the executor (internal method).
 
-        If the executor is not prepared, prepare it.
+        If the executor is not prepared, prepare it by ``_create_executor``.
 
         Returns:
             Executor: executor.
 
         """
         if self.executor is None:
-            self.executor = self._parallel_pool_provider(max_workers=self.num_parallel)
+            self.executor = self._create_executor()
         return self.executor
 
     def _shutdown_executor(self) -> None:
@@ -261,6 +311,23 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
     is parallelized in each step using :class:`concurrent.futures.ProcessPoolExecutor`.
     See :class:`pams.runners.MultiThreadAgentParallelRunner` for the details of the parallelization.
 
+    The start method of :mod:`multiprocessing` for the worker processes can be set by
+    ``simulation.startMethod`` in the config. It must be one of
+    :func:`multiprocessing.get_all_start_methods` on the platform, e.g., ``"spawn"``. If it is not
+    set, :attr:`default_start_method` is used, and if it is None, the default start method of the
+    platform is used.
+
+    Subclasses can customize the worker processes by overriding the following members:
+
+    - :attr:`default_start_method`: start method used when ``simulation.startMethod`` is not set.
+      For example, ``"spawn"`` is required for libraries that are not fork-safe, such as PyTorch
+      with CUDA, TensorFlow, and JAX.
+    - ``_get_worker_initializer`` and ``_get_worker_initargs``: function called once on each worker
+      process when it starts and its arguments, e.g., to load a neural network model once per
+      worker.
+    - ``_get_mp_context``: multiprocessing context of the worker processes.
+    - ``_create_executor``: executor itself.
+
     .. note::
         The agent and the markets are pickled and copied to a worker process for each call of
         :func:`pams.agents.Agent.submit_orders`. Therefore, only the returned orders and the state
@@ -282,14 +349,96 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
 
     .. warning::
         This class is much slower than :class:`pams.runners.MultiThreadAgentParallelRunner` because
-        of the
-        cost of pickling. If you want to use parallelization, it is recommended to use
+        of the cost of pickling. Agents and markets refer to the simulator, so each call of
+        :func:`pams.agents.Agent.submit_orders` pickles and unpickles the whole simulation, i.e.,
+        all the agents and all the markets including their histories. The cost grows with the
+        numbers of agents and steps; for example, it is about 0.4 MB and 20 ms per call for 100
+        :class:`pams.agents.FCNAgent` agents and about 4 MB and 0.2 s per call for 1000 agents.
+        Large objects held by agents, such as neural network models, are also pickled for each call
+        unless they are excluded from pickling, e.g., by ``__getstate__``. Such objects should be
+        loaded once per worker process by the worker initializer (see ``_get_worker_initializer``)
+        instead. If you want to use parallelization, it is recommended to use
         :class:`pams.runners.MultiThreadAgentParallelRunner`.
     """
 
     _parallel_pool_provider: Union[
         Type[ThreadPoolExecutor], Type[ProcessPoolExecutor]
     ] = ProcessPoolExecutor
+
+    #: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is
+    #: not set in the config. None means the default start method of the platform. Subclasses can
+    #: override it, e.g., ``"spawn"`` for libraries that are not fork-safe.
+    default_start_method: Optional[str] = None
+
+    def __init__(
+        self,
+        settings: Union[Dict, TextIOWrapper, os.PathLike, str],
+        prng: Optional[random.Random] = None,
+        logger: Optional[Logger] = None,
+        simulator_class: Type[Simulator] = Simulator,
+    ):
+        """Initialize.
+
+        Args:
+            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
+            prng (random.Random, Optional): pseudo random number generator for this runner.
+            logger (Logger, Optional): logger instance.
+            simulator_class (Type[Simulator]): type of simulator.
+
+        Returns:
+            None
+
+        """
+        super().__init__(settings, prng, logger, simulator_class)
+        self.start_method: Optional[str] = self.default_start_method
+
+    def _setup(self) -> None:
+        """Set up the simulation (internal method).
+
+        In addition to :func:`pams.runners.MultiThreadAgentParallelRunner._setup`,
+        ``simulation.startMethod`` is read before the executor is prepared.
+        """
+        if (
+            "simulation" in self.settings
+            and "startMethod" in self.settings["simulation"]
+        ):
+            start_method = self.settings["simulation"]["startMethod"]
+            all_start_methods: List[str] = multiprocessing.get_all_start_methods()
+            if start_method not in all_start_methods:
+                raise ValueError(
+                    f"simulation.startMethod must be one of {all_start_methods}, "
+                    f"but {start_method} is given"
+                )
+            self.start_method = start_method
+        super()._setup()
+
+    def _get_mp_context(self) -> BaseContext:
+        """Get the multiprocessing context of the worker processes (internal method).
+
+        Returns:
+            BaseContext: context of ``start_method``. If ``start_method`` is None, the default
+            context of the platform is returned.
+
+        """
+        return multiprocessing.get_context(self.start_method)
+
+    def _create_executor(self) -> Executor:
+        """Create a new executor (internal method).
+
+        The executor is a :class:`concurrent.futures.ProcessPoolExecutor` with ``num_parallel``
+        workers, ``_get_mp_context()``, ``_get_worker_initializer()``, and
+        ``_get_worker_initargs()``.
+
+        Returns:
+            Executor: new executor.
+
+        """
+        return ProcessPoolExecutor(
+            max_workers=self.num_parallel,
+            mp_context=self._get_mp_context(),
+            initializer=self._get_worker_initializer(),
+            initargs=self._get_worker_initargs(),
+        )
 
     def _receive_orders_from_worker(
         self, agent: Agent, future: "Future[Tuple[List[Union[Order, Cancel]], Any]]"
