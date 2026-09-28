@@ -433,7 +433,87 @@ class SequentialRunner(Runner):
                 n_orders += 1
         return all_orders
 
-    def _handle_orders(  # pylint: disable=too-many-nested-blocks
+    def _process_order(self, session: Session, order: Union[Order, Cancel]) -> None:
+        """process one order or cancel order and the executions caused by it. (Internal method)
+
+        Args:
+            session (Session): session.
+            order (Union[Order, Cancel]): order or cancel order.
+
+        Returns:
+            None
+        """
+        if not session.with_order_placement:
+            raise AssertionError("currently order is not accepted")
+        market: Market = self.simulator.id2market[order.market_id]
+        agent: Agent
+        if isinstance(order, Order):
+            self.simulator._trigger_event_before_order(order=order)
+            log: OrderLog = market._add_order(order=order)
+            agent = self.simulator.id2agent[order.agent_id]
+            agent.submitted_order(log=log)
+            self.simulator._trigger_event_after_order(order_log=log)
+        elif isinstance(order, Cancel):
+            self.simulator._trigger_event_before_cancel(cancel=order)
+            log_: CancelLog = market._cancel_order(cancel=order)
+            agent = self.simulator.id2agent[order.order.agent_id]
+            agent.canceled_order(log=log_)
+            self.simulator._trigger_event_after_cancel(cancel_log=log_)
+        else:
+            raise NotImplementedError
+        if session.with_order_execution and market.is_running:
+            logs: List[ExecutionLog] = market._execution()
+            self.simulator._update_agents_for_execution(execution_logs=logs)
+            for execution_log in logs:
+                agent = self.simulator.id2agent[execution_log.buy_agent_id]
+                agent.executed_order(log=execution_log)
+                agent = self.simulator.id2agent[execution_log.sell_agent_id]
+                agent.executed_order(log=execution_log)
+                self.simulator._trigger_event_after_execution(
+                    execution_log=execution_log
+                )
+
+    def _handle_high_frequency_orders(
+        self, session: Session
+    ) -> List[List[Union[Order, Cancel]]]:
+        """collect and process the orders from high frequency agents. (Internal method)
+
+        High frequency agents are asked in random order until the number of agents submitting orders
+        reaches max_high_frequency_orders. The orders are processed immediately.
+
+        Args:
+            session (Session): session.
+
+        Returns:
+            List[List[Union[Order, Cancel]]]: order lists submitted by high frequency agents.
+        """
+        all_orders: List[List[Union[Order, Cancel]]] = []
+        n_high_freq_orders = 0
+        agents = self.simulator.high_frequency_agents
+        agents = self._prng.sample(agents, len(agents))
+        for agent in agents:
+            if n_high_freq_orders >= session.max_high_frequency_orders:
+                break
+            high_freq_orders: List[Union[Order, Cancel]] = agent.submit_orders(
+                markets=self.simulator.markets
+            )
+            if len(high_freq_orders) == 0:
+                continue
+            if not session.with_order_placement:
+                raise AssertionError("currently order is not accepted")
+            if sum(order.agent_id != agent.agent_id for order in high_freq_orders) > 0:
+                raise ValueError(
+                    "spoofing order is not allowed. please check agent_id in order"
+                )
+            all_orders.append(high_freq_orders)
+            # TODO: currently the original impl is used
+            n_high_freq_orders += 1
+            # n_high_freq_orders += len(high_freq_orders)
+            for order in high_freq_orders:
+                self._process_order(session=session, order=order)
+        return all_orders
+
+    def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
         """handle orders. (Internal method)
@@ -451,98 +531,11 @@ class SequentialRunner(Runner):
         all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
         for orders in sequential_orders:
             for order in orders:
-                if not session.with_order_placement:
-                    raise AssertionError("currently order is not accepted")
-                market: Market = self.simulator.id2market[order.market_id]
-                if isinstance(order, Order):
-                    self.simulator._trigger_event_before_order(order=order)
-                    log: OrderLog = market._add_order(order=order)
-                    agent: Agent = self.simulator.id2agent[order.agent_id]
-                    agent.submitted_order(log=log)
-                    self.simulator._trigger_event_after_order(order_log=log)
-                elif isinstance(order, Cancel):
-                    self.simulator._trigger_event_before_cancel(cancel=order)
-                    log_: CancelLog = market._cancel_order(cancel=order)
-                    agent = self.simulator.id2agent[order.order.agent_id]
-                    agent.canceled_order(log=log_)
-                    self.simulator._trigger_event_after_cancel(cancel_log=log_)
-                else:
-                    raise NotImplementedError
-                if session.with_order_execution and market.is_running:
-                    logs: List[ExecutionLog] = market._execution()
-                    self.simulator._update_agents_for_execution(execution_logs=logs)
-                    for execution_log in logs:
-                        agent = self.simulator.id2agent[execution_log.buy_agent_id]
-                        agent.executed_order(log=execution_log)
-                        agent = self.simulator.id2agent[execution_log.sell_agent_id]
-                        agent.executed_order(log=execution_log)
-                        self.simulator._trigger_event_after_execution(
-                            execution_log=execution_log
-                        )
+                self._process_order(session=session, order=order)
 
             if session.high_frequency_submission_rate < self._prng.random():
                 continue
-
-            n_high_freq_orders = 0
-            agents = self.simulator.high_frequency_agents
-            agents = self._prng.sample(agents, len(agents))
-            for agent in agents:
-                if n_high_freq_orders >= session.max_high_frequency_orders:
-                    break
-
-                high_freq_orders: List[Union[Order, Cancel]] = agent.submit_orders(
-                    markets=self.simulator.markets
-                )
-                if len(high_freq_orders) > 0:
-                    if not session.with_order_placement:
-                        raise AssertionError("currently order is not accepted")
-                    if (
-                        sum(
-                            order.agent_id != agent.agent_id
-                            for order in high_freq_orders
-                        )
-                        > 0
-                    ):
-                        raise ValueError(
-                            "spoofing order is not allowed. please check agent_id in order"
-                        )
-                    all_orders.append(high_freq_orders)
-                    # TODO: currently the original impl is used
-                    n_high_freq_orders += 1
-                    # n_high_freq_orders += len(high_freq_orders)
-                    for order in high_freq_orders:
-                        market = self.simulator.id2market[order.market_id]
-                        if isinstance(order, Order):
-                            self.simulator._trigger_event_before_order(order=order)
-                            log = market._add_order(order=order)
-                            agent = self.simulator.id2agent[order.agent_id]
-                            agent.submitted_order(log=log)
-                            self.simulator._trigger_event_after_order(order_log=log)
-                        elif isinstance(order, Cancel):
-                            self.simulator._trigger_event_before_cancel(cancel=order)
-                            log_ = market._cancel_order(cancel=order)
-                            agent = self.simulator.id2agent[order.order.agent_id]
-                            agent.canceled_order(log=log_)
-                            self.simulator._trigger_event_after_cancel(cancel_log=log_)
-                        else:
-                            raise NotImplementedError
-                        if session.with_order_execution and market.is_running:
-                            logs = market._execution()
-                            self.simulator._update_agents_for_execution(
-                                execution_logs=logs
-                            )
-                            for execution_log in logs:
-                                agent = self.simulator.id2agent[
-                                    execution_log.buy_agent_id
-                                ]
-                                agent.executed_order(log=execution_log)
-                                agent = self.simulator.id2agent[
-                                    execution_log.sell_agent_id
-                                ]
-                                agent.executed_order(log=execution_log)
-                                self.simulator._trigger_event_after_execution(
-                                    execution_log=execution_log
-                                )
+            all_orders.extend(self._handle_high_frequency_orders(session=session))
         return all_orders
 
     def _update_markets(self, session: Session) -> None:

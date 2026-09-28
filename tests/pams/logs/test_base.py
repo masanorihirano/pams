@@ -23,7 +23,10 @@ from pams.logs import SimulationEndLog
 
 
 class CountingLogger(Logger):
+    """Logger that counts how many times the patched write/process is called."""
+
     def __init__(self) -> None:
+        """Initialize the counter."""
         super().__init__()
         self.count = 0
 

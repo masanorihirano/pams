@@ -47,7 +47,7 @@ class JsonRandom:
         self.prng: random.Random = prng
 
     def _next_uniform(self, min_value: float, max_value: float) -> float:
-        r"""get next uniform.
+        r"""Get next uniform.
 
         Its probability density function is
         :math:`p(x) = \frac{1}{max - min}`
@@ -59,11 +59,12 @@ class JsonRandom:
 
         Returns:
             float: uniform.
+
         """
         return self.prng.random() * (max_value - min_value) + min_value
 
     def _next_normal(self, mu: float, sigma: float) -> float:
-        r"""get next normal.
+        r"""Get next normal.
 
         Its probability density function is
         :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}e^{- \frac{(x - \mu)^2}{2 \sigma^2}}}`
@@ -75,11 +76,12 @@ class JsonRandom:
 
         Returns:
             float: normal.
+
         """
         return self.prng.gauss(mu=mu, sigma=sigma)
 
     def _next_exponential(self, lam: float) -> float:
-        r"""get next exponential.
+        r"""Get next exponential.
 
         Its probability density function is
         :math:`p(x) = \lambda exp(- \lambda x)`
@@ -90,6 +92,7 @@ class JsonRandom:
 
         Returns:
             float: exponential.
+
         """
         return lam * -math.log(self.prng.random())
 
