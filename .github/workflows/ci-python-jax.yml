@@ -28,7 +28,10 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install poetry
           poetry install
-          # the CPU builds of JAX and Flax, which are not dependencies of pams
+          # the CPU builds of JAX and Flax, which are not dependencies of pams. Recent JAX needs
+          # numpy>=2, so pip replaces the numpy 1.x installed by poetry and reports that pams
+          # declares numpy<2 on this Python version, but it still installs them (pams also runs
+          # with numpy 2, which it uses on Python 3.13).
           poetry run pip install "jax[cpu]" flax
           # the tests are skipped instead of failing if JAX or Flax cannot be imported
           poetry run python -c "import flax, jax; print(jax.__version__, flax.__version__)"
