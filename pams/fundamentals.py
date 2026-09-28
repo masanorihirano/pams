@@ -130,7 +130,7 @@ class Fundamentals:
         Returns:
             None
         """
-        if not (-1.0 < corr < 1.0):
+        if not -1.0 < corr < 1.0:
             raise ValueError("corr must be in (-1.0, 1.0)")
         if market_id1 == market_id2:
             raise ValueError("market_id1 and market_id2 must be different")
@@ -232,7 +232,9 @@ class Fundamentals:
 
     def _generate_next(self) -> None:
         """execute to next step. (Internal method)
-        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or :func:`pams.Fundamentals.get_fundamental_prices`.
+
+        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or
+        :func:`pams.Fundamentals.get_fundamental_prices`.
         """
         setting_change_points: List[int] = [
             x for x in self.start_at.values() if x > self._generated_until

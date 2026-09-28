@@ -423,7 +423,8 @@ class Logger:
             log (:class:`pams.logs.OrderLog`]): order log
 
         Returns:
-            None"""
+            None
+        """
         pass
 
     def process_cancel_log(self, log: "CancelLog") -> None:

@@ -233,12 +233,7 @@ class SequentialRunner(Runner):
             accessible_market_names: List[str] = agent_settings["markets"]
             accessible_market_ids: List[int] = sum(
                 [
-                    list(
-                        map(
-                            lambda m: m.market_id,
-                            self.simulator.markets_group_name2market[x],
-                        )
-                    )
+                    [m.market_id for m in self.simulator.markets_group_name2market[x]]
                     for x in accessible_market_names
                 ],
                 [],
@@ -265,13 +260,14 @@ class SequentialRunner(Runner):
 
     def _set_fundamental_correlation(self) -> None:
         """set fundamental correlation. (Internal method)"""
+        # pylint: disable=too-many-nested-blocks
         if "fundamentalCorrelations" in self.settings["simulation"]:
             corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
             for key, value in corr_settings.items():
                 if key == "pairwise":
                     if (
                         not isinstance(value, list)
-                        or sum([len(x) != 3 for x in value]) > 0
+                        or sum(len(x) != 3 for x in value) > 0
                     ):
                         raise ValueError(
                             "simulation.fundamentalCorrelations.pairwise has invalid format data"
@@ -375,7 +371,7 @@ class SequentialRunner(Runner):
         market_type_names: List[str] = self.settings["simulation"]["markets"]
         if (
             not isinstance(market_type_names, list)
-            or sum([not isinstance(m, str) for m in market_type_names]) > 0
+            or sum(not isinstance(m, str) for m in market_type_names) > 0
         ):
             raise ValueError("simulation.markets in json file have to be list[str]")
         self._generate_markets(market_type_names=market_type_names)
@@ -386,7 +382,7 @@ class SequentialRunner(Runner):
         agent_type_names: List[str] = self.settings["simulation"]["agents"]
         if (
             not isinstance(agent_type_names, list)
-            or sum([not isinstance(m, str) for m in agent_type_names]) > 0
+            or sum(not isinstance(m, str) for m in agent_type_names) > 0
         ):
             raise ValueError("simulation.agents in json file have to be list[str]")
         self._generate_agents(agent_type_names=agent_type_names)
@@ -396,7 +392,7 @@ class SequentialRunner(Runner):
         session_settings: List[Dict[str, Any]] = self.settings["simulation"]["sessions"]
         if (
             not isinstance(session_settings, list)
-            or sum([not isinstance(m, dict) for m in session_settings]) > 0
+            or sum(not isinstance(m, dict) for m in session_settings) > 0
         ):
             raise ValueError("simulation.sessions in json file have to be List[Dict]")
         self._generate_sessions()
@@ -407,7 +403,8 @@ class SequentialRunner(Runner):
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
         """collect orders from normal_agents. (Internal method)
-        orders are corrected until the total number of orders reaches max_normal_orders
+
+        orders are collected until the total number of orders reaches max_normal_orders
 
         Args:
             session (Session): session.
@@ -426,7 +423,7 @@ class SequentialRunner(Runner):
             if len(orders) > 0:
                 if not session.with_order_placement:
                     raise AssertionError("currently order is not accepted")
-                if sum([order.agent_id != agent.agent_id for order in orders]) > 0:
+                if sum(order.agent_id != agent.agent_id for order in orders) > 0:
                     raise ValueError(
                         "spoofing order is not allowed. please check agent_id in order"
                     )
@@ -436,10 +433,11 @@ class SequentialRunner(Runner):
                 n_orders += 1
         return all_orders
 
-    def _handle_orders(
+    def _handle_orders(  # pylint: disable=too-many-nested-blocks
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
         """handle orders. (Internal method)
+
         processing local orders and correct and process the orders from high frequency agents.
 
         Args:
@@ -500,10 +498,8 @@ class SequentialRunner(Runner):
                         raise AssertionError("currently order is not accepted")
                     if (
                         sum(
-                            [
-                                order.agent_id != agent.agent_id
-                                for order in high_freq_orders
-                            ]
+                            order.agent_id != agent.agent_id
+                            for order in high_freq_orders
                         )
                         > 0
                     ):

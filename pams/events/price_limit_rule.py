@@ -53,7 +53,7 @@ class PriceLimitRule(EventABC):
             None
         """
         if "referenceMarket" in settings:
-            warnings.warn("referenceMarket is obsoleted")
+            warnings.warn("referenceMarket is obsoleted", stacklevel=2)
         if "targetMarkets" not in settings:
             raise ValueError("targetMarkets is required for PriceLimitRule")
         if not isinstance(settings["targetMarkets"], list):
@@ -79,8 +79,7 @@ class PriceLimitRule(EventABC):
                 event=self, hook_type="order", is_before=True, time=None
             )
             return [event_hook]
-        else:
-            return []
+        return []
 
     def get_limited_price(self, order: Order, market: Market) -> Optional[float]:
         """Calculate the limited price for an order.
@@ -90,7 +89,8 @@ class PriceLimitRule(EventABC):
             market (Market): market that order belongs to
 
         Returns:
-            Optional[float]: price after price limit. If the input order is market order, the return become None (market order).
+            Optional[float]: price after price limit.
+                             If the input order is market order, the return become None (market order).
         """
         reference_price = market.get_market_price(0)
         if market not in self.target_markets.values():

@@ -9,10 +9,13 @@ def json_extends(
     target_json: Dict,
     excludes_fields: Optional[List[str]] = None,
 ) -> Dict:
-    """extend target json. If "extends" keys are included in target_json, this try to extend the json dict recursively.
-     For the extension, the value for "extends" field  is found in whole_json and target_json is extended using the dict under
-     the found part of whole_json. This process is recursively repeated. "parent_name" is only used for avoiding circle
-     extension of target_json and it should be parent key of taregt_json.
+    """extend target json.
+
+    If "extends" keys are included in target_json, this try to extend the json dict recursively.
+    For the extension, the value for "extends" field  is found in whole_json and target_json is extended
+    using the dict under the found part of whole_json. This process is recursively repeated.
+    "parent_name" is only used for avoiding circle extension of target_json and it should be parent key
+    of target_json.
 
     Args:
         whole_json (Dict): whole of json.
@@ -45,12 +48,12 @@ def json_extends(
             raise ValueError(f"{parent_name} has extending loop")
         extending_history.append(extends_class)
         extending_dict: Dict = whole_json[extends_class]
-        results = dict(
-            [
-                (key, value)
+        results = {
+            **{
+                key: value
                 for key, value in extending_dict.items()
                 if key not in excludes_fields_
-            ],
+            },
             **results,
-        )
+        }
     return results

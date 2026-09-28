@@ -96,14 +96,15 @@ class TestEventHook:
             specific_instance = agent
         else:
             raise NotImplementedError
-        if (
-            (hook_type == "execution" and is_before)
-            or hook_type == "dummy"
-            or (hook_type != "market" and specific_class is not None)
-            or (hook_type != "market" and specific_instance is not None)
-            or specific_class == DummyAgent
-            or specific_instance_name == "agent"
-        ):
+        invalid_conditions = [
+            hook_type == "execution" and is_before,
+            hook_type == "dummy",
+            hook_type != "market" and specific_class is not None,
+            hook_type != "market" and specific_instance is not None,
+            specific_class == DummyAgent,
+            specific_instance_name == "agent",
+        ]
+        if any(invalid_conditions):
             with pytest.raises(ValueError):
                 EventHook(
                     event=event,
@@ -114,15 +115,14 @@ class TestEventHook:
                     specific_instance=specific_instance,
                 )
             return
-        else:
-            event_hook = EventHook(
-                event=event,
-                hook_type=hook_type,
-                is_before=is_before,
-                time=[1, 3],
-                specific_class=specific_class,
-                specific_instance=specific_instance,
-            )
+        event_hook = EventHook(
+            event=event,
+            hook_type=hook_type,
+            is_before=is_before,
+            time=[1, 3],
+            specific_class=specific_class,
+            specific_instance=specific_instance,
+        )
         sim._add_event(event_hook=event_hook)
         assert event_hook.event == event
         assert event_hook.hook_type == hook_type

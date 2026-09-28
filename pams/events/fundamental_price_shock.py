@@ -41,7 +41,8 @@ class FundamentalPriceShock(EventABC):
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".
+                                       This must include the parameters "triggerDays", "target", "triggerTime",
+                                       and "priceChangeRate".
                                        This can include the parameters "enabled" and "shockTimeLength".
 
         Returns:
@@ -78,12 +79,11 @@ class FundamentalPriceShock(EventABC):
                 specific_instance=self.target_market,
             )
             return [event_hook]
-        else:
-            return []
+        return []
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
         time: int = market.get_time()
-        if not (self.trigger_time <= time < self.trigger_time + self.shock_time_length):
+        if not self.trigger_time <= time < self.trigger_time + self.shock_time_length:
             raise AssertionError
         if market != self.target_market:
             raise AssertionError

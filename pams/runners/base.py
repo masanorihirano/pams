@@ -48,14 +48,11 @@ class Runner(ABC):
         self.settings: Dict
         if isinstance(settings, Dict):
             self.settings = settings
-        elif (
-            isinstance(settings, TextIOBase)
-            or isinstance(settings, TextIO)
-            or isinstance(settings, TextIOWrapper)
-        ):
+        elif isinstance(settings, (TextIOBase, TextIO, TextIOWrapper)):
             self.settings = json.load(fp=settings)
         else:
-            self.settings = json.load(fp=open(settings, mode="r"))
+            with open(settings, mode="r", encoding="utf-8") as fp:
+                self.settings = json.load(fp=fp)
         self._prng: random.Random = prng if prng is not None else random.Random()
         self.logger = logger
         self.simulator: Simulator = simulator_class(
@@ -82,8 +79,9 @@ class Runner(ABC):
     def class_register(self, cls: Type) -> None:
         """register class. This method is used for user-defined classes.
 
-        Usually, user-defined classes, i.e., the classes you implemented for your original simulation, cannot be referred from
-        pams package, especially from simulation runners. Therefore, the class registration to the runner is necessary.
+        Usually, user-defined classes, i.e., the classes you implemented for your original simulation,
+        cannot be referred from pams package, especially from simulation runners.
+        Therefore, the class registration to the runner is necessary.
 
         Args:
             cls (Type): class to register.

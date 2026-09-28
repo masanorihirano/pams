@@ -30,7 +30,8 @@ class TestAgent(Agent):
         Note:
             TestAgent is mainly introduced for testing.
             Therefore, we do not intend that you modify it.
-            If you want to use similar agents for your research purpose, please make user-defined class instead of using TestAgent.
+            If you want to use similar agents for your research purpose, please make user-defined class
+            instead of using TestAgent.
         """
         margin_scale: float = 10.0
         volume_scale: int = 100

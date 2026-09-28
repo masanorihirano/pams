@@ -45,13 +45,15 @@ class TestRunner:
         if setting is None:
             setting = self.default_setting.copy()
         _prng = random.Random(42)
-        kwargs: Dict[str, Any] = dict(prng=_prng, logger=logger)
+        runner: Runner
+        kwargs: Dict[str, Any] = {"prng": _prng, "logger": logger}
         if simulator_class is not None:
             kwargs["simulator_class"] = simulator_class
         if setting_mode in ["file_pointer", "file_path"]:
             with tempfile.TemporaryDirectory() as tmp_dir:
                 setting_file = os.path.join(tmp_dir, "setting.json")
-                json.dump(setting, open(setting_file, mode="w", encoding="utf-8"))
+                with open(setting_file, mode="w", encoding="utf-8") as fp:
+                    json.dump(setting, fp)
                 if setting_mode == "file_pointer":
                     with open(setting_file, mode="r", encoding="utf-8") as fp:
                         runner = self.runner_class(settings=fp, **kwargs)
@@ -73,7 +75,7 @@ class TestRunner:
             runner.simulator,
             simulator_class if simulator_class is not None else Simulator,
         )
-        assert runner.registered_classes == []
+        assert not runner.registered_classes
         if logger is not None:
             assert runner.simulator.logger is logger
             assert logger.simulator is runner.simulator

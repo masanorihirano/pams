@@ -18,7 +18,9 @@ class MarketStepPrintLogger(Logger):
             None
         """
         print(
-            f"{log.session.session_id} {log.market.get_time()} {log.market.market_id} {log.market.name} {log.market.get_market_price()} {log.market.get_fundamental_price()}"
+            f"{log.session.session_id} {log.market.get_time()} {log.market.market_id} "
+            f"{log.market.name} {log.market.get_market_price()} "
+            f"{log.market.get_fundamental_price()}"
         )
 
 

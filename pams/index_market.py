@@ -40,15 +40,19 @@ class IndexMarket(Market):
             settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.
                                        This must include the parameter "markets".
                                        This should include the parameter "requires".
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
         """
-        super(IndexMarket, self).setup(settings, *args, **kwargs)
+        super().setup(settings, *args, **kwargs)
         if "markets" not in settings:
             raise ValueError("markets is required for index markets as components")
         if "requires" in settings:
-            warnings.warn("requires in index market settings is no longer required")
+            warnings.warn(
+                "requires in index market settings is no longer required", stacklevel=2
+            )
         for market_name in settings["markets"]:
             market: Market = self.simulator.name2market[market_name]
             self._add_market(market=market)
@@ -93,7 +97,8 @@ class IndexMarket(Market):
 
         .. note::
             In an index market, there are two types of fundamental values:
-             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
+             1. fundamental value set from outside such as runner
+                (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
              2. fundamental value calculated from components' fundamental value
                 (:func:`pams.index_market.IndexMarket.get_fundamental_index`,
                  :func:`pams.index_market.IndexMarket.get_fundamental_price`)
@@ -143,7 +148,7 @@ class IndexMarket(Market):
         Returns:
             bool: whether all markets is running or not.
         """
-        return sum(map(lambda x: not x.is_running, self._components)) == 0
+        return sum((not x.is_running for x in self._components)) == 0
 
     def get_fundamental_index(self, time: Optional[int] = None) -> float:
         """get fundamental index.
@@ -156,7 +161,8 @@ class IndexMarket(Market):
 
         .. note::
             In an index market, there are two types of fundamental values:
-             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
+             1. fundamental value set from outside such as runner
+                (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)
              2. fundamental value calculated from components' fundamental value
                 (:func:`pams.index_market.IndexMarket.get_fundamental_index`,
                  :func:`pams.index_market.IndexMarket.get_fundamental_price`)

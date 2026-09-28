@@ -9,10 +9,11 @@ JsonValue = Union[Dict, List, float, int]
 
 
 class JsonRandom:
-    """random generator from json.
+    r"""random generator from json.
 
     The following direction can be used for config as randomized values:
-     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int, this automatically converted into int. This always satisfy :math:`a \leq x < b`
+     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int,
+       this automatically converted into int. This always satisfy :math:`a \leq x < b`
      - :code:`{"const": [a]}`: constant value. Always set to a.
      - :code:`{"uniform": [a, b]}`: same as [a, b]
      - :code:`{"normal": [u, s]}`: normal distribution whose mean and deviation is u and s.
@@ -46,7 +47,7 @@ class JsonRandom:
         self.prng: random.Random = prng
 
     def _next_uniform(self, min_value: float, max_value: float) -> float:
-        """get next uniform.
+        r"""get next uniform.
 
         Its probability density function is
         :math:`p(x) = \frac{1}{max - min}`
@@ -62,11 +63,11 @@ class JsonRandom:
         return self.prng.random() * (max_value - min_value) + min_value
 
     def _next_normal(self, mu: float, sigma: float) -> float:
-        """get next normal.
+        r"""get next normal.
 
         Its probability density function is
-        :math:`p(x) = \frac{1}{\\sqrt{2 \\pi \\sigma^2}e^{- \frac{(x - \\mu)^2}{2 \\sigma^2}}}`
-        where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.
+        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}e^{- \frac{(x - \mu)^2}{2 \sigma^2}}}`
+        where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
 
         Args:
             mu (float): mu.
@@ -78,11 +79,11 @@ class JsonRandom:
         return self.prng.gauss(mu=mu, sigma=sigma)
 
     def _next_exponential(self, lam: float) -> float:
-        """get next exponential.
+        r"""get next exponential.
 
         Its probability density function is
-        :math:`p(x) = \\lambda exp(- \\lambda x)`
-        for :math:`x \\gt 0` and 0 elsewhere. Where :math:`\\lambda` is the scale parameter.
+        :math:`p(x) = \lambda exp(- \lambda x)`
+        for :math:`x \gt 0` and 0 elsewhere. Where :math:`\lambda` is the scale parameter.
 
         Args:
             lam (float): lambda.
@@ -96,7 +97,8 @@ class JsonRandom:
         """get a random value.
 
         Args:
-            json_value (JsonValue): random type. This can include the parameter "const", "uniform", "normal", and "expon".
+            json_value (JsonValue): random type.
+                                    This can include the parameter "const", "uniform", "normal", and "expon".
 
         Returns:
             float: random value.

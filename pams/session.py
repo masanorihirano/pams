@@ -68,8 +68,14 @@ class Session:
 
         Args:
             settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.
-                                       This must include the parameters "iterationSteps", "withOrderPlacement", "withOrderExecution", and "withPrint".
-                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "highFrequencySubmitRate".
+                                       This must include the parameters "iterationSteps", "withOrderPlacement",
+                                       "withOrderExecution", and "withPrint".
+                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders",
+                                       and "highFrequencySubmitRate".
+            *args: not used.
+            **kwargs: not used.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None
@@ -115,7 +121,8 @@ class Session:
         elif "maxHifreqOrders" in settings:
             # TODO: check non-negative
             warnings.warn(
-                "maxHifreqOrders is replaced to maxHighFrequencyOrders in pams."
+                "maxHifreqOrders is replaced to maxHighFrequencyOrders in pams.",
+                stacklevel=2,
             )
             self.max_high_frequency_orders = settings["maxHifreqOrders"]
         # TODO: check malOrders + maxHighFrequencyOrders >= 1
@@ -128,7 +135,8 @@ class Session:
                 )
         elif "hifreqSubmitRate" in settings:
             warnings.warn(
-                "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."
+                "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams.",
+                stacklevel=2,
             )
             # TODO: check non-negative
             self.high_frequency_submission_rate = settings["hifreqSubmitRate"]

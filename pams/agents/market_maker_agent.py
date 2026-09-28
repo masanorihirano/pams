@@ -13,7 +13,7 @@ from pams.utils.json_random import JsonRandom
 
 
 class MarketMakerAgent(HighFrequencyAgent):
-    """Market Maker Agent class
+    r"""Market Maker Agent class
 
     This class inherits from the :class:`pams.agents.Agent` class.
 
@@ -41,6 +41,8 @@ class MarketMakerAgent(HighFrequencyAgent):
                                        This must include the parameters "targetMarket" and "netInterestSpread".
                                        This can include the parameters "orderTimeLength".
             accessible_markets_ids (List[int]): list of market IDs.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None

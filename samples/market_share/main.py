@@ -11,7 +11,7 @@ from pams.runners.sequential import SequentialRunner
 
 class ExtendedMarket(Market):
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        super(ExtendedMarket, self).setup(settings, *args, **kwargs)
+        super().setup(settings, *args, **kwargs)
         if "tradeVolume" in settings:
             if not isinstance(settings["tradeVolume"], int):
                 raise ValueError("tradeVolume must be int")

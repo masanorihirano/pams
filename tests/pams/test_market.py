@@ -1013,14 +1013,14 @@ class TestMarket:
         logs = market._execution()
         assert len(logs) == 2
         assert all(isinstance(log, ExecutionLog) for log in logs)
-        assert sum([log.volume for log in logs]) == 2
+        assert sum(log.volume for log in logs) == 2
         execution_logs = [
             log for log in logger.pending_logs if isinstance(log, ExecutionLog)
         ]
         assert len(execution_logs) == len(logs)
         assert [id(log) for log in execution_logs] == [id(log) for log in logs]
         n_pending_logs = len(logger.pending_logs)
-        assert market._execution() == []
+        assert not market._execution()
         assert len(logger.pending_logs) == n_pending_logs
 
     def test_execute_orders_log_written_once(self) -> None:

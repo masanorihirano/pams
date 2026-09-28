@@ -25,7 +25,7 @@ def test_all() -> None:
             env["PYTHONPATH"] += f";{root_dir}"
         else:
             env["PYTHONPATH"] = root_dir
-        run = subprocess.run(
+        run = subprocess.run(  # pylint: disable=subprocess-run-check
             cmd,
             cwd=root_dir,
             stdout=subprocess.PIPE,

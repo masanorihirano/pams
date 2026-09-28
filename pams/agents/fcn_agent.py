@@ -19,7 +19,7 @@ MARGIN_NORMAL = 1
 
 
 class FCNAgent(Agent):
-    """FCN (Fundamental, Chartist, Noise) Agent class
+    r"""FCN (Fundamental, Chartist, Noise) Agent class
 
     This class inherits from the :class:`pams.agents.Agent` class.
 
@@ -75,10 +75,12 @@ class FCNAgent(Agent):
         """agent setup.  Usually be called from simulator/runner automatically.
 
         Args:
-            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight",
-                                       "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType",
-                                       and "meanReversionTime".
+            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight",
+                                       "chartWeight", "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin",
+                                       "marginType", and "meanReversionTime".
             accessible_markets_ids (List[int]): list of market IDs.
+            *args: not used.
+            **kwargs: not used.
 
         Returns:
             None

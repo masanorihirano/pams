@@ -55,7 +55,7 @@ class OrderMistakeShock(EventABC):
             None
         """
         if "agent" in settings:
-            warnings.warn("agent in OrderMistakeShock is obsoleted.")
+            warnings.warn("agent in OrderMistakeShock is obsoleted.", stacklevel=2)
         if "target" not in settings:
             raise ValueError("target is required for OrderMistakeShock")
         if settings["target"] not in self.simulator.name2market:
@@ -90,8 +90,7 @@ class OrderMistakeShock(EventABC):
                 event=self, hook_type="order", is_before=True, time=[self.trigger_time]
             )
             return [event_hook]
-        else:
-            return []
+        return []
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
         if order.market_id != self.target_market.market_id:
