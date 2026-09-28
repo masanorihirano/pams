@@ -12,8 +12,8 @@ class JsonRandom:
     r"""random generator from json.
 
     The following direction can be used for config as randomized values:
-     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int,
-       this automatically converted into int. This always satisfy :math:`a \leq x < b`
+     - :code:`[a, b]`: uniform distribution on :math:`[a, b)`. Both bounds are converted into float and
+       a float is returned, so :math:`a \leq x < b` always holds; convert it into int by yourself if needed.
      - :code:`{"const": [a]}`: constant value. Always set to a.
      - :code:`{"uniform": [a, b]}`: same as [a, b]
      - :code:`{"normal": [u, s]}`: normal distribution whose mean and deviation is u and s.
@@ -67,7 +67,7 @@ class JsonRandom:
         r"""Get next normal.
 
         Its probability density function is
-        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}e^{- \frac{(x - \mu)^2}{2 \sigma^2}}}`
+        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{- \frac{(x - \mu)^2}{2 \sigma^2}}`
         where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.
 
         Args:
@@ -84,11 +84,12 @@ class JsonRandom:
         r"""Get next exponential.
 
         Its probability density function is
-        :math:`p(x) = \lambda exp(- \lambda x)`
-        for :math:`x \gt 0` and 0 elsewhere. Where :math:`\lambda` is the scale parameter.
+        :math:`p(x) = \frac{1}{\lambda} e^{- x / \lambda}`
+        for :math:`x \geq 0` and 0 elsewhere, where :math:`\lambda` is the scale parameter,
+        i.e., both the mean and the standard deviation of the distribution.
 
         Args:
-            lam (float): lambda.
+            lam (float): lambda (mean of the distribution).
 
         Returns:
             float: exponential.

@@ -74,8 +74,6 @@ class Session:
                                        and "highFrequencySubmitRate".
             *args: not used.
             **kwargs: not used.
-            *args: not used.
-            **kwargs: not used.
 
         Returns:
             None
