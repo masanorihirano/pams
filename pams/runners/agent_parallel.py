@@ -238,13 +238,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                     if len(orders) > 0:
                         if not session.with_order_placement:
                             raise AssertionError("currently order is not accepted")
-                        if (
-                            sum(order.agent_id != agent.agent_id for order in orders)
-                            > 0
-                        ):
-                            raise ValueError(
-                                "spoofing order is not allowed. please check agent_id in order"
-                            )
+                        self._check_submitted_orders(agent=agent, orders=orders)
                         all_orders.append(orders)
                         n_orders += 1
             finally:
@@ -313,6 +307,9 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         orders = super()._receive_orders_from_worker(agent=agent, future=future)
         for order in orders:
             if isinstance(order, Cancel):
+                if order.order.market_id not in self.simulator.id2market:
+                    # rejected later by SequentialRunner._check_submitted_orders
+                    continue
                 market: Market = self.simulator.id2market[order.order.market_id]
                 order_book = (
                     market.buy_order_book

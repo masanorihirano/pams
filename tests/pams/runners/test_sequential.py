@@ -1261,10 +1261,15 @@ class TestSequentialRunner(TestRunner):
         runner._setup()
 
         def dummy_fn(cls: Agent, markets: List[Market]) -> List[Order]:
+            accessible_markets = [
+                market
+                for market in markets
+                if cls.is_market_accessible(market_id=market.market_id)
+            ]
             return [
                 Order(
                     agent_id=cls.agent_id,
-                    market_id=markets[0].market_id,
+                    market_id=accessible_markets[0].market_id,
                     is_buy=True,
                     kind=LIMIT_ORDER,
                     volume=1,
