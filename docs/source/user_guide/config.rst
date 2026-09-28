@@ -1139,8 +1139,7 @@ before calling ``main()``, then refer to it by its class name:
            self.my_parameter = settings.get("myParameter", 1.0)
 
 
-   with open("config.json", encoding="utf-8") as fp:
-       runner = SequentialRunner(settings=fp)
+   runner = SequentialRunner(settings="config.json")
    runner.class_register(cls=MyAgent)
    runner.main()
 
@@ -1217,8 +1216,6 @@ These mistakes do not raise an error but change the simulation:
 - ``triggerTime`` **counts from the start of the session** that lists the event, not from step 0. A time beyond
   the end of the session fires in a later session, or never.
 - ``[a, b]`` **never produces** ``b``, and integer parameters are truncated.
-- **Files with non-ASCII characters**: when ``settings`` is a file path, the file is read with the platform's
-  default encoding. Open the file yourself with ``encoding="utf-8"`` and pass the file object.
 - **Adding, removing or reordering entries changes the random numbers.** The runner draws a seed for every
   market, agent, session and event entry in list order, so such an edit usually changes the whole run even with
   the same seed. To switch an event off for a comparison run, keep it listed with ``"enabled": false``.
