@@ -81,6 +81,15 @@ class SharedModelJaxAgentParallelRunner(JaxAgentParallelRunner):
         return (SHARED_MODEL_SEED,)
 
 
+class XlaFlagsJaxAgentParallelRunner(JaxAgentParallelRunner):
+    """JaxAgentParallelRunner making JAX use two CPU devices on the worker processes."""
+
+    def _get_worker_environment(self) -> Dict[str, str]:
+        environment = super()._get_worker_environment()
+        environment["XLA_FLAGS"] = "--xla_force_host_platform_device_count=2"
+        return environment
+
+
 class FailingJaxAgentParallelRunner(JaxAgentParallelRunner):
     def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
         return fail_to_initialize_worker
@@ -332,6 +341,36 @@ def test_config_inherited_from_environment(monkeypatch: pytest.MonkeyPatch) -> N
     config = runner._get_executor().submit(jax_dummy.get_jax_worker_config).result()
     assert config["XLA_PYTHON_CLIENT_PREALLOCATE"] == "false"
     assert config["XLA_PYTHON_CLIENT_MEM_FRACTION"] == "0.5"
+    runner._shutdown_executor()
+
+
+def test_jax_platforms_overrides_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    # JAX reads JAX_PLATFORMS when it is imported, so JAX on the worker processes fails with this
+    # inherited value unless jaxPlatforms is applied to the config of JAX
+    monkeypatch.setenv("JAX_PLATFORMS", "nosuchplatform")
+    setting = copy.deepcopy(DEFAULT_SETTING)
+    setting["simulation"]["jaxPlatforms"] = "cpu"
+    runner = _make_runner(setting=setting)
+    runner._setup()
+    config = runner._get_executor().submit(jax_dummy.get_jax_worker_config).result()
+    assert config["jax_platforms"] == "cpu"
+    assert config["default_backend"] == "cpu"
+    runner._shutdown_executor()
+
+
+def test_worker_environment_set_before_jax_initialized(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # XLA_FLAGS takes effect only if it is set before JAX initializes its backends
+    monkeypatch.delenv("XLA_FLAGS", raising=False)
+    setting = copy.deepcopy(DEFAULT_SETTING)
+    setting["simulation"]["jaxPlatforms"] = "cpu"
+    _, runner = _make_runners(
+        setting=setting, runner_class=XlaFlagsJaxAgentParallelRunner
+    )
+    runner._setup()
+    assert runner._get_executor().submit(jax_dummy.get_device_count).result() == 2
+    assert "XLA_FLAGS" not in os.environ
     runner._shutdown_executor()
 
 

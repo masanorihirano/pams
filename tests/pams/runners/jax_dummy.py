@@ -91,6 +91,11 @@ def get_jax_worker_config() -> Dict[str, Optional[str]]:
     }
 
 
+def get_device_count() -> int:
+    """Get the number of the devices of JAX on the current process."""
+    return jax.device_count()
+
+
 def _market_features(market: Market, noise: float) -> jax.Array:
     market_price = market.get_market_price()
     past_price = market.get_market_price(max(market.get_time() - 5, 0))
