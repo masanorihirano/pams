@@ -1,0 +1,53 @@
+{
+  "simulation": {
+    "markets": ["Market"],
+    "agents": ["FCNAgents"],
+    "sessions": [
+      {
+        "sessionName": "warmup",
+        "iterationSteps": 100,
+        "withOrderPlacement": true,
+        "withOrderExecution": false,
+        "withPrint": true
+      },
+      {
+        "sessionName": "main",
+        "iterationSteps": 500,
+        "withOrderPlacement": true,
+        "withOrderExecution": true,
+        "withPrint": true,
+        "events": ["PriceDrop", "CircuitBreaker"]
+      }
+    ]
+  },
+  "PriceDrop": {
+    "class": "FundamentalPriceShock",
+    "target": "Market",
+    "triggerTime": 100,
+    "priceChangeRate": -0.1
+  },
+  "CircuitBreaker": {
+    "class": "TradingHaltRule",
+    "targetMarkets": ["Market"],
+    "triggerChangeRate": 0.05,
+    "haltingTimeLength": 50
+  },
+  "Market": {
+    "class": "Market",
+    "tickSize": 0.00001,
+    "marketPrice": 300.0
+  },
+  "FCNAgents": {
+    "class": "FCNAgent",
+    "numAgents": 100,
+    "markets": ["Market"],
+    "assetVolume": 50,
+    "cashAmount": 10000,
+    "fundamentalWeight": {"expon": [1.0]},
+    "chartWeight": {"expon": [0.0]},
+    "noiseWeight": {"expon": [1.0]},
+    "noiseScale": 0.001,
+    "timeWindowSize": [100, 200],
+    "orderMargin": [0.0, 0.1]
+  }
+}

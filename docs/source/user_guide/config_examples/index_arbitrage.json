@@ -1,0 +1,72 @@
+{
+  "simulation": {
+    "markets": ["SpotMarkets", "IndexMarket"],
+    "agents": ["SpotFCNAgents", "IndexFCNAgents", "ArbitrageAgents"],
+    "sessions": [
+      {
+        "sessionName": "warmup",
+        "iterationSteps": 100,
+        "withOrderPlacement": true,
+        "withOrderExecution": false,
+        "withPrint": true,
+        "maxNormalOrders": 3,
+        "maxHighFrequencyOrders": 0
+      },
+      {
+        "sessionName": "main",
+        "iterationSteps": 500,
+        "withOrderPlacement": true,
+        "withOrderExecution": true,
+        "withPrint": true,
+        "maxNormalOrders": 3,
+        "maxHighFrequencyOrders": 5
+      }
+    ],
+    "fundamentalCorrelations": {
+      "pairwise": [["SpotMarkets-0", "SpotMarkets-1", 0.5]]
+    }
+  },
+  "SpotMarkets": {
+    "class": "Market",
+    "numMarkets": 2,
+    "tickSize": 0.00001,
+    "marketPrice": 300.0,
+    "fundamentalVolatility": 0.001,
+    "outstandingShares": 25000
+  },
+  "IndexMarket": {
+    "class": "IndexMarket",
+    "tickSize": 0.00001,
+    "marketPrice": 300.0,
+    "markets": ["SpotMarkets-0", "SpotMarkets-1"]
+  },
+  "FCNBase": {
+    "class": "FCNAgent",
+    "numAgents": 100,
+    "assetVolume": 50,
+    "cashAmount": 10000,
+    "fundamentalWeight": {"expon": [1.0]},
+    "chartWeight": {"expon": [0.0]},
+    "noiseWeight": {"expon": [1.0]},
+    "noiseScale": 0.001,
+    "timeWindowSize": [100, 200],
+    "orderMargin": [0.0, 0.1]
+  },
+  "SpotFCNAgents": {
+    "extends": "FCNBase",
+    "markets": ["SpotMarkets"]
+  },
+  "IndexFCNAgents": {
+    "extends": "FCNBase",
+    "markets": ["IndexMarket"]
+  },
+  "ArbitrageAgents": {
+    "class": "ArbitrageAgent",
+    "numAgents": 10,
+    "markets": ["IndexMarket", "SpotMarkets"],
+    "assetVolume": 50,
+    "cashAmount": 150000,
+    "orderVolume": 1,
+    "orderThresholdPrice": 1.0
+  }
+}
