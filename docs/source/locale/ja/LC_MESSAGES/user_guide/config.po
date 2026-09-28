@@ -30,40 +30,37 @@ msgid ""
 "which events (shocks, circuit breakers, ...) happen. Changing the market "
 "setup, the population of agents or the scenario usually needs no Python code"
 " at all: you only edit the config file."
-msgstr "PAMSのシミュレーションは1つのJSONファイルで記述します．このファイルでは，どの市場が存在するか，どのエージェントがそれらの市場で取引するか，シミュレーションをどのようにセッションに分割するか，どのイベント（ショック，サーキットブレーカーなど）が発生するかを定めます．市場の構成，エージェント集団，シナリオを変更する場合でも，通常Pythonコードはまったく必要ありません：設定ファイルを編集するだけです．"
+msgstr "PAMSのシミュレーションは1つのJSONファイルで記述します。このファイルでは、どの市場が存在するか、どのエージェントがそれらの市場で取引するか、シミュレーションをどのようにセッションに分割するか、どのイベント（ショック、サーキットブレーカーなど）が発生するかを定めます。市場の構成、エージェント集団、シナリオを変更する場合でも、通常Pythonコードはまったく必要ありません：設定ファイルを編集するだけです。"
 
 #: ../../source/user_guide/config.rst:11
 msgid ""
 "This page explains how the file is organized and documents every key "
 "understood by the built-in classes."
-msgstr "このページでは，ファイルの構成を説明し，組み込みクラスが解釈するすべてのキーを記載します．"
+msgstr "このページでは、ファイルの構成を説明し、組み込みクラスが解釈するすべてのキーを記載します。"
 
-#: ../../source/user_guide/config.rst:22
-#: ../../source/user_guide/config.rst:80
+#: ../../source/user_guide/config.rst:22 ../../source/user_guide/config.rst:80
 msgid "Quick start"
 msgstr "クイックスタート"
 
 #: ../../source/user_guide/config.rst:26
 msgid "Complete, runnable configs for common setups."
-msgstr "よくある構成のための，そのまま実行できる完全な設定ファイル．"
+msgstr "よくある構成のための、そのまま実行できる完全な設定ファイル。"
 
-#: ../../source/user_guide/config.rst:28
-#: ../../source/user_guide/config.rst:173
+#: ../../source/user_guide/config.rst:28 ../../source/user_guide/config.rst:173
 msgid "File structure"
 msgstr "ファイル構造"
 
 #: ../../source/user_guide/config.rst:32
 msgid "The ``simulation`` block, named blocks and how they refer to each other."
-msgstr "``simulation`` ブロック，名前付きブロック，およびそれらが互いを参照する方法．"
+msgstr "``simulation`` ブロック、名前付きブロック、およびそれらが互いを参照する方法。"
 
-#: ../../source/user_guide/config.rst:34
-#: ../../source/user_guide/config.rst:302
+#: ../../source/user_guide/config.rst:34 ../../source/user_guide/config.rst:302
 msgid "Sessions"
 msgstr "セッション"
 
 #: ../../source/user_guide/config.rst:38
 msgid "Steps, order placement and execution, the order flow of one step."
-msgstr "ステップ，発注と約定，1ステップにおける注文の流れ．"
+msgstr "ステップ、発注と約定、1ステップにおける注文の流れ。"
 
 #: ../../source/user_guide/config.rst:40
 msgid "Groups and naming"
@@ -73,36 +70,31 @@ msgstr "グループと命名"
 msgid ""
 "``numMarkets`` / ``numAgents``, ``from`` / ``to``, ``prefix`` and "
 "``extends``."
-msgstr ""
-"``numMarkets`` / ``numAgents``， ``from`` / ``to``， ``prefix`` および "
-"``extends``．"
+msgstr "``numMarkets`` / ``numAgents``、``from`` / ``to``、``prefix`` および ``extends``。"
 
-#: ../../source/user_guide/config.rst:46
-#: ../../source/user_guide/config.rst:518
+#: ../../source/user_guide/config.rst:46 ../../source/user_guide/config.rst:518
 msgid "Markets"
 msgstr "市場"
 
 #: ../../source/user_guide/config.rst:50
 msgid "``Market``, ``IndexMarket``, fundamental prices and correlations."
-msgstr "``Market``， ``IndexMarket``，ファンダメンタル価格および相関．"
+msgstr "``Market``、``IndexMarket``、ファンダメンタル価格および相関。"
 
-#: ../../source/user_guide/config.rst:52
-#: ../../source/user_guide/config.rst:664
+#: ../../source/user_guide/config.rst:52 ../../source/user_guide/config.rst:664
 msgid "Agents"
 msgstr "エージェント"
 
 #: ../../source/user_guide/config.rst:56
 msgid "``FCNAgent``, ``ArbitrageAgent``, ``MarketMakerAgent`` and more."
-msgstr "``FCNAgent``， ``ArbitrageAgent``， ``MarketMakerAgent`` など．"
+msgstr "``FCNAgent``、``ArbitrageAgent``、``MarketMakerAgent`` など。"
 
-#: ../../source/user_guide/config.rst:58
-#: ../../source/user_guide/config.rst:884
+#: ../../source/user_guide/config.rst:58 ../../source/user_guide/config.rst:884
 msgid "Events"
 msgstr "イベント"
 
 #: ../../source/user_guide/config.rst:62
 msgid "Price shocks, price limits, trading halts and fat-finger orders."
-msgstr "価格ショック，値幅制限，売買停止，誤発注．"
+msgstr "価格ショック、値幅制限、売買停止、誤発注。"
 
 #: ../../source/user_guide/config.rst:64
 msgid "JsonRandom"
@@ -111,20 +103,19 @@ msgstr ""
 #: ../../source/user_guide/config.rst:68
 #, python-brace-format
 msgid "Random agent parameters such as ``[100, 200]`` or ``{\"expon\": [1.0]}``."
-msgstr "``[100, 200]`` や ``{\"expon\": [1.0]}`` のような，ランダムなエージェントパラメータ．"
+msgstr "``[100, 200]`` や ``{\"expon\": [1.0]}`` のような、ランダムなエージェントパラメータ。"
 
-#: ../../source/user_guide/config.rst:70
-#: ../../source/user_guide/config.rst:1201
+#: ../../source/user_guide/config.rst:70 ../../source/user_guide/config.rst:1201
 msgid "Troubleshooting"
 msgstr "トラブルシューティング"
 
 #: ../../source/user_guide/config.rst:74
 msgid "Common mistakes, silent pitfalls and error messages."
-msgstr "よくある間違い，エラーにならない落とし穴，エラーメッセージ．"
+msgstr "よくある間違い、エラーにならない落とし穴、エラーメッセージ。"
 
 #: ../../source/user_guide/config.rst:82
 msgid "Save one of the configs below as ``config.json`` and run it with a runner:"
-msgstr "以下の設定ファイルのいずれかを ``config.json`` として保存し，ランナーで実行してください："
+msgstr "以下の設定ファイルのいずれかを ``config.json`` として保存し、ランナーで実行してください："
 
 msgid "Minimal"
 msgstr "最小構成"
@@ -139,10 +130,10 @@ msgid ""
 "additionally sets ``meanReversionTime``."
 msgstr ""
 "1つの市場と100体の :class:`~pams.agents.FCNAgent` "
-"エージェントからなる構成です．最初のセッションでは板の構築のみを行い（約定なし），2番目のセッションで取引します．デフォルトのセッション設定では，各ステップで注文を出すのはランダムに選ばれた1体のエージェントのみです（:ref"
-":`config-sessions` の ``maxNormalOrders`` を参照）．これは ``samples/CI2002`` "
-"にあるChiarella and Iori (2002) の設定に従ったもので，そちらではさらに ``meanReversionTime`` "
-"も設定しています．"
+"エージェントからなる構成です。最初のセッションでは板の構築のみを行い（約定なし）、2番目のセッションで取引します。デフォルトのセッション設定では、各ステップで注文を出すのはランダムに選ばれた1体のエージェントのみです（:ref"
+":`config-sessions` の ``maxNormalOrders`` を参照）。これは ``samples/CI2002`` "
+"にあるChiarella and Iori (2002) の設定に従ったもので、そちらではさらに ``meanReversionTime`` "
+"も設定しています。"
 
 #: ../../source/user_guide/config.rst:115
 #, python-format
@@ -152,8 +143,8 @@ msgid ""
 "trading for 50 steps when the market price moves 5% away from its value at "
 "step 0 (10% for the second halt, 15% for the third, and so on)."
 msgstr ""
-"最小構成に加えて， ``main`` "
-"セッションに2つのイベントを設定した構成です：セッション開始から100ステップ後にファンダメンタル価格が10%下落し，市場価格がステップ0の値から5%乖離するとサーキットブレーカーが50ステップの間売買を停止します（2回目の停止は10%，3回目は15%，以降同様）．"
+"最小構成に加えて、``main`` "
+"セッションに2つのイベントを設定した構成です：セッション開始から100ステップ後にファンダメンタル価格が10%下落し、市場価格がステップ0の値から5%乖離するとサーキットブレーカーが50ステップの間売買を停止します（2回目の停止は10%、3回目は15%、以降同様）。"
 
 msgid "Index and arbitrage"
 msgstr "インデックスと裁定"
@@ -172,14 +163,14 @@ msgid ""
 "agents place orders per step (``maxNormalOrders: 3``) and keep the arbitrage"
 " agents off during the warm-up (``maxHighFrequencyOrders: 0``)."
 msgstr ""
-"相関のある2つの現物市場，それらから構成されるインデックス市場，各市場のFCNエージェント，そしてインデックス市場の市場価格とインデックス値の乖離を利用して取引する"
-" :class:`~pams.agents.ArbitrageAgent` エージェントからなる構成です．FCNグループは ``extends`` "
-"によって設定を共有します．現物市場では ``outstandingShares`` （インデックスのすべての構成市場で必須）と "
-"``fundamentalVolatility`` （相関に必須）を設定しています．インデックス市場と相関は，現物市場をインスタンス名 "
-"``SpotMarkets-0`` と ``SpotMarkets-1`` で参照し，エージェントはグループ名 ``SpotMarkets`` "
+"相関のある2つの現物市場、それらから構成されるインデックス市場、各市場のFCNエージェント、そしてインデックス市場の市場価格とインデックス値の乖離を利用して取引する"
+" :class:`~pams.agents.ArbitrageAgent` エージェントからなる構成です。FCNグループは ``extends`` "
+"によって設定を共有します。現物市場では ``outstandingShares`` （インデックスのすべての構成市場で必須）と "
+"``fundamentalVolatility`` （相関に必須）を設定しています。インデックス市場と相関は、現物市場をインスタンス名 "
+"``SpotMarkets-0`` と ``SpotMarkets-1`` で参照し、エージェントはグループ名 ``SpotMarkets`` "
 "を使います（:ref:`config-names` "
-"を参照）．セッションでは1ステップあたり3体のFCNエージェントが注文を出せるようにし（``maxNormalOrders: "
-"3``），ウォームアップ中は裁定エージェントを動作させません（``maxHighFrequencyOrders: 0``）．"
+"を参照）。セッションでは1ステップあたり3体のFCNエージェントが注文を出せるようにし（``maxNormalOrders: "
+"3``）、ウォームアップ中は裁定エージェントを動作させません（``maxHighFrequencyOrders: 0``）。"
 
 msgid "Market maker"
 msgstr "マーケットメイカー"
@@ -194,12 +185,12 @@ msgid ""
 "(``highFrequencySubmitRate: 0.5``), one of the two market makers, chosen at "
 "random, quotes after the normal agent's orders."
 msgstr ""
-"FCNエージェントに加えて，市場の買いと売りの両方に気配値を提示する2体の ``MarketMakerAgent`` "
-"エージェントを置いた構成です．マーケットメイカーは高頻度エージェントなので，セッションのキー ``maxHighFrequencyOrders`` と "
+"FCNエージェントに加えて、市場の買いと売りの両方に気配値を提示する2体の ``MarketMakerAgent`` "
+"エージェントを置いた構成です。マーケットメイカーは高頻度エージェントなので、セッションのキー ``maxHighFrequencyOrders`` と "
 "``highFrequencySubmitRate`` "
-"によって行動の頻度が決まります．ここではウォームアップ中は動作させません（``maxHighFrequencyOrders: 0``）． "
-"``main`` では，約半数のステップで（``highFrequencySubmitRate: "
-"0.5``），2体のマーケットメイカーのうちランダムに選ばれた1体が，通常エージェントの注文の後に気配値を提示します．"
+"によって行動の頻度が決まります。ここではウォームアップ中は動作させません（``maxHighFrequencyOrders: 0``）。``main``"
+" では、約半数のステップで（``highFrequencySubmitRate: "
+"0.5``）、2体のマーケットメイカーのうちランダムに選ばれた1体が、通常エージェントの注文の後に気配値を提示します。"
 
 msgid "Parallel runner"
 msgstr "並列ランナー"
@@ -219,40 +210,41 @@ msgid ""
 "runner."
 msgstr ""
 "同じ形式は :class:`~pams.runners.MultiThreadAgentParallelRunner` と "
-":class:`~pams.runners.MultiProcessAgentParallelRunner` （いずれも実験的機能）でも使えます． "
-"``simulation.numParallel`` でワーカー数を設定します．並列に注文を問い合わせるのは最大 ``maxNormalOrders``"
-" 体のエージェントなので， ``numParallel`` はこれを超えないようにしてください（ここではどちらも4です）． "
-"``maxNormalOrders`` は1ステップあたりに注文を出すエージェント数を決めるため，モデルの一部です：まずこれを決め，その後に "
-"``numParallel`` を設定してください．この設定ファイルを実行するには，上のコード例の ``SequentialRunner`` "
+":class:`~pams.runners.MultiProcessAgentParallelRunner` "
+"（いずれも実験的機能）でも使えます。``simulation.numParallel`` でワーカー数を設定します。並列に注文を問い合わせるのは最大 "
+"``maxNormalOrders`` 体のエージェントなので、``numParallel`` "
+"はこれを超えないようにしてください（ここではどちらも4です）。``maxNormalOrders`` "
+"は1ステップあたりに注文を出すエージェント数を決めるため、モデルの一部です：まずこれを決め、その後に ``numParallel`` "
+"を設定してください。この設定ファイルを実行するには、上のコード例の ``SequentialRunner`` "
 "をこれらのクラスのいずれかに置き換えてください（``SequentialRunner`` は ``numParallel`` "
-"を無視します）．また，マルチプロセスのランナーを使う前に :ref:`config-parallel` を参照してください．"
+"を無視します）。また、マルチプロセスのランナーを使う前に :ref:`config-parallel` を参照してください。"
 
 #: ../../source/user_guide/config.rst:167
 msgid ""
 "More complete examples are in the ``samples`` directory of the repository "
 "(see :ref:`config-samples`)."
-msgstr "より完全な例は，リポジトリの ``samples`` ディレクトリにあります（:ref:`config-samples` を参照）．"
+msgstr "より完全な例は、リポジトリの ``samples`` ディレクトリにあります（:ref:`config-samples` を参照）。"
 
 #: ../../source/user_guide/config.rst:175
 msgid "The root of the file is a JSON object with two kinds of entries:"
-msgstr "ファイルのルートはJSONオブジェクトで，2種類のエントリを持ちます："
+msgstr "ファイルのルートはJSONオブジェクトで、2種類のエントリを持ちます："
 
 #: ../../source/user_guide/config.rst:177
 msgid "the ``simulation`` block, which lists what is created and in which order, and"
-msgstr "何をどの順序で生成するかを列挙する ``simulation`` ブロック，および"
+msgstr "何をどの順序で生成するかを列挙する ``simulation`` ブロック、および"
 
 #: ../../source/user_guide/config.rst:178
 msgid ""
 "**named blocks**: every other top-level key. The key is a name you choose, "
 "and the block holds the settings of a market group, an agent group or an "
 "event."
-msgstr "**名前付きブロック**：それ以外のすべてのトップレベルのキーです．キーは任意に付けた名前で，ブロックには市場グループ，エージェントグループ，またはイベントの設定を記述します．"
+msgstr "**名前付きブロック**：それ以外のすべてのトップレベルのキーです。キーは任意に付けた名前で、ブロックには市場グループ、エージェントグループ、またはイベントの設定を記述します。"
 
 #: ../../source/user_guide/config.rst:181
 msgid ""
 "A named block does nothing by itself. It is used only when its name is "
 "referenced:"
-msgstr "名前付きブロックは，それ自体では何もしません．その名前が参照されたときにのみ使われます："
+msgstr "名前付きブロックは、それ自体では何もしません。その名前が参照されたときにのみ使われます："
 
 #: ../../source/user_guide/config.rst:187
 msgid "Where the block name is listed"
@@ -268,7 +260,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:190
 msgid "The block becomes a **market group** (one or more markets)."
-msgstr "ブロックは **市場グループ** （1つ以上の市場）になります．"
+msgstr "ブロックは **市場グループ** （1つ以上の市場）になります。"
 
 #: ../../source/user_guide/config.rst:191
 msgid "``simulation.agents``"
@@ -276,7 +268,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:192
 msgid "The block becomes an **agent group** (one or more agents)."
-msgstr "ブロックは **エージェントグループ** （1つ以上のエージェント）になります．"
+msgstr "ブロックは **エージェントグループ** （1つ以上のエージェント）になります。"
 
 #: ../../source/user_guide/config.rst:193
 msgid "``events`` of a session"
@@ -284,7 +276,7 @@ msgstr "セッションの ``events``"
 
 #: ../../source/user_guide/config.rst:194
 msgid "The block becomes an **event** attached to that session."
-msgstr "ブロックはそのセッションに紐づく **イベント** になります．"
+msgstr "ブロックはそのセッションに紐づく **イベント** になります。"
 
 #: ../../source/user_guide/config.rst:195
 msgid "``\"extends\"`` in another block"
@@ -295,8 +287,8 @@ msgid ""
 "The other block inherits this block's keys (see :ref:`config-extends`). A "
 "block that is only used through ``extends`` is a template."
 msgstr ""
-"他のブロックがこのブロックのキーを継承します（:ref:`config-extends` を参照）． ``extends`` "
-"を通じてのみ使われるブロックはテンプレートです．"
+"他のブロックがこのブロックのキーを継承します（:ref:`config-extends` を参照）。``extends`` "
+"を通じてのみ使われるブロックはテンプレートです。"
 
 #: ../../source/user_guide/config.rst:199
 #, python-brace-format
@@ -306,9 +298,9 @@ msgid ""
 "\"FCNAgent\", ...}`` and ``\"Noise traders\": {\"class\": \"FCNAgent\", "
 "...}`` are equally valid."
 msgstr ""
-"ブロック名とクラスは互いに独立しています：クラスは ``\"class\"`` で選択され，名前は単なるラベルです． ``\"FCNAgents\": "
+"ブロック名とクラスは互いに独立しています：クラスは ``\"class\"`` で選択され、名前は単なるラベルです。``\"FCNAgents\": "
 "{\"class\": \"FCNAgent\", ...}`` と ``\"Noise traders\": {\"class\": "
-"\"FCNAgent\", ...}`` はどちらも同じように有効です．"
+"\"FCNAgent\", ...}`` はどちらも同じように有効です。"
 
 #: ../../source/user_guide/config.rst:205
 msgid "Group names and instance names"
@@ -322,24 +314,17 @@ msgid ""
 "``SpotMarkets-1``, see :ref:`config-naming`). Different keys expect "
 "different kinds of names:"
 msgstr ""
-"市場グループは複数の市場を作成できます（``\"numMarkets\": 2``）．このとき，グループは **グループ名** （ブロック名，例えば "
-"``SpotMarkets``）を持ち，各市場は **インスタンス名** （例えば ``SpotMarkets-0`` と "
-"``SpotMarkets-1``， :ref:`config-naming` を参照）を持ちます．キーによって，指定する名前の種類が異なります："
+"市場グループは複数の市場を作成できます（``\"numMarkets\": 2``）。このとき、グループは **グループ名** （ブロック名、例えば "
+"``SpotMarkets``）を持ち、各市場は **インスタンス名** （例えば ``SpotMarkets-0`` と "
+"``SpotMarkets-1``、:ref:`config-naming` を参照）を持ちます。キーによって、指定する名前の種類が異なります："
 
-#: ../../source/user_guide/config.rst:215
-#: ../../source/user_guide/config.rst:273
-#: ../../source/user_guide/config.rst:325
-#: ../../source/user_guide/config.rst:415
-#: ../../source/user_guide/config.rst:533
-#: ../../source/user_guide/config.rst:604
-#: ../../source/user_guide/config.rst:673
-#: ../../source/user_guide/config.rst:727
-#: ../../source/user_guide/config.rst:820
-#: ../../source/user_guide/config.rst:851
-#: ../../source/user_guide/config.rst:934
-#: ../../source/user_guide/config.rst:972
-#: ../../source/user_guide/config.rst:1002
-#: ../../source/user_guide/config.rst:1037
+#: ../../source/user_guide/config.rst:215 ../../source/user_guide/config.rst:273
+#: ../../source/user_guide/config.rst:325 ../../source/user_guide/config.rst:415
+#: ../../source/user_guide/config.rst:533 ../../source/user_guide/config.rst:604
+#: ../../source/user_guide/config.rst:673 ../../source/user_guide/config.rst:727
+#: ../../source/user_guide/config.rst:820 ../../source/user_guide/config.rst:851
+#: ../../source/user_guide/config.rst:934 ../../source/user_guide/config.rst:972
+#: ../../source/user_guide/config.rst:1002 ../../source/user_guide/config.rst:1037
 msgid "Key"
 msgstr "キー"
 
@@ -371,8 +356,9 @@ msgid ""
 "``targetMarket`` of ``MarketMakerAgent``, ``target`` and ``targetMarkets`` "
 "of events"
 msgstr ""
-"``IndexMarket`` の ``markets``， ``fundamentalCorrelations.pairwise``， "
-"``MarketMakerAgent`` の ``targetMarket``，イベントの ``target`` と ``targetMarkets``"
+"``IndexMarket`` の "
+"``markets``、``fundamentalCorrelations.pairwise``、``MarketMakerAgent`` の "
+"``targetMarket``、イベントの ``target`` と ``targetMarkets``"
 
 #: ../../source/user_guide/config.rst:223
 msgid "market **instance** names"
@@ -386,9 +372,9 @@ msgid ""
 "even for a single market: ``\"prefix\": \"Stock\"`` gives the instance name "
 "``Stock``."
 msgstr ""
-"グループが市場を1つだけ作成し， ``prefix`` も ``from`` / ``to`` "
-"も使わない場合は両者の名前が一致するため，この区別が主に重要になるのは複数の市場を持つグループです．これらのキーを使う場合は，市場が1つでも名前が異なります："
-" ``\"prefix\": \"Stock\"`` とするとインスタンス名は ``Stock`` になります．"
+"グループが市場を1つだけ作成し、``prefix`` も ``from`` / ``to`` "
+"も使わない場合は両者の名前が一致するため、この区別が主に重要になるのは複数の市場を持つグループです。これらのキーを使う場合は、市場が1つでも名前が異なります："
+" ``\"prefix\": \"Stock\"`` とするとインスタンス名は ``Stock`` になります。"
 
 #: ../../source/user_guide/config.rst:232
 msgid "Notation used on this page"
@@ -402,7 +388,7 @@ msgstr ""
 msgid ""
 "The key must be present. Otherwise setting up the simulation fails with an "
 "error."
-msgstr "このキーは省略できません．省略すると，シミュレーションのセットアップ時にエラーになります．"
+msgstr "このキーは省略できません。省略すると、シミュレーションのセットアップ時にエラーになります。"
 
 #: ../../source/user_guide/config.rst:239
 msgid "|optional|"
@@ -410,7 +396,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:240
 msgid "The key may be omitted. The default is used."
-msgstr "このキーは省略できます．省略した場合はデフォルト値が使われます．"
+msgstr "このキーは省略できます。省略した場合はデフォルト値が使われます。"
 
 #: ../../source/user_guide/config.rst:241
 msgid "|conditional|"
@@ -418,7 +404,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:242
 msgid "Required only in some situations, described next to the key."
-msgstr "特定の状況でのみ必須です．その条件は各キーの説明に記載しています．"
+msgstr "特定の状況でのみ必須です。その条件は各キーの説明に記載しています。"
 
 #: ../../source/user_guide/config.rst:243
 msgid "|jsonrandom|"
@@ -429,8 +415,8 @@ msgid ""
 "The value may be a random distribution drawn separately for each agent (see "
 ":ref:`config-jsonrandom`). Keys without this badge take a plain value."
 msgstr ""
-"値に確率分布を指定でき，その場合はエージェントごとに個別に値が抽出されます（:ref:`config-jsonrandom` "
-"を参照）．このバッジのないキーには通常の値を指定します．"
+"値に確率分布を指定でき、その場合はエージェントごとに個別に値が抽出されます（:ref:`config-jsonrandom` "
+"を参照）。このバッジのないキーには通常の値を指定します。"
 
 #: ../../source/user_guide/config.rst:246
 msgid "|deprecated|"
@@ -441,7 +427,7 @@ msgid ""
 "Old key. Depending on the key, it still works with a warning, is ignored "
 "with a warning, or is an error (see its description). Do not use it in new "
 "configs."
-msgstr "古いキーです．キーによって，警告付きで引き続き動作する，警告付きで無視される，エラーになる，のいずれかです（各キーの説明を参照）．新しい設定ファイルでは使わないでください．"
+msgstr "古いキーです。キーによって、警告付きで引き続き動作する、警告付きで無視される、エラーになる、のいずれかです（各キーの説明を参照）。新しい設定ファイルでは使わないでください。"
 
 #: ../../source/user_guide/config.rst:252
 msgid ""
@@ -449,9 +435,9 @@ msgid ""
 "``true`` / ``false``, not ``True`` / ``False``. To leave a note, add a key "
 "that PAMS does not read, such as ``\"MEMO\"``; the samples do this."
 msgstr ""
-"設定ファイルは **厳密なJSON** でなければなりません：コメントや末尾のカンマは使えません． ``True`` / ``False`` ではなく "
-"``true`` / ``false`` を使ってください．メモを残すには， ``\"MEMO\"`` "
-"のようにPAMSが読み込まないキーを追加します（サンプルでもこの方法を使っています）．"
+"設定ファイルは **厳密なJSON** でなければなりません：コメントや末尾のカンマは使えません。``True`` / ``False`` ではなく "
+"``true`` / ``false`` を使ってください。メモを残すには、``\"MEMO\"`` "
+"のようにPAMSが読み込まないキーを追加します（サンプルでもこの方法を使っています）。"
 
 #: ../../source/user_guide/config.rst:255
 msgid ""
@@ -459,8 +445,8 @@ msgid ""
 "instead of ``\"numMarkets\"`` does not raise an error; the default is used "
 "instead. Check spelling and case carefully."
 msgstr ""
-"**未知のキーは警告なしに無視されます．** ``\"numMarkets\"`` を ``\"numMarket\"`` "
-"と書くようなタイプミスはエラーにならず，代わりにデフォルト値が使われます．綴りと大文字・小文字を注意深く確認してください．"
+"**未知のキーは警告なしに無視されます。** ``\"numMarkets\"`` を ``\"numMarket\"`` "
+"と書くようなタイプミスはエラーにならず、代わりにデフォルト値が使われます。綴りと大文字・小文字を注意深く確認してください。"
 
 #: ../../source/user_guide/config.rst:257
 msgid ""
@@ -472,59 +458,43 @@ msgid ""
 "``orderTimeLength`` of ``ArbitrageAgent`` and ``OrderMistakeShock`` must be "
 "written as integers (``100``, not ``100.0``)."
 msgstr ""
-"一部のキーでは，JSONの数値の型がチェックされます． ``triggerChangeRate`` （``PriceLimitRule``， "
-"``TradingHaltRule``）と ``OrderMistakeShock`` の ``priceChangeRate`` "
-"は浮動小数点数で書く必要があります（``1`` ではなく ``1.0``）． ``iterationSteps``， "
-"``outstandingShares``， ``numParallel``， ``triggerTime``， "
-"``shockTimeLength``， ``haltingTimeLength``，および ``ArbitrageAgent`` と "
-"``OrderMistakeShock`` の ``orderVolume`` / ``orderTimeLength`` "
-"は整数で書く必要があります（``100.0`` ではなく ``100``）．"
+"一部のキーでは、JSONの数値の型がチェックされます。``triggerChangeRate`` "
+"（``PriceLimitRule``、``TradingHaltRule``）と ``OrderMistakeShock`` の "
+"``priceChangeRate`` は浮動小数点数で書く必要があります（``1`` ではなく "
+"``1.0``）。``iterationSteps``、``outstandingShares``、``numParallel``、``triggerTime``、``shockTimeLength``、``haltingTimeLength``、および"
+" ``ArbitrageAgent`` と ``OrderMistakeShock`` の ``orderVolume`` / "
+"``orderTimeLength`` は整数で書く必要があります（``100.0`` ではなく ``100``）。"
 
 #: ../../source/user_guide/config.rst:267
 msgid "The ``simulation`` block"
 msgstr "``simulation`` ブロック"
 
-#: ../../source/user_guide/config.rst:274
-#: ../../source/user_guide/config.rst:326
-#: ../../source/user_guide/config.rst:416
-#: ../../source/user_guide/config.rst:534
-#: ../../source/user_guide/config.rst:605
-#: ../../source/user_guide/config.rst:674
-#: ../../source/user_guide/config.rst:728
-#: ../../source/user_guide/config.rst:821
-#: ../../source/user_guide/config.rst:852
-#: ../../source/user_guide/config.rst:935
-#: ../../source/user_guide/config.rst:973
-#: ../../source/user_guide/config.rst:1003
-#: ../../source/user_guide/config.rst:1038
-#: ../../source/user_guide/config.rst:1082
+#: ../../source/user_guide/config.rst:274 ../../source/user_guide/config.rst:326
+#: ../../source/user_guide/config.rst:416 ../../source/user_guide/config.rst:534
+#: ../../source/user_guide/config.rst:605 ../../source/user_guide/config.rst:674
+#: ../../source/user_guide/config.rst:728 ../../source/user_guide/config.rst:821
+#: ../../source/user_guide/config.rst:852 ../../source/user_guide/config.rst:935
+#: ../../source/user_guide/config.rst:973 ../../source/user_guide/config.rst:1003
+#: ../../source/user_guide/config.rst:1038 ../../source/user_guide/config.rst:1082
 msgid "Value"
 msgstr "値"
 
-#: ../../source/user_guide/config.rst:275
-#: ../../source/user_guide/config.rst:327
-#: ../../source/user_guide/config.rst:417
-#: ../../source/user_guide/config.rst:535
-#: ../../source/user_guide/config.rst:606
-#: ../../source/user_guide/config.rst:675
-#: ../../source/user_guide/config.rst:729
-#: ../../source/user_guide/config.rst:822
-#: ../../source/user_guide/config.rst:853
-#: ../../source/user_guide/config.rst:936
-#: ../../source/user_guide/config.rst:974
-#: ../../source/user_guide/config.rst:1004
+#: ../../source/user_guide/config.rst:275 ../../source/user_guide/config.rst:327
+#: ../../source/user_guide/config.rst:417 ../../source/user_guide/config.rst:535
+#: ../../source/user_guide/config.rst:606 ../../source/user_guide/config.rst:675
+#: ../../source/user_guide/config.rst:729 ../../source/user_guide/config.rst:822
+#: ../../source/user_guide/config.rst:853 ../../source/user_guide/config.rst:936
+#: ../../source/user_guide/config.rst:974 ../../source/user_guide/config.rst:1004
 #: ../../source/user_guide/config.rst:1039
 msgid "Description"
 msgstr "説明"
 
-#: ../../source/user_guide/config.rst:276
-#: ../../source/user_guide/config.rst:607
+#: ../../source/user_guide/config.rst:276 ../../source/user_guide/config.rst:607
 #: ../../source/user_guide/config.rst:676
 msgid "``markets`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:277
-#: ../../source/user_guide/config.rst:281
+#: ../../source/user_guide/config.rst:277 ../../source/user_guide/config.rst:281
 #: ../../source/user_guide/config.rst:361
 msgid "list of block names"
 msgstr "ブロック名のリスト"
@@ -534,8 +504,8 @@ msgid ""
 "The market groups to create, in this order. Market IDs are assigned in this "
 "order, and an ``IndexMarket`` must come after the markets it is made of."
 msgstr ""
-"作成する市場グループを，作成する順に並べます．市場IDはこの順に割り当てられます．また， ``IndexMarket`` "
-"はその構成市場より後に置く必要があります．"
+"作成する市場グループを、作成する順に並べます。市場IDはこの順に割り当てられます。また、``IndexMarket`` "
+"はその構成市場より後に置く必要があります。"
 
 #: ../../source/user_guide/config.rst:280
 msgid "``agents`` |required|"
@@ -545,7 +515,7 @@ msgstr ""
 msgid ""
 "The agent groups to create, in this order. Agent IDs are assigned in this "
 "order."
-msgstr "作成するエージェントグループを，作成する順に並べます．エージェントIDはこの順に割り当てられます．"
+msgstr "作成するエージェントグループを、作成する順に並べます。エージェントIDはこの順に割り当てられます。"
 
 #: ../../source/user_guide/config.rst:283
 msgid "``sessions`` |required|"
@@ -559,7 +529,7 @@ msgstr "セッションオブジェクトのリスト"
 msgid ""
 "The sessions, run one after another in list order. See :ref:`config-"
 "sessions`."
-msgstr "セッションのリストです．リストの順に1つずつ実行されます． :ref:`config-sessions` を参照してください．"
+msgstr "セッションのリストです。リストの順に1つずつ実行されます。:ref:`config-sessions` を参照してください。"
 
 #: ../../source/user_guide/config.rst:286
 msgid "``fundamentalCorrelations`` |optional|"
@@ -574,17 +544,15 @@ msgid ""
 "Correlations between the fundamental prices of markets. See :ref:`config-"
 "correlations`. Default: all fundamental prices move independently."
 msgstr ""
-"市場のファンダメンタル価格間の相関です． :ref:`config-correlations` "
-"を参照してください．デフォルト：すべてのファンダメンタル価格が独立に変動します．"
+"市場のファンダメンタル価格間の相関です。:ref:`config-correlations` "
+"を参照してください。デフォルト：すべてのファンダメンタル価格が独立に変動します。"
 
 #: ../../source/user_guide/config.rst:290
 msgid "``numParallel`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:291
-#: ../../source/user_guide/config.rst:743
-#: ../../source/user_guide/config.rst:824
-#: ../../source/user_guide/config.rst:831
+#: ../../source/user_guide/config.rst:291 ../../source/user_guide/config.rst:743
+#: ../../source/user_guide/config.rst:824 ../../source/user_guide/config.rst:831
 #: ../../source/user_guide/config.rst:862
 msgid "int ≥ 1"
 msgstr ""
@@ -595,15 +563,14 @@ msgid ""
 "CPUs minus 1, at least 1). Ignored by "
 ":class:`~pams.runners.SequentialRunner`. See :ref:`config-parallel`."
 msgstr ""
-"エージェント並列ランナーのワーカー数です（デフォルト：CPU数から1を引いた値，ただし最小1）． "
-":class:`~pams.runners.SequentialRunner` では無視されます． :ref:`config-parallel` "
-"を参照してください．"
+"エージェント並列ランナーのワーカー数です（デフォルト：CPU数から1を引いた値、ただし最小1）。:class:`~pams.runners.SequentialRunner`"
+" では無視されます。:ref:`config-parallel` を参照してください。"
 
 #: ../../source/user_guide/config.rst:296
 msgid ""
 "Other keys in ``simulation`` are ignored. In particular, events are not "
 "listed here but in each session."
-msgstr "``simulation`` 内のその他のキーは無視されます．特に，イベントはここではなく各セッションに列挙します．"
+msgstr "``simulation`` 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。"
 
 #: ../../source/user_guide/config.rst:304
 msgid ""
@@ -613,8 +580,8 @@ msgid ""
 "executed. A typical setup has a warm-up session that only fills the order "
 "book, followed by the main trading session:"
 msgstr ""
-"シミュレーションは，0から始まる1つの時計に沿って離散的な **ステップ** で進みます．ステップは **セッション** "
-"に分割され，セッションは順に1つずつ実行されます．各セッションは，エージェントが注文を出せるかどうかと，注文が約定するかどうかを決めます．典型的な設定では，板を埋めるだけのウォームアップセッションの後に，メインの取引セッションが続きます："
+"シミュレーションは、0から始まる1つの時計に沿って離散的な **ステップ** で進みます。ステップは **セッション** "
+"に分割され、セッションは順に1つずつ実行されます。各セッションは、エージェントが注文を出せるかどうかと、注文が約定するかどうかを決めます。典型的な設定では、板を埋めるだけのウォームアップセッションの後に、メインの取引セッションが続きます："
 
 #: ../../source/user_guide/config.rst:318
 msgid ""
@@ -622,16 +589,15 @@ msgid ""
 "In general, a session starts at the sum of the ``iterationSteps`` of all "
 "sessions before it."
 msgstr ""
-"ここでは， ``warmup`` がステップ0から99まで， ``main`` "
-"がステップ100から599までを占めます．一般に，セッションはそれより前のすべてのセッションの ``iterationSteps`` "
-"の合計のステップから始まります．"
+"ここでは、``warmup`` がステップ0から99まで、``main`` "
+"がステップ100から599までを占めます。一般に、セッションはそれより前のすべてのセッションの ``iterationSteps`` "
+"の合計のステップから始まります。"
 
 #: ../../source/user_guide/config.rst:328
 msgid "``sessionName`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:329
-#: ../../source/user_guide/config.rst:419
+#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:419
 #: ../../source/user_guide/config.rst:435
 msgid "string"
 msgstr "文字列"
@@ -643,25 +609,19 @@ msgid ""
 "loggers show the session's position in the list (``0``, ``1``, ...), not "
 "this name."
 msgstr ""
-"セッションの名前です．どのJSON値も文字列に変換され，変換後の名前は一意でなければなりません（``0`` と ``\"0\"`` "
-"は衝突します）．組み込みのロガーは，この名前ではなくリスト内でのセッションの位置（``0``， ``1``，...）を表示します．"
+"セッションの名前です。どのJSON値も文字列に変換され、変換後の名前は一意でなければなりません（``0`` と ``\"0\"`` "
+"は衝突します）。組み込みのロガーは、この名前ではなくリスト内でのセッションの位置（``0``、``1``、...）を表示します。"
 
 #: ../../source/user_guide/config.rst:333
 msgid "``iterationSteps`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:334
-#: ../../source/user_guide/config.rst:364
-#: ../../source/user_guide/config.rst:427
-#: ../../source/user_guide/config.rst:431
-#: ../../source/user_guide/config.rst:554
-#: ../../source/user_guide/config.rst:619
-#: ../../source/user_guide/config.rst:755
-#: ../../source/user_guide/config.rst:943
-#: ../../source/user_guide/config.rst:949
-#: ../../source/user_guide/config.rst:1013
-#: ../../source/user_guide/config.rst:1044
-#: ../../source/user_guide/config.rst:1052
+#: ../../source/user_guide/config.rst:334 ../../source/user_guide/config.rst:364
+#: ../../source/user_guide/config.rst:427 ../../source/user_guide/config.rst:431
+#: ../../source/user_guide/config.rst:554 ../../source/user_guide/config.rst:619
+#: ../../source/user_guide/config.rst:755 ../../source/user_guide/config.rst:943
+#: ../../source/user_guide/config.rst:949 ../../source/user_guide/config.rst:1013
+#: ../../source/user_guide/config.rst:1044 ../../source/user_guide/config.rst:1052
 #: ../../source/user_guide/config.rst:1055
 msgid "int"
 msgstr "整数"
@@ -670,18 +630,15 @@ msgstr "整数"
 msgid ""
 "Number of steps in the session. Must be a JSON integer (``100.0`` is "
 "rejected)."
-msgstr "セッションのステップ数です．JSONの整数で指定する必要があります（``100.0`` は不可）．"
+msgstr "セッションのステップ数です。JSONの整数で指定する必要があります（``100.0`` は不可）。"
 
 #: ../../source/user_guide/config.rst:336
 msgid "``withOrderPlacement`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:337
-#: ../../source/user_guide/config.rst:341
-#: ../../source/user_guide/config.rst:346
-#: ../../source/user_guide/config.rst:953
-#: ../../source/user_guide/config.rst:983
-#: ../../source/user_guide/config.rst:1016
+#: ../../source/user_guide/config.rst:337 ../../source/user_guide/config.rst:341
+#: ../../source/user_guide/config.rst:346 ../../source/user_guide/config.rst:953
+#: ../../source/user_guide/config.rst:983 ../../source/user_guide/config.rst:1016
 #: ../../source/user_guide/config.rst:1058
 msgid "bool"
 msgstr "真偽値"
@@ -693,7 +650,7 @@ msgid ""
 " expire."
 msgstr ""
 "``false`` "
-"の場合，セッション中はどのエージェントにも注文を求めません．それでも時刻は進み，ファンダメンタル価格は変動し，板上の注文が有効期限切れになることもあります．"
+"の場合、セッション中はどのエージェントにも注文を求めません。それでも時刻は進み、ファンダメンタル価格は変動し、板上の注文が有効期限切れになることもあります。"
 
 #: ../../source/user_guide/config.rst:340
 msgid "``withOrderExecution`` |required|"
@@ -706,7 +663,7 @@ msgid ""
 "(not expired) can be matched once a later session allows execution."
 msgstr ""
 "``false`` "
-"の場合，注文は板に入りますが約定せず，市場価格は直前の値のまま変わりません．板に残っている（有効期限切れでない）注文は，後のセッションで約定が許可されると約定する可能性があります．"
+"の場合、注文は板に入りますが約定せず、市場価格は直前の値のまま変わりません。板に残っている（有効期限切れでない）注文は、後のセッションで約定が許可されると約定する可能性があります。"
 
 #: ../../source/user_guide/config.rst:345
 msgid "``withPrint`` |required|"
@@ -716,14 +673,13 @@ msgstr ""
 msgid ""
 "Required, but currently not used by PAMS (kept for compatibility with plham "
 "configs). What is printed is decided by the logger passed to the runner."
-msgstr "必須ですが，現在PAMSでは使われていません（plhamの設定ファイルとの互換性のために残されています）．何が出力されるかは，ランナーに渡したロガーによって決まります．"
+msgstr "必須ですが、現在PAMSでは使われていません（plhamの設定ファイルとの互換性のために残されています）。何が出力されるかは、ランナーに渡したロガーによって決まります。"
 
 #: ../../source/user_guide/config.rst:349
 msgid "``maxNormalOrders`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:350
-#: ../../source/user_guide/config.rst:354
+#: ../../source/user_guide/config.rst:350 ../../source/user_guide/config.rst:354
 msgid "int ≥ 0"
 msgstr "0以上の整数"
 
@@ -733,8 +689,8 @@ msgid ""
 "one step. Default: ``1``. It counts **agents**, not orders: an agent may "
 "submit several orders at once."
 msgstr ""
-"1ステップで注文を出す通常エージェント（高頻度エージェント以外）の最大数です．デフォルトは ``1`` です．数えるのは注文ではなく "
-"**エージェント** です．1つのエージェントが一度に複数の注文を出すこともあります．"
+"1ステップで注文を出す通常エージェント（高頻度エージェント以外）の最大数です。デフォルトは ``1`` です。数えるのは注文ではなく "
+"**エージェント** です。1つのエージェントが一度に複数の注文を出すこともあります。"
 
 #: ../../source/user_guide/config.rst:353
 msgid "``maxHighFrequencyOrders`` |optional|"
@@ -744,7 +700,7 @@ msgstr ""
 msgid ""
 "Maximum number of high-frequency agents that submit orders in each high-"
 "frequency round. Default: ``1``. It also counts agents, not orders."
-msgstr "各高頻度ラウンドで注文を出す高頻度エージェントの最大数です．デフォルトは ``1`` です．こちらも注文ではなくエージェントの数を数えます．"
+msgstr "各高頻度ラウンドで注文を出す高頻度エージェントの最大数です。デフォルトは ``1`` です。こちらも注文ではなくエージェントの数を数えます。"
 
 #: ../../source/user_guide/config.rst:357
 msgid "``highFrequencySubmitRate`` |optional|"
@@ -758,7 +714,7 @@ msgstr "[0, 1] の浮動小数点数"
 msgid ""
 "Probability that a high-frequency round follows each normal agent's orders. "
 "Default: ``1.0``."
-msgstr "各通常エージェントの注文の後に高頻度ラウンドが行われる確率です．デフォルトは ``1.0`` です．"
+msgstr "各通常エージェントの注文の後に高頻度ラウンドが行われる確率です。デフォルトは ``1.0`` です。"
 
 #: ../../source/user_guide/config.rst:360
 msgid "``events`` |optional|"
@@ -766,7 +722,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:362
 msgid "Events attached to this session. See :ref:`config-events`."
-msgstr "このセッションに付与するイベントです．詳しくは :ref:`config-events` を参照してください．"
+msgstr "このセッションに付与するイベントです。詳しくは :ref:`config-events` を参照してください。"
 
 #: ../../source/user_guide/config.rst:363
 msgid "``maxHifreqOrders`` |deprecated|"
@@ -776,16 +732,14 @@ msgstr ""
 msgid ""
 "Old name of ``maxHighFrequencyOrders``. Works with a warning; giving both is"
 " an error."
-msgstr "``maxHighFrequencyOrders`` の旧名です．警告付きで動作しますが，両方を指定するとエラーになります．"
+msgstr "``maxHighFrequencyOrders`` の旧名です。警告付きで動作しますが、両方を指定するとエラーになります。"
 
 #: ../../source/user_guide/config.rst:366
 msgid "``hifreqSubmitRate`` |deprecated|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:367
-#: ../../source/user_guide/config.rst:946
-#: ../../source/user_guide/config.rst:980
-#: ../../source/user_guide/config.rst:1010
+#: ../../source/user_guide/config.rst:367 ../../source/user_guide/config.rst:946
+#: ../../source/user_guide/config.rst:980 ../../source/user_guide/config.rst:1010
 #: ../../source/user_guide/config.rst:1048
 msgid "float"
 msgstr "浮動小数点数"
@@ -794,7 +748,7 @@ msgstr "浮動小数点数"
 msgid ""
 "Old name of ``highFrequencySubmitRate``. Works with a warning; giving both "
 "is an error."
-msgstr "``highFrequencySubmitRate`` の旧名です．警告付きで動作しますが，両方を指定するとエラーになります．"
+msgstr "``highFrequencySubmitRate`` の旧名です。警告付きで動作しますが、両方を指定するとエラーになります。"
 
 #: ../../source/user_guide/config.rst:370
 msgid ""
@@ -803,20 +757,20 @@ msgid ""
 " any unknown key)."
 msgstr ""
 "セッションのキーはいずれも :ref:`JsonRandom <config-jsonrandom>` "
-"記法を受け付けません．また，セッションオブジェクトは ``extends`` に対応していません（他の未知のキーと同様に無視されます）．"
+"記法を受け付けません。また、セッションオブジェクトは ``extends`` に対応していません（他の未知のキーと同様に無視されます）。"
 
 msgid "What happens in one step"
 msgstr "1ステップで行われる処理"
 
 #: ../../source/user_guide/config.rst:376
 msgid "For every step of a session:"
-msgstr "セッションの各ステップでは，次の処理が行われます："
+msgstr "セッションの各ステップでは、次の処理が行われます："
 
 #: ../../source/user_guide/config.rst:378
 msgid ""
 "Events hooked before the step run (e.g. "
 ":class:`~pams.events.FundamentalPriceShock`)."
-msgstr "ステップの前にフックされたイベントが実行されます（:class:`~pams.events.FundamentalPriceShock` など）．"
+msgstr "ステップの前にフックされたイベントが実行されます（:class:`~pams.events.FundamentalPriceShock` など）。"
 
 #: ../../source/user_guide/config.rst:379
 msgid ""
@@ -827,9 +781,9 @@ msgid ""
 "count."
 msgstr ""
 "``withOrderPlacement`` が ``true`` "
-"の場合，通常エージェントをシャッフルし，1つずつ順に注文を求めます（各エージェントにはすべての市場が渡されます）．注文を1つ以上返したエージェントの数が"
+"の場合、通常エージェントをシャッフルし、1つずつ順に注文を求めます（各エージェントにはすべての市場が渡されます）。注文を1つ以上返したエージェントの数が"
 " ``maxNormalOrders`` "
-"に達するか，すべてのエージェントに問い合わせた時点で，問い合わせを終了します．注文を返さなかったエージェントは数に含めません．"
+"に達するか、すべてのエージェントに問い合わせた時点で、問い合わせを終了します。注文を返さなかったエージェントは数に含めません。"
 
 #: ../../source/user_guide/config.rst:382
 msgid ""
@@ -838,9 +792,9 @@ msgid ""
 "the market is not halted by a :class:`~pams.events.TradingHaltRule`, the "
 "market matches orders immediately (continuous double auction)."
 msgstr ""
-"集めた注文リストはランダムな順序で処理されます．各注文（またはキャンセル）は対象の市場に送られ， ``withOrderExecution`` が "
-"``true`` で，かつその市場が :class:`~pams.events.TradingHaltRule` "
-"によって売買停止されていなければ，市場は直ちに注文を約定させます（連続ダブルオークション）．"
+"集めた注文リストはランダムな順序で処理されます。各注文（またはキャンセル）は対象の市場に送られ、``withOrderExecution`` が "
+"``true`` で、かつその市場が :class:`~pams.events.TradingHaltRule` "
+"によって売買停止されていなければ、市場は直ちに注文を約定させます（連続ダブルオークション）。"
 
 #: ../../source/user_guide/config.rst:385
 msgid ""
@@ -851,9 +805,9 @@ msgid ""
 " next one is asked, so high-frequency agents react to the orders placed just"
 " before them."
 msgstr ""
-"各通常エージェントの注文の後，確率 ``highFrequencySubmitRate`` で **高頻度ラウンド** "
-"が行われます．このラウンドでは，高頻度エージェントをシャッフルし，注文を返したエージェントの数が ``maxHighFrequencyOrders`` "
-"に達するまで問い合わせます．各エージェントの注文は，次のエージェントに問い合わせる前にすぐ処理（および約定）されるため，高頻度エージェントは直前に出された注文に反応します．"
+"各通常エージェントの注文の後、確率 ``highFrequencySubmitRate`` で **高頻度ラウンド** "
+"が行われます。このラウンドでは、高頻度エージェントをシャッフルし、注文を返したエージェントの数が ``maxHighFrequencyOrders`` "
+"に達するまで問い合わせます。各エージェントの注文は、次のエージェントに問い合わせる前にすぐ処理（および約定）されるため、高頻度エージェントは直前に出された注文に反応します。"
 
 #: ../../source/user_guide/config.rst:389
 msgid ""
@@ -862,13 +816,13 @@ msgid ""
 "after the step run."
 msgstr ""
 "ステップ終了時のログが書き出され（:class:`~pams.logs.MarketStepPrintLogger` "
-"が出力するのはこれです），その後，ステップの後にフックされたイベントが実行されます．"
+"が出力するのはこれです）、その後、ステップの後にフックされたイベントが実行されます。"
 
 #: ../../source/user_guide/config.rst:391
 msgid ""
 "Time advances by one step: expired orders leave the books and the "
 "fundamental prices move."
-msgstr "時刻が1ステップ進みます．有効期限切れの注文は板から取り除かれ，ファンダメンタル価格が変動します．"
+msgstr "時刻が1ステップ進みます。有効期限切れの注文は板から取り除かれ、ファンダメンタル価格が変動します。"
 
 #: ../../source/user_guide/config.rst:395
 msgid ""
@@ -878,8 +832,8 @@ msgid ""
 "none of them sees the orders the others submit in that step."
 msgstr ""
 "デフォルトの ``maxNormalOrders: 1`` "
-"では，設定ファイルで作成するエージェントの数にかかわらず，1ステップに注文を出す通常エージェントは **1つ** "
-"だけです．同じステップでより多くのエージェントを行動させるには，この値を大きくしてください．その場合，すべてのエージェントが同じ市場状態に基づいて判断します．つまり，どのエージェントも，同じステップで他のエージェントが出した注文を見ることはできません．"
+"では、設定ファイルで作成するエージェントの数にかかわらず、1ステップに注文を出す通常エージェントは **1つ** "
+"だけです。同じステップでより多くのエージェントを行動させるには、この値を大きくしてください。その場合、すべてのエージェントが同じ市場状態に基づいて判断します。つまり、どのエージェントも、同じステップで他のエージェントが出した注文を見ることはできません。"
 
 #: ../../source/user_guide/config.rst:398
 msgid ""
@@ -890,9 +844,9 @@ msgid ""
 "0.0`` switches them off."
 msgstr ""
 "高頻度エージェント（:class:`~pams.agents.ArbitrageAgent` と "
-"``MarketMakerAgent``）は，各通常エージェントの注文の後に行われ得る高頻度ラウンド（上記の手順4）で **のみ** "
-"行動します．通常エージェントが1つも注文を出さなかったステップでは行動せず， ``highFrequencySubmitRate: 0.0`` "
-"とすると無効になります．"
+"``MarketMakerAgent``）は、各通常エージェントの注文の後に行われ得る高頻度ラウンド（上記の手順4）で **のみ** "
+"行動します。通常エージェントが1つも注文を出さなかったステップでは行動せず、``highFrequencySubmitRate: 0.0`` "
+"とすると無効になります。"
 
 #: ../../source/user_guide/config.rst:406
 msgid "Market and agent groups"
@@ -902,7 +856,7 @@ msgstr "市場グループとエージェントグループ"
 msgid ""
 "Market blocks and agent blocks share a set of keys that decide which class "
 "is used, how many objects are created and how they are named."
-msgstr "市場ブロックとエージェントブロックには，使用するクラス，作成するオブジェクトの数，およびその命名方法を決める共通のキーがあります．"
+msgstr "市場ブロックとエージェントブロックには、使用するクラス、作成するオブジェクトの数、およびその命名方法を決める共通のキーがあります。"
 
 #: ../../source/user_guide/config.rst:418
 msgid "``class`` |required|"
@@ -916,8 +870,8 @@ msgid ""
 "classes`)."
 msgstr ""
 "``\"Market\"`` や ``\"FCNAgent\"`` "
-"などのクラス名です．ドット区切りのパスではなく，単純なクラス名（大文字と小文字を区別）を指定してください．組み込みクラスは自動的に検出されますが，ユーザー定義クラスは登録する必要があります（:ref"
-":`config-user-classes` を参照）．"
+"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録する必要があります（:ref"
+":`config-user-classes` を参照）。"
 
 #: ../../source/user_guide/config.rst:423
 msgid "``extends`` |optional|"
@@ -929,7 +883,7 @@ msgstr "ブロック名"
 
 #: ../../source/user_guide/config.rst:425
 msgid "Inherit the keys of another block. See :ref:`config-extends`."
-msgstr "別のブロックのキーを継承します．詳しくは :ref:`config-extends` を参照してください．"
+msgstr "別のブロックのキーを継承します。詳しくは :ref:`config-extends` を参照してください。"
 
 #: ../../source/user_guide/config.rst:426
 msgid "``numMarkets`` / ``numAgents`` |optional|"
@@ -940,8 +894,8 @@ msgid ""
 "Number of markets (in a market block) or agents (in an agent block) created "
 "from this block. Default: ``1``. Cannot be combined with ``from`` / ``to``."
 msgstr ""
-"このブロックから作成する市場（市場ブロックの場合）またはエージェント（エージェントブロックの場合）の数です．デフォルトは ``1`` です．これは "
-"``from`` / ``to`` と併用できません．"
+"このブロックから作成する市場（市場ブロックの場合）またはエージェント（エージェントブロックの場合）の数です。デフォルトは ``1`` です。これは "
+"``from`` / ``to`` と併用できません。"
 
 #: ../../source/user_guide/config.rst:430
 msgid "``from`` and ``to`` |optional|"
@@ -953,8 +907,8 @@ msgid ""
 " so ``to`` must be at least ``from``). Give both or neither. The indices "
 "only affect names, not IDs."
 msgstr ""
-"``from`` から ``to`` までの各インデックスについて，オブジェクトを1つずつ作成します（**両端を含む** ため， ``to`` は "
-"``from`` 以上である必要があります）．両方を指定するか，どちらも省略してください．インデックスが影響するのは名前だけで，IDには影響しません．"
+"``from`` から ``to`` までの各インデックスについて、オブジェクトを1つずつ作成します（**両端を含む** ため、``to`` は "
+"``from`` 以上である必要があります）。両方を指定するか、どちらも省略してください。インデックスが影響するのは名前だけで、IDには影響しません。"
 
 #: ../../source/user_guide/config.rst:434
 msgid "``prefix`` |optional|"
@@ -966,9 +920,9 @@ msgid ""
 "group creates more than one object. An explicit ``prefix`` is used as is (no"
 " ``-`` is added). See :ref:`config-naming`."
 msgstr ""
-"インスタンス名の基になる文字列です．デフォルトはブロック名で，グループが複数のオブジェクトを作成する場合はその後に ``-`` "
-"が付きます．明示的に指定した ``prefix`` はそのまま使われます（``-`` は付加されません）．詳しくは :ref:`config-"
-"naming` を参照してください．"
+"インスタンス名の基になる文字列です。デフォルトはブロック名で、グループが複数のオブジェクトを作成する場合はその後に ``-`` "
+"が付きます。明示的に指定した ``prefix`` はそのまま使われます（``-`` は付加されません）。詳しくは :ref:`config-"
+"naming` を参照してください。"
 
 #: ../../source/user_guide/config.rst:442
 msgid "Instance names"
@@ -979,8 +933,8 @@ msgid ""
 "Names are what other keys use to refer to a single market (see :ref:`config-"
 "names`), so it helps to know how they are built:"
 msgstr ""
-"名前は，他のキーから個々の市場を参照する際に使われます（:ref:`config-names` "
-"を参照）．そのため，名前がどのように生成されるかを知っておくと役に立ちます："
+"名前は、他のキーから個々の市場を参照する際に使われます（:ref:`config-names` "
+"を参照）。そのため、名前がどのように生成されるかを知っておくと役に立ちます："
 
 #: ../../source/user_guide/config.rst:451
 #, python-brace-format
@@ -993,7 +947,7 @@ msgstr "生成される名前"
 
 #: ../../source/user_guide/config.rst:453
 msgid "no count, or ``\"numMarkets\": 1``"
-msgstr "個数の指定なし，または ``\"numMarkets\": 1``"
+msgstr "個数の指定なし、または ``\"numMarkets\": 1``"
 
 #: ../../source/user_guide/config.rst:454
 msgid "``Market``"
@@ -1049,8 +1003,8 @@ msgid ""
 " group has more than one object. An explicit ``prefix`` is used as is (no "
 "``-`` is added)."
 msgstr ""
-"``prefix`` を指定しない場合，プレフィックスはブロック名となり，グループが複数のオブジェクトを持つときはその後に ``-`` "
-"が付きます．明示的に指定した ``prefix`` はそのまま使われます（``-`` は付加されません）．"
+"``prefix`` を指定しない場合、プレフィックスはブロック名となり、グループが複数のオブジェクトを持つときはその後に ``-`` "
+"が付きます。明示的に指定した ``prefix`` はそのまま使われます（``-`` は付加されません）。"
 
 #: ../../source/user_guide/config.rst:470
 msgid ""
@@ -1058,9 +1012,9 @@ msgid ""
 "the prefix alone. Otherwise an index is appended: ``0, 1, 2, ...`` with a "
 "count, or ``from`` to ``to`` with a range."
 msgstr ""
-"グループのオブジェクトがちょうど1つで， ``from`` / ``to`` "
-"も指定されていない場合，名前はプレフィックスのみになります．それ以外の場合はインデックスが付加されます：個数を指定した場合は ``0, 1, 2, "
-"...``，範囲を指定した場合は ``from`` から ``to`` までです．"
+"グループのオブジェクトがちょうど1つで、``from`` / ``to`` "
+"も指定されていない場合、名前はプレフィックスのみになります。それ以外の場合はインデックスが付加されます：個数を指定した場合は ``0, 1, 2, "
+"...``、範囲を指定した場合は ``from`` から ``to`` までです。"
 
 #: ../../source/user_guide/config.rst:473
 msgid ""
@@ -1069,9 +1023,9 @@ msgid ""
 "in the order of ``simulation.markets`` and ``simulation.agents``, regardless"
 " of ``from`` / ``to``."
 msgstr ""
-"市場名はすべての市場グループを通じて，エージェント名はすべてのエージェントグループを通じて一意でなければなりません．ID（``market_id`` と"
-" ``agent_id``）は， ``from`` / ``to`` に関係なく， ``simulation.markets`` および "
-"``simulation.agents`` の順に0から割り当てられます．"
+"市場名はすべての市場グループを通じて、エージェント名はすべてのエージェントグループを通じて一意でなければなりません。ID（``market_id`` と"
+" ``agent_id``）は、``from`` / ``to`` に関係なく、``simulation.markets`` および "
+"``simulation.agents`` の順に0から割り当てられます。"
 
 #: ../../source/user_guide/config.rst:480
 msgid "Inheritance with ``extends``"
@@ -1086,9 +1040,9 @@ msgid ""
 "list. Market groups, agent groups and event blocks all support ``extends``."
 msgstr ""
 "``\"extends\": \"OtherBlock\"`` は ``OtherBlock`` "
-"のすべてのキーをこのブロックにコピーし，このブロックに書かれたキーは継承されたキーを上書きします．親ブロック自体も ``extends`` "
-"を使えるため，継承の連鎖は再帰的に解決されます．ブロックの親は1つだけです： ``extends`` "
-"はリストではなく単一のブロック名を取ります．市場グループ，エージェントグループ，イベントブロックはいずれも ``extends`` に対応しています．"
+"のすべてのキーをこのブロックにコピーし、このブロックに書かれたキーは継承されたキーを上書きします。親ブロック自体も ``extends`` "
+"を使えるため、継承の連鎖は再帰的に解決されます。ブロックの親は1つだけです： ``extends`` "
+"はリストではなく単一のブロック名を取ります。市場グループ、エージェントグループ、イベントブロックはいずれも ``extends`` に対応しています。"
 
 #: ../../source/user_guide/config.rst:498
 msgid ""
@@ -1098,16 +1052,16 @@ msgid ""
 "``SpotFCNAgents-99`` and ``Chartists-0`` to ``Chartists-99``)."
 msgstr ""
 "ここで ``FCNBase`` はテンプレートです： ``simulation.agents`` "
-"に列挙されていないため，このブロックから直接エージェントが作成されることはありません．両方の子ブロックは ``\"numAgents\": 100`` "
-"を継承するため，それぞれ100体のエージェントを作成します（``SpotFCNAgents-0`` から ``SpotFCNAgents-99`` "
-"まで，および ``Chartists-0`` から ``Chartists-99`` まで）．"
+"に列挙されていないため、このブロックから直接エージェントが作成されることはありません。両方の子ブロックは ``\"numAgents\": 100`` "
+"を継承するため、それぞれ100体のエージェントを作成します（``SpotFCNAgents-0`` から ``SpotFCNAgents-99`` "
+"まで、および ``Chartists-0`` から ``Chartists-99`` まで）。"
 
 #: ../../source/user_guide/config.rst:502
 #, python-brace-format
 msgid ""
 "The merge is shallow: an object value in the child (e.g. ``{\"expon\": "
 "[1.0]}``) replaces the parent's value as a whole."
-msgstr "マージは浅く行われます：子ブロックのオブジェクト値（例： ``{\"expon\": [1.0]}``）は親の値を丸ごと置き換えます．"
+msgstr "マージは浅く行われます：子ブロックのオブジェクト値（例： ``{\"expon\": [1.0]}``）は親の値を丸ごと置き換えます。"
 
 #: ../../source/user_guide/config.rst:504
 msgid ""
@@ -1122,22 +1076,22 @@ msgid ""
 "\"to\": 99`` together create ``Trader-0`` to ``Trader-99``. Otherwise give "
 "each group its own ``prefix``."
 msgstr ""
-"``from`` と ``to`` が継承されることはありません． ``numMarkets``， ``numAgents``， ``prefix`` "
-"は市場グループとエージェントグループでは **継承されます**．そのため，親が ``numAgents`` を設定しているのに子が ``from`` /"
-" ``to`` を設定すると失敗します．また，列挙されている2つのグループが同じ ``prefix`` "
-"を継承している場合（例：1つのテンプレートの2つの子，または子と列挙されているその親），両者の ``from`` / ``to`` "
-"の範囲が重ならない限り名前が重複します．例えば， ``\"prefix\": \"Trader-\"`` を持つ（``numAgents`` "
+"``from`` と ``to`` が継承されることはありません。``numMarkets``、``numAgents``、``prefix`` "
+"は市場グループとエージェントグループでは **継承されます**。そのため、親が ``numAgents`` を設定しているのに子が ``from`` /"
+" ``to`` を設定すると失敗します。また、列挙されている2つのグループが同じ ``prefix`` "
+"を継承している場合（例：1つのテンプレートの2つの子、または子と列挙されているその親）、両者の ``from`` / ``to`` "
+"の範囲が重ならない限り名前が重複します。例えば、``\"prefix\": \"Trader-\"`` を持つ（``numAgents`` "
 "を持たない）テンプレートの2つの子が ``\"from\": 0, \"to\": 49`` と ``\"from\": 50, \"to\": "
-"99`` を使うと，合わせて ``Trader-0`` から ``Trader-99`` までが作成されます．それ以外の場合は，各グループに固有の "
-"``prefix`` を指定してください．"
+"99`` を使うと、合わせて ``Trader-0`` から ``Trader-99`` までが作成されます。それ以外の場合は、各グループに固有の "
+"``prefix`` を指定してください。"
 
 #: ../../source/user_guide/config.rst:511
 msgid "Event blocks do not inherit ``numMarkets``, ``from``, ``to`` or ``prefix``."
-msgstr "イベントブロックは ``numMarkets``， ``from``， ``to``， ``prefix`` を継承しません．"
+msgstr "イベントブロックは ``numMarkets``、``from``、``to``、``prefix`` を継承しません。"
 
 #: ../../source/user_guide/config.rst:512
 msgid "A missing parent and a loop (``A`` extends ``B`` extends ``A``) are errors."
-msgstr "存在しない親の指定と，ループ（``A`` が ``B`` を継承し，それがさらに ``A`` を継承する）はエラーになります．"
+msgstr "存在しない親の指定と、ループ（``A`` が ``B`` を継承し、それがさらに ``A`` を継承する）はエラーになります。"
 
 #: ../../source/user_guide/config.rst:520
 msgid ""
@@ -1146,9 +1100,9 @@ msgid ""
 "``prefix``), a market block has the keys below. None of them accepts "
 ":ref:`JsonRandom <config-jsonrandom>` notation."
 msgstr ""
-"市場ブロックは，板を持つ市場を1つ以上作成します．グループキー（``class``， ``extends``， ``numMarkets``， "
-"``from`` / ``to``， ``prefix``）に加えて，市場ブロックには以下のキーがあります．これらはいずれも "
-":ref:`JsonRandom <config-jsonrandom>` 記法を受け付けません．"
+"市場ブロックは、板を持つ市場を1つ以上作成します。グループキー（``class``、``extends``、``numMarkets``、``from``"
+" / ``to``、``prefix``）に加えて、市場ブロックには以下のキーがあります。これらはいずれも :ref:`JsonRandom "
+"<config-jsonrandom>` 記法を受け付けません。"
 
 #: ../../source/user_guide/config.rst:525
 msgid "Market"
@@ -1158,15 +1112,12 @@ msgstr ""
 msgid "``\"class\": \"Market\"`` (:class:`pams.Market`)"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:536
-#: ../../source/user_guide/config.rst:611
+#: ../../source/user_guide/config.rst:536 ../../source/user_guide/config.rst:611
 msgid "``tickSize`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:537
-#: ../../source/user_guide/config.rst:541
-#: ../../source/user_guide/config.rst:544
-#: ../../source/user_guide/config.rst:612
+#: ../../source/user_guide/config.rst:537 ../../source/user_guide/config.rst:541
+#: ../../source/user_guide/config.rst:544 ../../source/user_guide/config.rst:612
 msgid "number > 0"
 msgstr "数値 > 0"
 
@@ -1174,7 +1125,7 @@ msgstr "数値 > 0"
 msgid ""
 "Minimum price increment. Limit order prices that are not a multiple of it "
 "are rounded (buy orders down, sell orders up) with a warning."
-msgstr "価格の最小変動単位です．この倍数でない指値注文の価格は，警告とともに丸められます（買い注文は切り下げ，売り注文は切り上げ）．"
+msgstr "価格の最小変動単位です。この倍数でない指値注文の価格は、警告とともに丸められます（買い注文は切り下げ、売り注文は切り上げ）。"
 
 #: ../../source/user_guide/config.rst:540
 msgid "``marketPrice`` |conditional|"
@@ -1184,7 +1135,7 @@ msgstr ""
 msgid ""
 "Initial market price. At least one of ``marketPrice`` and "
 "``fundamentalPrice`` is required."
-msgstr "初期市場価格です． ``marketPrice`` と ``fundamentalPrice`` の少なくとも一方が必須です．"
+msgstr "初期市場価格です。``marketPrice`` と ``fundamentalPrice`` の少なくとも一方が必須です。"
 
 #: ../../source/user_guide/config.rst:543
 msgid "``fundamentalPrice`` |conditional|"
@@ -1194,35 +1145,29 @@ msgstr ""
 msgid ""
 "Initial fundamental price. At least one of ``marketPrice`` and "
 "``fundamentalPrice`` is required."
-msgstr "初期ファンダメンタル価格です． ``marketPrice`` と ``fundamentalPrice`` の少なくとも一方が必須です．"
+msgstr "初期ファンダメンタル価格です。``marketPrice`` と ``fundamentalPrice`` の少なくとも一方が必須です。"
 
 #: ../../source/user_guide/config.rst:546
 msgid "``fundamentalDrift`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:547
-#: ../../source/user_guide/config.rst:615
-#: ../../source/user_guide/config.rst:680
-#: ../../source/user_guide/config.rst:683
-#: ../../source/user_guide/config.rst:740
-#: ../../source/user_guide/config.rst:859
+#: ../../source/user_guide/config.rst:547 ../../source/user_guide/config.rst:615
+#: ../../source/user_guide/config.rst:680 ../../source/user_guide/config.rst:683
+#: ../../source/user_guide/config.rst:740 ../../source/user_guide/config.rst:859
 msgid "number"
 msgstr "数値"
 
 #: ../../source/user_guide/config.rst:548
 msgid "Drift of the fundamental price per step (see below). Default: ``0.0``."
-msgstr "1ステップあたりのファンダメンタル価格のドリフトです（下記参照）．デフォルトは ``0.0`` です．"
+msgstr "1ステップあたりのファンダメンタル価格のドリフトです（下記参照）。デフォルトは ``0.0`` です。"
 
 #: ../../source/user_guide/config.rst:549
 msgid "``fundamentalVolatility`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:550
-#: ../../source/user_guide/config.rst:731
-#: ../../source/user_guide/config.rst:734
-#: ../../source/user_guide/config.rst:737
-#: ../../source/user_guide/config.rst:747
-#: ../../source/user_guide/config.rst:828
+#: ../../source/user_guide/config.rst:550 ../../source/user_guide/config.rst:731
+#: ../../source/user_guide/config.rst:734 ../../source/user_guide/config.rst:737
+#: ../../source/user_guide/config.rst:747 ../../source/user_guide/config.rst:828
 msgid "number ≥ 0"
 msgstr "数値 ≥ 0"
 
@@ -1231,11 +1176,10 @@ msgid ""
 "Volatility of the fundamental price per step (see below). Default: ``0.0``, "
 "i.e. the fundamental price only follows the drift."
 msgstr ""
-"1ステップあたりのファンダメンタル価格のボラティリティです（下記参照）．デフォルトは ``0.0`` "
-"で，この場合ファンダメンタル価格はドリフトのみに従います．"
+"1ステップあたりのファンダメンタル価格のボラティリティです（下記参照）。デフォルトは ``0.0`` "
+"で、この場合ファンダメンタル価格はドリフトのみに従います。"
 
-#: ../../source/user_guide/config.rst:553
-#: ../../source/user_guide/config.rst:618
+#: ../../source/user_guide/config.rst:553 ../../source/user_guide/config.rst:618
 msgid "``outstandingShares`` |conditional|"
 msgstr ""
 
@@ -1245,8 +1189,8 @@ msgid ""
 "where it is the weight of the market in the index. Must be a JSON integer. "
 "Not set by default."
 msgstr ""
-"発行済株式数です． ``IndexMarket`` "
-"を構成する市場では必須で，インデックスにおけるその市場の重みとなります．JSONの整数でなければなりません．デフォルトでは設定されていません．"
+"発行済株式数です。``IndexMarket`` "
+"を構成する市場では必須で、インデックスにおけるその市場の重みとなります。JSONの整数でなければなりません。デフォルトでは設定されていません。"
 
 #: ../../source/user_guide/config.rst:558
 msgid ""
@@ -1255,8 +1199,8 @@ msgid ""
 "``marketPrice`` and the fundamental price at ``fundamentalPrice``."
 msgstr ""
 "``marketPrice`` と ``fundamentalPrice`` "
-"の一方のみが指定された場合，両方の価格がその値から始まります．両方が指定された場合，市場価格は ``marketPrice`` "
-"から，ファンダメンタル価格は ``fundamentalPrice`` から始まります．"
+"の一方のみが指定された場合、両方の価格がその値から始まります。両方が指定された場合、市場価格は ``marketPrice`` "
+"から、ファンダメンタル価格は ``fundamentalPrice`` から始まります。"
 
 msgid "How the fundamental price moves"
 msgstr "ファンダメンタル価格の動き方"
@@ -1265,7 +1209,7 @@ msgstr "ファンダメンタル価格の動き方"
 msgid ""
 "The fundamental price :math:`P^f_t` of each market follows a geometric "
 "random walk with one step per simulation step:"
-msgstr "各市場のファンダメンタル価格 :math:`P^f_t` は，シミュレーションの1ステップごとに1歩進む幾何ランダムウォークに従います："
+msgstr "各市場のファンダメンタル価格 :math:`P^f_t` は、シミュレーションの1ステップごとに1歩進む幾何ランダムウォークに従います："
 
 #: ../../source/user_guide/config.rst:568
 #, python-brace-format
@@ -1283,11 +1227,11 @@ msgid ""
 "fundamental price keeps moving in every session, including sessions without "
 "order execution."
 msgstr ""
-"ここで :math:`\\mu` は ``fundamentalDrift``， :math:`\\sigma` は "
-"``fundamentalVolatility`` です．どちらも1ステップあたりの値であり，年率換算ではありません．異なる市場のショック "
-":math:`\\varepsilon_t` は， :ref:`fundamentalCorrelations <config-"
+"ここで :math:`\\mu` は ``fundamentalDrift``、:math:`\\sigma` は "
+"``fundamentalVolatility`` です。どちらも1ステップあたりの値であり、年率換算ではありません。異なる市場のショック "
+":math:`\\varepsilon_t` は、:ref:`fundamentalCorrelations <config-"
 "correlations>` "
-"で相関を持たせない限り独立です．ファンダメンタル価格は，注文の約定を行わないセッションも含め，すべてのセッションで変動し続けます．"
+"で相関を持たせない限り独立です。ファンダメンタル価格は、注文の約定を行わないセッションも含め、すべてのセッションで変動し続けます。"
 
 msgid "How the market price is determined"
 msgstr "市場価格の決まり方"
@@ -1300,8 +1244,8 @@ msgid ""
 "not executed (``withOrderExecution: false`` or during a trading halt), the "
 "market price stays at its previous value."
 msgstr ""
-"ステップ0の開始時には，エージェントは初期の市場価格を参照します．それ以降，セッションが注文を約定させている間は，市場価格は直近の約定価格，まだ何も約定していなければ仲値になります．注文が約定しない間（``withOrderExecution:"
-" false`` の場合や売買停止中）は，市場価格は直前の値のまま変わりません．"
+"ステップ0の開始時には、エージェントは初期の市場価格を参照します。それ以降、セッションが注文を約定させている間は、市場価格は直近の約定価格、まだ何も約定していなければ仲値になります。注文が約定しない間（``withOrderExecution:"
+" false`` の場合や売買停止中）は、市場価格は直前の値のまま変わりません。"
 
 #: ../../source/user_guide/config.rst:585
 msgid ""
@@ -1309,7 +1253,7 @@ msgid ""
 "book (the one placed earlier); a market order takes the price of the limit "
 "order it matches. If an order fills against several price levels at once, "
 "all of these fills use the last (worst) of those prices."
-msgstr "新たに到着した注文は，板上でマッチングした注文（先に出されていた注文）の価格で約定します．成行注文は，マッチングした指値注文の価格で約定します．1つの注文が一度に複数の価格水準にまたがって約定する場合，それらの約定はすべて，そのうち最後の（最も不利な）価格で行われます．"
+msgstr "新たに到着した注文は、板上でマッチングした注文（先に出されていた注文）の価格で約定します。成行注文は、マッチングした指値注文の価格で約定します。1つの注文が一度に複数の価格水準にまたがって約定する場合、それらの約定はすべて、そのうち最後の（最も不利な）価格で行われます。"
 
 #: ../../source/user_guide/config.rst:592
 msgid "IndexMarket"
@@ -1325,12 +1269,11 @@ msgid ""
 ":class:`~pams.agents.ArbitrageAgent` trades this gap."
 msgstr ""
 "``\"class\": \"IndexMarket\"`` "
-"（:class:`pams.IndexMarket`）は，構成市場のファンダメンタル価格の加重平均をファンダメンタル価格とする市場です．独自の板と市場価格を持ち，その市場価格は，構成市場の"
+"（:class:`pams.IndexMarket`）は、構成市場のファンダメンタル価格の加重平均をファンダメンタル価格とする市場です。独自の板と市場価格を持ち、その市場価格は、構成市場の"
 " **市場** 価格（ファンダメンタル価格ではありません）を ``outstandingShares`` で加重平均した **インデックス値** "
-"と乖離することがあります． :class:`~pams.agents.ArbitrageAgent` はこの乖離を利用して取引します．"
+"と乖離することがあります。:class:`~pams.agents.ArbitrageAgent` はこの乖離を利用して取引します。"
 
-#: ../../source/user_guide/config.rst:608
-#: ../../source/user_guide/config.rst:976
+#: ../../source/user_guide/config.rst:608 ../../source/user_guide/config.rst:976
 #: ../../source/user_guide/config.rst:1006
 msgid "list of market instance names"
 msgstr "市場インスタンス名のリスト"
@@ -1341,13 +1284,13 @@ msgid ""
 "component needs ``outstandingShares``, and its group must be listed "
 "**before** the index in ``simulation.markets``."
 msgstr ""
-"構成市場です（例： ``[\"SpotMarkets-0\", \"SpotMarkets-1\"]``）．各構成市場には "
-"``outstandingShares`` が必要であり，そのグループは ``simulation.markets`` においてインデックスより "
-"**前** に記載されていなければなりません．"
+"構成市場です（例： ``[\"SpotMarkets-0\", \"SpotMarkets-1\"]``）。各構成市場には "
+"``outstandingShares`` が必要であり、そのグループは ``simulation.markets`` においてインデックスより "
+"**前** に記載されていなければなりません。"
 
 #: ../../source/user_guide/config.rst:613
 msgid "As for ``Market``."
-msgstr "``Market`` と同じです．"
+msgstr "``Market`` と同じです。"
 
 #: ../../source/user_guide/config.rst:614
 msgid "``marketPrice`` / ``fundamentalPrice`` |conditional|"
@@ -1358,34 +1301,30 @@ msgid ""
 "At least one is required. They only set the initial market price of the "
 "index. The fundamental price of the index is always computed from the "
 "components."
-msgstr "少なくとも一方が必須です．これらはインデックスの初期市場価格を設定するだけです．インデックスのファンダメンタル価格は常に構成市場から計算されます．"
+msgstr "少なくとも一方が必須です。これらはインデックスの初期市場価格を設定するだけです。インデックスのファンダメンタル価格は常に構成市場から計算されます。"
 
 #: ../../source/user_guide/config.rst:620
 msgid "Only needed when this index is itself a component of another index."
-msgstr "このインデックス自体が別のインデックスの構成市場である場合にのみ必要です．"
+msgstr "このインデックス自体が別のインデックスの構成市場である場合にのみ必要です。"
 
 #: ../../source/user_guide/config.rst:621
 msgid "``requires`` |deprecated|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:622
-#: ../../source/user_guide/config.rst:956
-#: ../../source/user_guide/config.rst:986
-#: ../../source/user_guide/config.rst:1019
+#: ../../source/user_guide/config.rst:622 ../../source/user_guide/config.rst:956
+#: ../../source/user_guide/config.rst:986 ../../source/user_guide/config.rst:1019
 #: ../../source/user_guide/config.rst:1061
 msgid "any"
 msgstr "任意の値"
 
-#: ../../source/user_guide/config.rst:623
-#: ../../source/user_guide/config.rst:987
-#: ../../source/user_guide/config.rst:1020
-#: ../../source/user_guide/config.rst:1062
+#: ../../source/user_guide/config.rst:623 ../../source/user_guide/config.rst:987
+#: ../../source/user_guide/config.rst:1020 ../../source/user_guide/config.rst:1062
 msgid "Ignored with a warning."
-msgstr "警告を出したうえで無視されます．"
+msgstr "警告を出したうえで無視されます。"
 
 #: ../../source/user_guide/config.rst:625
 msgid "The fundamental price of the index at each step is"
-msgstr "各ステップにおけるインデックスのファンダメンタル価格は次式で与えられます．"
+msgstr "各ステップにおけるインデックスのファンダメンタル価格は次式で与えられます。"
 
 #: ../../source/user_guide/config.rst:627
 msgid "P^f_{\\mathrm{index}, t} = \\frac{\\sum_i S_i P^f_{i, t}}{\\sum_i S_i}"
@@ -1398,9 +1337,9 @@ msgid ""
 " ignored. To avoid an artificial gap at the start, set its ``marketPrice`` "
 "to the weighted average of the component prices."
 msgstr ""
-"ここで :math:`S_i` は構成市場 :math:`i` の ``outstandingShares`` です． ``IndexMarket`` "
-"の ``fundamentalDrift`` と ``fundamentalVolatility`` "
-"は無視されます．開始時に人為的な乖離が生じないよう，インデックスの ``marketPrice`` を構成市場の価格の加重平均に設定してください．"
+"ここで :math:`S_i` は構成市場 :math:`i` の ``outstandingShares`` です。``IndexMarket`` の"
+" ``fundamentalDrift`` と ``fundamentalVolatility`` "
+"は無視されます。開始時に人為的な乖離が生じないよう、インデックスの ``marketPrice`` を構成市場の価格の加重平均に設定してください。"
 
 #: ../../source/user_guide/config.rst:638
 msgid "Correlated fundamental prices"
@@ -1412,15 +1351,15 @@ msgid ""
 "fundamental prices of pairs of markets:"
 msgstr ""
 "``simulation.fundamentalCorrelations`` "
-"は，市場のペアについて，ファンダメンタル価格のランダムなショックに相関を持たせます："
+"は、市場のペアについて、ファンダメンタル価格のランダムなショックに相関を持たせます："
 
 #: ../../source/user_guide/config.rst:652
 msgid ""
 "``pairwise`` is a list of ``[market name, market name, correlation]``. The "
 "names are market **instance** names, and the two markets must differ."
 msgstr ""
-"``pairwise`` は ``[market name, market name, correlation]`` のリストです．名前は市場の "
-"**インスタンス** 名であり，2つの市場は異なっていなければなりません．"
+"``pairwise`` は ``[market name, market name, correlation]`` のリストです。名前は市場の "
+"**インスタンス** 名であり、2つの市場は異なっていなければなりません。"
 
 #: ../../source/user_guide/config.rst:654
 msgid ""
@@ -1428,19 +1367,19 @@ msgid ""
 "``fundamentalVolatility`` greater than 0. Index markets cannot be used, "
 "because their fundamental price is computed from their components."
 msgstr ""
-"相関は-1より大きく1より小さい値でなければならず，両方の市場で ``fundamentalVolatility`` "
-"が0より大きい必要があります．インデックス市場は，ファンダメンタル価格が構成市場から計算されるため使用できません．"
+"相関は-1より大きく1より小さい値でなければならず、両方の市場で ``fundamentalVolatility`` "
+"が0より大きい必要があります。インデックス市場は、ファンダメンタル価格が構成市場から計算されるため使用できません。"
 
 #: ../../source/user_guide/config.rst:656
 msgid ""
 "If the same pair appears twice, the last value is used. All the correlations"
 " together must form a valid (positive definite) correlation matrix; "
 "otherwise the simulation fails when it starts."
-msgstr "同じペアが2回現れた場合は，最後の値が使われます．すべての相関を合わせたものが有効な（正定値の）相関行列になっていなければなりません．そうでない場合，シミュレーションは開始時に失敗します．"
+msgstr "同じペアが2回現れた場合は、最後の値が使われます。すべての相関を合わせたものが有効な（正定値の）相関行列になっていなければなりません。そうでない場合、シミュレーションは開始時に失敗します。"
 
 #: ../../source/user_guide/config.rst:658
 msgid "``pairwise`` is the only supported key."
-msgstr "サポートされているキーは ``pairwise`` のみです．"
+msgstr "サポートされているキーは ``pairwise`` のみです。"
 
 #: ../../source/user_guide/config.rst:666
 msgid ""
@@ -1448,8 +1387,8 @@ msgid ""
 "keys (``class``, ``extends``, ``numAgents``, ``from`` / ``to``, ``prefix``),"
 " every agent block has the keys below."
 msgstr ""
-"エージェントブロックは，1つのクラスのエージェントを1体以上作成します．グループのキー（``class``， ``extends``， "
-"``numAgents``， ``from`` / ``to``， ``prefix``）に加えて，すべてのエージェントブロックは以下のキーを持ちます．"
+"エージェントブロックは、1つのクラスのエージェントを1体以上作成します。グループのキー（``class``、``extends``、``numAgents``、``from``"
+" / ``to``、``prefix``）に加えて、すべてのエージェントブロックは以下のキーを持ちます。"
 
 #: ../../source/user_guide/config.rst:677
 msgid "list of market group names"
@@ -1459,7 +1398,7 @@ msgstr "市場グループ名のリスト"
 msgid ""
 "The markets these agents can trade. Every market of each listed group "
 "becomes tradable."
-msgstr "これらのエージェントが取引できる市場です．記載した各グループのすべての市場が取引可能になります．"
+msgstr "これらのエージェントが取引できる市場です。記載した各グループのすべての市場が取引可能になります。"
 
 #: ../../source/user_guide/config.rst:679
 msgid "``cashAmount`` |required| |jsonrandom|"
@@ -1467,7 +1406,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:681
 msgid "Initial cash of each agent."
-msgstr "各エージェントの初期現金です．"
+msgstr "各エージェントの初期現金です。"
 
 #: ../../source/user_guide/config.rst:682
 msgid "``assetVolume`` |required| |jsonrandom|"
@@ -1477,13 +1416,13 @@ msgstr ""
 msgid ""
 "Initial number of shares held in **each** tradable market (drawn separately "
 "per market and truncated to an integer)."
-msgstr "取引可能な **各** 市場における初期保有株式数です（市場ごとに個別にサンプリングされ，整数に切り捨てられます）．"
+msgstr "取引可能な **各** 市場における初期保有株式数です（市場ごとに個別にサンプリングされ、整数に切り捨てられます）。"
 
 #: ../../source/user_guide/config.rst:687
 msgid ""
 "Cash and holdings are only bookkeeping: the built-in agents do not check "
 "them before ordering, so they can become negative."
-msgstr "現金と保有株式は帳簿上の値にすぎません：組み込みのエージェントは注文前にこれらを確認しないため，負の値になることがあります．"
+msgstr "現金と保有株式は帳簿上の値にすぎません：組み込みのエージェントは注文前にこれらを確認しないため、負の値になることがあります。"
 
 #: ../../source/user_guide/config.rst:690
 msgid ""
@@ -1492,7 +1431,7 @@ msgid ""
 ":`config-sessions`):"
 msgstr ""
 "各エージェントは **通常** エージェントか **高頻度** "
-"エージェントのいずれかであり，これによって注文を求められるタイミングが決まります（:ref:`config-sessions` の *1ステップの流れ*"
+"エージェントのいずれかであり、これによって注文を求められるタイミングが決まります（:ref:`config-sessions` の *1ステップの流れ*"
 " を参照）："
 
 #: ../../source/user_guide/config.rst:697
@@ -1511,15 +1450,14 @@ msgstr "挙動"
 msgid ":class:`~pams.agents.FCNAgent`"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:701
-#: ../../source/user_guide/config.rst:704
+#: ../../source/user_guide/config.rst:701 ../../source/user_guide/config.rst:704
 #: ../../source/user_guide/config.rst:713
 msgid "normal"
 msgstr "通常"
 
 #: ../../source/user_guide/config.rst:702
 msgid "Fundamentalist, chartist and noise trader."
-msgstr "ファンダメンタリスト，チャーティスト，ノイズトレーダーを兼ねるトレーダー．"
+msgstr "ファンダメンタリスト、チャーティスト、ノイズトレーダーを兼ねるトレーダー。"
 
 #: ../../source/user_guide/config.rst:703
 msgid ":class:`~pams.agents.MarketShareFCNAgent`"
@@ -1529,20 +1467,19 @@ msgstr ""
 msgid ""
 "FCN trader that picks one market per decision, weighted by recent trading "
 "volume."
-msgstr "意思決定ごとに，直近の出来高で重み付けして1つの市場を選ぶFCNトレーダー．"
+msgstr "意思決定ごとに、直近の出来高で重み付けして1つの市場を選ぶFCNトレーダー。"
 
 #: ../../source/user_guide/config.rst:706
 msgid ":class:`~pams.agents.ArbitrageAgent`"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:707
-#: ../../source/user_guide/config.rst:710
+#: ../../source/user_guide/config.rst:707 ../../source/user_guide/config.rst:710
 msgid "high-frequency"
 msgstr "高頻度"
 
 #: ../../source/user_guide/config.rst:708
 msgid "Trades the gap between an index market and its components."
-msgstr "インデックス市場とその構成市場の間の乖離を利用して取引します．"
+msgstr "インデックス市場とその構成市場の間の乖離を利用して取引します。"
 
 #: ../../source/user_guide/config.rst:709
 msgid "``MarketMakerAgent``"
@@ -1550,7 +1487,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:711
 msgid "Quotes a buy and a sell order around the current price."
-msgstr "現在の価格を挟んで買い注文と売り注文を1つずつ提示します．"
+msgstr "現在の価格を挟んで買い注文と売り注文を1つずつ提示します。"
 
 #: ../../source/user_guide/config.rst:712
 msgid "``TestAgent``"
@@ -1558,7 +1495,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:714
 msgid "Random orders for testing PAMS itself. Not intended for research."
-msgstr "PAMS自体をテストするためのランダムな注文を出します．研究用途は想定していません．"
+msgstr "PAMS自体をテストするためのランダムな注文を出します。研究用途は想定していません。"
 
 #: ../../source/user_guide/config.rst:717
 msgid "FCNAgent"
@@ -1573,9 +1510,9 @@ msgid ""
 "different values."
 msgstr ""
 "``\"class\": \"FCNAgent\"`` "
-"（:class:`pams.agents.FCNAgent`）は，ファンダメンタリスト，チャーティスト，ノイズの各成分を組み合わせたエージェントです（Chiarella"
-" and Iori, 2002）．数値パラメータ（``marginType`` 以外のすべてのキー）はすべて :ref:`JsonRandom "
-"<config-jsonrandom>` 記法に対応しているため，エージェントごとに異なる値を与えられます．"
+"（:class:`pams.agents.FCNAgent`）は、ファンダメンタリスト、チャーティスト、ノイズの各成分を組み合わせたエージェントです（Chiarella"
+" and Iori, 2002）。数値パラメータ（``marginType`` 以外のすべてのキー）はすべて :ref:`JsonRandom "
+"<config-jsonrandom>` 記法に対応しているため、エージェントごとに異なる値を与えられます。"
 
 #: ../../source/user_guide/config.rst:730
 msgid "``fundamentalWeight`` |required| |jsonrandom|"
@@ -1583,7 +1520,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:732
 msgid "Weight :math:`w_F` of the fundamental component."
-msgstr "ファンダメンタル成分の重み :math:`w_F` です．"
+msgstr "ファンダメンタル成分の重み :math:`w_F` です。"
 
 #: ../../source/user_guide/config.rst:733
 msgid "``chartWeight`` |required| |jsonrandom|"
@@ -1591,7 +1528,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:735
 msgid "Weight :math:`w_C` of the chartist (trend-following) component."
-msgstr "チャーティスト（トレンド追随）成分の重み :math:`w_C` です．"
+msgstr "チャーティスト（トレンド追随）成分の重み :math:`w_C` です。"
 
 #: ../../source/user_guide/config.rst:736
 msgid "``noiseWeight`` |required| |jsonrandom|"
@@ -1601,7 +1538,7 @@ msgstr ""
 msgid ""
 "Weight :math:`w_N` of the noise component. The three weights must not all be"
 " 0."
-msgstr "ノイズ成分の重み :math:`w_N` です．3つの重みをすべて0にすることはできません．"
+msgstr "ノイズ成分の重み :math:`w_N` です。3つの重みをすべて0にすることはできません。"
 
 #: ../../source/user_guide/config.rst:739
 msgid "``noiseScale`` |required| |jsonrandom|"
@@ -1609,7 +1546,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:741
 msgid "Standard deviation :math:`\\sigma_N` of the noise component."
-msgstr "ノイズ成分の標準偏差 :math:`\\sigma_N` です．"
+msgstr "ノイズ成分の標準偏差 :math:`\\sigma_N` です。"
 
 #: ../../source/user_guide/config.rst:742
 msgid "``timeWindowSize`` |required| |jsonrandom|"
@@ -1622,7 +1559,7 @@ msgid ""
 "integer."
 msgstr ""
 "ステップ単位の時間窓 :math:`\\tau` "
-"です．チャーティスト成分が過去を参照する期間，予測期間，注文の有効期間（TTL）として使われます．整数に切り捨てられます．"
+"です。チャーティスト成分が過去を参照する期間、予測期間、注文の有効期間（TTL）として使われます。整数に切り捨てられます。"
 
 #: ../../source/user_guide/config.rst:746
 msgid "``orderMargin`` |required| |jsonrandom|"
@@ -1635,9 +1572,9 @@ msgid ""
 " of the order price, in price units; keep it well below the price, because "
 "an order price below 0 stops the simulation with an ``AssertionError``."
 msgstr ""
-"価格マージン :math:`k` です．マージンが ``\"fixed\"`` の場合は相対値で，0から1の間でなければなりません．マージンが "
-"``\"normal\"`` の場合は価格単位での注文価格の標準偏差です．注文価格が0を下回るとシミュレーションが ``AssertionError``"
-" で停止するため，価格より十分小さい値にしてください．"
+"価格マージン :math:`k` です。マージンが ``\"fixed\"`` の場合は相対値で、0から1の間でなければなりません。マージンが "
+"``\"normal\"`` の場合は価格単位での注文価格の標準偏差です。注文価格が0を下回るとシミュレーションが ``AssertionError``"
+" で停止するため、価格より十分小さい値にしてください。"
 
 #: ../../source/user_guide/config.rst:751
 msgid "``marginType`` |optional|"
@@ -1651,7 +1588,7 @@ msgstr "``\"fixed\"`` または ``\"normal\"``"
 msgid ""
 "How the order price is derived from the expected price. Default: "
 "``\"fixed\"``."
-msgstr "期待価格から注文価格を導く方法です．デフォルトは ``\"fixed\"`` です．"
+msgstr "期待価格から注文価格を導く方法です。デフォルトは ``\"fixed\"`` です。"
 
 #: ../../source/user_guide/config.rst:754
 msgid "``meanReversionTime`` |optional| |jsonrandom|"
@@ -1662,8 +1599,8 @@ msgid ""
 "Time scale :math:`\\tau_r` of the fundamental component, in steps. Truncated"
 " to an integer. Default: the agent's own ``timeWindowSize``."
 msgstr ""
-"ステップ単位でのファンダメンタル成分の時間スケール :math:`\\tau_r` です．整数に切り捨てられます．デフォルトはそのエージェント自身の "
-"``timeWindowSize`` です．"
+"ステップ単位でのファンダメンタル成分の時間スケール :math:`\\tau_r` です。整数に切り捨てられます。デフォルトはそのエージェント自身の "
+"``timeWindowSize`` です。"
 
 msgid "How an FCN agent decides its orders"
 msgstr "FCNエージェントが注文を決める仕組み"
@@ -1674,8 +1611,8 @@ msgid ""
 "and fundamental price :math:`P^f_t`, the agent computes an expected log "
 "return"
 msgstr ""
-"ステップ :math:`t` において，エージェントは，市場価格が :math:`P_t`，ファンダメンタル価格が :math:`P^f_t` "
-"である取引可能な各市場について，次の期待対数リターンを計算します．"
+"ステップ :math:`t` において、エージェントは、市場価格が :math:`P_t`、ファンダメンタル価格が :math:`P^f_t` "
+"である取引可能な各市場について、次の期待対数リターンを計算します。"
 
 #: ../../source/user_guide/config.rst:765
 msgid ""
@@ -1697,10 +1634,10 @@ msgid ""
 ":math:`\\hat{P} > P_t` it places a buy limit order, if :math:`\\hat{P} < "
 "P_t` a sell limit order, each of volume 1 and lifetime :math:`\\tau`:"
 msgstr ""
-"ここで :math:`\\tau' = \\min(t, \\tau)` であり（2つの分母では，1未満の :math:`\\tau_r` および "
-":math:`\\tau'` の値は1に置き換えられます），期待価格は :math:`\\hat{P} = P_t \\exp(\\hat{r} "
-"\\tau)` です．エージェントは :math:`\\hat{P} > P_t` ならば買いの指値注文を出し，また :math:`\\hat{P} <"
-" P_t` ならば売りの指値注文を出します．いずれも数量1，有効期間 :math:`\\tau` の注文です："
+"ここで :math:`\\tau' = \\min(t, \\tau)` であり（2つの分母では、1未満の :math:`\\tau_r` および "
+":math:`\\tau'` の値は1に置き換えられます）、期待価格は :math:`\\hat{P} = P_t \\exp(\\hat{r} "
+"\\tau)` です。エージェントは :math:`\\hat{P} > P_t` ならば買いの指値注文を出し、また :math:`\\hat{P} <"
+" P_t` ならば売りの指値注文を出します。いずれも数量1、有効期間 :math:`\\tau` の注文です："
 
 #: ../../source/user_guide/config.rst:780
 #, python-brace-format
@@ -1708,8 +1645,8 @@ msgid ""
 "``\"fixed\"``: buy at :math:`\\hat{P}(1 - k)`, sell at :math:`\\hat{P}(1 + "
 "k)`."
 msgstr ""
-"``\"fixed\"``：買いは :math:`\\hat{P}(1 - k)`，売りは :math:`\\hat{P}(1 + k)` "
-"の価格で注文します．"
+"``\"fixed\"``：買いは :math:`\\hat{P}(1 - k)`、売りは :math:`\\hat{P}(1 + k)` "
+"の価格で注文します。"
 
 #: ../../source/user_guide/config.rst:781
 #, python-brace-format
@@ -1718,13 +1655,13 @@ msgid ""
 ":math:`\\varepsilon' \\sim \\mathcal{N}(0, 1)`."
 msgstr ""
 "``\"normal\"``：価格 :math:`\\hat{P} + k \\varepsilon'` "
-"で注文します（:math:`\\varepsilon' \\sim \\mathcal{N}(0, 1)`）．"
+"で注文します（:math:`\\varepsilon' \\sim \\mathcal{N}(0, 1)`）。"
 
 #: ../../source/user_guide/config.rst:783
 msgid ""
 "The chartist component always follows the trend; there is no key for "
 "contrarian behavior."
-msgstr "チャーティスト成分は常にトレンドに追随します．逆張りの挙動を指定するキーはありません．"
+msgstr "チャーティスト成分は常にトレンドに追随します。逆張りの挙動を指定するキーはありません。"
 
 #: ../../source/user_guide/config.rst:787
 #, python-brace-format
@@ -1738,12 +1675,12 @@ msgid ""
 "silently never place orders, and a negative one stops the simulation with an"
 " ``AssertionError``."
 msgstr ""
-"FCNのパラメータの範囲は，シミュレーションのセットアップ時ではなく，エージェントが最初に注文を出すときに初めてチェックされます．そのため，重みに対する"
-" ``{\"normal\": [...]}`` のように不正な値を生成しうる分布を指定すると，シミュレーションが途中で "
-"``AssertionError`` により停止することがあります（3つの重みがすべて0の場合は ``ZeroDivisionError``）．また "
+"FCNのパラメータの範囲は、シミュレーションのセットアップ時ではなく、エージェントが最初に注文を出すときに初めてチェックされます。そのため、重みに対する"
+" ``{\"normal\": [...]}`` のように不正な値を生成しうる分布を指定すると、シミュレーションが途中で "
+"``AssertionError`` により停止することがあります（3つの重みがすべて0の場合は ``ZeroDivisionError``）。また "
 "``timeWindowSize`` に0へ切り捨てられる値（``0.5`` "
-"や，0から始まる範囲など）を指定すると，エージェントは警告なしに注文を一切出さなくなり，負の値を指定するとシミュレーションが "
-"``AssertionError`` で停止します．"
+"や、0から始まる範囲など）を指定すると、エージェントは警告なしに注文を一切出さなくなり、負の値を指定するとシミュレーションが "
+"``AssertionError`` で停止します。"
 
 #: ../../source/user_guide/config.rst:794
 msgid "MarketShareFCNAgent"
@@ -1760,9 +1697,9 @@ msgid ""
 msgstr ""
 "``\"class\": \"MarketShareFCNAgent\"`` "
 "（:class:`pams.agents.MarketShareFCNAgent`）は ``FCNAgent`` "
-"とまったく同じキーを持ちます．取引可能なすべての市場に注文を出す代わりに，意思決定のたびに **1つ** "
-"の市場を選びます．各市場が選ばれる確率は，現在のステップとその前の ``timeWindowSize`` "
-"ステップにその市場で約定した数量に比例します．取引可能な市場が少なくとも1つ必要です．"
+"とまったく同じキーを持ちます。取引可能なすべての市場に注文を出す代わりに、意思決定のたびに **1つ** "
+"の市場を選びます。各市場が選ばれる確率は、現在のステップとその前の ``timeWindowSize`` "
+"ステップにその市場で約定した数量に比例します。取引可能な市場が少なくとも1つ必要です。"
 
 #: ../../source/user_guide/config.rst:802
 msgid ""
@@ -1774,10 +1711,10 @@ msgid ""
 " a user-defined market class that sets an initial traded volume "
 "(``tradeVolume``)."
 msgstr ""
-"時間窓内にいずれかの市場で約定がある間は，約定のない市場が選ばれる確率はほぼ0になります（重みは約定数量に ``1e-10`` "
-"を加えた値です）．そのため，ある市場で取引が始まると，エージェントは通常その市場を選び続け，他の市場の出来高は0のままになります．どの市場にも約定がない場合は，すべての市場が等確率で選ばれます．開始時の配分については"
+"時間窓内にいずれかの市場で約定がある間は、約定のない市場が選ばれる確率はほぼ0になります（重みは約定数量に ``1e-10`` "
+"を加えた値です）。そのため、ある市場で取引が始まると、エージェントは通常その市場を選び続け、他の市場の出来高は0のままになります。どの市場にも約定がない場合は、すべての市場が等確率で選ばれます。開始時の配分については"
 " ``samples/market_share`` "
-"が，初期の出来高（``tradeVolume``）を設定するユーザー定義の市場クラスを用いて制御しています．"
+"が、初期の出来高（``tradeVolume``）を設定するユーザー定義の市場クラスを用いて制御しています。"
 
 #: ../../source/user_guide/config.rst:808
 msgid "ArbitrageAgent"
@@ -1795,14 +1732,13 @@ msgid ""
 "notation (``cashAmount`` and ``assetVolume`` still do)."
 msgstr ""
 "``\"class\": \"ArbitrageAgent\"`` "
-"（:class:`pams.agents.ArbitrageAgent`）は，取引可能なすべての ``IndexMarket`` "
-"を監視する高頻度エージェントです．インデックス市場の市場価格がインデックス値（構成市場の市場価格の加重平均．詳しくは :ref:`IndexMarket"
-" <config-indexmarket>` を参照）を下回り，その差が ``orderThresholdPrice`` "
-"を超えると，インデックスを買い，各構成市場で売ります（いずれも各市場の現在の市場価格での指値注文）．逆の場合はその反対の売買を行います．このエージェント固有のキーはいずれも"
-" JsonRandom 記法に対応していません（``cashAmount`` と ``assetVolume`` は対応しています）．"
+"（:class:`pams.agents.ArbitrageAgent`）は、取引可能なすべての ``IndexMarket`` "
+"を監視する高頻度エージェントです。インデックス市場の市場価格がインデックス値（構成市場の市場価格の加重平均。詳しくは :ref:`IndexMarket"
+" <config-indexmarket>` を参照）を下回り、その差が ``orderThresholdPrice`` "
+"を超えると、インデックスを買い、各構成市場で売ります（いずれも各市場の現在の市場価格での指値注文）。逆の場合はその反対の売買を行います。このエージェント固有のキーはいずれも"
+" JsonRandom 記法に対応していません（``cashAmount`` と ``assetVolume`` は対応しています）。"
 
-#: ../../source/user_guide/config.rst:823
-#: ../../source/user_guide/config.rst:1051
+#: ../../source/user_guide/config.rst:823 ../../source/user_guide/config.rst:1051
 msgid "``orderVolume`` |required|"
 msgstr ""
 
@@ -1811,8 +1747,8 @@ msgid ""
 "Volume per component market. The index order has ``orderVolume`` × (number "
 "of components). Must be a JSON integer."
 msgstr ""
-"構成市場1つあたりの注文数量です．インデックス市場への注文の数量は ``orderVolume`` "
-"×（構成市場の数）になります．JSONの整数で指定する必要があります．"
+"構成市場1つあたりの注文数量です。インデックス市場への注文の数量は ``orderVolume`` "
+"×（構成市場の数）になります。JSONの整数で指定する必要があります。"
 
 #: ../../source/user_guide/config.rst:827
 msgid "``orderThresholdPrice`` |required|"
@@ -1822,7 +1758,7 @@ msgstr ""
 msgid ""
 "Minimum gap, in price units, between the index market price and the index "
 "value."
-msgstr "インデックス市場の市場価格とインデックス値との乖離の最小値（価格単位）です．"
+msgstr "インデックス市場の市場価格とインデックス値との乖離の最小値（価格単位）です。"
 
 #: ../../source/user_guide/config.rst:830
 msgid "``orderTimeLength`` |optional|"
@@ -1832,7 +1768,7 @@ msgstr ""
 msgid ""
 "Lifetime (TTL) of its orders in steps. Default: ``1``. Must be a JSON "
 "integer."
-msgstr "注文の有効期間（TTL）をステップ数で指定します．デフォルトは ``1`` です．JSONの整数で指定する必要があります．"
+msgstr "注文の有効期間（TTL）をステップ数で指定します。デフォルトは ``1`` です。JSONの整数で指定する必要があります。"
 
 #: ../../source/user_guide/config.rst:834
 msgid ""
@@ -1841,17 +1777,17 @@ msgid ""
 "the simulation stops with a ``KeyError`` (a market ID) when the first one is"
 " executed."
 msgstr ""
-"``markets`` には，インデックス市場の市場グループ **および** "
-"そのすべての構成市場の市場グループを含める必要があります．含めない場合でも構成市場への注文は送信され，そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します．"
+"``markets`` には、インデックス市場の市場グループ **および** "
+"そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
+" ``KeyError`` （市場ID）で停止します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
-msgstr "すべての構成市場の ``outstandingShares`` が同じである必要があります．"
+msgstr "すべての構成市場の ``outstandingShares`` が同じである必要があります。"
 
 #: ../../source/user_guide/config.rst:838
 msgid "It only trades while the index and all its components are executing orders."
-msgstr "インデックス市場とそのすべての構成市場が注文を約定させている間のみ取引を行います．"
+msgstr "インデックス市場とそのすべての構成市場が注文を約定させている間のみ取引を行います。"
 
 #: ../../source/user_guide/config.rst:841
 msgid "MarketMakerAgent"
@@ -1865,16 +1801,15 @@ msgid ""
 "(see below). Old orders are not cancelled; they expire after "
 "``orderTimeLength`` steps."
 msgstr ""
-"``\"class\": \"MarketMakerAgent\"`` は，発注を求められるたびに ``targetMarket`` "
-"に買いと売りの指値注文（数量1）を1つずつ出す高頻度エージェントです．注文は，取引可能な **すべての** "
-"市場の最良価格を中心に配置されます（下記参照）．古い注文は取り消されず，発注から ``orderTimeLength`` ステップ後に失効します．"
+"``\"class\": \"MarketMakerAgent\"`` は、発注を求められるたびに ``targetMarket`` "
+"に買いと売りの指値注文（数量1）を1つずつ出す高頻度エージェントです。注文は、取引可能な **すべての** "
+"市場の最良価格を中心に配置されます（下記参照）。古い注文は取り消されず、発注から ``orderTimeLength`` ステップ後に失効します。"
 
 #: ../../source/user_guide/config.rst:854
 msgid "``targetMarket`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:855
-#: ../../source/user_guide/config.rst:938
+#: ../../source/user_guide/config.rst:855 ../../source/user_guide/config.rst:938
 #: ../../source/user_guide/config.rst:1041
 msgid "market instance name"
 msgstr "市場のインスタンス名"
@@ -1885,8 +1820,8 @@ msgid ""
 " otherwise the simulation stops with a ``KeyError`` (a market ID) when its "
 "first order is executed."
 msgstr ""
-"気配を提示する市場です．エージェントが取引可能な市場の1つでもある必要があり，そうでない場合は最初の注文が約定した時点でシミュレーションが "
-"``KeyError`` （市場ID）で停止します．"
+"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合は最初の注文が約定した時点でシミュレーションが "
+"``KeyError`` （市場ID）で停止します。"
 
 #: ../../source/user_guide/config.rst:858
 msgid "``netInterestSpread`` |required| |jsonrandom|"
@@ -1896,7 +1831,7 @@ msgstr ""
 msgid ""
 "Full spread between the two orders, as a fraction of the fundamental price "
 "(``0.02`` = 2%)."
-msgstr "2つの注文の間のスプレッド全体の幅を，ファンダメンタル価格に対する比率で指定します（``0.02`` = 2%）．"
+msgstr "2つの注文の間のスプレッド全体の幅を、ファンダメンタル価格に対する比率で指定します（``0.02`` = 2%）。"
 
 #: ../../source/user_guide/config.rst:861
 msgid "``orderTimeLength`` |optional| |jsonrandom|"
@@ -1906,7 +1841,7 @@ msgstr ""
 msgid ""
 "Lifetime (TTL) of its orders in steps. Truncated to an integer. Default: "
 "``2``."
-msgstr "注文の有効期間（TTL）をステップ数で指定します．整数に切り捨てられます．デフォルトは ``2`` です．"
+msgstr "注文の有効期間（TTL）をステップ数で指定します。整数に切り捨てられます。デフォルトは ``2`` です。"
 
 msgid "How a market maker sets its prices"
 msgstr "マーケットメイカーの価格の決め方"
@@ -1921,12 +1856,12 @@ msgid ""
 " fundamental price of ``targetMarket``, the agent buys at :math:`c - P^f s /"
 " 2` and sells at :math:`c + P^f s / 2`."
 msgstr ""
-"2つの注文は，エージェントが取引可能な **すべての** 市場（``targetMarket`` "
+"2つの注文は、エージェントが取引可能な **すべての** 市場（``targetMarket`` "
 "だけではありません）における最も高い最良買い価格と最も低い最良売り価格の中点 :math:`c` "
-"を中心に配置されます．取引可能などの市場にも買い注文がない場合や，どの市場にも売り注文がない場合には ``targetMarket`` の市場価格を "
-":math:`c` とします．ここで ``netInterestSpread`` を :math:`s` とし， ``targetMarket`` "
-"のファンダメンタル価格を :math:`P^f` とすると，エージェントは買い注文を :math:`c - P^f s / 2` に，売り注文を "
-":math:`c + P^f s / 2` に出します．"
+"を中心に配置されます。取引可能などの市場にも買い注文がない場合や、どの市場にも売り注文がない場合には ``targetMarket`` の市場価格を "
+":math:`c` とします。ここで ``netInterestSpread`` を :math:`s` とし、``targetMarket`` "
+"のファンダメンタル価格を :math:`P^f` とすると、エージェントは買い注文を :math:`c - P^f s / 2` に、売り注文を "
+":math:`c + P^f s / 2` に出します。"
 
 #: ../../source/user_guide/config.rst:875
 msgid "TestAgent"
@@ -1938,9 +1873,9 @@ msgid ""
 " besides ``markets``, ``cashAmount`` and ``assetVolume``. It exists to test "
 "PAMS itself and should not be used for research."
 msgstr ""
-"``\"class\": \"TestAgent\"`` はランダムな注文を出すエージェントで， ``markets``， "
-"``cashAmount``， ``assetVolume`` "
-"以外に固有のキーはありません．PAMS自体をテストするためのものであり，研究には使用しないでください．"
+"``\"class\": \"TestAgent\"`` "
+"はランダムな注文を出すエージェントで、``markets``、``cashAmount``、``assetVolume`` "
+"以外に固有のキーはありません。PAMS自体をテストするためのものであり、研究には使用しないでください。"
 
 #: ../../source/user_guide/config.rst:886
 msgid ""
@@ -1950,9 +1885,9 @@ msgid ""
 "is attached to a session by listing the block name in the session's "
 "``events``:"
 msgstr ""
-"イベントは，価格にショックを与える，注文価格を制限する，売買を停止する，誤った注文を投入するといった形でシミュレーションの流れを変えます．イベントは名前付きブロックで定義し，その"
-" ``\"class\"`` （必須）でイベントクラスを指定します．セッションの ``events`` "
-"にブロック名を記載すると，そのセッションにイベントが割り当てられます："
+"イベントは、価格にショックを与える、注文価格を制限する、売買を停止する、誤った注文を投入するといった形でシミュレーションの流れを変えます。イベントは名前付きブロックで定義し、その"
+" ``\"class\"`` （必須）でイベントクラスを指定します。セッションの ``events`` "
+"にブロック名を記載すると、そのセッションにイベントが割り当てられます："
 
 #: ../../source/user_guide/config.rst:903
 msgid "Timing rules:"
@@ -1965,9 +1900,9 @@ msgid ""
 "200. A ``triggerTime`` beyond the end of the session fires in a later "
 "session, or never if the simulation has already ended."
 msgstr ""
-"``triggerTime`` は **イベントを記載したセッションの開始時点から** 数えたステップ数です．上の例では ``main`` "
-"がステップ100から始まるため，ショックはステップ200で発生します． ``triggerTime`` "
-"がセッションの終了を超える場合，イベントは後のセッションで発動し，その時点でシミュレーションがすでに終了していれば発動しません．"
+"``triggerTime`` は **イベントを記載したセッションの開始時点から** 数えたステップ数です。上の例では ``main`` "
+"がステップ100から始まるため、ショックはステップ200で発生します。``triggerTime`` "
+"がセッションの終了を超える場合、イベントは後のセッションで発動し、その時点でシミュレーションがすでに終了していれば発動しません。"
 
 #: ../../source/user_guide/config.rst:908
 msgid ""
@@ -1976,8 +1911,8 @@ msgid ""
 "simulation**, from step 0, whichever session lists them."
 msgstr ""
 "トリガー時刻を持たないルール（:class:`~pams.events.PriceLimitRule` と "
-":class:`~pams.events.TradingHaltRule`）は，どのセッションに記載されていても，ステップ0から "
-"**シミュレーション全体** にわたって有効です．"
+":class:`~pams.events.TradingHaltRule`）は、どのセッションに記載されていても、ステップ0から "
+"**シミュレーション全体** にわたって有効です。"
 
 #: ../../source/user_guide/config.rst:910
 msgid ""
@@ -1987,10 +1922,10 @@ msgid ""
 " watches the same markets twice (each copy with its own halt count), which "
 "is not supported."
 msgstr ""
-"同じブロックを2つのセッションに記載すると，独立した2つのイベントが作成されます． ``PriceLimitRule`` や "
+"同じブロックを2つのセッションに記載すると、独立した2つのイベントが作成されます。``PriceLimitRule`` や "
 "``TradingHaltRule`` は **1つの** "
-"セッションにのみ記載してください：1つだけですでにすべてのセッションに適用されるうえ，2つ目の ``TradingHaltRule`` "
-"は同じ市場を二重に監視することになり（それぞれが独自の売買停止回数を持ちます），これはサポートされていません．"
+"セッションにのみ記載してください：1つだけですでにすべてのセッションに適用されるうえ、2つ目の ``TradingHaltRule`` "
+"は同じ市場を二重に監視することになり（それぞれが独自の売買停止回数を持ちます）、これはサポートされていません。"
 
 #: ../../source/user_guide/config.rst:914
 msgid ""
@@ -2000,15 +1935,15 @@ msgid ""
 " step where the event acts, while removing the event from ``events`` changes"
 " the random numbers from the start."
 msgstr ""
-"どのイベントも ``\"enabled\": false`` を受け付け，これによりイベントを削除せずに無効化できます（デフォルトは "
-"``true``）．対照実験にはこれを使ってください：同じシードを使えば，イベントを無効化した実行は，イベントが作用するステップまではイベントありの実行と一致します．一方でイベントを"
-" ``events`` から削除すると，最初から乱数が変わってしまいます．"
+"どのイベントも ``\"enabled\": false`` を受け付け、これによりイベントを削除せずに無効化できます（デフォルトは "
+"``true``）。対照実験にはこれを使ってください：同じシードを使えば、イベントを無効化した実行は、イベントが作用するステップまではイベントありの実行と一致します。一方でイベントを"
+" ``events`` から削除すると、最初から乱数が変わってしまいます。"
 
 #: ../../source/user_guide/config.rst:919
 msgid ""
 "All rates are fractions: ``0.05`` means 5%. None of the event keys accepts "
 "JsonRandom notation."
-msgstr "率はすべて比率で指定します（``0.05`` は5%を意味します）．イベントのキーはいずれもJsonRandom記法を受け付けません．"
+msgstr "率はすべて比率で指定します（``0.05`` は5%を意味します）。イベントのキーはいずれもJsonRandom記法を受け付けません。"
 
 #: ../../source/user_guide/config.rst:922
 msgid "FundamentalPriceShock"
@@ -2025,12 +1960,11 @@ msgid ""
 " volatility are unchanged)."
 msgstr ""
 "1つの市場のファンダメンタル価格を :math:`1 + r` "
-"倍します（:class:`pams.events.FundamentalPriceShock`）．この変化は恒久的で，ファンダメンタル価格は新しい水準からランダムウォークを続けます．ショック以降は"
+"倍します（:class:`pams.events.FundamentalPriceShock`）。この変化は恒久的で、ファンダメンタル価格は新しい水準からランダムウォークを続けます。ショック以降は"
 " **すべての** "
-"市場のファンダメンタル価格が新たに生成された乱数で推移するため，同じシードでも，ショックありの実行となしの実行とでは，それ以降のファンダメンタル価格のノイズは一致しません（ドリフトとボラティリティは変わりません）．"
+"市場のファンダメンタル価格が新たに生成された乱数で推移するため、同じシードでも、ショックありの実行となしの実行とでは、それ以降のファンダメンタル価格のノイズは一致しません（ドリフトとボラティリティは変わりません）。"
 
-#: ../../source/user_guide/config.rst:937
-#: ../../source/user_guide/config.rst:1040
+#: ../../source/user_guide/config.rst:937 ../../source/user_guide/config.rst:1040
 msgid "``target`` |required|"
 msgstr ""
 
@@ -2040,27 +1974,25 @@ msgid ""
 " this is not checked at setup, and the simulation stops with a ``KeyError`` "
 "when the shock fires. To move an index, shock its component markets."
 msgstr ""
-"ファンダメンタル価格を変更する市場です．ただし ``IndexMarket`` "
-"は指定できません：これはセットアップ時にはチェックされず，ショックが発動した時点でシミュレーションが ``KeyError`` "
-"で停止します．インデックス市場を動かすには，その構成市場にショックを与えてください．"
+"ファンダメンタル価格を変更する市場です。ただし ``IndexMarket`` "
+"は指定できません：これはセットアップ時にはチェックされず、ショックが発動した時点でシミュレーションが ``KeyError`` "
+"で停止します。インデックス市場を動かすには、その構成市場にショックを与えてください。"
 
-#: ../../source/user_guide/config.rst:942
-#: ../../source/user_guide/config.rst:1043
+#: ../../source/user_guide/config.rst:942 ../../source/user_guide/config.rst:1043
 msgid "``triggerTime`` |required|"
 msgstr ""
 
 #: ../../source/user_guide/config.rst:944
 msgid "Step of the shock, counted from the start of the session."
-msgstr "セッション開始から数えた，ショックが発生するステップです．"
+msgstr "セッション開始から数えた、ショックが発生するステップです。"
 
-#: ../../source/user_guide/config.rst:945
-#: ../../source/user_guide/config.rst:1047
+#: ../../source/user_guide/config.rst:945 ../../source/user_guide/config.rst:1047
 msgid "``priceChangeRate`` |required|"
 msgstr ""
 
 #: ../../source/user_guide/config.rst:947
 msgid "Rate :math:`r`. ``-0.1`` lowers the fundamental price by 10%."
-msgstr "変化率 :math:`r` です． ``-0.1`` とすると，ファンダメンタル価格が10%下がります．"
+msgstr "変化率 :math:`r` です。``-0.1`` とすると、ファンダメンタル価格が10%下がります。"
 
 #: ../../source/user_guide/config.rst:948
 msgid "``shockTimeLength`` |optional|"
@@ -2070,21 +2002,17 @@ msgstr ""
 msgid ""
 "Number of consecutive steps at which the change is applied. The effect "
 "compounds to :math:`(1 + r)^n`. Default: ``1``."
-msgstr "変化を適用する連続ステップ数です．効果は複利的に累積し，全体で :math:`(1 + r)^n` 倍になります．デフォルトは ``1`` です．"
+msgstr "変化を適用する連続ステップ数です。効果は複利的に累積し、全体で :math:`(1 + r)^n` 倍になります。デフォルトは ``1`` です。"
 
-#: ../../source/user_guide/config.rst:952
-#: ../../source/user_guide/config.rst:982
-#: ../../source/user_guide/config.rst:1015
-#: ../../source/user_guide/config.rst:1057
+#: ../../source/user_guide/config.rst:952 ../../source/user_guide/config.rst:982
+#: ../../source/user_guide/config.rst:1015 ../../source/user_guide/config.rst:1057
 msgid "``enabled`` |optional|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:954
-#: ../../source/user_guide/config.rst:984
-#: ../../source/user_guide/config.rst:1017
-#: ../../source/user_guide/config.rst:1059
+#: ../../source/user_guide/config.rst:954 ../../source/user_guide/config.rst:984
+#: ../../source/user_guide/config.rst:1017 ../../source/user_guide/config.rst:1059
 msgid "Default: ``true``."
-msgstr "デフォルトは ``true`` です．"
+msgstr "デフォルトは ``true`` です。"
 
 #: ../../source/user_guide/config.rst:955
 msgid "``triggerDays`` |deprecated|"
@@ -2092,7 +2020,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:957
 msgid "Replaced by ``triggerTime``. Its presence is an error."
-msgstr "``triggerTime`` に置き換えられました．このキーが存在するとエラーになります．"
+msgstr "``triggerTime`` に置き換えられました。このキーが存在するとエラーになります。"
 
 #: ../../source/user_guide/config.rst:960
 msgid "PriceLimitRule"
@@ -2108,14 +2036,13 @@ msgid ""
 " first session has ``withOrderExecution: false`` (as in the examples); "
 "otherwise trading during step 0 can move it. Market orders are not affected."
 msgstr ""
-"指値注文の価格を，初期価格を中心とする価格帯の中に制限します（:class:`pams.events.PriceLimitRule`）．価格が "
-":math:`[P_0 (1 - r), P_0 (1 + r)]` の範囲外にある指値注文は，価格帯の最も近い端に移動されます．ここで "
-":math:`P_0` はステップ0における市場価格で，以後シミュレーション終了まで固定されます．最初のセッションが "
-"``withOrderExecution: false`` の場合（本ページの例と同様）， :math:`P_0` は市場の "
-"``marketPrice`` になります．そうでない場合は，ステップ0の間の取引によって変化することがあります．成行注文は影響を受けません．"
+"指値注文の価格を、初期価格を中心とする価格帯の中に制限します（:class:`pams.events.PriceLimitRule`）。価格が "
+":math:`[P_0 (1 - r), P_0 (1 + r)]` の範囲外にある指値注文は、価格帯の最も近い端に移動されます。ここで "
+":math:`P_0` はステップ0における市場価格で、以後シミュレーション終了まで固定されます。最初のセッションが "
+"``withOrderExecution: false`` の場合（本ページの例と同様）、:math:`P_0` は市場の "
+"``marketPrice`` になります。そうでない場合は、ステップ0の間の取引によって変化することがあります。成行注文は影響を受けません。"
 
-#: ../../source/user_guide/config.rst:975
-#: ../../source/user_guide/config.rst:1005
+#: ../../source/user_guide/config.rst:975 ../../source/user_guide/config.rst:1005
 msgid "``targetMarkets`` |required|"
 msgstr ""
 
@@ -2125,11 +2052,10 @@ msgid ""
 " receives orders**; an order to a market that is not listed stops the "
 "simulation with an ``AssertionError``."
 msgstr ""
-"注文が制限される市場です．これには **注文を受けるすべての市場** を含める必要があります．一覧にない市場への注文があると，シミュレーションは "
-"``AssertionError`` で停止します．"
+"注文が制限される市場です。これには **注文を受けるすべての市場** を含める必要があります。一覧にない市場への注文があると、シミュレーションは "
+"``AssertionError`` で停止します。"
 
-#: ../../source/user_guide/config.rst:979
-#: ../../source/user_guide/config.rst:1009
+#: ../../source/user_guide/config.rst:979 ../../source/user_guide/config.rst:1009
 msgid "``triggerChangeRate`` |required|"
 msgstr ""
 
@@ -2137,10 +2063,9 @@ msgstr ""
 msgid ""
 "Width :math:`r` of the band, greater than 0. Must be written as a float "
 "(``1.0``, not ``1``)."
-msgstr "価格帯の幅 :math:`r` で，0より大きい値です．浮動小数点数で記述する必要があります（``1`` ではなく ``1.0``）．"
+msgstr "価格帯の幅 :math:`r` で、0より大きい値です。浮動小数点数で記述する必要があります（``1`` ではなく ``1.0``）。"
 
-#: ../../source/user_guide/config.rst:985
-#: ../../source/user_guide/config.rst:1018
+#: ../../source/user_guide/config.rst:985 ../../source/user_guide/config.rst:1018
 msgid "``referenceMarket`` |deprecated|"
 msgstr ""
 
@@ -2158,11 +2083,11 @@ msgid ""
 "but nothing is executed. Trading resumes ``haltingTimeLength`` + 1 steps "
 "after the halt started."
 msgstr ""
-"サーキットブレーカーです（:class:`pams.events.TradingHaltRule`）．対象市場のいずれかで約定が発生した後，市場価格がステップ0における価格"
+"サーキットブレーカーです（:class:`pams.events.TradingHaltRule`）。対象市場のいずれかで約定が発生した後、市場価格がステップ0における価格"
 " :math:`P_0` （``PriceLimitRule`` と同じ定義）から :math:`P_0 \\times r \\times (n + "
-"1)` 以上乖離していた場合， **すべての** 対象市場が売買停止になります（:math:`n` "
-"はそれまでの売買停止の回数）．売買停止中も注文は受け付けられますが，約定は一切行われません．売買は，売買停止の開始から "
-"``haltingTimeLength`` + 1 ステップ後に再開されます．"
+"1)` 以上乖離していた場合、**すべての** 対象市場が売買停止になります（:math:`n` "
+"はそれまでの売買停止の回数）。売買停止中も注文は受け付けられますが、約定は一切行われません。売買は、売買停止の開始から "
+"``haltingTimeLength`` + 1 ステップ後に再開されます。"
 
 #: ../../source/user_guide/config.rst:1007
 msgid ""
@@ -2170,14 +2095,14 @@ msgid ""
 "independently, define one event per market. A market must not be watched by "
 "two ``TradingHaltRule`` events."
 msgstr ""
-"まとめて監視され，一緒に売買停止になる市場です．市場ごとに独立して売買停止させるには，市場ごとに1つずつイベントを定義してください．1つの市場を複数の "
-"``TradingHaltRule`` イベントで監視してはいけません．"
+"まとめて監視され、一緒に売買停止になる市場です。市場ごとに独立して売買停止させるには、市場ごとに1つずつイベントを定義してください。1つの市場を複数の "
+"``TradingHaltRule`` イベントで監視してはいけません。"
 
 #: ../../source/user_guide/config.rst:1011
 msgid ""
 "Threshold :math:`r`, greater than 0. Must be written as a float (``1.0``, "
 "not ``1``)."
-msgstr "閾値 :math:`r` で，0より大きい値です．浮動小数点数で記述する必要があります（``1`` ではなく ``1.0``）．"
+msgstr "閾値 :math:`r` で、0より大きい値です。浮動小数点数で記述する必要があります（``1`` ではなく ``1.0``）。"
 
 #: ../../source/user_guide/config.rst:1012
 msgid "``haltingTimeLength`` |required|"
@@ -2185,7 +2110,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1014
 msgid "Length of a halt in steps."
-msgstr "売買停止の期間（ステップ数）です．"
+msgstr "売買停止の期間（ステップ数）です。"
 
 #: ../../source/user_guide/config.rst:1022
 msgid ""
@@ -2193,8 +2118,8 @@ msgid ""
 " session. When it ends, execution resumes only if the current session has "
 "``withOrderExecution: true``."
 msgstr ""
-"セッション終了時点で継続中の売買停止は，次のセッションに持ち越されます．売買停止が終了したとき，約定が再開されるのはその時点のセッションが "
-"``withOrderExecution: true`` の場合のみです．"
+"セッション終了時点で継続中の売買停止は、次のセッションに持ち越されます。売買停止が終了したとき、約定が再開されるのはその時点のセッションが "
+"``withOrderExecution: true`` の場合のみです。"
 
 #: ../../source/user_guide/config.rst:1026
 msgid "OrderMistakeShock"
@@ -2209,32 +2134,32 @@ msgid ""
 "new order is created; the agent that submitted the original order owns the "
 "mistaken one."
 msgstr ""
-"誤発注です（:class:`pams.events.OrderMistakeShock`）．トリガーとなるステップで， "
-"**対象市場に最初に出された注文** が大口の指値注文に置き換えられます．この注文は， :math:`r > 0` の場合は :math:`P (1 +"
-" r)` での買い注文，そうでない場合は :math:`P (1 + r)` での売り注文です（:math:`P` "
-"は現在の市場価格）．新しい注文は作成されず，誤発注された注文は元の注文を出したエージェントのものになります．"
+"誤発注です（:class:`pams.events.OrderMistakeShock`）。トリガーとなるステップで、**対象市場に最初に出された注文**"
+" が大口の指値注文に置き換えられます。この注文は、:math:`r > 0` の場合は :math:`P (1 + r)` "
+"での買い注文、そうでない場合は :math:`P (1 + r)` での売り注文です（:math:`P` "
+"は現在の市場価格）。新しい注文は作成されず、誤発注された注文は元の注文を出したエージェントのものになります。"
 
 #: ../../source/user_guide/config.rst:1042
 msgid "The market where the mistake happens."
-msgstr "誤発注が発生する市場です．"
+msgstr "誤発注が発生する市場です。"
 
 #: ../../source/user_guide/config.rst:1045
 msgid ""
 "Step of the mistake, counted from the start of the session. If no order "
 "reaches the target market at exactly this step, nothing happens."
-msgstr "セッション開始から数えた，誤発注が発生するステップです．ちょうどこのステップに対象市場へ注文が1つも届かなかった場合は，何も起こりません．"
+msgstr "セッション開始から数えた、誤発注が発生するステップです。ちょうどこのステップに対象市場へ注文が1つも届かなかった場合は、何も起こりません。"
 
 #: ../../source/user_guide/config.rst:1049
 msgid ""
 "Rate :math:`r` relative to the current market price. Must be written as a "
 "float. ``0.0`` does not mean \"no mistake\": it places a sell at :math:`P`."
 msgstr ""
-"現在の市場価格に対する変化率 :math:`r` です．浮動小数点数で記述する必要があります． ``0.0`` は「誤発注なし」を意味せず， "
-":math:`P` での売り注文になります．"
+"現在の市場価格に対する変化率 :math:`r` です。浮動小数点数で記述する必要があります。``0.0`` "
+"は「誤発注なし」を意味せず、:math:`P` での売り注文になります。"
 
 #: ../../source/user_guide/config.rst:1053
 msgid "Volume of the mistaken order."
-msgstr "誤発注された注文の数量です．"
+msgstr "誤発注された注文の数量です。"
 
 #: ../../source/user_guide/config.rst:1054
 msgid "``orderTimeLength`` |required|"
@@ -2242,7 +2167,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1056
 msgid "Lifetime (TTL) of the mistaken order in steps."
-msgstr "誤発注された注文の有効期間（TTL）です（単位はステップ）．"
+msgstr "誤発注された注文の有効期間（TTL）です（単位はステップ）。"
 
 #: ../../source/user_guide/config.rst:1060
 msgid "``agent`` |deprecated|"
@@ -2250,7 +2175,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1064
 msgid "The mistaken order is not restricted by a ``PriceLimitRule``."
-msgstr "誤発注された注文は ``PriceLimitRule`` による制限を受けません．"
+msgstr "誤発注された注文は ``PriceLimitRule`` による制限を受けません。"
 
 #: ../../source/user_guide/config.rst:1070
 msgid "Random parameters (JsonRandom)"
@@ -2265,9 +2190,9 @@ msgid ""
 "is how a single block describes a heterogeneous population of agents."
 msgstr ""
 "エージェントのパラメータのうち |jsonrandom| "
-"が付いたものには，固定の数値または分布を指定できます．1つのグループが多数のエージェントを生成する場合， "
-"**各エージェントが自分の値を1回だけサンプリングします** （``assetVolume`` "
-"は取引可能な市場ごとに1回）．サンプリングはシミュレーションのセットアップ時に行われ，シミュレーション中に値が変わることはありません．これにより，1つのブロックで異質なエージェントの集団を記述できます．"
+"が付いたものには、固定の数値または分布を指定できます。1つのグループが多数のエージェントを生成する場合、**各エージェントが自分の値を1回だけサンプリングします**"
+" （``assetVolume`` "
+"は取引可能な市場ごとに1回）。サンプリングはシミュレーションのセットアップ時に行われ、シミュレーション中に値が変わることはありません。これにより、1つのブロックで異質なエージェントの集団を記述できます。"
 
 #: ../../source/user_guide/config.rst:1081
 msgid "Notation"
@@ -2280,7 +2205,7 @@ msgstr "``300`` または ``{\"const\": [300]}``"
 
 #: ../../source/user_guide/config.rst:1084
 msgid "Always 300."
-msgstr "常に300です．"
+msgstr "常に300です。"
 
 #: ../../source/user_guide/config.rst:1085
 #, python-brace-format
@@ -2289,7 +2214,7 @@ msgstr "``[a, b]`` または ``{\"uniform\": [a, b]}``"
 
 #: ../../source/user_guide/config.rst:1086
 msgid "Uniform distribution with :math:`a \\le x < b`."
-msgstr ":math:`a \\le x < b` の一様分布です．"
+msgstr ":math:`a \\le x < b` の一様分布です。"
 
 #: ../../source/user_guide/config.rst:1087
 #, python-brace-format
@@ -2300,7 +2225,7 @@ msgstr ""
 msgid ""
 "Normal distribution with mean ``mu`` and standard deviation ``sigma``. Can "
 "be negative."
-msgstr "平均 ``mu``，標準偏差 ``sigma`` の正規分布です．負の値になることもあります．"
+msgstr "平均 ``mu``、標準偏差 ``sigma`` の正規分布です。負の値になることもあります。"
 
 #: ../../source/user_guide/config.rst:1089
 #, python-brace-format
@@ -2313,8 +2238,8 @@ msgid ""
 "Exponential distribution with **mean** ``lam`` (``lam`` is the scale, not "
 "the rate). ``{\"expon\": [0.0]}`` is always 0."
 msgstr ""
-"**平均** が ``lam`` の指数分布です（``lam`` はスケールであり，レートではありません）． ``{\"expon\": "
-"[0.0]}`` は常に0です．"
+"**平均** が ``lam`` の指数分布です（``lam`` はスケールであり、レートではありません）。``{\"expon\": [0.0]}``"
+" は常に0です。"
 
 #: ../../source/user_guide/config.rst:1111
 msgid ""
@@ -2323,9 +2248,9 @@ msgid ""
 "**truncated**, not rounded. ``[100, 200]`` therefore gives integers from 100"
 " to 199; write ``[100, 201]`` to include 200."
 msgstr ""
-"整数のパラメータ（``assetVolume``， ``timeWindowSize``， ``meanReversionTime``，および "
-"``MarketMakerAgent`` の ``orderTimeLength``）は，四捨五入ではなく **切り捨て** になります．したがって "
-"``[100, 200]`` では100から199までの整数になります．200を含めるには ``[100, 201]`` と書いてください．"
+"整数のパラメータ（``assetVolume``、``timeWindowSize``、``meanReversionTime``、および "
+"``MarketMakerAgent`` の ``orderTimeLength``）は、四捨五入ではなく **切り捨て** になります。したがって "
+"``[100, 200]`` では100から199までの整数になります。200を含めるには ``[100, 201]`` と書いてください。"
 
 #: ../../source/user_guide/config.rst:1115
 msgid ""
@@ -2336,12 +2261,12 @@ msgid ""
 "``orderThresholdPrice`` and ``orderTimeLength``. A distribution there fails,"
 " in some cases only while the simulation is running."
 msgstr ""
-"JsonRandom が使えるのは，このページで |jsonrandom| "
-"が付いているエージェントのキーだけです．それ以外のキーには通常の値しか指定できません．すなわち，市場，セッション，イベント，および "
-"``simulation`` のキーと，バッジのないエージェントのキー（``marginType``， ``targetMarket``，および "
-"``ArbitrageAgent`` のキーである ``orderVolume``， ``orderThresholdPrice``， "
-"``orderTimeLength`` "
-"など）です．これらのキーに分布を指定すると失敗します．場合によっては，シミュレーションの実行中になって初めて失敗します．"
+"JsonRandom が使えるのは、このページで |jsonrandom| "
+"が付いているエージェントのキーだけです。それ以外のキーには通常の値しか指定できません。すなわち、市場、セッション、イベント、および "
+"``simulation`` のキーと、バッジのないエージェントのキー（``marginType``、``targetMarket``、および "
+"``ArbitrageAgent`` のキーである "
+"``orderVolume``、``orderThresholdPrice``、``orderTimeLength`` "
+"など）です。これらのキーに分布を指定すると失敗します。場合によっては、シミュレーションの実行中になって初めて失敗します。"
 
 #: ../../source/user_guide/config.rst:1124
 msgid "User-defined classes"
@@ -2353,8 +2278,8 @@ msgid ""
 "Register each class with the runner before calling ``main()``, then refer to"
 " it by its class name:"
 msgstr ""
-"独自の市場，エージェント，イベントも組み込みのものと同じように設定します．各クラスを ``main()`` "
-"の呼び出し前にランナーに登録し，クラス名で参照してください："
+"独自の市場、エージェント、イベントも組み込みのものと同じように設定します。各クラスを ``main()`` "
+"の呼び出し前にランナーに登録し、クラス名で参照してください："
 
 #: ../../source/user_guide/config.rst:1150
 msgid ""
@@ -2366,13 +2291,13 @@ msgid ""
 "pams.utils import JsonRandom``; see :class:`~pams.utils.JsonRandom`). It "
 "always returns a float, so apply ``int()`` yourself for integer parameters."
 msgstr ""
-"ブロック（``extends`` を解決した後の内容から ``numAgents`` / ``numMarkets``， ``from``， "
-"``to`` および ``prefix`` を除いたもの）は ``setup(settings=...)`` "
-"に渡されるため，追加した任意のキーをそこで利用できます．JsonRandom 記法を受け付けるには ``setup`` 内で "
+"ブロック（``extends`` を解決した後の内容から ``numAgents`` / ``numMarkets``、``from``、``to`` "
+"および ``prefix`` を除いたもの）は ``setup(settings=...)`` "
+"に渡されるため、追加した任意のキーをそこで利用できます。JsonRandom 記法を受け付けるには ``setup`` 内で "
 "``JsonRandom(prng=self.prng).random(settings[\"myParameter\"])`` "
-"により値を生成してください（インポートは ``from pams.utils import JsonRandom``，詳細は "
-":class:`~pams.utils.JsonRandom` を参照）．戻り値は常に float なので，整数パラメータには自分で ``int()``"
-" を適用してください．"
+"により値を生成してください（インポートは ``from pams.utils import JsonRandom``、詳細は "
+":class:`~pams.utils.JsonRandom` を参照）。戻り値は常に float なので、整数パラメータには自分で ``int()``"
+" を適用してください。"
 
 #: ../../source/user_guide/config.rst:1155
 msgid ""
@@ -2381,7 +2306,7 @@ msgid ""
 "only once."
 msgstr ""
 "クラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
-"``FCNAgent``）は曖昧となりエラーになります．各クラスは一度だけ登録してください．"
+"``FCNAgent``）は曖昧となりエラーになります。各クラスは一度だけ登録してください。"
 
 #: ../../source/user_guide/config.rst:1157
 msgid ""
@@ -2390,13 +2315,13 @@ msgid ""
 ":class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency "
 "agent."
 msgstr ""
-"エージェントクラスは :class:`~pams.agents.Agent` を，市場クラスは :class:`~pams.Market` "
-"を継承する必要があります．エージェントが :class:`~pams.agents.HighFrequencyAgent` "
-"を継承している場合，高頻度エージェントとしてスケジュールされます．"
+"エージェントクラスは :class:`~pams.agents.Agent` を、市場クラスは :class:`~pams.Market` "
+"を継承する必要があります。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
+"を継承している場合、高頻度エージェントとしてスケジュールされます。"
 
 #: ../../source/user_guide/config.rst:1159
 msgid "``samples/user_class`` and ``samples/market_share`` show complete examples."
-msgstr "``samples/user_class`` と ``samples/market_share`` に完全な例があります．"
+msgstr "``samples/user_class`` と ``samples/market_share`` に完全な例があります。"
 
 #: ../../source/user_guide/config.rst:1165
 msgid "Parallel runners"
@@ -2413,8 +2338,8 @@ msgid ""
 msgstr ""
 ":class:`~pams.runners.MultiThreadAgentParallelRunner` と "
 ":class:`~pams.runners.MultiProcessAgentParallelRunner` "
-"（いずれも実験的機能）は同じ設定ファイルを読み込み，同じシードであれば :class:`~pams.runners.SequentialRunner` "
-"と同じ結果になります．これらは通常エージェントの ``submit_orders`` を並列に呼び出し，それ以外はすべて逐次的に処理します．"
+"（いずれも実験的機能）は同じ設定ファイルを読み込み、同じシードであれば :class:`~pams.runners.SequentialRunner` "
+"と同じ結果になります。これらは通常エージェントの ``submit_orders`` を並列に呼び出し、それ以外はすべて逐次的に処理します。"
 
 #: ../../source/user_guide/config.rst:1171
 msgid ""
@@ -2424,9 +2349,9 @@ msgid ""
 " because the agent and the markets are copied to a worker process at every "
 "call. See also :doc:`platform`."
 msgstr ""
-"**速度**：Python の GIL のため，スレッドランナーが効果を持つのは ``submit_orders`` が I/O "
-"を待つ場合（例えば外部モデルの呼び出し）のみで，組み込みエージェントは高速化されません．プロセスランナーは，呼び出しのたびにエージェントと市場がワーカープロセスにコピーされるため，はるかに低速です．あわせて"
-" :doc:`platform` も参照してください．"
+"**速度**：Python の GIL のため、スレッドランナーが効果を持つのは ``submit_orders`` が I/O "
+"を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、呼び出しのたびにエージェントと市場がワーカープロセスにコピーされるため、はるかに低速です。あわせて"
+" :doc:`platform` も参照してください。"
 
 #: ../../source/user_guide/config.rst:1175
 msgid ""
@@ -2437,9 +2362,9 @@ msgid ""
 "process."
 msgstr ""
 "**ユーザー定義エージェント** は ``submit_orders`` "
-"内で共有オブジェクト（市場，他のエージェント，ロガー）を変更してはいけません．プロセスランナーでは，エージェントが ``submit_orders`` "
-"内で自身の属性に加えた変更は失われます．このような状態は，メインプロセスで実行される ``executed_order`` "
-"などのコールバックで更新してください．"
+"内で共有オブジェクト（市場、他のエージェント、ロガー）を変更してはいけません。プロセスランナーでは、エージェントが ``submit_orders`` "
+"内で自身の属性に加えた変更は失われます。このような状態は、メインプロセスで実行される ``executed_order`` "
+"などのコールバックで更新してください。"
 
 #: ../../source/user_guide/config.rst:1179
 msgid ""
@@ -2448,7 +2373,7 @@ msgid ""
 "number of CPUs minus 1, at least 1)."
 msgstr ""
 "ワーカースレッドまたはワーカープロセスの数は ``simulation.numParallel`` で設定します（:ref:`config-"
-"simulation` を参照．デフォルト：CPU数から1を引いた値，ただし1以上）．"
+"simulation` を参照。デフォルト：CPU数から1を引いた値、ただし1以上）。"
 
 #: ../../source/user_guide/config.rst:1182
 msgid ""
@@ -2459,11 +2384,11 @@ msgid ""
 "raising it changes the simulation results. Choose it for your model first, "
 "then set ``numParallel`` to at most that value."
 msgstr ""
-"同時に注文の提出を求められるエージェントは最大 ``maxNormalOrders`` 個なので，セッションの ``maxNormalOrders`` "
-"を超える分のワーカーは待機したままになります．すべてのセッションで ``numParallel`` が ``maxNormalOrders`` "
-"より大きい場合（例えばデフォルト設定の場合）は警告が表示されます．また ``maxNormalOrders`` "
-"はモデルの一部であり，値を大きくするとシミュレーション結果が変わります．まずモデルに合わせてこの値を決め，その後 ``numParallel`` "
-"をその値以下に設定してください．"
+"同時に注文の提出を求められるエージェントは最大 ``maxNormalOrders`` 個なので、セッションの ``maxNormalOrders`` "
+"を超える分のワーカーは待機したままになります。すべてのセッションで ``numParallel`` が ``maxNormalOrders`` "
+"より大きい場合（例えばデフォルト設定の場合）は警告が表示されます。また ``maxNormalOrders`` "
+"はモデルの一部であり、値を大きくするとシミュレーション結果が変わります。まずモデルに合わせてこの値を決め、その後 ``numParallel`` "
+"をその値以下に設定してください。"
 
 #: ../../source/user_guide/config.rst:1187
 msgid ""
@@ -2474,11 +2399,11 @@ msgid ""
 "classes in a ``.py`` file, not in a notebook or an interactive session, so "
 "that the worker processes can import them."
 msgstr ""
-"プロセスランナーを使う場合は，ランナーを作成して実行するコードを ``if __name__ == \"__main__\":`` "
-"の下に置いてください（Windows と macOS，およびワーカープロセスが ``fork`` で起動されなくなった Python 3.14 以降の "
+"プロセスランナーを使う場合は、ランナーを作成して実行するコードを ``if __name__ == \"__main__\":`` "
+"の下に置いてください（Windows と macOS、およびワーカープロセスが ``fork`` で起動されなくなった Python 3.14 以降の "
 "Linux "
-"では必須です．これがないと実行が失敗するかハングします）．また，ワーカープロセスがインポートできるよう，ユーザー定義クラスはノートブックや対話型セッションではなく"
-" ``.py`` ファイル内で定義してください．"
+"では必須です。これがないと実行が失敗するかハングします）。また、ワーカープロセスがインポートできるよう、ユーザー定義クラスはノートブックや対話型セッションではなく"
+" ``.py`` ファイル内で定義してください。"
 
 #: ../../source/user_guide/config.rst:1192
 msgid ""
@@ -2489,10 +2414,10 @@ msgid ""
 "with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data"
 " in memory and write the file after the run."
 msgstr ""
-"プロセスランナーは呼び出しのたびに，エージェントと市場を，それらが参照するすべてのもの（シミュレータ，他のエージェント，イベント，ロガー）とともに "
-"pickle 化します．そのため，ユーザー定義のエージェント，市場，イベント，ロガーは pickle "
-"可能でなければなりません．例えば，ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
-"'_io.TextIOWrapper' object`` で失敗します．このようなデータはメモリ上に保持し，実行後にファイルへ書き出してください．"
+"プロセスランナーは呼び出しのたびに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに "
+"pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle "
+"可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
+"'_io.TextIOWrapper' object`` で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。"
 
 #: ../../source/user_guide/config.rst:1204
 msgid "Silent pitfalls"
@@ -2500,7 +2425,7 @@ msgstr "エラーにならない落とし穴"
 
 #: ../../source/user_guide/config.rst:1206
 msgid "These mistakes do not raise an error but change the simulation:"
-msgstr "以下の誤りはエラーにはなりませんが，シミュレーションの内容を変えてしまいます："
+msgstr "以下の誤りはエラーにはなりませんが、シミュレーションの内容を変えてしまいます："
 
 #: ../../source/user_guide/config.rst:1208
 msgid ""
@@ -2509,29 +2434,29 @@ msgid ""
 "``simulation`` instead of in a session creates no event."
 msgstr ""
 "**綴りや配置を誤ったキーは無視されます**：例えば ``\"numMarket\"`` や ``\"maxNormalOrder\"`` "
-"と書くとデフォルト値が使われ，セッション内ではなく ``simulation`` 内に書いた ``events`` からはイベントが作成されません．"
+"と書くとデフォルト値が使われ、セッション内ではなく ``simulation`` 内に書いた ``events`` からはイベントが作成されません。"
 
 #: ../../source/user_guide/config.rst:1210
 msgid ""
 "**Only one normal agent places orders per step** by default "
 "(``maxNormalOrders: 1``)."
-msgstr "デフォルト（``maxNormalOrders: 1``）では **1ステップに注文を出す通常エージェントは1つだけです**．"
+msgstr "デフォルト（``maxNormalOrders: 1``）では **1ステップに注文を出す通常エージェントは1つだけです**。"
 
 #: ../../source/user_guide/config.rst:1211
 msgid ""
 "**High-frequency agents never act** when no normal agent submits orders in a"
 " step, or when ``highFrequencySubmitRate`` is ``0.0``."
 msgstr ""
-"あるステップで注文を出す通常エージェントがいない場合，または ``highFrequencySubmitRate`` が ``0.0`` の場合には "
-"**高頻度エージェントは一切行動しません**．"
+"あるステップで注文を出す通常エージェントがいない場合、または ``highFrequencySubmitRate`` が ``0.0`` の場合には "
+"**高頻度エージェントは一切行動しません**。"
 
 #: ../../source/user_guide/config.rst:1213
 msgid ""
 "``withPrint`` **has no effect**; use a logger such as "
 ":class:`~pams.logs.MarketStepPrintLogger`."
 msgstr ""
-"``withPrint`` は **効果がありません**．代わりに :class:`~pams.logs.MarketStepPrintLogger` "
-"などのロガーを使用してください．"
+"``withPrint`` は **効果がありません**。代わりに :class:`~pams.logs.MarketStepPrintLogger` "
+"などのロガーを使用してください。"
 
 #: ../../source/user_guide/config.rst:1214
 msgid ""
@@ -2540,7 +2465,7 @@ msgid ""
 "the first one."
 msgstr ""
 "**イベントルールはすべてのセッションで有効です**：2番目のセッションにのみ記載した ``PriceLimitRule`` や "
-"``TradingHaltRule`` は，1番目のセッションの間にも適用されます．"
+"``TradingHaltRule`` は、1番目のセッションの間にも適用されます。"
 
 #: ../../source/user_guide/config.rst:1216
 msgid ""
@@ -2549,11 +2474,11 @@ msgid ""
 "later session, or never."
 msgstr ""
 "``triggerTime`` は "
-"**イベントを記載したセッションの開始時点から数えます**．ステップ0からではありません．セッションの終了より後の時刻を指定すると，イベントは後続のセッションで発火するか，まったく発火しません．"
+"**イベントを記載したセッションの開始時点から数えます**。ステップ0からではありません。セッションの終了より後の時刻を指定すると、イベントは後続のセッションで発火するか、まったく発火しません。"
 
 #: ../../source/user_guide/config.rst:1218
 msgid "``[a, b]`` **never produces** ``b``, and integer parameters are truncated."
-msgstr "``[a, b]`` は ``b`` を **決して生成せず**，整数パラメータは切り捨てられます．"
+msgstr "``[a, b]`` は ``b`` を **決して生成せず**、整数パラメータは切り捨てられます。"
 
 #: ../../source/user_guide/config.rst:1219
 msgid ""
@@ -2563,9 +2488,9 @@ msgid ""
 "seed. To switch an event off for a comparison run, keep it listed with "
 "``\"enabled\": false``."
 msgstr ""
-"**エントリの追加，削除，並べ替えは乱数を変えてしまいます．** "
-"ランナーはすべての市場，エージェント，セッション，イベントのエントリについてリスト順にシードを生成するため，このような編集を行うと，同じシードでも通常は実行全体が変わります．比較実行のためにイベントを無効にするには，リストに記載したまま"
-" ``\"enabled\": false`` を指定してください．"
+"**エントリの追加、削除、並べ替えは乱数を変えてしまいます。** "
+"ランナーはすべての市場、エージェント、セッション、イベントのエントリについてリスト順にシードを生成するため、このような編集を行うと、同じシードでも通常は実行全体が変わります。比較実行のためにイベントを無効にするには、リストに記載したまま"
+" ``\"enabled\": false`` を指定してください。"
 
 #: ../../source/user_guide/config.rst:1224
 msgid "Common errors"
@@ -2589,9 +2514,9 @@ msgid ""
 "``True`` / ``False`` / ``None`` instead of ``true`` / ``false`` / ``null``. "
 "The message gives the line and column."
 msgstr ""
-"ファイルが厳密なJSONではありません：末尾のカンマ，コメント，シングルクォート，あるいは ``true`` / ``false`` / "
+"ファイルが厳密なJSONではありません：末尾のカンマ、コメント、シングルクォート、あるいは ``true`` / ``false`` / "
 "``null`` の代わりに書かれた ``True`` / ``False`` / ``None`` "
-"が含まれています．エラーメッセージに行番号と列番号が示されます．"
+"が含まれています。エラーメッセージに行番号と列番号が示されます。"
 
 #: ../../source/user_guide/config.rst:1235
 msgid "``class for X is found 0 times``"
@@ -2601,7 +2526,7 @@ msgstr ""
 msgid ""
 "Unknown class name, or a user-defined class that was not registered with "
 "``runner.class_register``."
-msgstr "未知のクラス名，または ``runner.class_register`` で登録されていないユーザー定義クラスです．"
+msgstr "未知のクラス名、または ``runner.class_register`` で登録されていないユーザー定義クラスです。"
 
 #: ../../source/user_guide/config.rst:1237
 msgid "``class for X is found 2 times``"
@@ -2612,7 +2537,7 @@ msgid ""
 "Two classes have the same name (e.g. your own class named like a built-in "
 "one), or the same class was registered twice. Rename the class or register "
 "it once."
-msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か，同じクラスが2回登録されています．クラス名を変更するか，1回だけ登録してください．"
+msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か、同じクラスが2回登録されています。クラス名を変更するか、1回だけ登録してください。"
 
 #: ../../source/user_guide/config.rst:1240
 msgid "``X setting is missing in config``"
@@ -2624,7 +2549,7 @@ msgid ""
 "Check the spelling."
 msgstr ""
 "``simulation.markets`` または ``simulation.agents`` "
-"に挙げた名前に対応するブロックがありません．綴りを確認してください．"
+"に挙げた名前に対応するブロックがありません。綴りを確認してください。"
 
 #: ../../source/user_guide/config.rst:1242
 msgid "``KeyError: 'X'``"
@@ -2632,11 +2557,11 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1243
 msgid "A name was not found. Typical causes:"
-msgstr "名前が見つかりません．典型的な原因は次のとおりです："
+msgstr "名前が見つかりません。典型的な原因は次のとおりです："
 
 #: ../../source/user_guide/config.rst:1245
 msgid "a session ``events`` entry without a block;"
-msgstr "セッションの ``events`` に，ブロックが定義されていないエントリがある；"
+msgstr "セッションの ``events`` に、ブロックが定義されていないエントリがある；"
 
 #: ../../source/user_guide/config.rst:1246
 msgid ""
@@ -2650,13 +2575,12 @@ msgid ""
 "``MarketMakerAgent.targetMarket``, ``IndexMarket.markets`` or "
 "``fundamentalCorrelations`` (use the instance name);"
 msgstr ""
-"``FundamentalPriceShock.target``， ``MarketMakerAgent.targetMarket``， "
-"``IndexMarket.markets`` または ``fundamentalCorrelations`` "
-"にグループ名を指定している（インスタンス名を使ってください）；"
+"``FundamentalPriceShock.target``、``MarketMakerAgent.targetMarket``、``IndexMarket.markets``"
+" または ``fundamentalCorrelations`` にグループ名を指定している（インスタンス名を使ってください）；"
 
 #: ../../source/user_guide/config.rst:1249
 msgid "a missing required ``FCNAgent`` parameter."
-msgstr "``FCNAgent`` の必須パラメータが不足している．"
+msgstr "``FCNAgent`` の必須パラメータが不足している。"
 
 #: ../../source/user_guide/config.rst:1250
 msgid "``X does not exist`` / ``market X is not exists``"
@@ -2668,13 +2592,13 @@ msgid ""
 "or the ``target`` of an ``OrderMistakeShock``, is not a market instance "
 "name. Use the instance name (``Market-0``), not the group name."
 msgstr ""
-"``PriceLimitRule`` または ``TradingHaltRule`` の ``targetMarkets`` にある名前，あるいは "
+"``PriceLimitRule`` または ``TradingHaltRule`` の ``targetMarkets`` にある名前、あるいは "
 "``OrderMistakeShock`` の ``target`` "
-"が，市場のインスタンス名になっていません．グループ名ではなくインスタンス名（``Market-0``）を使ってください．"
+"が、市場のインスタンス名になっていません。グループ名ではなくインスタンス名（``Market-0``）を使ってください。"
 
 #: ../../source/user_guide/config.rst:1254
 msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
-msgstr "シミュレーション実行中に発生する，数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
 
 #: ../../source/user_guide/config.rst:1255
 msgid ""
@@ -2684,9 +2608,9 @@ msgid ""
 "``target`` is an ``IndexMarket`` fails the same way."
 msgstr ""
 "エージェントが取引できない市場が使われています： ``targetMarket`` が自身の ``markets`` に含まれていない "
-"``MarketMakerAgent`` や， ``markets`` に構成市場が含まれていない ``ArbitrageAgent`` "
-"がこれに当たります． ``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
-"も同様に失敗します．"
+"``MarketMakerAgent`` や、``markets`` に構成市場が含まれていない ``ArbitrageAgent`` "
+"がこれに当たります。``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
+"も同様に失敗します。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``market name X is duplicate`` / ``agent name X is duplicate``"
@@ -2696,7 +2620,7 @@ msgstr ""
 msgid ""
 "Two groups produce the same instance name, e.g. a group listed twice or an "
 "inherited ``prefix``."
-msgstr "2つのグループが同じインスタンス名を生成しています（例：同じグループを2回列挙している，または ``prefix`` を継承している）．"
+msgstr "2つのグループが同じインスタンス名を生成しています（例：同じグループを2回列挙している、または ``prefix`` を継承している）。"
 
 #: ../../source/user_guide/config.rst:1260
 msgid "``X.numAgents and (X.from or X.to) cannot be used at the same time``"
@@ -2706,7 +2630,7 @@ msgstr ""
 msgid ""
 "Both a count and a range are given, possibly because the count is inherited "
 "through ``extends``."
-msgstr "個数と範囲が両方指定されています（個数が ``extends`` を通じて継承されている場合もあります）．"
+msgstr "個数と範囲が両方指定されています（個数が ``extends`` を通じて継承されている場合もあります）。"
 
 #: ../../source/user_guide/config.rst:1262
 msgid "``triggerChangeRate have to be float`` (and similar)"
@@ -2717,8 +2641,8 @@ msgid ""
 "Write the number as a float (``0.05``, ``1.0``), or as an integer for "
 "``int`` keys (``100``, not ``100.0``)."
 msgstr ""
-"数値は浮動小数点数（``0.05``， ``1.0``）で， ``int`` 型のキーでは整数（``100.0`` ではなく "
-"``100``）で記述してください．"
+"数値は浮動小数点数（``0.05``、``1.0``）で、``int`` 型のキーでは整数（``100.0`` ではなく "
+"``100``）で記述してください。"
 
 #: ../../source/user_guide/config.rst:1265
 msgid "``outstandingShares is required in component market setting``"
@@ -2729,8 +2653,8 @@ msgid ""
 "A component of an ``IndexMarket`` has no ``outstandingShares``, or its group"
 " is listed after the index in ``simulation.markets``."
 msgstr ""
-"``IndexMarket`` の構成市場に ``outstandingShares`` がないか，構成市場のグループが "
-"``simulation.markets`` でインデックス市場より後に列挙されています．"
+"``IndexMarket`` の構成市場に ``outstandingShares`` がないか、構成市場のグループが "
+"``simulation.markets`` でインデックス市場より後に列挙されています。"
 
 #: ../../source/user_guide/config.rst:1268
 msgid ""
@@ -2742,7 +2666,7 @@ msgstr ""
 msgid ""
 "Markets in ``fundamentalCorrelations`` need ``fundamentalVolatility`` "
 "greater than 0."
-msgstr "``fundamentalCorrelations`` に含まれる市場には，0より大きい ``fundamentalVolatility`` が必要です．"
+msgstr "``fundamentalCorrelations`` に含まれる市場には、0より大きい ``fundamentalVolatility`` が必要です。"
 
 #: ../../source/user_guide/config.rst:1270
 msgid "``hifreqSubmitRate is replaced to highFrequencySubmitRate`` (warning)"
@@ -2750,7 +2674,7 @@ msgstr "``hifreqSubmitRate is replaced to highFrequencySubmitRate`` （警告）
 
 #: ../../source/user_guide/config.rst:1271
 msgid "Rename the deprecated key. The same applies to ``maxHifreqOrders``."
-msgstr "非推奨のキーの名前を変更してください． ``maxHifreqOrders`` についても同様です．"
+msgstr "非推奨のキーの名前を変更してください。``maxHifreqOrders`` についても同様です。"
 
 #: ../../source/user_guide/config.rst:1272
 msgid "``order price does not accord to the tick size`` (warning)"
@@ -2760,7 +2684,7 @@ msgstr "``order price does not accord to the tick size`` （警告）"
 msgid ""
 "An agent submitted a price that is not a multiple of ``tickSize``; it was "
 "rounded. This is normal for FCN agents."
-msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため，価格が丸められました．FCNエージェントでは通常のことです．"
+msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。"
 
 #: ../../source/user_guide/config.rst:1275
 msgid "``AssertionError`` while the simulation runs"
@@ -2771,8 +2695,8 @@ msgid ""
 "Often an agent parameter out of range (see the FCNAgent warning) or an order"
 " to a market missing from a ``PriceLimitRule``'s ``targetMarkets``."
 msgstr ""
-"多くの場合，エージェントのパラメータが範囲外である（FCNAgentの警告を参照）か， ``PriceLimitRule`` の "
-"``targetMarkets`` に含まれていない市場への注文が原因です．"
+"多くの場合、エージェントのパラメータが範囲外である（FCNAgentの警告を参照）か、``PriceLimitRule`` の "
+"``targetMarkets`` に含まれていない市場への注文が原因です。"
 
 #: ../../source/user_guide/config.rst:1283
 msgid "Sample configurations"
@@ -2786,8 +2710,8 @@ msgid ""
 "repository and run them from its root, e.g."
 msgstr ""
 "リポジトリの `samples <https://github.com/masanorihirano/pams/tree/main/samples>`_"
-" ディレクトリには，完全な設定ファイルと，それらを実行するための ``main.py`` "
-"が含まれています．サンプルはパッケージと一緒にはインストールされないため，リポジトリをクローンし，そのルートから実行してください．例："
+" ディレクトリには、完全な設定ファイルと、それらを実行するための ``main.py`` "
+"が含まれています。サンプルはパッケージと一緒にはインストールされないため、リポジトリをクローンし、そのルートから実行してください。例："
 
 #: ../../source/user_guide/config.rst:1293
 msgid ""
@@ -2795,7 +2719,7 @@ msgid ""
 "with the config written as a Python dict."
 msgstr ""
 "``examples`` "
-"ディレクトリには，これらのサンプルの大半について，設定をPythonのdictとして記述したJupyterノートブックがあります．"
+"ディレクトリには、これらのサンプルの大半について、設定をPythonのdictとして記述したJupyterノートブックがあります。"
 
 #: ../../source/user_guide/config.rst:1298
 msgid ""
@@ -2804,9 +2728,9 @@ msgid ""
 "``samples/market_share`` uses ``maxHifreqOrders``, so running them prints a "
 "deprecation warning. Use the new names in your own configs."
 msgstr ""
-"``samples/CI2002``， ``samples/test`` および ``samples/user_class`` は非推奨のセッションキー"
-" ``hifreqSubmitRate`` を， ``samples/market_share`` は ``maxHifreqOrders`` "
-"をまだ使用しているため，実行すると非推奨の警告が表示されます．ご自身の設定ファイルでは新しい名前を使ってください．"
+"``samples/CI2002``、``samples/test`` および ``samples/user_class`` は非推奨のセッションキー "
+"``hifreqSubmitRate`` を、``samples/market_share`` は ``maxHifreqOrders`` "
+"をまだ使用しているため、実行すると非推奨の警告が表示されます。ご自身の設定ファイルでは新しい名前を使ってください。"
 
 #: ../../source/user_guide/config.rst:1306
 msgid "Sample"
@@ -2822,7 +2746,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1309
 msgid "One market with FCN agents (Chiarella and Iori, 2002)."
-msgstr "FCNエージェントが取引する1つの市場（Chiarella and Iori, 2002）．"
+msgstr "FCNエージェントが取引する1つの市場（Chiarella and Iori, 2002）。"
 
 #: ../../source/user_guide/config.rst:1310
 msgid "``shock_transfer``"
@@ -2834,8 +2758,8 @@ msgid ""
 "``ArbitrageAgent`` agents. A ``FundamentalPriceShock`` hits one spot market;"
 " compare how the three markets react."
 msgstr ""
-"``extends`` で構築した2つの現物市場，それらから構成されるインデックス市場，および ``ArbitrageAgent`` エージェント． "
-"``FundamentalPriceShock`` が一方の現物市場に加わるので，3つの市場の反応を比較してください．"
+"``extends`` で構築した2つの現物市場、それらから構成されるインデックス市場、および ``ArbitrageAgent`` "
+"エージェント。``FundamentalPriceShock`` が一方の現物市場に加わるので、3つの市場の反応を比較してください。"
 
 #: ../../source/user_guide/config.rst:1313
 msgid "``fat_finger``"
@@ -2843,7 +2767,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1314
 msgid "``OrderMistakeShock``."
-msgstr "``OrderMistakeShock``．"
+msgstr "``OrderMistakeShock``。"
 
 #: ../../source/user_guide/config.rst:1315
 msgid "``price_limit``"
@@ -2851,7 +2775,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1316
 msgid "``PriceLimitRule``."
-msgstr "``PriceLimitRule``．"
+msgstr "``PriceLimitRule``。"
 
 #: ../../source/user_guide/config.rst:1317
 msgid "``trading_halt``"
@@ -2859,7 +2783,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1318
 msgid "``FundamentalPriceShock`` and ``TradingHaltRule``."
-msgstr "``FundamentalPriceShock`` と ``TradingHaltRule``．"
+msgstr "``FundamentalPriceShock`` と ``TradingHaltRule``。"
 
 #: ../../source/user_guide/config.rst:1319
 msgid "``market_share``"
@@ -2871,9 +2795,9 @@ msgid ""
 "with a ``tradeVolume`` key). ``config-mm.json`` adds a ``MarketMakerAgent``;"
 " run it with ``--config samples/market_share/config-mm.json``."
 msgstr ""
-"``MarketShareFCNAgent`` とユーザー定義の市場クラス（``tradeVolume`` キーを持つ "
-"``ExtendedMarket``）． ``config-mm.json`` は ``MarketMakerAgent`` を追加したもので， "
-"``--config samples/market_share/config-mm.json`` を付けて実行します．"
+"``MarketShareFCNAgent`` とユーザー定義の市場クラス（``tradeVolume`` キーを持つ ``ExtendedMarket"
+"``）。``config-mm.json`` は ``MarketMakerAgent`` を追加したもので、``--config "
+"samples/market_share/config-mm.json`` を付けて実行します。"
 
 #: ../../source/user_guide/config.rst:1323
 msgid "``user_class``"
@@ -2881,7 +2805,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1324
 msgid "A user-defined agent class registered with ``class_register``."
-msgstr "``class_register`` で登録したユーザー定義エージェントクラス．"
+msgstr "``class_register`` で登録したユーザー定義エージェントクラス。"
 
 #: ../../source/user_guide/config.rst:1325
 msgid "``test``"
@@ -2894,8 +2818,7 @@ msgid ""
 "``shockTimeLength``. It is a feature test: its ``fundamentalVolatility`` of "
 "``0.1`` per step is far above realistic values."
 msgstr ""
-"1つのブロックから作る3つの市場（``numMarkets``， ``prefix``， ``extends``）， "
-"``fundamentalCorrelations``，および ``shockTimeLength`` を指定した "
-"``FundamentalPriceShock``．これは機能テストです：1ステップあたり ``0.1`` という "
-"``fundamentalVolatility`` は現実的な値をはるかに上回っています．"
+"1つのブロックから作る3つの市場（``numMarkets``、``prefix``、``extends``）、``fundamentalCorrelations``、および"
+" ``shockTimeLength`` を指定した ``FundamentalPriceShock``。これは機能テストです：1ステップあたり "
+"``0.1`` という ``fundamentalVolatility`` は現実的な値をはるかに上回っています。"
 
