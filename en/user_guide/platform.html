@@ -173,6 +173,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -301,6 +303,27 @@ On the other hand, simulator provide API interface for runners to define the pro
 Moreover, simulator and its components generate logs and push it to logger.</p>
 <p>The key concept of this platform is that runner is replaceable to realize more complex simulator controlling.</p>
 </section>
+<section id="parallel-runners">
+<h2>Parallel runners<a class="headerlink" href="#parallel-runners" title="Permalink to this heading">#</a></h2>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> and <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> are experimental runners
+that parallelize the order submissions of normal (non high-frequency) agents in each step.
+They are drop-in replacements of <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>, and the simulation results are the same as
+<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> with the same settings and the same seed.
+The number of workers can be set by <code class="docutils literal notranslate"><span class="pre">simulation.numParallel</span></code> in the config, but the number of agents that can be
+parallelized in each step is limited by <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> of the session.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">runner</span> <span class="o">=</span> <span class="n">MultiThreadAgentParallelRunner</span><span class="p">(</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">setting_dict_or_json</span><span class="p">,</span>
+    <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">),</span>
+    <span class="n">logger</span><span class="o">=</span><span class="n">MarketStepPrintLogger</span><span class="p">(),</span>
+<span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Because of the GIL of python, <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> is beneficial only when
+the order submission of agents waits for I/O (e.g., external models or services).
+<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> copies agents and markets to worker processes for each order submission,
+so it is much slower and the user-defined classes must be picklable and importable from the worker processes.</p>
+</section>
 </section>
 
         </article>
@@ -360,6 +383,7 @@ Moreover, simulator and its components generate logs and push it to logger.</p>
             <ul>
 <li><a class="reference internal" href="#">Platform</a><ul>
 <li><a class="reference internal" href="#class-architecture">Class architecture</a></li>
+<li><a class="reference internal" href="#parallel-runners">Parallel runners</a></li>
 </ul>
 </li>
 </ul>

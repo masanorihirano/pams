@@ -8,3 +8,5 @@ Runner
 
     runners.Runner
     runners.SequentialRunner
+    runners.MultiThreadAgentParallelRunner
+    runners.MultiProcessAgentParallelRunner
