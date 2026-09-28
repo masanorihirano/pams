@@ -1213,6 +1213,39 @@ are split into at most ``numParallel`` tasks. An object held by an agent, such a
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
 ``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
 
+.. _config-parallel-jax:
+
+JAX/Flax runner
+~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process runner for agents that use JAX in
+``submit_orders``, for example Flax models. JAX is not installed with PAMS: install it yourself (for example
+``pip install jax flax``). The runner starts its worker processes by ``"spawn"`` unless ``simulation.startMethod``
+is set. Each worker process configures JAX once, before it runs any task, with these keys in ``simulation``, which
+the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``jaxPlatforms`` |optional|
+     - string
+     - The platforms that JAX uses on the worker processes, such as ``"cpu"`` or ``"cuda"`` (``jax_platforms`` of
+       JAX). Default: ``JAX_PLATFORMS`` in the environment if it is set; otherwise JAX chooses.
+   * - ``jaxPreallocate`` |optional|
+     - bool
+     - Whether JAX preallocates GPU memory on each worker process (``XLA_PYTHON_CLIENT_PREALLOCATE``). Default:
+       ``false``, so that the worker processes can share a GPU (by default, JAX preallocates 75% of it).
+   * - ``jaxMemoryFraction`` |optional|
+     - number in (0, 1]
+     - The fraction of GPU memory that JAX can use on each worker process (``XLA_PYTHON_CLIENT_MEM_FRACTION``).
+       Default: the default of JAX (0.75).
+
+These keys do not configure JAX on the main process. See :doc:`platform` for how to write agents for this runner.
+
 
 .. _config-troubleshooting:
 
