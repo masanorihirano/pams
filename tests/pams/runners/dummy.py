@@ -91,6 +91,20 @@ class ExecutionCountLogger(Logger):
         self.execution_logs.append(log)
 
 
+class SimulatorAccessingLogger(Logger):
+    def __init__(self) -> None:
+        super().__init__()
+        self.accessed_simulators: List = []
+
+    def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
+        assert self.simulator is log.simulator
+        self.accessed_simulators.append(self.simulator)
+
+    def process_simulation_end_log(self, log: SimulationEndLog) -> None:
+        assert self.simulator is log.simulator
+        self.accessed_simulators.append(self.simulator)
+
+
 class RandomlyIdleFCNAgent(FCNAgent):
     """FCNAgent that submits no orders with 50% probability.
 

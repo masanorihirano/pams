@@ -23,6 +23,7 @@ from tests.pams.runners.test_base import TestRunner
 from .dummy import DummyLogger
 from .dummy import DummyLogger2
 from .dummy import ExecutionCountLogger
+from .dummy import SimulatorAccessingLogger
 
 
 class TestSequentialRunner(TestRunner):
@@ -1739,23 +1740,9 @@ class TestSequentialRunner(TestRunner):
         )
 
     def test_run_logger_can_access_simulator(self) -> None:
-        class SimulatorAccessingLogger(Logger):
-            def __init__(self) -> None:
-                super().__init__()
-                self.accessed_simulators: List = []
-
-            def process_simulation_begin_log(self, log: SimulationBeginLog) -> None:
-                assert self.simulator is log.simulator
-                self.accessed_simulators.append(self.simulator)
-
-            def process_simulation_end_log(self, log: SimulationEndLog) -> None:
-                assert self.simulator is log.simulator
-                self.accessed_simulators.append(self.simulator)
-
         logger = SimulatorAccessingLogger()
-        runner = cast(
-            SequentialRunner,
-            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        runner = self.test__init__(
+            setting_mode="dict", logger=logger, simulator_class=None
         )
         runner._setup()
         runner._run()
