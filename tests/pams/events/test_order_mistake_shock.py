@@ -1,4 +1,5 @@
 import random
+from typing import List
 
 import pytest
 
@@ -11,6 +12,8 @@ from pams import Simulator
 from pams.events import EventABC
 from pams.events import OrderMistakeShock
 from pams.logs import Logger
+from pams.logs import OrderLog
+from pams.runners import SequentialRunner
 from tests.pams.events.test_base import TestEventABC
 
 
@@ -378,3 +381,191 @@ class TestOrderMistakeShock(TestEventABC):
         assert order2.is_buy
         assert order2.volume == 1
         assert order2.ttl is None
+
+    def test_hooked_before_order_other_market(self) -> None:
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=logger,
+        )
+        session_setting = {
+            "sessionName": 0,
+            "iterationSteps": 500,
+            "withOrderPlacement": True,
+            "withOrderExecution": True,
+            "withPrint": True,
+            "maxNormalOrders": 1,
+            "events": ["OrderMistakeShock"],
+        }
+        session.setup(settings=session_setting)
+        for market_id, name, price in [(0, "market1", 300.0), (1, "market2", 500.0)]:
+            market = Market(
+                market_id=market_id,
+                prng=random.Random(42),
+                simulator=sim,
+                name=name,
+                logger=logger,
+            )
+            market.setup(
+                settings={
+                    "tickSize": 0.01,
+                    "marketPrice": price,
+                    "outstandingShares": 2000,
+                }
+            )
+            sim._add_market(market=market)
+            sim.fundamentals.add_market(
+                market_id=market_id,
+                initial=price,
+                drift=0.0,
+                volatility=0.0,
+                start_at=0,
+            )
+            market._update_time(next_fundamental_price=price)
+        event = OrderMistakeShock(
+            event_id=1,
+            prng=random.Random(42),
+            session=session,
+            simulator=sim,
+            name="event",
+        )
+        setting = {
+            "target": "market2",
+            "triggerTime": 100,
+            "priceChangeRate": -0.05,
+            "orderVolume": 10000,
+            "orderTimeLength": 10000,
+            "enabled": True,
+        }
+        event.setup(settings=setting)
+        # an order to a non-target market must not be overridden
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=1,
+            placed_at=None,
+            price=None,
+            order_id=None,
+            ttl=None,
+        )
+        event.hooked_before_order(simulator=sim, order=order)
+        assert order.kind == MARKET_ORDER
+        assert order.price is None
+        assert order.is_buy
+        assert order.volume == 1
+        assert order.ttl is None
+        assert not event.triggerd
+        # the first order to the target market is overridden
+        order2 = Order(
+            agent_id=0,
+            market_id=1,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=1,
+            placed_at=None,
+            price=None,
+            order_id=None,
+            ttl=None,
+        )
+        event.hooked_before_order(simulator=sim, order=order2)
+        assert order2.kind == LIMIT_ORDER
+        assert order2.price == 500.0 * (1 - 0.05)
+        assert not order2.is_buy
+        assert order2.volume == 10000
+        assert order2.ttl == 10000
+        assert event.triggerd
+        # the shock is applied only once
+        order3 = Order(
+            agent_id=0,
+            market_id=1,
+            is_buy=True,
+            kind=MARKET_ORDER,
+            volume=1,
+            placed_at=None,
+            price=None,
+            order_id=None,
+            ttl=None,
+        )
+        event.hooked_before_order(simulator=sim, order=order3)
+        assert order3.kind == MARKET_ORDER
+        assert order3.volume == 1
+
+    def test_target_market_in_runner(self) -> None:
+        class OrderLogCollector(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.order_logs: List[OrderLog] = []
+
+            def process_order_log(self, log: OrderLog) -> None:
+                self.order_logs.append(log)
+
+        config = {
+            "simulation": {
+                "markets": ["Market"],
+                "agents": ["FCNAgents"],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 10,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": False,
+                        "withPrint": False,
+                    },
+                    {
+                        "sessionName": 1,
+                        "iterationSteps": 20,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": False,
+                        "events": ["OrderMistakeShock"],
+                    },
+                ],
+            },
+            "OrderMistakeShock": {
+                "class": "OrderMistakeShock",
+                "target": "Market-1",
+                "triggerTime": 5,
+                "priceChangeRate": -0.05,
+                "orderVolume": 10000,
+                "orderTimeLength": 10000,
+                "enabled": True,
+            },
+            "Market": {
+                "class": "Market",
+                "numMarkets": 2,
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+            },
+            "FCNAgents": {
+                "class": "FCNAgent",
+                "numAgents": 10,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+                "fundamentalWeight": {"expon": [1.0]},
+                "chartWeight": {"expon": [0.0]},
+                "noiseWeight": {"expon": [1.0]},
+                "noiseScale": 0.001,
+                "timeWindowSize": [100, 200],
+                "orderMargin": [0.0, 0.1],
+            },
+        }
+        logger = OrderLogCollector()
+        runner = SequentialRunner(
+            settings=config, prng=random.Random(42), logger=logger
+        )
+        runner.main()
+        target_market = runner.simulator.name2market["Market-1"]
+        shock_logs = [log for log in logger.order_logs if log.volume == 10000]
+        assert len(shock_logs) == 1
+        assert shock_logs[0].market_id == target_market.market_id
+        assert shock_logs[0].time == 10 + 5
+        assert shock_logs[0].kind == LIMIT_ORDER

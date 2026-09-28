@@ -131,4 +131,4 @@ class Session:
                 "hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."
             )
             # TODO: check non-negative
-            self.max_high_frequency_orders = settings["hifreqSubmitRate"]
+            self.high_frequency_submission_rate = settings["hifreqSubmitRate"]
