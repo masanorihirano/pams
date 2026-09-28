@@ -360,6 +360,7 @@
             <span class="n">n_markets</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">id_from</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">id_to</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">uses_range</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="s2">"numMarkets"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                 <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"numMarkets"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="n">n_markets</span> <span class="o">-</span> <span class="mi">1</span>
@@ -372,9 +373,14 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time"</span>
                     <span class="p">)</span>
-                <span class="n">n_markets</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
                 <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">id_to</span> <span class="o">&lt;</span> <span class="n">id_from</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to must be greater than or equal to </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from"</span>
+                    <span class="p">)</span>
+                <span class="n">n_markets</span> <span class="o">=</span> <span class="n">id_to</span> <span class="o">-</span> <span class="n">id_from</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">uses_range</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="s2">"numMarkets"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">market_settings</span><span class="p">[</span><span class="s2">"numMarkets"</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
@@ -418,7 +424,7 @@
                     <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>
                     <span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
                     <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_markets</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">uses_range</span> <span class="ow">or</span> <span class="n">n_markets</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">i_market</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -457,6 +463,7 @@
             <span class="n">n_agents</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">id_from</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">id_to</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">uses_range</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="s2">"numAgents"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                 <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"numAgents"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="n">n_agents</span> <span class="o">-</span> <span class="mi">1</span>
@@ -469,9 +476,14 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.numMarkets and (</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from or </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to) cannot be used at the same time"</span>
                     <span class="p">)</span>
-                <span class="n">n_agents</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span> <span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
                 <span class="n">id_from</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"from"</span><span class="p">])</span>
                 <span class="n">id_to</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agent_settings</span><span class="p">[</span><span class="s2">"to"</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">id_to</span> <span class="o">&lt;</span> <span class="n">id_from</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.to must be greater than or equal to </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.from"</span>
+                    <span class="p">)</span>
+                <span class="n">n_agents</span> <span class="o">=</span> <span class="n">id_to</span> <span class="o">-</span> <span class="n">id_from</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">uses_range</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="s2">"numAgents"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                 <span class="k">del</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"numAgents"</span><span class="p">]</span>
             <span class="k">if</span> <span class="s2">"from"</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
@@ -514,7 +526,7 @@
                     <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>
                     <span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">,</span>
                     <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">n_agents</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">uses_range</span> <span class="ow">or</span> <span class="n">n_agents</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">),</span>
                 <span class="p">)</span>
                 <span class="n">i_agent</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_add_agent</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>

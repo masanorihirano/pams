@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -270,7 +270,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -391,6 +391,15 @@
 }
 </pre></div>
 </div>
+<section id="naming-of-markets-and-agents">
+<h2>Naming of markets and agents<a class="headerlink" href="#naming-of-markets-and-agents" title="Permalink to this heading">#</a></h2>
+<p>Each market / agent gets a name built from <code class="docutils literal notranslate"><span class="pre">prefix</span></code> (default: the dict key) as follows:</p>
+<ul class="simple">
+<li><p>Neither <code class="docutils literal notranslate"><span class="pre">numMarkets</span></code> / <code class="docutils literal notranslate"><span class="pre">numAgents</span></code> nor <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code> specified, or the count is 1: the name is <code class="docutils literal notranslate"><span class="pre">prefix</span></code> itself (e.g. <code class="docutils literal notranslate"><span class="pre">Market</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numMarkets</span></code> / <code class="docutils literal notranslate"><span class="pre">numAgents</span></code> greater than 1: the names are <code class="docutils literal notranslate"><span class="pre">prefix</span></code> + index, starting from 0. If <code class="docutils literal notranslate"><span class="pre">prefix</span></code> is not specified, <code class="docutils literal notranslate"><span class="pre">-</span></code> is inserted (e.g. <code class="docutils literal notranslate"><span class="pre">Market-0</span></code>, <code class="docutils literal notranslate"><span class="pre">Market-1</span></code>, …).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from</span></code> and <code class="docutils literal notranslate"><span class="pre">to</span></code>: both are required, <code class="docutils literal notranslate"><span class="pre">to</span></code> is inclusive and must be greater than or equal to <code class="docutils literal notranslate"><span class="pre">from</span></code>. The names are always <code class="docutils literal notranslate"><span class="pre">prefix</span></code> + index for every index from <code class="docutils literal notranslate"><span class="pre">from</span></code> to <code class="docutils literal notranslate"><span class="pre">to</span></code>, even when <code class="docutils literal notranslate"><span class="pre">from</span></code> equals <code class="docutils literal notranslate"><span class="pre">to</span></code>. If <code class="docutils literal notranslate"><span class="pre">prefix</span></code> is not specified and the range has more than one element, <code class="docutils literal notranslate"><span class="pre">-</span></code> is inserted (e.g. <code class="docutils literal notranslate"><span class="pre">from:</span> <span class="pre">0,</span> <span class="pre">to:</span> <span class="pre">1</span></code> gives <code class="docutils literal notranslate"><span class="pre">Market-0</span></code>, <code class="docutils literal notranslate"><span class="pre">Market-1</span></code>; <code class="docutils literal notranslate"><span class="pre">from:</span> <span class="pre">5,</span> <span class="pre">to:</span> <span class="pre">5</span></code> gives <code class="docutils literal notranslate"><span class="pre">Market5</span></code>).</p></li>
+</ul>
+</section>
 </section>
 
         </article>
@@ -436,8 +445,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Json config</a><ul>
+<li><a class="reference internal" href="#naming-of-markets-and-agents">Naming of markets and agents</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
