@@ -834,6 +834,9 @@ JsonRandom notation (``cashAmount`` and ``assetVolume`` still do).
 - ``markets`` must include the index market group **and** the groups of all its component markets.
   Otherwise the component orders are still sent, and the simulation stops with a ``KeyError`` (a market ID)
   when the first one is executed.
+  Unlike plham, the component markets are not added automatically; the agent warns at setup about each
+  index market with missing components.
+- If ``markets`` includes no ``IndexMarket``, the agent never places an order, and it warns about this at setup.
 - All component markets must have the same ``outstandingShares``.
 - It only trades while the index and all its components are executing orders.
 
@@ -1272,6 +1275,12 @@ Common errors
    * - ``order price does not accord to the tick size`` (warning)
      - An agent submitted a price that is not a multiple of ``tickSize``; it was rounded. This is normal for
        FCN agents.
+   * - ``ArbitrageAgent X can access the index market Y but not its component markets Z`` (warning)
+     - Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise its orders to them fail while
+       the simulation runs.
+   * - ``ArbitrageAgent X cannot access any index market`` (warning)
+     - The agent never places an order. Add an ``IndexMarket`` group and the groups of its component markets to
+       its ``markets``.
    * - ``AssertionError`` while the simulation runs
      - Often an agent parameter out of range (see the FCNAgent warning) or an order to a market missing from a
        ``PriceLimitRule``'s ``targetMarkets``.
