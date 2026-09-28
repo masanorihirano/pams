@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -36,15 +36,16 @@ msgstr "このクラスはHighFrequencyAgentクラスを継承しています。
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent:6
 msgid ""
-"Currently, index markets must have the same weight for each constitutional "
-"stock."
+"Currently, index markets must have the same weight for each "
+"constitutional stock."
 msgstr "現在のところ、インデックス市場では各構成銘柄のウェイトが同一である必要があります。"
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:1
-msgid "agent setup. Usually be called from simulator/runner automatically."
+#, fuzzy
+msgid "Agent setup. Usually be called from simulator/runner automatically."
 msgstr "エージェントのセットアップ。通常はシミュレーター/ランナーから自動的に呼び出されます。"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
+#: ../../source/reference/generated/agents/pams.agents.ArbitrageAgent.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -52,46 +53,53 @@ msgstr "パラメータ"
 msgid ""
 "agent configuration. Usually, automatically set from json config of "
 "simulator. This must include the parameters \"orderVolume\", "
-"\"orderThresholdPrice\". This can include the parameter \"orderTimeLength\"."
+"\"orderThresholdPrice\". This can include the parameter "
+"\"orderTimeLength\"."
 msgstr "エージェントの設定。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ「orderVolume」、「orderThresholdPrice」を含める必要があります。パラメータ「orderTimeLength」を含めることもできます。"
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:9
 msgid "list of market IDs."
 msgstr "市場IDのリスト。"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:11
-#: pams.agents.arbitrage_agent.ArbitrageAgent.setup:12
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:12
+#: pams.agents.arbitrage_agent.ArbitrageAgent.setup:14
 msgid "not used."
 msgstr "未使用。"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
-#: pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders
+#: ../../source/reference/generated/agents/pams.agents.ArbitrageAgent.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:14
-msgid ":py:obj:`None`"
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:16
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
+#: ../../source/reference/generated/agents/pams.agents.ArbitrageAgent.rst
 msgid "Returns"
 msgstr "戻り値"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:15
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:17
 msgid "None"
 msgstr ""
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:1
-msgid "submit orders to take arbitrage chance."
+#, fuzzy
+msgid "Submit orders to take arbitrage chance."
 msgstr "裁定機会を捉えるために注文を発注します。"
 
-#: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:4
-msgid ":func:`pams.agents.Agent.submit_orders`"
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:3
+msgid "order list."
 msgstr ""
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:7
-msgid ""
-":py:class:`~typing.List`\\[:py:data:`~typing.Union`\\[:py:class:`~pams.order.Order`,"
-" :py:class:`~pams.order.Cancel`]]"
+msgid ":func:`pams.agents.Agent.submit_orders`"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":py:class:`~typing.List`\\[:py:data:`~typing.Union`\\[:py:class:`~pams.order.Order`,"
+#~ " :py:class:`~pams.order.Cancel`]]"
+#~ msgstr ""
 

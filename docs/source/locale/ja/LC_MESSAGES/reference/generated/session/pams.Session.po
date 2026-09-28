@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -28,10 +28,11 @@ msgid "Session management class."
 msgstr "セッション管理クラス。"
 
 #: of pams.session.Session.setup:1
-msgid "setup session configuration from setting format."
+#, fuzzy
+msgid "Setup session configuration from setting format."
 msgstr "設定形式からセッションの構成をセットアップします。"
 
-#: of pams.session.Session.setup
+#: ../../source/reference/generated/session/pams.Session.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -39,28 +40,31 @@ msgstr "パラメータ"
 msgid ""
 "session configuration. Usually, automatically set from json config of "
 "simulator. This must include the parameters \"iterationSteps\", "
-"\"withOrderPlacement\", \"withOrderExecution\", and \"withPrint\". This can "
-"include the parameter \"maxNormalOrders\", \"maxHighFrequencyOrders\", and "
-"\"highFrequencySubmitRate\"."
+"\"withOrderPlacement\", \"withOrderExecution\", and \"withPrint\". This "
+"can include the parameter \"maxNormalOrders\", "
+"\"maxHighFrequencyOrders\", and \"highFrequencySubmitRate\"."
 msgstr "セッションの設定。通常は、シミュレーターのJSON設定ファイルから自動的に設定されます。これにはパラメータ「iterationSteps」、「withOrderPlacement」、「withOrderExecution」、「withPrint」が含まれている必要があります。また、パラメータ「maxNormalOrders」、「maxHighFrequencyOrders」、「highFrequencySubmitRate」を含めることもできます。"
 
-#: of pams.session.Session.setup:10 pams.session.Session.setup:11
+#: of pams.session.Session.setup:11 pams.session.Session.setup:13
 msgid "not used."
 msgstr "未使用。"
 
-#: of pams.session.Session.setup
+#: ../../source/reference/generated/session/pams.Session.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
-#: of pams.session.Session.setup:13
-msgid ":py:obj:`None`"
+#: of pams.session.Session.setup:15
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.session.Session.setup
+#: ../../source/reference/generated/session/pams.Session.rst
 msgid "Returns"
 msgstr "戻り値"
 
-#: of pams.session.Session.setup:14
+#: of pams.session.Session.setup:16
 msgid "None"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

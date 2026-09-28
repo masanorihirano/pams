@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -24,13 +24,14 @@ msgid "OrderMistakeShock"
 msgstr ""
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock:1
-msgid "This suddenly changes the market price."
+#, fuzzy
+msgid "Event that suddenly changes the market price."
 msgstr "市場価格を突然変化させます。"
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock:3
 msgid ""
-"It is as a consequence of a fat finger error, e.g., caused by a huge amount "
-"of orders at an extremely cheap or expensive price."
+"It is as a consequence of a fat finger error, e.g., caused by a huge "
+"amount of orders at an extremely cheap or expensive price."
 msgstr "これは誤発注の結果として起こるもので、例えば極端に安い価格または高い価格での大量の注文によって引き起こされます。"
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock:6
@@ -49,8 +50,7 @@ msgid ""
 "simulation. You must implement this."
 msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
 
-#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration
-#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+#: ../../source/reference/generated/events/pams.events.OrderMistakeShock.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -58,24 +58,22 @@ msgstr "戻り値"
 msgid "The list of event hook ( :class:`EventHook` )"
 msgstr "イベントフック（:class:`EventHook`）のリスト"
 
-#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration
-#: pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order
-#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+#: ../../source/reference/generated/events/pams.events.OrderMistakeShock.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:1
-msgid "This method is hooked before order placements if you set the event hook."
+#, fuzzy
+msgid "Hook called before order placements if you set the event hook."
 msgstr "イベントフックを設定した場合、このメソッドは発注の前に呼び出されます。"
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:3
 msgid ""
-"Please be careful that the order haven't yet been accepted by markets and it"
-" could be leakage of order information."
+"Please be careful that the order haven't yet been accepted by markets and"
+" it could be leakage of order information."
 msgstr "この時点では注文はまだ市場に受け付けられておらず、注文情報の漏洩につながる可能性があることに注意してください。"
 
-#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order
-#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+#: ../../source/reference/generated/events/pams.events.OrderMistakeShock.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -87,13 +85,14 @@ msgstr "参照用のシミュレーター。"
 msgid "order accepting now."
 msgstr "現在受け付け中の注文。"
 
-#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:17
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:16
 #: pams.events.order_mistake_shock.OrderMistakeShock.setup:9
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock.setup:1
-msgid "event setup. Usually be called from simulator/runner automatically."
+#, fuzzy
+msgid "Event setup. Usually be called from simulator/runner automatically."
 msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
 
 #: of pams.events.order_mistake_shock.OrderMistakeShock.setup:4
@@ -107,4 +106,7 @@ msgstr "イベントの設定。通常、シミュレーターのJSON設定フ�
 #: of pams.events.order_mistake_shock.OrderMistakeShock.setup:10
 msgid "None"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 
