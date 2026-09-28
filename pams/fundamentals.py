@@ -215,7 +215,7 @@ class Fundamentals:
         )
         result_cholesky = np.dot(
             cholesky_matrix, dw_cholesky
-        ) + drifts_cholesky.T.reshape(-1, 1)
+        ) + drifts_cholesky.reshape(-1, 1)
 
         drifts_others = np.asarray(
             [[self.drifts[x] for _ in range(length)] for x in generate_target_ids_other]
@@ -253,9 +253,7 @@ class Fundamentals:
         current_prices = np.asarray(
             [self.prices[x][self._generated_until] for x in target_market_ids]
         )
-        prices = current_prices.T.reshape(-1, 1) * np.exp(
-            np.cumsum(log_return, axis=-1)
-        )
+        prices = current_prices.reshape(-1, 1) * np.exp(np.cumsum(log_return, axis=-1))
         for market_id, price_seq in zip(target_market_ids, prices):
             self.prices[market_id] = (
                 self.prices[market_id][: self._generated_until + 1] + price_seq.tolist()
