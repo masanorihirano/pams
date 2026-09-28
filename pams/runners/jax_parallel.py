@@ -29,9 +29,9 @@ def _import_jax() -> Any:
         import jax
     except ImportError as e:
         raise ImportError(
-            "JaxAgentParallelRunner requires JAX, which is not installed. Install it, e.g., by"
-            ' `pip install jax flax` for CPUs or `pip install "jax[cuda12]" flax` for NVIDIA'
-            " GPUs (flax is needed only for Flax models). See"
+            "JaxAgentParallelRunner requires JAX, which could not be imported (it may not be"
+            " installed). Install it, e.g., by `pip install jax flax` for CPUs or `pip install"
+            ' "jax[cuda12]" flax` for NVIDIA GPUs (flax is needed only for Flax models). See'
             " https://docs.jax.dev/en/latest/installation.html for the details."
         ) from e
     return jax
