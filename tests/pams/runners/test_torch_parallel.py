@@ -193,16 +193,24 @@ class TestTorchAgentParallelRunner:
                     assert parallel_parameter.is_shared()
                     assert torch.equal(sequential_parameter, parallel_parameter)
 
-    def test_seed_changes_result(self) -> None:
+    def test_seed_changes_result(self, torch: Any) -> None:
         # the equality above is meaningful only if the PyTorch agents depend on the seed
         prices: List[List[float]] = []
+        weights: List[Any] = []
         for seed in [1, 2]:
             runner, _ = self._make_runners(setting=SETTING, seed=seed)
             runner._setup()
             runner._run()
             market = runner.simulator.markets[0]
             prices.append(market.get_market_prices(range(market.get_time() + 1)))
+            agent = next(
+                agent
+                for agent in runner.simulator.normal_frequency_agents
+                if isinstance(agent, TorchPricingAgent)
+            )
+            weights.append(next(agent.model.parameters()))
         assert prices[0] != prices[1]
+        assert not torch.equal(weights[0], weights[1])
 
     def test_default_start_method(self) -> None:
         assert TorchAgentParallelRunner.default_start_method == "spawn"
