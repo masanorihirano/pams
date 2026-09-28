@@ -297,6 +297,11 @@ The ``simulation`` block
      - How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker processes (default: the
        platform's default). Only the start methods available on the platform are accepted: Windows has only
        ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
+   * - ``torchNumThreads`` |optional|
+     - int ≥ 1
+     - Number of threads of PyTorch on each worker process of :class:`~pams.runners.TorchAgentParallelRunner`
+       (default: the number of threads of PyTorch on the main process divided by ``numParallel``, at least 1).
+       Ignored by the other runners. See :doc:`platform`.
 
 Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
 
