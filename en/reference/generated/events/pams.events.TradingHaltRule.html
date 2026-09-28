@@ -284,7 +284,22 @@
 <dd><p>A trading halt is a market regulation that suspends the trading of some assets.</p>
 <p>When the one of targetMarkets violate halting line, all of them will be halted.
 If you want to halt them separately, please make event separately.
-The current implementation sets <code class="xref py py-func docutils literal notranslate"><span class="pre">pams.market.Market.is_running()</span></code> = false when the price changed beyond the prespecified threshold range.</p>
+The current implementation sets <code class="xref py py-func docutils literal notranslate"><span class="pre">pams.market.Market.is_running()</span></code> = false for all targetMarkets
+when the price changed beyond the prespecified threshold range.
+Markets not included in targetMarkets are not affected, and the session setting
+(<code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.Session.with_order_execution</span></code>) is never changed by this rule.</p>
+<p>After the halt starts at time t, the halted markets resume trading at time t + haltingTimeLength + 1,
+only if the session at that time allows order execution.
+If the halt continues over a session boundary, it is continued in the next session.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This rule is hooked after execution, i.e., after all executions caused by one order are processed.
+Therefore, a halt prevents the subsequent executions, but not the executions caused by the triggering order.
+While halted, orders and cancels are still accepted, but the market price is not updated.
+Sharing a market among multiple TradingHaltRule events is not supported.
+Like other events, this rule is hooked from the beginning of the simulation,
+even if it is configured only in a later session.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.TradingHaltRule.hook_registration">
 <span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/trading_halt_rule.html#TradingHaltRule.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.TradingHaltRule.hook_registration" title="Permalink to this definition">#</a></dt>

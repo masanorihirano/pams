@@ -747,7 +747,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="ow">and</span> <span class="n">market</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
                     <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span><span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">execution_log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
@@ -807,7 +807,7 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="ow">and</span> <span class="n">market</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
                             <span class="n">logs</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span>
                                 <span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span>
