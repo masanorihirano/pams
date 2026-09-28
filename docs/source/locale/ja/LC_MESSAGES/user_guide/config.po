@@ -1773,13 +1773,12 @@ msgstr "注文の有効期間（TTL）をステップ数で指定します。デ
 #: ../../source/user_guide/config.rst:834
 msgid ""
 "``markets`` must include the index market group **and** the groups of all "
-"its component markets. Otherwise the component orders are still sent, and "
-"the simulation stops with a ``KeyError`` (a market ID) when the first one is"
-" executed."
+"its component markets. Otherwise the simulation stops with a ``ValueError`` "
+"when the agent first submits orders for the component markets."
 msgstr ""
 "``markets`` には、インデックス市場の市場グループ **および** "
-"そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します。"
+"そのすべての構成市場の市場グループを含める必要があります。含めない場合は、エージェントが構成市場への注文を最初に出した時点でシミュレーションが"
+" ``ValueError`` で停止します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
@@ -1817,11 +1816,11 @@ msgstr "市場のインスタンス名"
 #: ../../source/user_guide/config.rst:856
 msgid ""
 "The market to quote in. It must also be one of the agent's tradable markets;"
-" otherwise the simulation stops with a ``KeyError`` (a market ID) when its "
-"first order is executed."
+" otherwise the simulation stops with a ``ValueError`` when the agent first "
+"submits orders."
 msgstr ""
-"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合は最初の注文が約定した時点でシミュレーションが "
-"``KeyError`` （市場ID）で停止します。"
+"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合はエージェントが最初に注文を出した時点でシミュレーションが "
+"``ValueError`` で停止します。"
 
 #: ../../source/user_guide/config.rst:858
 msgid "``netInterestSpread`` |required| |jsonrandom|"
@@ -2597,20 +2596,31 @@ msgstr ""
 "が、市場のインスタンス名になっていません。グループ名ではなくインスタンス名（``Market-0``）を使ってください。"
 
 #: ../../source/user_guide/config.rst:1254
-msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
-msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+msgid "``order for an inaccessible market is not allowed``"
+msgstr ""
 
 #: ../../source/user_guide/config.rst:1255
 msgid ""
-"A market was used that the agent cannot trade: a ``MarketMakerAgent`` whose "
-"``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose "
-"``markets`` lack the component markets. A ``FundamentalPriceShock`` whose "
-"``target`` is an ``IndexMarket`` fails the same way."
+"An agent submitted an order for a market that it cannot trade: a "
+"``MarketMakerAgent`` whose ``targetMarket`` is not in its ``markets``, or an "
+"``ArbitrageAgent`` whose ``markets`` lack the component markets. Add the "
+"market group named in the message to the agent's ``markets``."
 msgstr ""
-"エージェントが取引できない市場が使われています： ``targetMarket`` が自身の ``markets`` に含まれていない "
+"エージェントが取引できない市場に注文を出しました： ``targetMarket`` が自身の ``markets`` に含まれていない "
 "``MarketMakerAgent`` や、``markets`` に構成市場が含まれていない ``ArbitrageAgent`` "
-"がこれに当たります。``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
-"も同様に失敗します。"
+"がこれに当たります。メッセージに示された市場グループをエージェントの ``markets`` に追加してください。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
+msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its"
+" component markets instead."
+msgstr ""
+"``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
+"です。代わりにその構成市場にショックを与えてください。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``market name X is duplicate`` / ``agent name X is duplicate``"
