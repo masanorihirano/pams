@@ -357,6 +357,99 @@ class TestSequentialRunner(TestRunner):
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
 
+    def _make_from_to_runner(self, setting: Dict) -> SequentialRunner:
+        return cast(
+            SequentialRunner,
+            self.test__init__(
+                setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            ),
+        )
+
+    @pytest.mark.parametrize(
+        "range_settings, expected_names",
+        [
+            ({"from": 0, "to": 1}, ["Market-0", "Market-1"]),
+            ({"from": 5, "to": 6}, ["Market-5", "Market-6"]),
+            ({"from": 0, "to": 1, "prefix": "Test"}, ["Test0", "Test1"]),
+            ({"from": 0, "to": 0}, ["Market0"]),
+            ({"from": 5, "to": 5}, ["Market5"]),
+            ({"from": 5, "to": 5, "prefix": "Test"}, ["Test5"]),
+            ({"numMarkets": 1}, ["Market"]),
+            ({}, ["Market"]),
+        ],
+    )
+    def test_generate_markets_from_to_naming(
+        self, range_settings: Dict, expected_names: List[str]
+    ) -> None:
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                **range_settings,
+            },
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["Market"])
+        assert [m.name for m in runner.simulator.markets] == expected_names
+        assert [m.market_id for m in runner.simulator.markets] == list(
+            range(len(expected_names))
+        )
+        assert sorted(runner.simulator.name2market.keys()) == sorted(expected_names)
+        assert len(runner.simulator.markets_group_name2market["Market"]) == len(
+            expected_names
+        )
+        assert len(runner._pending_setups) == len(expected_names)
+
+    def test_generate_markets_from_to_singletons_shared_prefix(self) -> None:
+        setting = {
+            "simulation": {"markets": ["MarketA", "MarketB"]},
+            "MarketA": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "prefix": "Market",
+                "from": 0,
+                "to": 0,
+            },
+            "MarketB": {"extends": "MarketA", "from": 1, "to": 1},
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["MarketA", "MarketB"])
+        assert [m.name for m in runner.simulator.markets] == ["Market0", "Market1"]
+        assert len(runner.simulator.name2market) == 2
+
+    def test_generate_markets_reversed_range(self) -> None:
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "from": 1,
+                "to": 0,
+            },
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        with pytest.raises(ValueError, match="Market.to"):
+            runner._generate_markets(market_type_names=["Market"])
+        assert len(runner.simulator.markets) == 0
+        assert len(runner._pending_setups) == 0
+
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "to": 1,
+            },
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        with pytest.raises(ValueError):
+            runner._generate_markets(market_type_names=["Market"])
+
     def test_generate_agents(self) -> None:
         setting = {
             "simulation": {"agents": ["Agent"], "markets": ["Market"]},
@@ -509,7 +602,10 @@ class TestSequentialRunner(TestRunner):
             ),
         )
         runner._generate_markets(market_type_names=["Market"])
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError,
+            match=r"Agent\.numAgents and \(Agent\.from or Agent\.to\) cannot be used",
+        ):
             runner._generate_agents(agent_type_names=["Agent"])
 
         setting = {
@@ -563,6 +659,82 @@ class TestSequentialRunner(TestRunner):
             "settings": {"class": "FCNAgent", "markets": ["Market"]},
             "accessible_markets_ids": [0],
         }
+
+    @pytest.mark.parametrize(
+        "range_settings, expected_names",
+        [
+            ({"from": 0, "to": 1}, ["Agent-0", "Agent-1"]),
+            ({"from": 5, "to": 6}, ["Agent-5", "Agent-6"]),
+            ({"from": 0, "to": 1, "prefix": "Test"}, ["Test0", "Test1"]),
+            ({"from": 0, "to": 0}, ["Agent0"]),
+            ({"from": 5, "to": 5}, ["Agent5"]),
+            ({"from": 5, "to": 5, "prefix": "Test"}, ["Test5"]),
+            ({"numAgents": 1}, ["Agent"]),
+            ({}, ["Agent"]),
+        ],
+    )
+    def test_generate_agents_from_to_naming(
+        self, range_settings: Dict, expected_names: List[str]
+    ) -> None:
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+            "Agent": {"class": "FCNAgent", "markets": ["Market"], **range_settings},
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["Market"])
+        runner._generate_agents(agent_type_names=["Agent"])
+        assert [a.name for a in runner.simulator.agents] == expected_names
+        assert [a.agent_id for a in runner.simulator.agents] == list(
+            range(len(expected_names))
+        )
+        assert sorted(runner.simulator.name2agent.keys()) == sorted(expected_names)
+        assert len(runner.simulator.agents_group_name2agent["Agent"]) == len(
+            expected_names
+        )
+        assert len(runner._pending_setups) == 1 + len(expected_names)
+
+    def test_generate_agents_from_to_singletons_shared_prefix(self) -> None:
+        setting = {
+            "simulation": {"agents": ["AgentA", "AgentB"], "markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+            "AgentA": {
+                "class": "FCNAgent",
+                "markets": ["Market"],
+                "prefix": "Agent",
+                "from": 0,
+                "to": 0,
+            },
+            "AgentB": {"extends": "AgentA", "from": 1, "to": 1},
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["Market"])
+        runner._generate_agents(agent_type_names=["AgentA", "AgentB"])
+        assert [a.name for a in runner.simulator.agents] == ["Agent0", "Agent1"]
+        assert len(runner.simulator.name2agent) == 2
+
+    def test_generate_agents_reversed_range(self) -> None:
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+            "Agent": {"class": "FCNAgent", "from": 1, "to": 0, "markets": ["Market"]},
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError, match="Agent.to"):
+            runner._generate_agents(agent_type_names=["Agent"])
+        assert len(runner.simulator.agents) == 0
+        assert len(runner._pending_setups) == 1
+
+        setting = {
+            "simulation": {"agents": ["Agent"], "markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+            "Agent": {"class": "FCNAgent", "to": 1, "markets": ["Market"]},
+        }
+        runner = self._make_from_to_runner(setting=setting)
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError):
+            runner._generate_agents(agent_type_names=["Agent"])
 
     def test_set_fundamental_correlation(self) -> None:
         setting = {
@@ -1072,7 +1244,9 @@ class TestSequentialRunner(TestRunner):
                 setting_mode="dict", logger=None, simulator_class=None, setting=setting
             ),
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(
+            ValueError, match=r"simulation\.agents is required in json file"
+        ):
             runner._setup()
 
         setting = copy.deepcopy(self.default_setting)
@@ -1701,6 +1875,30 @@ class TestSequentialRunner(TestRunner):
         )
         assert logger.n_market_step_end == sum(
             [session.iteration_steps for session in runner.simulator.sessions]
+        )
+
+    def test_run_execution_logs_processed_once(self) -> None:
+        class ExecutionCountLogger(Logger):
+            def __init__(self) -> None:
+                super().__init__()
+                self.execution_logs: List[ExecutionLog] = []
+
+            def process_execution_log(self, log: ExecutionLog) -> None:
+                self.execution_logs.append(log)
+
+        logger = ExecutionCountLogger()
+        runner = cast(
+            SequentialRunner,
+            self.test__init__(setting_mode="dict", logger=logger, simulator_class=None),
+        )
+        runner._setup()
+        runner._run()
+        assert len(logger.execution_logs) > 0
+        assert len(logger.execution_logs) == len(
+            set([id(log) for log in logger.execution_logs])
+        )
+        assert sum([log.volume for log in logger.execution_logs]) == sum(
+            [sum(market._executed_volumes) for market in runner.simulator.markets]
         )
 
     def test_run_logger_can_access_simulator(self) -> None:

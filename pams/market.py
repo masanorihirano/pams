@@ -15,7 +15,6 @@ from typing import cast
 from .logs.base import CancelLog
 from .logs.base import ExecutionLog
 from .logs.base import ExpirationLog
-from .logs.base import Log
 from .logs.base import Logger
 from .logs.base import OrderLog
 from .order import Cancel
@@ -123,6 +122,7 @@ class Market:
         """
         if times is None:
             times = range(self.time + 1)
+        times = list(times)
         if sum([t > self.time for t in times]) > 0:
             raise AssertionError("Cannot refer the future parameters")
         result = [parameters[t] for t in times]
@@ -493,6 +493,33 @@ class Market:
         """
         return self.buy_order_book.get_price_volume()
 
+    def _get_tick_level_if_on_tick(self, price: float) -> Optional[int]:
+        """get the tick level of the price if the price is on a tick.
+
+        A price is regarded as on a tick if ``price / tick_size`` is an integer up to
+        floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).
+        The tolerance is 4 ULPs of the tick level (``4 * math.ulp(max(1.0, abs(ratio)))``,
+        in tick units), capped at 0.25 tick. Converting an on-tick price (a decimal literal
+        or ``tick_level * tick_size``) gives an error of at most about 1 ULP and each further
+        addition or subtraction of ticks adds about 1 ULP, so a few arithmetic operations
+        on the price are absorbed, while off-tick prices more than 4 ULPs away from a tick
+        (e.g., 500000000001.001 with tick size 1.0) are still detected. The cap keeps
+        half-tick prices off tick at huge tick levels (>= 2**49), where 4 ULPs would reach
+        half a tick.
+
+        Args:
+            price (float): price.
+
+        Returns:
+            int, Optional: tick level if the price is on a tick, otherwise None.
+        """
+        ratio: float = price / self.tick_size
+        tick_level: int = round(ratio)
+        tolerance: float = min(4 * math.ulp(max(1.0, abs(ratio))), 0.25)
+        if abs(ratio - tick_level) <= tolerance:
+            return tick_level
+        return None
+
     def convert_to_tick_level_rounded_lower(self, price: float) -> int:
         """convert price to tick level rounded lower.
 
@@ -502,6 +529,9 @@ class Market:
         Returns:
             int: price for tick level rounded lower.
         """
+        tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
+        if tick_level is not None:
+            return tick_level
         return math.floor(price / self.tick_size)
 
     def convert_to_tick_level_rounded_upper(self, price: float) -> int:
@@ -513,6 +543,9 @@ class Market:
         Returns:
             int: price for tick level rounded upper.
         """
+        tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
+        if tick_level is not None:
+            return tick_level
         return math.ceil(price / self.tick_size)
 
     def convert_to_tick_level(self, price: float, is_buy: bool) -> int:
@@ -572,21 +605,21 @@ class Market:
                 ),
             )
             self._last_executed_prices[self.time] = (
-                executed_prices[-1] if sum(executed_prices) > 0 else None
+                executed_prices[-1] if len(executed_prices) > 0 else None
             )
             mid_prices: List[float] = cast(
                 List[float],
                 list(filter(lambda x: x is not None, self._mid_prices[: self.time])),
             )
             self._mid_prices[self.time] = (
-                mid_prices[-1] if sum(mid_prices) > 0 else None
+                mid_prices[-1] if len(mid_prices) > 0 else None
             )
             market_prices: List[float] = cast(
                 List[float],
                 list(filter(lambda x: x is not None, self._market_prices[: self.time])),
             )
             self._market_prices[self.time] = (
-                market_prices[-1] if sum(market_prices) > 0 else None
+                market_prices[-1] if len(market_prices) > 0 else None
             )
             if self.is_running:
                 if self._last_executed_prices[self.time - 1] is not None:
@@ -755,14 +788,18 @@ class Market:
             raise ValueError("the order is already submitted")
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
-        if order.price is not None and order.price % self.tick_size != 0:
-            warnings.warn(
-                "order price does not accord to the tick size. price will be modified"
+        if order.price is not None:
+            tick_level: Optional[int] = self._get_tick_level_if_on_tick(
+                price=order.price
             )
-            order.price = (
-                self.convert_to_tick_level(price=order.price, is_buy=order.is_buy)
-                * self.tick_size
-            )
+            if tick_level is None:
+                warnings.warn(
+                    "order price does not accord to the tick size. price will be modified"
+                )
+                tick_level = self.convert_to_tick_level(
+                    price=order.price, is_buy=order.is_buy
+                )
+            order.price = self.convert_to_price(tick_level=tick_level)
         order.order_id = self._next_order_id
         self._next_order_id += 1
         (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
@@ -792,6 +829,11 @@ class Market:
     def remain_executable_orders(self) -> bool:
         """check if there are remain executable orders in this market.
 
+        When both sides have market orders and their total volumes differ, the excess
+        market orders have to be absorbed by the limit orders of the other side.
+        Otherwise, the execution price cannot be determined and nothing is executed
+        (special quote), even if some orders could be matched.
+
         Returns:
             bool: whether some orders is executable or not.
         """
@@ -816,14 +858,18 @@ class Market:
             if None not in sell_book or None not in buy_book:
                 raise AssertionError
             if sell_book[None] != buy_book[None]:
+                # the excess market orders of the larger side have to be absorbed
+                # by the limit orders of the other side. Otherwise, as in a batch
+                # auction, the execution price cannot be determined and no execution
+                # happens (special quote).
                 if sell_book[None] < buy_book[None]:
-                    additional_required_orders = buy_book[None] - sell_book[None]
+                    additional_required_volume = buy_book[None] - sell_book[None]
                     sell_book.pop(None)
-                    return len(sell_book) >= additional_required_orders
+                    return sum(sell_book.values()) >= additional_required_volume
                 else:
-                    additional_required_orders = sell_book[None] - buy_book[None]
+                    additional_required_volume = sell_book[None] - buy_book[None]
                     buy_book.pop(None)
-                    return len(buy_book) >= additional_required_orders
+                    return sum(buy_book.values()) >= additional_required_volume
             else:
                 sell_book.pop(None)
                 buy_book.pop(None)
@@ -940,8 +986,6 @@ class Market:
         )
         if self.remain_executable_orders():
             raise AssertionError
-        if self.logger is not None:
-            self.logger.bulk_write(logs=cast(List[Log], logs))
         return logs
 
     def change_fundamental_price(self, scale: float) -> None:

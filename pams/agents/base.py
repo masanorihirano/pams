@@ -82,12 +82,12 @@ class Agent(ABC):
             None
         """
         if "cashAmount" not in settings:
-            raise ValueError("cashAmount is required property of agent settings")
+            raise ValueError("cashAmount is a required property of agent settings")
         self.cash_amount = JsonRandom(prng=self.prng).random(
             json_value=settings["cashAmount"]
         )
         if "assetVolume" not in settings:
-            raise ValueError("cashAmount is required property of agent settings")
+            raise ValueError("assetVolume is a required property of agent settings")
 
         for market_id in accessible_markets_ids:
             self.set_market_accessible(market_id=market_id)
