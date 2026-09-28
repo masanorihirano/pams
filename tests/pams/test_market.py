@@ -1591,6 +1591,87 @@ class TestMarket:
         assert popped_orders == [order]
         assert not order_book.priority_queue
 
+    def _make_market_with_best_order_without_volume(
+        self, is_buy: bool
+    ) -> Tuple[Market, Order, Order]:
+        # The best order of one side has no volume, while the next order of that side
+        # still crosses the order of the other side.
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        sign = 1 if is_buy else -1
+        order_without_volume = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=is_buy,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=100 + 10 * sign,
+        )
+        market._add_order(order_without_volume)
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=10,
+                price=100 + 5 * sign,
+            )
+        )
+        other_order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=not is_buy,
+            kind=LIMIT_ORDER,
+            volume=5,
+            price=100,
+        )
+        market._add_order(other_order)
+        # an order without volume must not remain in the order book
+        order_without_volume.volume = 0
+        assert market.remain_executable_orders()
+        return market, order_without_volume, other_order
+
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_execution_best_order_without_volume(self, is_buy: bool) -> None:
+        # an order without volume is not skipped even if it is the first popped order
+        # of its side, but violates the invariant like the following ones
+        market, _, _ = self._make_market_with_best_order_without_volume(is_buy=is_buy)
+        with pytest.raises(AssertionError):
+            market._execution()
+
+    @pytest.mark.parametrize("is_buy", [True, False])
+    def test_collect_pending_executions_best_order_without_volume(
+        self, is_buy: bool
+    ) -> None:
+        (
+            market,
+            order_without_volume,
+            other_order,
+        ) = self._make_market_with_best_order_without_volume(is_buy=is_buy)
+        popped_buy_orders: List[Order] = []
+        popped_sell_orders: List[Order] = []
+        with pytest.raises(AssertionError):
+            market._collect_pending_executions(
+                popped_buy_orders=popped_buy_orders,
+                popped_sell_orders=popped_sell_orders,
+            )
+        # the buy order is popped first, and the popped orders are recorded so that
+        # they can be pushed back
+        if is_buy:
+            assert popped_buy_orders == [order_without_volume]
+            assert not popped_sell_orders
+        else:
+            assert popped_buy_orders == [other_order]
+            assert popped_sell_orders == [order_without_volume]
+
     def test_expiration_orrder_pattern01(self) -> None:
         logger = Logger()
         market = self.base_class(

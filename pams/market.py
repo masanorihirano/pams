@@ -999,12 +999,12 @@ class Market:
         """
         pending: List[Tuple[int, Order, Order]] = []
 
-        # The caller has checked remain_executable_orders(), so the book is not empty.
-        buy_order: Order = heapq.heappop(self.buy_order_book.priority_queue)
-        popped_buy_orders.append(buy_order)
+        buy_order: Order
         sell_order: Order
         next_order: Optional[Order]
-        buy_order_volume_tmp: int = buy_order.volume
+        # Both remaining volumes start at 0, so that the first buy and sell orders are
+        # also popped by _pop_next_order, which checks that they have volume.
+        buy_order_volume_tmp: int = 0
         sell_order_volume_tmp: int = 0
         price: Optional[float] = None
         while True:
