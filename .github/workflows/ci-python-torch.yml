@@ -1,0 +1,39 @@
+# Tests of the optional PyTorch integration, which are skipped in the other workflows
+
+name: CI-torch
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "30 22 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install poetry
+          poetry install
+          # PyTorch is not a dependency of pams; the CPU build is enough for the tests
+          poetry run python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          poetry run python -c "import torch; print(torch.__version__)"
+      - name: Test
+        run: |
+          poetry run pytest -rs tests/pams/runners/test_torch_parallel.py
