@@ -36,4 +36,10 @@ jobs:
         env:
           JAX_PLATFORMS: cpu
         run: |
-          poetry run pytest tests/pams/runners/test_jax_parallel.py
+          poetry run pytest --cov=./ --cov-report=xml tests/pams/runners/test_jax_parallel.py tests/pams/runners/test_jax_parallel_import.py
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          files: ./coverage.xml
+          flags: jax
+          verbose: true

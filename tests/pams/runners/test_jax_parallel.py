@@ -2,8 +2,6 @@ import copy
 import os
 import pickle
 import random
-import subprocess
-import sys
 from concurrent.futures import Executor
 from typing import Any
 from typing import Callable
@@ -16,7 +14,6 @@ from typing import Type
 
 import pytest
 
-import pams
 from pams.runners import JaxAgentParallelRunner
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import SequentialRunner
@@ -25,7 +22,8 @@ from .dummy import DummyLogger2
 from .dummy import fail_to_initialize_worker
 from .test_agent_parallel import _assert_same_results
 
-# the tests below require JAX and Flax, which are optional dependencies of pams
+# the tests below require JAX and Flax, which are optional dependencies of pams. The tests that do
+# not require them are in test_jax_parallel_import.py.
 jax = pytest.importorskip("jax", reason="JAX is not installed")
 pytest.importorskip("flax", reason="Flax is not installed")
 
@@ -134,32 +132,6 @@ def _make_runners(
 def _make_runner(setting: Dict) -> JaxAgentParallelRunner:
     _, runner = _make_runners(setting=setting)
     return runner
-
-
-def test_import_does_not_import_jax() -> None:
-    code = (
-        "import sys\n"
-        "import pams\n"
-        "from pams.runners import JaxAgentParallelRunner\n"
-        "print([name for name in ['jax', 'flax'] if name in sys.modules])\n"
-    )
-    result = subprocess.run(
-        [sys.executable, "-c", code],
-        cwd=os.path.dirname(os.path.dirname(os.path.abspath(pams.__file__))),
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    assert result.stdout.strip() == "[]"
-
-
-def test_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    # None in sys.modules makes `import jax` raise ImportError
-    monkeypatch.setitem(sys.modules, "jax", None)
-    with pytest.raises(ImportError, match="requires JAX") as exc_info:
-        JaxAgentParallelRunner(settings=copy.deepcopy(DEFAULT_SETTING))
-    assert "pip install jax" in str(exc_info.value)
-    assert isinstance(exc_info.value.__cause__, ImportError)
 
 
 def test_experimental_warning() -> None:
