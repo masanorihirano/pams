@@ -493,6 +493,33 @@ class Market:
         """
         return self.buy_order_book.get_price_volume()
 
+    def _get_tick_level_if_on_tick(self, price: float) -> Optional[int]:
+        """get the tick level of the price if the price is on a tick.
+
+        A price is regarded as on a tick if ``price / tick_size`` is an integer up to
+        floating point errors, e.g., 0.3 with tick size 0.1 (0.3 / 0.1 is 2.9999999999999996).
+        The tolerance is 4 ULPs of the tick level (``4 * math.ulp(max(1.0, abs(ratio)))``,
+        in tick units), capped at 0.25 tick. Converting an on-tick price (a decimal literal
+        or ``tick_level * tick_size``) gives an error of at most about 1 ULP and each further
+        addition or subtraction of ticks adds about 1 ULP, so a few arithmetic operations
+        on the price are absorbed, while off-tick prices more than 4 ULPs away from a tick
+        (e.g., 500000000001.001 with tick size 1.0) are still detected. The cap keeps
+        half-tick prices off tick at huge tick levels (>= 2**49), where 4 ULPs would reach
+        half a tick.
+
+        Args:
+            price (float): price.
+
+        Returns:
+            int, Optional: tick level if the price is on a tick, otherwise None.
+        """
+        ratio: float = price / self.tick_size
+        tick_level: int = round(ratio)
+        tolerance: float = min(4 * math.ulp(max(1.0, abs(ratio))), 0.25)
+        if abs(ratio - tick_level) <= tolerance:
+            return tick_level
+        return None
+
     def convert_to_tick_level_rounded_lower(self, price: float) -> int:
         """convert price to tick level rounded lower.
 
@@ -502,6 +529,9 @@ class Market:
         Returns:
             int: price for tick level rounded lower.
         """
+        tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
+        if tick_level is not None:
+            return tick_level
         return math.floor(price / self.tick_size)
 
     def convert_to_tick_level_rounded_upper(self, price: float) -> int:
@@ -513,6 +543,9 @@ class Market:
         Returns:
             int: price for tick level rounded upper.
         """
+        tick_level: Optional[int] = self._get_tick_level_if_on_tick(price=price)
+        if tick_level is not None:
+            return tick_level
         return math.ceil(price / self.tick_size)
 
     def convert_to_tick_level(self, price: float, is_buy: bool) -> int:
@@ -755,14 +788,18 @@ class Market:
             raise ValueError("the order is already submitted")
         if order.order_id is not None:
             raise ValueError("the order is already submitted")
-        if order.price is not None and order.price % self.tick_size != 0:
-            warnings.warn(
-                "order price does not accord to the tick size. price will be modified"
+        if order.price is not None:
+            tick_level: Optional[int] = self._get_tick_level_if_on_tick(
+                price=order.price
             )
-            order.price = (
-                self.convert_to_tick_level(price=order.price, is_buy=order.is_buy)
-                * self.tick_size
-            )
+            if tick_level is None:
+                warnings.warn(
+                    "order price does not accord to the tick size. price will be modified"
+                )
+                tick_level = self.convert_to_tick_level(
+                    price=order.price, is_buy=order.is_buy
+                )
+            order.price = self.convert_to_price(tick_level=tick_level)
         order.order_id = self._next_order_id
         self._next_order_id += 1
         (self.buy_order_book if order.is_buy else self.sell_order_book).add(order=order)
