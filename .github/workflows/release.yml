@@ -53,7 +53,13 @@ jobs:
         run: |
           # "Re-run all jobs" finds the tag that the first run pushed. Accept it
           # if it points to this commit; refuse a tag on any other commit.
-          tagged_commit=$(git ls-remote --tags origin "refs/tags/${TAG}^{}" | cut -f1)
+          # An annotated tag has a peeled "^{}" entry holding its commit; a
+          # lightweight tag has only the direct entry, which is the commit.
+          tag_refs=$(git ls-remote --tags origin "refs/tags/${TAG}" "refs/tags/${TAG}^{}")
+          tagged_commit=$(printf '%s\n' "$tag_refs" | awk -v ref="refs/tags/${TAG}^{}" '$2 == ref { print $1 }')
+          if [ -z "$tagged_commit" ]; then
+            tagged_commit=$(printf '%s\n' "$tag_refs" | awk -v ref="refs/tags/${TAG}" '$2 == ref { print $1 }')
+          fi
           if [ -n "$tagged_commit" ]; then
             if [ "$tagged_commit" = "$(git rev-parse HEAD)" ]; then
               echo "Tag ${TAG} already points to this commit; not creating it again."
