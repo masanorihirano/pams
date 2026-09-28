@@ -292,6 +292,11 @@ The ``simulation`` block
      - Number of workers for the agent-parallel runners (default: the number of CPUs minus 1, at least 1).
        Ignored by
        :class:`~pams.runners.SequentialRunner`. See :ref:`config-parallel`.
+   * - ``startMethod`` |optional|
+     - ``"spawn"``, ``"fork"`` or ``"forkserver"``
+     - How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker processes (default: the
+       platform's default). Only the start methods available on the platform are accepted: Windows has only
+       ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
 
 Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
 
@@ -1170,7 +1175,7 @@ the same seed. They call ``submit_orders`` of normal agents in parallel; everyth
 
 - **Speed**: because of Python's GIL, the thread runner only helps when ``submit_orders`` waits for I/O (for
   example a call to an external model); it does not speed up the built-in agents. The process runner is much
-  slower, because the agent and the markets are copied to a worker process at every call. See also
+  slower, because the whole simulation is copied to the worker processes in every step (see below). See also
   :doc:`platform`.
 - **User-defined agents** must not change shared objects (markets, other agents, the logger) in
   ``submit_orders``. With the process runner, changes an agent makes to its own attributes in ``submit_orders``
@@ -1189,10 +1194,24 @@ With the process runner, put the code that creates and runs the runner under ``i
 ``fork``; without it the run fails or hangs), and define user-defined classes in a ``.py``
 file, not in a notebook or an interactive session, so that the worker processes can import them.
 
-The process runner pickles the agent and the markets at every call, together with everything they refer to (the
+``simulation.startMethod`` sets how the process runner starts its worker processes: ``"spawn"`` (the default on
+Windows and macOS), ``"fork"`` (the default on Linux up to Python 3.13) or ``"forkserver"`` (the default on Linux
+from Python 3.14). Only the values that :func:`multiprocessing.get_all_start_methods` returns on the platform are
+accepted; any other value is an error. Without the key, the platform's default is used, unless a subclass of the
+runner sets another default. Use ``"spawn"`` when agents use a library that does not work in a forked process,
+such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.
+
+The process runner pickles the agents and the markets for each task, together with everything they refer to (the
 simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
 therefore be picklable: for example, a logger that keeps an open file fails with
 ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data in memory and write the file after the run.
+
+Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
+state of each agent's random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,
+much longer than ``submit_orders`` of the built-in agents. To limit this cost, the agents asked at the same time
+are split into at most ``numParallel`` tasks. An object held by an agent, such as a neural network model, is copied
+in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
+``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
 
 
 .. _config-troubleshooting:
