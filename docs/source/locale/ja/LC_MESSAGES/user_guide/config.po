@@ -2490,6 +2490,77 @@ msgstr ""
 " pickle 化の対象から除外し（例えば ``__getstate__`` を使います）、読み取り専用であれば、代わりにワーカープロセスごとに 1 "
 "回だけ読み込んでください（:doc:`platform` を参照）。"
 
+#: ../../source/user_guide/config.rst:1219
+msgid "TensorFlow runner"
+msgstr "TensorFlow ランナー"
+
+#: ../../source/user_guide/config.rst:1221
+msgid ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is "
+"the process runner for agents that use TensorFlow in ``submit_orders``, "
+"for example Keras models. TensorFlow is not installed with PAMS: install "
+"it yourself (for example ``pip install tensorflow``, or ``pip install "
+"tensorflow-cpu`` for the CPU-only build). The runner starts its worker "
+"processes by ``\"spawn\"`` unless ``simulation.startMethod`` is set. Each"
+" worker process configures TensorFlow once, before it runs any task, with"
+" these keys in ``simulation``, which the other runners ignore:"
+msgstr ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` "
+"（実験的）は、``submit_orders`` で TensorFlow を使うエージェント（例えば Keras "
+"のモデル）のためのプロセスランナーです。TensorFlow は PAMS "
+"と一緒にはインストールされないため、各自でインストールしてください（例えば ``pip install tensorflow``、CPU "
+"版のみであれば ``pip install tensorflow-"
+"cpu``）。このランナーは、``simulation.startMethod`` が設定されていない限り、``\"spawn\"`` "
+"でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで "
+"TensorFlow を設定します。これらのキーは他のランナーでは無視されます："
+
+#: ../../source/user_guide/config.rst:1234
+msgid "``tensorflowIntraOpThreads`` |optional|"
+msgstr ""
+
+#: ../../source/user_guide/config.rst:1236
+msgid ""
+"The number of threads that TensorFlow uses to run one operation, such as "
+"a matrix multiplication, on each worker process. Default: the number of "
+"CPUs divided by ``numParallel`` (at least 1), so that the worker "
+"processes do not use more threads than the CPUs in total."
+msgstr ""
+"各ワーカープロセスで、TensorFlow が 1 つの演算（例えば行列積）の実行に使うスレッド数です。デフォルト：CPU 数を "
+"``numParallel`` で割った値（最小 1）。ワーカープロセス全体で CPU 数より多くのスレッドを使わないようにするためです。"
+
+#: ../../source/user_guide/config.rst:1239
+msgid "``tensorflowInterOpThreads`` |optional|"
+msgstr ""
+
+#: ../../source/user_guide/config.rst:1241
+msgid ""
+"The number of threads that TensorFlow uses to run independent operations "
+"at the same time on each worker process. Default: ``1``."
+msgstr "各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：``1``。"
+
+#: ../../source/user_guide/config.rst:1243
+msgid "``tensorflowGpuMemoryGrowth`` |optional|"
+msgstr ""
+
+#: ../../source/user_guide/config.rst:1245
+msgid ""
+"Whether memory growth is enabled for all the visible GPUs on each worker "
+"process. Default: ``true``, so that the worker processes can share a GPU "
+"(by default, TensorFlow allocates almost all the memory of a GPU to the "
+"first process that uses it)."
+msgstr ""
+"各ワーカープロセスで、認識されているすべての GPU のメモリ増加（memory "
+"growth）を有効にするかどうかです。デフォルト：``true``。ワーカープロセスが GPU "
+"を共有できるようにするためです（TensorFlow はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。"
+
+#: ../../source/user_guide/config.rst:1249
+msgid ""
+"These keys do not configure TensorFlow on the main process. See "
+":doc:`platform` for how to write agents for this runner."
+msgstr ""
+"これらのキーはメインプロセスの TensorFlow を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` "
+"を参照してください。"
+
 #: ../../source/user_guide/config.rst:1223
 msgid "Silent pitfalls"
 msgstr "エラーにならない落とし穴"
