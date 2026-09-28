@@ -79,7 +79,9 @@ class TorchAgentParallelRunner(MultiProcessAgentParallelRunner):
       :func:`torch.set_num_threads` to ``simulation.torchNumThreads``. By default, PyTorch uses
       about as many threads as the CPU cores in every process, so ``numParallel`` workers would
       oversubscribe the CPUs. The default is the number of threads of PyTorch on the main process,
-      :func:`torch.get_num_threads`, divided by ``numParallel`` (at least one).
+      :func:`torch.get_num_threads`, divided by the number of workers that can run tasks at the
+      same time, i.e., the smaller of ``numParallel`` and the largest ``maxNormalOrders`` of the
+      sessions (at least one).
     - sets the sharing strategy of :mod:`torch.multiprocessing` to
       :attr:`torch_sharing_strategy`, i.e., ``file_system``, on the main process when it is set up
       and on each worker process (see below).
@@ -161,7 +163,8 @@ class TorchAgentParallelRunner(MultiProcessAgentParallelRunner):
         super().__init__(settings, prng, logger, simulator_class)
         #: Optional[int]: number of threads of PyTorch on each worker process given by
         #: ``simulation.torchNumThreads``. None means the default, i.e., the number of threads of
-        #: PyTorch on the main process divided by ``num_parallel`` (at least one).
+        #: PyTorch on the main process divided by the smaller of ``num_parallel`` and the largest
+        #: ``max_normal_orders`` of the sessions (at least one).
         self.torch_num_threads: Optional[int] = None
 
     def _setup(self) -> None:
@@ -208,13 +211,20 @@ class TorchAgentParallelRunner(MultiProcessAgentParallelRunner):
         Returns:
             Tuple[Any, ...]: the number of threads of PyTorch on each worker process, i.e.,
             :attr:`torch_num_threads`, or the number of threads of PyTorch on the main process
-            divided by ``num_parallel`` (at least one) if it is None, and
-            :attr:`torch_sharing_strategy`.
+            divided by the number of workers that can run tasks at the same time (at least one)
+            if it is None, and :attr:`torch_sharing_strategy`.
 
         """
-        num_threads: int = (
-            self.torch_num_threads
-            if self.torch_num_threads is not None
-            else max(_import_torch().get_num_threads() // self.num_parallel, 1)
-        )
+        num_threads: int
+        if self.torch_num_threads is not None:
+            num_threads = self.torch_num_threads
+        else:
+            # at most max_normal_orders agents are asked at the same time, so the other workers
+            # stay idle and do not need threads.
+            max_normal_orders: int = max(
+                (session.max_normal_orders for session in self.simulator.sessions),
+                default=self.num_parallel,
+            )
+            num_busy_workers: int = max(min(self.num_parallel, max_normal_orders), 1)
+            num_threads = max(_import_torch().get_num_threads() // num_busy_workers, 1)
         return (num_threads, self.torch_sharing_strategy)

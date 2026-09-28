@@ -120,8 +120,9 @@ created, and the runner raises an ``ImportError`` if PyTorch is not installed. I
   PyTorch: CUDA cannot be initialized in a forked process, and a process forked while PyTorch runs its thread pools
   can deadlock.
 - sets the number of threads of PyTorch on each worker process to ``simulation.torchNumThreads`` (default: the number
-  of threads of PyTorch on the main process divided by ``numParallel``, at least 1), so that the workers do not
-  oversubscribe the CPUs. For small models, 1 is often the fastest.
+  of threads of PyTorch on the main process divided by the smaller of ``numParallel`` and the largest
+  ``maxNormalOrders`` of the sessions, at least 1), so that the workers do not oversubscribe the CPUs. For small
+  models, 1 is often the fastest.
 - sets the sharing strategy of :mod:`torch.multiprocessing` to ``file_system`` on the main process, which affects the
   whole process, and on the worker processes. A subclass can keep the current strategy by setting its class attribute
   ``torch_sharing_strategy`` to ``None``.

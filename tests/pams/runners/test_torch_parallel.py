@@ -229,22 +229,40 @@ class TestTorchAgentParallelRunner:
         assert runner.start_method == start_method
         assert runner._get_mp_context().get_start_method() == start_method
 
-    @pytest.mark.parametrize("num_parallel", [1, 2, 3, 1000])
-    def test_torch_num_threads_default(self, torch: Any, num_parallel: int) -> None:
+    @pytest.mark.parametrize(
+        "num_parallel, max_normal_orders, num_busy_workers",
+        [(1, 4, 1), (2, 4, 2), (3, 4, 3), (1000, 4, 4), (8, 2, 2), (3, 1, 1)],
+    )
+    def test_torch_num_threads_default(
+        self,
+        torch: Any,
+        monkeypatch: pytest.MonkeyPatch,
+        num_parallel: int,
+        max_normal_orders: int,
+        num_busy_workers: int,
+    ) -> None:
+        # the threads are divided among the workers that can run tasks at the same time, i.e.,
+        # at most max_normal_orders workers
         setting = copy.deepcopy(SETTING)
         setting["simulation"]["numParallel"] = num_parallel
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = max_normal_orders
         _, runner = self._make_runners(setting=setting)
         assert runner.torch_num_threads is None
+        # before the setup, there are no sessions and all the workers are assumed to be busy
         runner.num_parallel = num_parallel
-        expected = max(torch.get_num_threads() // num_parallel, 1)
-        assert runner._get_worker_initargs() == (expected, "file_system")
-        if num_parallel <= 2:
+        assert runner._get_worker_initargs()[0] == max(
+            torch.get_num_threads() // num_parallel, 1
+        )
+        if num_parallel > 2:
             # the workers are started only for a few values to keep the test fast
-            runner._setup()
-            assert runner.torch_num_threads is None
-            assert runner._get_worker_initializer() is _initialize_torch_worker
-            executor = runner._get_executor()
-            assert executor.submit(get_torch_settings).result()[0] == expected
+            monkeypatch.setattr(runner, "_create_executor", lambda: None)
+        runner._setup()
+        assert runner.torch_num_threads is None
+        expected = max(torch.get_num_threads() // num_busy_workers, 1)
+        assert runner._get_worker_initargs() == (expected, "file_system")
+        assert runner._get_worker_initializer() is _initialize_torch_worker
+        if runner.executor is not None:
+            assert runner.executor.submit(get_torch_settings).result()[0] == expected
 
     def test_torch_num_threads_config(self, torch: Any) -> None:
         setting = copy.deepcopy(SETTING)
