@@ -3,6 +3,11 @@ import multiprocessing
 import os
 import random
 import time
+import uuid
+from concurrent.futures import BrokenExecutor
+from concurrent.futures import Executor
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 from typing import Dict
 from typing import List
@@ -21,6 +26,7 @@ from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
+from . import dummy
 from .dummy import WAIT_TIME
 from .dummy import CancelingAgent
 from .dummy import DummyLogger2
@@ -28,6 +34,15 @@ from .dummy import FCNDelayAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
+from .dummy import WorkerInitializationCheckingAgent
+from .dummy import fail_to_initialize_worker
+from .dummy import get_parent_marker
+from .dummy import get_worker_token
+from .dummy import initialize_worker
+
+
+class SpawnMultiProcessAgentParallelRunner(MultiProcessAgentParallelRunner):
+    default_start_method = "spawn"
 
 
 def _order_keys(orders: List[Union[Order, Cancel]]) -> List[Any]:
@@ -143,6 +158,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         IdleEvenIDFCNAgent,
         CancelingAgent,
         RaisingAgent,
+        WorkerInitializationCheckingAgent,
     ]
 
     def _make_runners(
@@ -347,6 +363,99 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         with pytest.warns(UserWarning, match="is experimental"):
             self.runner_class(settings=copy.deepcopy(self.default_setting))
 
+    def test_create_executor_is_used(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        created_executors: List[Executor] = []
+
+        def create_executor() -> Executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            created_executors.append(executor)
+            return executor
+
+        setting = copy.deepcopy(self.default_setting)
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(parallel_runner, "_create_executor", create_executor)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert created_executors == [parallel_runner.executor]
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="FCNAgent",
+        )
+        assert parallel_runner.executor is None
+        assert parallel_runner._get_executor() is created_executors[-1]
+        assert len(created_executors) == 2
+        parallel_runner._shutdown_executor()
+
+    def _run_with_worker_initializer(
+        self, setting: Dict, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        token = uuid.uuid4().hex
+        setting = copy.deepcopy(setting)
+        setting["FCNAgents"]["class"] = "WorkerInitializationCheckingAgent"
+        setting["FCNAgents"]["workerToken"] = token
+        setting["simulation"]["numParallel"] = 2
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = 6
+        _, runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(
+            runner, "_get_worker_initializer", lambda: initialize_worker
+        )
+        monkeypatch.setattr(runner, "_get_worker_initargs", lambda: (token,))
+        runner._setup()
+        runner._run()
+        logger = runner.logger
+        assert isinstance(logger, DummyLogger2)
+        assert logger.n_order_log > 0
+        assert runner.executor is None
+        # the initializer is not called on the main thread
+        assert get_worker_token() is None
+
+    def test_worker_initializer(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        self._run_with_worker_initializer(
+            setting=self.default_setting, monkeypatch=monkeypatch
+        )
+
+    def test_worker_initializer_default(self) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "WorkerInitializationCheckingAgent"
+        setting["FCNAgents"]["workerToken"] = uuid.uuid4().hex
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        _, runner = self._make_runners(setting=setting)
+        assert runner._get_worker_initializer() is None
+        assert runner._get_worker_initargs() == ()
+        # without the initializer, WorkerInitializationCheckingAgent fails
+        runner._setup()
+        with pytest.raises(RuntimeError, match="worker is initialized with None"):
+            runner._run()
+        assert runner.executor is None
+
+    def test_worker_initializer_failure(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        _, runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(
+            runner, "_get_worker_initializer", lambda: fail_to_initialize_worker
+        )
+        runner._setup()
+        with pytest.raises(BrokenExecutor):
+            runner._run()
+        assert runner.executor is None
+
+    def test_split_agents_into_chunks(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        runner._setup()
+        runner._shutdown_executor()
+        agents = runner.simulator.normal_frequency_agents
+        assert runner._split_agents_into_chunks(agents=agents) == [
+            [agent] for agent in agents
+        ]
+        assert runner._split_agents_into_chunks(agents=[]) == []
+
 
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
@@ -389,3 +498,118 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     def test_start_method(self) -> None:
         # the tests above must pass regardless of the start method of multiprocessing
         assert multiprocessing.get_start_method() in ["fork", "spawn", "forkserver"]
+
+    @pytest.mark.parametrize("start_method", multiprocessing.get_all_start_methods())
+    def test_start_method_config(
+        self, start_method: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(dummy, "PARENT_MARKER", "set on the main process")
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "CancelingAgent"
+        setting["simulation"]["startMethod"] = start_method
+        setting["simulation"]["numParallel"] = 2
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 10
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        assert isinstance(parallel_runner, MultiProcessAgentParallelRunner)
+        assert parallel_runner.start_method is None
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert parallel_runner.start_method == start_method
+        assert parallel_runner._get_mp_context().get_start_method() == start_method
+        # module globals modified on the main process are inherited only by forked workers
+        marker = parallel_runner._get_executor().submit(get_parent_marker).result()
+        if start_method == "fork":
+            assert marker == "set on the main process"
+        else:
+            assert marker is None
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="CancelingAgent",
+        )
+
+    @pytest.mark.parametrize("start_method", ["invalid", "", "SPAWN", 1, None])
+    def test_start_method_invalid(self, start_method: Any) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = start_method
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        with pytest.raises(ValueError, match="startMethod"):
+            runner._setup()
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        assert runner.executor is None
+
+    def test_start_method_default(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        assert runner.start_method is None
+        runner._setup()
+        assert runner.start_method is None
+        assert (
+            runner._get_mp_context().get_start_method()
+            == multiprocessing.get_context().get_start_method()
+        )
+        runner._shutdown_executor()
+
+    def test_default_start_method_of_subclass(self) -> None:
+        assert MultiProcessAgentParallelRunner.default_start_method is None
+        setting = copy.deepcopy(self.default_setting)
+        runner = SpawnMultiProcessAgentParallelRunner(settings=copy.deepcopy(setting))
+        assert runner.start_method == "spawn"
+        runner._setup()
+        assert runner.start_method == "spawn"
+        assert runner._get_mp_context().get_start_method() == "spawn"
+        assert isinstance(runner.executor, ProcessPoolExecutor)
+        runner._shutdown_executor()
+        # simulation.startMethod takes precedence over the default of the class
+        start_method = next(
+            (
+                method
+                for method in multiprocessing.get_all_start_methods()
+                if method != "spawn"
+            ),
+            "spawn",
+        )
+        setting["simulation"]["startMethod"] = start_method
+        runner = SpawnMultiProcessAgentParallelRunner(settings=copy.deepcopy(setting))
+        runner._setup()
+        assert runner.start_method == start_method
+        assert runner._get_mp_context().get_start_method() == start_method
+        runner._shutdown_executor()
+
+    def test_worker_initializer(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # the initializer and its arguments must be passed to the workers even with spawn
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = "spawn"
+        self._run_with_worker_initializer(setting=setting, monkeypatch=monkeypatch)
+
+    def test_split_agents_into_chunks(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        runner._setup()
+        runner._shutdown_executor()
+        agents = runner.simulator.normal_frequency_agents
+        assert len(agents) == 10
+        for num_parallel in [1, 2, 3, 4, 10, 12]:
+            runner.num_parallel = num_parallel
+            for n_agents in [0, 1, 2, 3, 5, 10]:
+                chunks = runner._split_agents_into_chunks(agents=agents[:n_agents])
+                assert len(chunks) == min(num_parallel, n_agents)
+                assert [agent for chunk in chunks for agent in chunk] == agents[
+                    :n_agents
+                ]
+                chunk_sizes = [len(chunk) for chunk in chunks]
+                if n_agents > 0:
+                    assert min(chunk_sizes) >= 1
+                    assert max(chunk_sizes) - min(chunk_sizes) <= 1
+        runner.num_parallel = 3
+        assert [
+            len(chunk) for chunk in runner._split_agents_into_chunks(agents=agents)
+        ] == [4, 3, 3]
