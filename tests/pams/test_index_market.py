@@ -56,6 +56,35 @@ class TestIndexMarket:
         with pytest.warns(Warning):
             im.setup(settings=setting)
 
+    def test_setup_transaction_cost_rate(self) -> None:
+        sim = Simulator(prng=random.Random(32))
+        m1 = Market(market_id=0, prng=random.Random(42), simulator=sim, name="market")
+        m1.setup(
+            settings={"tickSize": 0.001, "outstandingShares": 100, "marketPrice": 300.0}
+        )
+        sim._add_market(market=m1)
+        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
+        im.setup(
+            settings={
+                "tickSize": 0.001,
+                "marketPrice": 300.0,
+                "markets": ["market"],
+                "transactionCostRate": 0.0005,
+            }
+        )
+        assert im.transaction_cost_rate == 0.0005
+        assert m1.transaction_cost_rate == 0.0
+        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
+        with pytest.raises(ValueError):
+            im.setup(
+                settings={
+                    "tickSize": 0.001,
+                    "marketPrice": 300.0,
+                    "markets": ["market"],
+                    "transactionCostRate": -0.0005,
+                }
+            )
+
     def test_add_market(self) -> None:
         sim = Simulator(prng=random.Random(32))
         im = IndexMarket(market_id=1, prng=random.Random(42), simulator=sim, name="im")

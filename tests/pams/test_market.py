@@ -311,6 +311,47 @@ class TestMarket:
         m.setup(settings={"tickSize": 0.001, "fundamentalPrice": 500.0})
         m.setup(settings={"tickSize": 0.001, "marketPrice": 300.0})
 
+    @pytest.mark.parametrize(
+        "rate, expected", [(None, 0.0), (0.0, 0.0), (0, 0.0), (0.001, 0.001)]
+    )
+    def test_setup_transaction_cost_rate(
+        self, rate: Optional[float], expected: float
+    ) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        assert m.transaction_cost_rate == 0.0
+        settings = {"tickSize": 0.001, "marketPrice": 300.0}
+        if rate is not None:
+            settings["transactionCostRate"] = rate
+        m.setup(settings=settings)
+        assert m.transaction_cost_rate == expected
+        assert isinstance(m.transaction_cost_rate, float)
+
+    @pytest.mark.parametrize(
+        "rate", ["0.001", True, None, -0.001, 1.0, 1, 10.0, math.nan, math.inf]
+    )
+    def test_setup_transaction_cost_rate_invalid(self, rate: object) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        with pytest.raises(ValueError):
+            m.setup(
+                settings={
+                    "tickSize": 0.001,
+                    "marketPrice": 300.0,
+                    "transactionCostRate": rate,
+                }
+            )
+
     def test_extract_sequential_data_by_time(self) -> None:
         m = self.base_class(
             market_id=0,
@@ -1050,6 +1091,100 @@ class TestMarket:
             log_ for log_ in logger.pending_logs if isinstance(log_, ExecutionLog)
         ]
         assert execution_logs == [log]
+
+    def test_compute_transaction_costs(self) -> None:
+        market = self._make_running_market()
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=3, price=10
+        )
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=3, price=10
+        )
+        assert market.compute_transaction_costs(
+            price=10.0, volume=3, buy_order=buy_order, sell_order=sell_order
+        ) == (0.0, 0.0)
+        market.transaction_cost_rate = 0.001
+        buy_cost, sell_cost = market.compute_transaction_costs(
+            price=10.0, volume=3, buy_order=buy_order, sell_order=sell_order
+        )
+        assert buy_cost == pytest.approx(0.03)
+        assert sell_cost == pytest.approx(0.03)
+
+    @pytest.mark.parametrize("rate", [None, 0.0, 0.002])
+    def test_execute_orders_transaction_costs(self, rate: Optional[float]) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        settings = {"tickSize": 0.001, "marketPrice": 10.0}
+        if rate is not None:
+            settings["transactionCostRate"] = rate
+        market.setup(settings=settings)
+        market._update_time(10.0)
+        market._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=5, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(buy_order)
+        log = market._execute_orders(
+            price=10.0, volume=2, buy_order=buy_order, sell_order=sell_order
+        )
+        assert log.price == 10.0
+        assert log.volume == 2
+        expected = 0.0 if rate is None else 10.0 * 2 * rate
+        assert log.buy_transaction_cost == pytest.approx(expected)
+        assert log.sell_transaction_cost == pytest.approx(expected)
+        if not expected:
+            assert log.buy_transaction_cost == 0.0
+            assert log.sell_transaction_cost == 0.0
+
+    def test_execute_orders_overridden_transaction_costs(self) -> None:
+        calls: List[Tuple[float, int, Order, Order]] = []
+
+        class MakerTakerMarket(self.base_class):  # type: ignore
+            def compute_transaction_costs(
+                self, price: float, volume: int, buy_order: Order, sell_order: Order
+            ) -> Tuple[float, float]:
+                calls.append((price, volume, buy_order, sell_order))
+                # The order that arrived first (smaller order ID) is the maker.
+                assert buy_order.order_id is not None
+                assert sell_order.order_id is not None
+                value = price * volume
+                maker_cost = -0.0001 * value
+                taker_cost = 0.0003 * value
+                if buy_order.order_id > sell_order.order_id:
+                    return taker_cost, maker_cost
+                return maker_cost, taker_cost
+
+        market = MakerTakerMarket(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        market._update_time(1.0)
+        market._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(buy_order)
+        logs = market._execution()
+        assert len(logs) == 1
+        assert calls == [(10.0, 2, buy_order, sell_order)]
+        assert logs[0].buy_transaction_cost == pytest.approx(0.006)
+        assert logs[0].sell_transaction_cost == pytest.approx(-0.002)
 
     def _make_running_market(self) -> Market:
         market = self.base_class(

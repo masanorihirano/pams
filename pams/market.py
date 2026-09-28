@@ -72,6 +72,7 @@ class Market:
         self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
+        self.transaction_cost_rate: float = 0.0
 
     def __repr__(self) -> str:
         return (
@@ -87,6 +88,8 @@ class Market:
                                        This must include the parameters "tickSize" and either "marketPrice"
                                        or "fundamentalPrice".
                                        This can include the parameter "outstandingShares" and "tradeVolume".
+                                       This can also include the parameter "transactionCostRate", a number in
+                                       [0.0, 1.0) (see :func:`compute_transaction_costs`).
             *args: not used.
             **kwargs: not used.
 
@@ -100,6 +103,15 @@ class Market:
             if not isinstance(settings["outstandingShares"], int):
                 raise ValueError("outstandingShares must be int")
             self.outstanding_shares = settings["outstandingShares"]
+        if "transactionCostRate" in settings:
+            transaction_cost_rate = settings["transactionCostRate"]
+            if isinstance(transaction_cost_rate, bool) or not isinstance(
+                transaction_cost_rate, (int, float)
+            ):
+                raise ValueError("transactionCostRate must be int or float")
+            if not 0.0 <= transaction_cost_rate < 1.0:
+                raise ValueError("transactionCostRate must be in [0.0, 1.0)")
+            self.transaction_cost_rate = float(transaction_cost_rate)
         if "marketPrice" in settings:
             self._market_prices = [float(settings["marketPrice"])]
         elif "fundamentalPrice" in settings:
@@ -724,6 +736,34 @@ class Market:
             elif self._mid_prices[self.time] is not None:
                 self._market_prices[self.time] = self._mid_prices[self.time]
 
+    def compute_transaction_costs(
+        self, price: float, volume: int, buy_order: Order, sell_order: Order
+    ) -> Tuple[float, float]:
+        """compute the transaction costs of an execution.
+
+        This is called by the market for every execution. The costs are recorded in
+        :class:`pams.logs.ExecutionLog` and subtracted from the cash of the buyer and the seller
+        by the simulator.
+
+        By default, both the buyer and the seller pay ``transaction_cost_rate`` times the executed value
+        (``price * volume``). ``transaction_cost_rate`` is set by "transactionCostRate" in the market settings
+        and is 0.0 (no costs) by default.
+
+        To implement other fee schedules, e.g., different rates for buyers and sellers or for makers and takers,
+        or fixed fees, override this method. Negative costs are rebates, which are added to the agent's cash.
+
+        Args:
+            price (float): executed price.
+            volume (int): executed volume.
+            buy_order (:class:`pams.order.Order`): buy order.
+            sell_order (:class:`pams.order.Order`): sell order.
+
+        Returns:
+            Tuple[float, float]: transaction costs charged to the buyer and the seller.
+        """
+        transaction_cost: float = price * volume * self.transaction_cost_rate
+        return transaction_cost, transaction_cost
+
     def _execute_orders(
         self, price: float, volume: int, buy_order: Order, sell_order: Order
     ) -> ExecutionLog:
@@ -753,6 +793,9 @@ class Market:
         if volume <= 0:
             raise AssertionError
 
+        buy_transaction_cost, sell_transaction_cost = self.compute_transaction_costs(
+            price=price, volume=volume, buy_order=buy_order, sell_order=sell_order
+        )
         log: ExecutionLog = ExecutionLog(
             market_id=self.market_id,
             time=self.time,
@@ -762,6 +805,8 @@ class Market:
             sell_order_id=cast(int, sell_order.order_id),
             price=price,
             volume=volume,
+            buy_transaction_cost=buy_transaction_cost,
+            sell_transaction_cost=sell_transaction_cost,
         )
 
         self.buy_order_book.change_order_volume(order=buy_order, delta=-volume)
