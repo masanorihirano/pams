@@ -454,8 +454,12 @@ class TestSequentialRunner(TestRunner):
             (Agent, "market class for Market does not inherit Market class"),
             ("FCNAgent", "market class for Market does not inherit Market class"),
             ("LIMIT_ORDER", "market class for Market does not inherit Market class"),
-            (None, "class must be a class name"),
-            (1, "class must be a class name"),
+            (
+                None,
+                r"^class for Market must be a class name \(str\) or a class, "
+                r"but None is given$",
+            ),
+            (1, "class for Market must be a class name"),
         ],
     )
     def test_generate_markets_with_invalid_class(
@@ -768,8 +772,8 @@ class TestSequentialRunner(TestRunner):
             (Market, "agent class for Agents does not inherit Agent class"),
             ("Market", "agent class for Agents does not inherit Agent class"),
             ("LIMIT_ORDER", "agent class for Agents does not inherit Agent class"),
-            (None, "class must be a class name"),
-            (1, "class must be a class name"),
+            (None, "class for Agents must be a class name"),
+            (1, "class for Agents must be a class name"),
         ],
     )
     def test_generate_agents_with_invalid_class(
@@ -1208,8 +1212,8 @@ class TestSequentialRunner(TestRunner):
             (Market, "event class for Shock does not inherit EventABC class"),
             ("FCNAgent", "event class for Shock does not inherit EventABC class"),
             ("LIMIT_ORDER", "event class for Shock does not inherit EventABC class"),
-            (None, "class must be a class name"),
-            (1, "class must be a class name"),
+            (None, "class for Shock must be a class name"),
+            (1, "class for Shock must be a class name"),
         ],
     )
     def test_generate_sessions_with_invalid_class(

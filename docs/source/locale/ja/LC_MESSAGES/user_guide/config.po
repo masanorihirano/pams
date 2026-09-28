@@ -597,8 +597,7 @@ msgstr ""
 msgid "``sessionName`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:419
-#: ../../source/user_guide/config.rst:435
+#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:435
 msgid "string"
 msgstr "文字列"
 
@@ -861,6 +860,10 @@ msgstr "市場ブロックとエージェントブロックには、使用する
 #: ../../source/user_guide/config.rst:418
 msgid "``class`` |required|"
 msgstr ""
+
+#: ../../source/user_guide/config.rst:419
+msgid "string or class"
+msgstr "文字列またはクラス"
 
 #: ../../source/user_guide/config.rst:420
 msgid ""
@@ -2573,14 +2576,16 @@ msgid ""
 msgstr "ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している）。"
 
 #: ../../source/user_guide/config.rst:1258
-msgid "``class must be a class name (str) or a class, but X is given``"
+msgid "``class for X must be a class name (str) or a class, but Y is given``"
 msgstr ""
 
 #: ../../source/user_guide/config.rst:1259
 msgid ""
-"The value of ``class`` in a Python dict config is neither a string nor a "
-"class, e.g. ``None``."
-msgstr "Python の dict による設定で、``class`` の値が文字列でもクラスでもありません（例：``None``）。"
+"The value ``Y`` of ``class`` in block ``X`` of a Python dict config is "
+"neither a string nor a class, e.g. ``None``."
+msgstr ""
+"Python の dict による設定で、ブロック ``X`` の ``class`` の値 ``Y`` "
+"が文字列でもクラスでもありません（例：``None``）。"
 
 #: ../../source/user_guide/config.rst:1240
 msgid "``X setting is missing in config``"

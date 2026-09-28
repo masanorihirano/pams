@@ -118,6 +118,11 @@ class SequentialRunner(Runner):
                 prefix = name + ("-" if n_markets > 1 else "")
             if "class" not in market_settings:
                 raise ValueError(f"class is not defined for {name}")
+            if not isinstance(market_settings["class"], (str, type)):
+                raise ValueError(
+                    f"class for {name} must be a class name (str) or a class, "
+                    f"but {market_settings['class']!r} is given"
+                )
             market_class: Type[Market] = find_class(
                 name=market_settings["class"],
                 optional_class_list=self.registered_classes,
@@ -224,6 +229,11 @@ class SequentialRunner(Runner):
 
             if "class" not in agent_settings:
                 raise ValueError(f"class is not defined for {name}")
+            if not isinstance(agent_settings["class"], (str, type)):
+                raise ValueError(
+                    f"class for {name} must be a class name (str) or a class, "
+                    f"but {agent_settings['class']!r} is given"
+                )
             agent_class: Type[Agent] = find_class(
                 name=agent_settings["class"],
                 optional_class_list=self.registered_classes,
@@ -339,6 +349,11 @@ class SequentialRunner(Runner):
                     )
                     if "class" not in event_setting:
                         raise ValueError(f"class is required in {event_name}")
+                    if not isinstance(event_setting["class"], (str, type)):
+                        raise ValueError(
+                            f"class for {event_name} must be a class name (str) "
+                            f"or a class, but {event_setting['class']!r} is given"
+                        )
                     event_class: Type[EventABC] = find_class(
                         name=event_setting["class"],
                         optional_class_list=self.registered_classes,

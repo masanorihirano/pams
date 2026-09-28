@@ -416,7 +416,7 @@ created and how they are named.
      - Value
      - Description
    * - ``class`` |required|
-     - string
+     - string or class
      - Class name, e.g. ``"Market"`` or ``"FCNAgent"``. Use the plain class name (case-sensitive), not a dotted
        path. Built-in classes are found automatically; your own classes must be registered, or set as the
        class itself in a Python dict config (see :ref:`config-user-classes`).
@@ -1255,8 +1255,9 @@ Common errors
        registered twice. Rename the class or register it once.
    * - ``market class for X does not inherit Market class`` (the same for agent and event classes)
      - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
-   * - ``class must be a class name (str) or a class, but X is given``
-     - The value of ``class`` in a Python dict config is neither a string nor a class, e.g. ``None``.
+   * - ``class for X must be a class name (str) or a class, but Y is given``
+     - The value ``Y`` of ``class`` in block ``X`` of a Python dict config is neither a string nor a class,
+       e.g. ``None``.
    * - ``X setting is missing in config``
      - A name in ``simulation.markets`` or ``simulation.agents`` has no block. Check the spelling.
    * - ``KeyError: 'X'``
