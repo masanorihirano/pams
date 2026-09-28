@@ -27,7 +27,7 @@ from .sequential import SequentialRunner
 def _submit_orders_in_worker(
     agent: Agent, markets: List[Market]
 ) -> Tuple[List[Union[Order, Cancel]], Any]:
-    """call :func:`pams.agents.Agent.submit_orders` on a worker. (Internal function)
+    """Call :func:`pams.agents.Agent.submit_orders` on a worker (internal function).
 
     This function is a module-level function so that it can be pickled and executed
     on a worker process of :class:`concurrent.futures.ProcessPoolExecutor`.
@@ -41,6 +41,7 @@ def _submit_orders_in_worker(
             the agent's pseudo random number generator after the submission. The state is
             required to update the agent on the main process when this function runs on
             another process.
+
     """
     orders: List[Union[Order, Cancel]] = agent.submit_orders(markets=markets)
     return orders, agent.prng.getstate()
@@ -49,18 +50,22 @@ def _submit_orders_in_worker(
 class MultiThreadAgentParallelRunner(SequentialRunner):
     """Multi Thread Agent Parallel runner class. This is experimental.
 
-    In this runner, only :func:`pams.agents.Agent.submit_orders` of normal (non high-frequency) agents
+    In this runner, only :func:`pams.agents.Agent.submit_orders` of normal (non high-frequency)
+    agents
     is parallelized in each step using :class:`concurrent.futures.ThreadPoolExecutor`.
-    Order handling, executions, high-frequency agents, events, and logging are processed sequentially
+    Order handling, executions, high-frequency agents, events, and logging are processed
+    sequentially
     on the main thread in the same way as :class:`pams.runners.SequentialRunner`.
 
-    The simulation results are identical to those of :class:`pams.runners.SequentialRunner` with the same
+    The simulation results are identical to those of :class:`pams.runners.SequentialRunner` with the
+    same
     settings and the same seed, because agents are asked to submit orders in the same order and
     the same number of agents are asked as :class:`pams.runners.SequentialRunner` does.
     Agents are asked in batches: at first, ``maxNormalOrders`` agents are asked in parallel,
     and if some of them submit no orders, the same number of the next agents are asked in parallel,
     and so on, until the number of agents submitting orders reaches ``maxNormalOrders``.
-    This means that the number of agents that can be parallelized is limited by ``maxNormalOrders`` of the session.
+    This means that the number of agents that can be parallelized is limited by ``maxNormalOrders``
+    of the session.
 
     The number of workers can be set by ``simulation.numParallel`` in the config. The default is
     the number of CPUs minus one (at least one).
@@ -73,7 +78,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         the simulator, the logger, or other agents in :func:`pams.agents.Agent.submit_orders`.
 
     .. note::
-        Because of the GIL of python, this runner does not speed up CPU-bound agents such as the built-in
+        Because of the GIL of python, this runner does not speed up CPU-bound agents such as the
+        built-in
         agents. This runner is beneficial when :func:`pams.agents.Agent.submit_orders` waits for I/O
         (e.g., network access to external models or services).
     """
@@ -89,7 +95,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
@@ -99,6 +105,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
 
         Returns:
             None
+
         """
         super().__init__(settings, prng, logger, simulator_class)
         warnings.warn(
@@ -108,9 +115,10 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         self.executor: Optional[Executor] = None
 
     def _setup(self) -> None:
-        """internal usage class for setup.
+        """Set up the simulation (internal method).
 
-        In addition to :func:`pams.runners.SequentialRunner._setup`, ``simulation.numParallel`` is read
+        In addition to :func:`pams.runners.SequentialRunner._setup`, ``simulation.numParallel`` is
+        read
         and the executor is prepared.
         """
         super()._setup()
@@ -122,7 +130,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 or num_parallel < 1
             ):
                 raise ValueError(
-                    f"simulation.numParallel must be a positive integer, but {num_parallel} is given"
+                    "simulation.numParallel must be a positive integer, "
+                    f"but {num_parallel} is given"
                 )
             self.num_parallel = num_parallel
         max_normal_orders = max(
@@ -139,23 +148,29 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         self.executor = self._parallel_pool_provider(max_workers=self.num_parallel)
 
     def _get_executor(self) -> Executor:
-        """get the executor. If the executor is not prepared, prepare it. (Internal method)
+        """Get the executor (internal method).
+
+        If the executor is not prepared, prepare it.
 
         Returns:
             Executor: executor.
+
         """
         if self.executor is None:
             self.executor = self._parallel_pool_provider(max_workers=self.num_parallel)
         return self.executor
 
     def _shutdown_executor(self) -> None:
-        """shutdown the executor if it exists. (Internal method)"""
+        """Shutdown the executor if it exists (internal method)."""
         if self.executor is not None:
             self.executor.shutdown(wait=True)
             self.executor = None
 
     def _run(self) -> None:
-        """main process. The executor is shut down after the simulation. (Internal method)"""
+        """Run the simulation (internal method).
+
+        The executor is shut down after the simulation.
+        """
         try:
             super()._run()
         finally:
@@ -164,7 +179,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
     def _receive_orders_from_worker(
         self, agent: Agent, future: "Future[Tuple[List[Union[Order, Cancel]], Any]]"
     ) -> List[Union[Order, Cancel]]:
-        """receive the result of :func:`_submit_orders_in_worker` and update the agent. (Internal method)
+        """Receive the result of the worker and update the agent (internal method).
 
         Args:
             agent (Agent): agent on the main process.
@@ -172,6 +187,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
 
         Returns:
             List[Union[Order, Cancel]]: orders submitted by the agent.
+
         """
         orders, prng_state = future.result()
         agent.prng.setstate(prng_state)
@@ -180,17 +196,20 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
-        """collect orders from normal_agents in parallel. (Internal method)
-        orders are collected until the number of agents submitting orders reaches max_normal_orders.
+        """Collect orders from normal_agents in parallel (internal method).
+
+        Orders are collected until the number of agents submitting orders reaches max_normal_orders.
 
         Agents are asked in batches so that the agents asked to submit orders and their order are
-        exactly the same as :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.
+        exactly the same as
+        :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.
 
         Args:
             session (Session): session.
 
         Returns:
             List[List[Union[Order, Cancel]]]: orders lists.
+
         """
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
@@ -200,8 +219,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         i_next_agent = 0
         all_orders: List[List[Union[Order, Cancel]]] = []
         while n_orders < session.max_normal_orders and i_next_agent < len(agents):
-            # TODO: currently the original impl is used for order counting.
-            # See more in the SequentialRunner class.
+            # the orders are counted in the same way as SequentialRunner, i.e.,
+            # by the number of agents submitting orders.
             n_remaining = session.max_normal_orders - n_orders
             batch: List[Agent] = agents[i_next_agent : i_next_agent + n_remaining]
             i_next_agent += len(batch)
@@ -218,7 +237,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                         if not session.with_order_placement:
                             raise AssertionError("currently order is not accepted")
                         if (
-                            sum([order.agent_id != agent.agent_id for order in orders])
+                            sum(order.agent_id != agent.agent_id for order in orders)
                             > 0
                         ):
                             raise ValueError(
@@ -235,27 +254,33 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
 class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
     """Multi Process Agent Parallel runner class. This is experimental.
 
-    In this runner, only :func:`pams.agents.Agent.submit_orders` of normal (non high-frequency) agents
+    In this runner, only :func:`pams.agents.Agent.submit_orders` of normal (non high-frequency)
+    agents
     is parallelized in each step using :class:`concurrent.futures.ProcessPoolExecutor`.
     See :class:`pams.runners.MultiThreadAgentParallelRunner` for the details of the parallelization.
 
     .. note::
         The agent and the markets are pickled and copied to a worker process for each call of
-        :func:`pams.agents.Agent.submit_orders`. Therefore, only the returned orders and the state of
+        :func:`pams.agents.Agent.submit_orders`. Therefore, only the returned orders and the state
+        of
         the agent's pseudo random number generator are reflected to the agent on the main process.
         Other attributes modified in :func:`pams.agents.Agent.submit_orders` are discarded.
         User-defined agents for this runner should keep their states through the callbacks such as
-        :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`, which are
+        :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`,
+        which are
         called on the main process, or derive their states from markets.
 
     .. note::
         User-defined classes (agents, markets, loggers, etc.) must be picklable. Especially when the
-        start method of multiprocessing is ``spawn`` or ``forkserver`` (e.g., macOS and Windows), the
-        definition of user-defined classes must be importable from worker processes, i.e., they should be
+        start method of multiprocessing is ``spawn`` or ``forkserver`` (e.g., macOS and Windows),
+        the
+        definition of user-defined classes must be importable from worker processes, i.e., they
+        should be
         saved to a module file rather than defined in ``__main__`` or in an interactive session.
 
     .. warning::
-        This class is much slower than :class:`pams.runners.MultiThreadAgentParallelRunner` because of the
+        This class is much slower than :class:`pams.runners.MultiThreadAgentParallelRunner` because
+        of the
         cost of pickling. If you want to use parallelization, it is recommended to use
         :class:`pams.runners.MultiThreadAgentParallelRunner`.
     """
@@ -267,10 +292,12 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
     def _receive_orders_from_worker(
         self, agent: Agent, future: "Future[Tuple[List[Union[Order, Cancel]], Any]]"
     ) -> List[Union[Order, Cancel]]:
-        """receive the result of :func:`_submit_orders_in_worker` and update the agent. (Internal method)
+        """Receive the result of the worker and update the agent (internal method).
 
-        In addition to :func:`pams.runners.MultiThreadAgentParallelRunner._receive_orders_from_worker`,
-        the orders referred by cancel orders are replaced with the orders on the main process because
+        In addition to
+        :func:`pams.runners.MultiThreadAgentParallelRunner._receive_orders_from_worker`,
+        the orders referred by cancel orders are replaced with the orders on the main process
+        because
         the orders returned from the worker process are copies of them.
 
         Args:
@@ -279,6 +306,7 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
 
         Returns:
             List[Union[Order, Cancel]]: orders submitted by the agent.
+
         """
         orders = super()._receive_orders_from_worker(agent=agent, future=future)
         for order in orders:

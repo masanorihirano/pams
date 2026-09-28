@@ -19,17 +19,18 @@ from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
 
-wait_time = 0.2  # seconds
+WAIT_TIME = 0.2  # seconds
 
 
 class FCNDelayAgent(FCNAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        time.sleep(wait_time)  # Simulate a delay
+        time.sleep(WAIT_TIME)  # Simulate a delay
         return super().submit_orders(markets)
 
 
 class DummyLogger(Logger):
     def __init__(self) -> None:
+        """Initialize counters."""
         super().__init__()
         self.n_market_step_begin = 0
         self.n_market_end_begin = 0
@@ -43,6 +44,7 @@ class DummyLogger(Logger):
 
 class DummyLogger2(Logger):
     def __init__(self) -> None:
+        """Initialize counters."""
         super().__init__()
         self.n_order_log = 0
         self.n_cancel_log = 0
@@ -84,6 +86,7 @@ class DummyLogger2(Logger):
 
 class ExecutionCountLogger(Logger):
     def __init__(self) -> None:
+        """Initialize counters."""
         super().__init__()
         self.execution_logs: List[ExecutionLog] = []
 
@@ -93,6 +96,7 @@ class ExecutionCountLogger(Logger):
 
 class SimulatorAccessingLogger(Logger):
     def __init__(self) -> None:
+        """Initialize counters."""
         super().__init__()
         self.accessed_simulators: List = []
 

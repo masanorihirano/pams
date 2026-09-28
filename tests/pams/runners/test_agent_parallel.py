@@ -21,13 +21,13 @@ from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
+from .dummy import WAIT_TIME
 from .dummy import CancelingAgent
 from .dummy import DummyLogger2
 from .dummy import FCNDelayAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
-from .dummy import wait_time
 
 
 def _order_keys(orders: List[Union[Order, Cancel]]) -> List[Any]:
@@ -240,7 +240,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         orders = runner._collect_orders_from_normal_agents(
             session=runner.simulator.sessions[0]
         )
-        assert orders == []
+        assert not orders
         assert _agent_states(runner.simulator.agents) == states_before
 
     def test_exception_in_submit_orders_is_raised(self) -> None:
@@ -306,20 +306,20 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["FCNAgents"]["class"] = "FCNDelayAgent"  # Use the delayed agent
         sequential_runner, parallel_runner = self._make_runners(setting=setting)
-        # 5 steps x 3 agents x wait_time in sequential
+        # 5 steps x 3 agents x WAIT_TIME in sequential
         start_time = time.time()
         sequential_runner.main()
         end_time = time.time()
         elps_time_sequential = end_time - start_time
-        # 5 steps x 1 batch x wait_time in parallel
+        # 5 steps x 1 batch x WAIT_TIME in parallel
         start_time = time.time()
         parallel_runner.main()
         end_time = time.time()
         elps_time_parallel = end_time - start_time
-        overhead_time = max(elps_time_sequential - wait_time * 15, 0.0)
-        assert elps_time_sequential > wait_time * 15
-        assert elps_time_parallel > wait_time * 5
-        assert elps_time_parallel < wait_time * 5 + overhead_time + 1
+        overhead_time = max(elps_time_sequential - WAIT_TIME * 15, 0.0)
+        assert elps_time_sequential > WAIT_TIME * 15
+        assert elps_time_parallel > WAIT_TIME * 5
+        assert elps_time_parallel < WAIT_TIME * 5 + overhead_time + 1
         assert elps_time_parallel < elps_time_sequential
 
     def test_parallel_thread_warning(self) -> None:
@@ -339,7 +339,8 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
-    # because of the cost of pickling, the time per step is not guaranteed to be less than the threshold.
+    # because of the cost of pickling, the time per step is not guaranteed
+    # to be less than the threshold.
 
     def test_collect_orders_from_normal_agents(self) -> None:
         pytest.skip(
@@ -367,10 +368,8 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         assert len(orders) == 3
         states_after = _agent_states(runner.simulator.agents)
         n_advanced = sum(
-            [
-                before["prng_state"] != after["prng_state"]
-                for before, after in zip(states_before, states_after)
-            ]
+            before["prng_state"] != after["prng_state"]
+            for before, after in zip(states_before, states_after)
         )
         assert n_advanced == 3
         runner._shutdown_executor()
