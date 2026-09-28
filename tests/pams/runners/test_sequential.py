@@ -5,6 +5,7 @@ import time
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Type
 from typing import Union
 from unittest import mock
@@ -17,6 +18,7 @@ from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.agents import Agent
+from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
 
@@ -1738,6 +1740,79 @@ class TestSequentialRunner(TestRunner):
         assert sum(log.volume for log in logger.execution_logs) == sum(
             sum(market._executed_volumes) for market in runner.simulator.markets
         )
+
+    def test_run_transaction_costs(self) -> None:
+        def run(rate: Optional[float]) -> Tuple[Runner, ExecutionCountLogger]:
+            setting = copy.deepcopy(self.default_setting)
+            if rate is not None:
+                setting["Market"]["transactionCostRate"] = rate
+            logger = ExecutionCountLogger()
+            runner = self.test__init__(
+                setting_mode="dict",
+                logger=logger,
+                simulator_class=None,
+                setting=setting,
+            )
+            runner._setup()
+            runner._run()
+            return runner, logger
+
+        rate = 0.001
+        base_runner, base_logger = run(rate=None)
+        zero_runner, zero_logger = run(rate=0.0)
+        cost_runner, cost_logger = run(rate=rate)
+        assert len(base_logger.execution_logs) > 0
+
+        # The built-in agents ignore their cash, so the costs do not change the prices,
+        # the executions and the asset volumes.
+        for runner in [zero_runner, cost_runner]:
+            for base_market, market in zip(
+                base_runner.simulator.markets, runner.simulator.markets
+            ):
+                assert market.get_market_prices() == base_market.get_market_prices()
+                assert (
+                    market.get_executed_volumes() == base_market.get_executed_volumes()
+                )
+            for base_agent, agent in zip(
+                base_runner.simulator.agents, runner.simulator.agents
+            ):
+                assert agent.asset_volumes == base_agent.asset_volumes
+        for logs in [zero_logger.execution_logs, cost_logger.execution_logs]:
+            assert [
+                (log.time, log.buy_agent_id, log.sell_agent_id, log.price, log.volume)
+                for log in logs
+            ] == [
+                (log.time, log.buy_agent_id, log.sell_agent_id, log.price, log.volume)
+                for log in base_logger.execution_logs
+            ]
+
+        # Without costs, the cash is exactly the same as before.
+        for log in base_logger.execution_logs + zero_logger.execution_logs:
+            assert log.buy_transaction_cost == 0.0
+            assert log.sell_transaction_cost == 0.0
+        assert [agent.cash_amount for agent in zero_runner.simulator.agents] == [
+            agent.cash_amount for agent in base_runner.simulator.agents
+        ]
+
+        # With costs, both sides pay the rate times the executed value.
+        paid: Dict[int, float] = {}
+        for log in cost_logger.execution_logs:
+            expected = rate * log.price * log.volume
+            assert log.buy_transaction_cost == pytest.approx(expected)
+            assert log.sell_transaction_cost == pytest.approx(expected)
+            paid[log.buy_agent_id] = (
+                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_cost
+            )
+            paid[log.sell_agent_id] = (
+                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_cost
+            )
+        assert sum(paid.values()) > 0.0
+        for base_agent, agent in zip(
+            base_runner.simulator.agents, cost_runner.simulator.agents
+        ):
+            assert agent.cash_amount == pytest.approx(
+                base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
+            )
 
     def test_run_logger_can_access_simulator(self) -> None:
         logger = SimulatorAccessingLogger()

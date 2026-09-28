@@ -179,6 +179,52 @@ class TestSimulator:
         assert agent_buy.asset_volumes == {0: 102}
         assert agent_sell.asset_volumes == {0: 98}
 
+    def test_update_agents_for_execution_with_transaction_costs(self) -> None:
+        sim = Simulator(prng=random.Random(32))
+        agent_buy = FCNAgent(
+            agent_id=0, prng=random.Random(42), simulator=sim, name="buy_agent"
+        )
+        agent_sell = FCNAgent(
+            agent_id=1, prng=random.Random(42), simulator=sim, name="sell_agent"
+        )
+        agent_buy.cash_amount = 1000
+        agent_sell.cash_amount = 1000
+        agent_buy.asset_volumes = {0: 100}
+        agent_sell.asset_volumes = {0: 100}
+        sim._add_agent(agent_buy)
+        sim._add_agent(agent_sell)
+        execution_logs = [
+            ExecutionLog(
+                market_id=0,
+                time=1,
+                buy_agent_id=0,
+                sell_agent_id=1,
+                buy_order_id=110,
+                sell_order_id=111,
+                price=90.0,
+                volume=2,
+                buy_transaction_cost=1.5,
+                sell_transaction_cost=0.5,
+            ),
+            ExecutionLog(
+                market_id=0,
+                time=1,
+                buy_agent_id=1,
+                sell_agent_id=0,
+                buy_order_id=112,
+                sell_order_id=113,
+                price=100.0,
+                volume=1,
+                buy_transaction_cost=-0.25,
+                sell_transaction_cost=0.75,
+            ),
+        ]
+        sim._update_agents_for_execution(execution_logs=execution_logs)
+        assert agent_buy.cash_amount == pytest.approx(1000 - 180 - 1.5 + 100 - 0.75)
+        assert agent_sell.cash_amount == pytest.approx(1000 + 180 - 0.5 - 100 + 0.25)
+        assert agent_buy.asset_volumes == {0: 101}
+        assert agent_sell.asset_volumes == {0: 99}
+
     def test_check_event_class_and_instance(self) -> None:
         sim = Simulator(prng=random.Random(42))
         market = IndexMarket(

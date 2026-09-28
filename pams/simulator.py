@@ -238,6 +238,9 @@ class Simulator:
     ) -> None:
         """update agents for execution. (Usually, this is called from runner.)
 
+        Besides the executed value, the transaction costs recorded in the execution logs are subtracted
+        from the cash of the buyer and the seller.
+
         Args:
             execution_logs (List["ExecutionLog"]): execution logs.
 
@@ -252,6 +255,8 @@ class Simulator:
             market_id: int = log.market_id
             buy_agent.cash_amount -= price * volume
             sell_agent.cash_amount += price * volume
+            buy_agent.cash_amount -= log.buy_transaction_cost
+            sell_agent.cash_amount -= log.sell_transaction_cost
             buy_agent.asset_volumes[market_id] += volume
             sell_agent.asset_volumes[market_id] -= volume
 
