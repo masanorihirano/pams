@@ -70,7 +70,7 @@ class TestTensorFlowAgentParallelRunner:
             "assetVolume": 50,
             "cashAmount": 10000,
             "modelSeed": 42,
-            "noiseScale": 0.001,
+            "noiseScale": 0.002,
         },
     }
 
@@ -239,6 +239,9 @@ class TestTensorFlowAgentParallelRunner:
             parallel_runner=parallel_runner,
             agent_class=agent_class,
         )
+        # the orders of the agents are executed, so the features given to the model change
+        assert isinstance(parallel_runner.logger, DummyLogger2)
+        assert parallel_runner.logger.n_execution_log > 0
         assert parallel_runner.executor is None
 
     @requires_tensorflow

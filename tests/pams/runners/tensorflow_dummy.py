@@ -107,7 +107,7 @@ class TensorFlowAgent(Agent):
             if not self.is_market_accessible(market_id=market.market_id):
                 continue
             features = np.asarray([get_features(market=market)], dtype=np.float32)
-            expected_log_return = 0.01 * float(
+            expected_log_return = 0.001 * float(
                 model(features, training=False).numpy()[0, 0]
             )
             noise = self.noise_scale * self.prng.gauss(0.0, 1.0)
