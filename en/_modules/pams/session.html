@@ -347,8 +347,12 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.</span>
-<span class="sd">                                       This must include the parameters "iterationSteps", "withOrderPlacement", "withOrderExecution", and "withPrint".</span>
-<span class="sd">                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders", and "highFrequencySubmitRate".</span>
+<span class="sd">                                       This must include the parameters "iterationSteps", "withOrderPlacement",</span>
+<span class="sd">                                       "withOrderExecution", and "withPrint".</span>
+<span class="sd">                                       This can include the parameter "maxNormalOrders", "maxHighFrequencyOrders",</span>
+<span class="sd">                                       and "highFrequencySubmitRate".</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -394,7 +398,8 @@
         <span class="k">elif</span> <span class="s2">"maxHifreqOrders"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="c1"># TODO: check non-negative</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"maxHifreqOrders is replaced to maxHighFrequencyOrders in pams."</span>
+                <span class="s2">"maxHifreqOrders is replaced to maxHighFrequencyOrders in pams."</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">max_high_frequency_orders</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"maxHifreqOrders"</span><span class="p">]</span>
         <span class="c1"># TODO: check malOrders + maxHighFrequencyOrders &gt;= 1</span>
@@ -407,7 +412,8 @@
                 <span class="p">)</span>
         <span class="k">elif</span> <span class="s2">"hifreqSubmitRate"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">"hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."</span>
+                <span class="s2">"hifreqSubmitRate is replaced to highFrequencySubmitRate in pams."</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># TODO: check non-negative</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"hifreqSubmitRate"</span><span class="p">]</span></div></div>

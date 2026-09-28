@@ -288,10 +288,13 @@
     <span class="n">target_json</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
     <span class="n">excludes_fields</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""extend target json. If "extends" keys are included in target_json, this try to extend the json dict recursively.</span>
-<span class="sd">     For the extension, the value for "extends" field  is found in whole_json and target_json is extended using the dict under</span>
-<span class="sd">     the found part of whole_json. This process is recursively repeated. "parent_name" is only used for avoiding circle</span>
-<span class="sd">     extension of target_json and it should be parent key of taregt_json.</span>
+<span class="w">    </span><span class="sd">"""extend target json.</span>
+
+<span class="sd">    If "extends" keys are included in target_json, this try to extend the json dict recursively.</span>
+<span class="sd">    For the extension, the value for "extends" field  is found in whole_json and target_json is extended</span>
+<span class="sd">    using the dict under the found part of whole_json. This process is recursively repeated.</span>
+<span class="sd">    "parent_name" is only used for avoiding circle extension of target_json and it should be parent key</span>
+<span class="sd">    of target_json.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        whole_json (Dict): whole of json.</span>
@@ -324,14 +327,14 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s2"> has extending loop"</span><span class="p">)</span>
         <span class="n">extending_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">extends_class</span><span class="p">)</span>
         <span class="n">extending_dict</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">whole_json</span><span class="p">[</span><span class="n">extends_class</span><span class="p">]</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">value</span>
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extending_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excludes_fields_</span>
-            <span class="p">],</span>
+            <span class="p">},</span>
             <span class="o">**</span><span class="n">results</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">}</span>
     <span class="k">return</span> <span class="n">results</span></div>
 </pre></div>
         </article>

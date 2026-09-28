@@ -319,15 +319,19 @@
 <span class="sd">            settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.</span>
 <span class="sd">                                       This must include the parameter "markets".</span>
 <span class="sd">                                       This should include the parameter "requires".</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        """</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">IndexMarket</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"markets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"markets is required for index markets as components"</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"requires"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"requires in index market settings is no longer required"</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">"requires in index market settings is no longer required"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span>
+            <span class="p">)</span>
         <span class="k">for</span> <span class="n">market_name</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"markets"</span><span class="p">]:</span>
             <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">name2market</span><span class="p">[</span><span class="n">market_name</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_market</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span></div>
@@ -372,7 +376,8 @@
 
 <span class="sd">        .. note::</span>
 <span class="sd">            In an index market, there are two types of fundamental values:</span>
-<span class="sd">             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
+<span class="sd">             1. fundamental value set from outside such as runner</span>
+<span class="sd">                (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
 <span class="sd">             2. fundamental value calculated from components' fundamental value</span>
 <span class="sd">                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,</span>
 <span class="sd">                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)</span>
@@ -422,7 +427,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: whether all markets is running or not.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_running</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">is_running</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="IndexMarket.get_fundamental_index"><a class="viewcode-back" href="../../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket.get_fundamental_index">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_fundamental_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""get fundamental index.</span>
@@ -435,7 +440,8 @@
 
 <span class="sd">        .. note::</span>
 <span class="sd">            In an index market, there are two types of fundamental values:</span>
-<span class="sd">             1. fundamental value set from outside such as runner (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
+<span class="sd">             1. fundamental value set from outside such as runner</span>
+<span class="sd">                (:func:`pams.index_market.IndexMarket.compute_fundamental_index`)</span>
 <span class="sd">             2. fundamental value calculated from components' fundamental value</span>
 <span class="sd">                (:func:`pams.index_market.IndexMarket.get_fundamental_index`,</span>
 <span class="sd">                 :func:`pams.index_market.IndexMarket.get_fundamental_price`)</span>

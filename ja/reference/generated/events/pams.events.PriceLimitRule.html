@@ -298,7 +298,11 @@ This event is only called via <a class="reference internal" href="#pams.events.P
 </ul>
 </dd>
 <dt class="field-even">戻り値<span class="colon">:</span></dt>
-<dd class="field-even"><p>price after price limit. If the input order is market order, the return become None (market order).</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>price after price limit.</dt><dd><p>If the input order is market order, the return become None (market order).</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[float]</p>
@@ -309,8 +313,8 @@ This event is only called via <a class="reference internal" href="#pams.events.P
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.PriceLimitRule.hook_registration">
 <span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/price_limit_rule.html#PriceLimitRule.hook_registration"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.PriceLimitRule.hook_registration" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>Define when this event should be hooked by simulator.
-This method is automatically hooked by simulator at the beginning of simulation.
+<dd><p>Define when this event should be hooked by simulator.</p>
+<p>This method is automatically hooked by simulator at the beginning of simulation.
 You must implement this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">戻り値<span class="colon">:</span></dt>
@@ -325,8 +329,9 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.PriceLimitRule.hooked_before_order">
 <span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/price_limit_rule.html#PriceLimitRule.hooked_before_order"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.PriceLimitRule.hooked_before_order" title="この定義へのパーマリンク">#</a></dt>
-<dd><p>This method is hooked before order placements if you set the event hook.
-Please be careful that the order haven't yet been accepted by markets and it could be leakage of order information.</p>
+<dd><p>This method is hooked before order placements if you set the event hook.</p>
+<p>Please be careful that the order haven't yet been accepted by markets and it could be leakage of
+order information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

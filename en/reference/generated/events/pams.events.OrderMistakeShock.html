@@ -292,8 +292,8 @@ at an extremely cheap or expensive price.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock.hook_registration">
 <span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock.hook_registration" title="Permalink to this definition">#</a></dt>
-<dd><p>Define when this event should be hooked by simulator.
-This method is automatically hooked by simulator at the beginning of simulation.
+<dd><p>Define when this event should be hooked by simulator.</p>
+<p>This method is automatically hooked by simulator at the beginning of simulation.
 You must implement this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -308,8 +308,9 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock.hooked_before_order">
 <span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock.hooked_before_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock.hooked_before_order" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked before order placements if you set the event hook.
-Please be careful that the order haven’t yet been accepted by markets and it could be leakage of order information.</p>
+<dd><p>This method is hooked before order placements if you set the event hook.</p>
+<p>Please be careful that the order haven’t yet been accepted by markets and it could be leakage of
+order information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

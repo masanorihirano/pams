@@ -351,7 +351,7 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"referenceMarket"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"referenceMarket is obsolete"</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"referenceMarket is obsolete"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"targetMarkets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"targetMarkets is required for TradingHaltRule"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"targetMarkets"</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
@@ -392,8 +392,7 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">event_hooked_after_execution</span><span class="p">]</span> <span class="o">+</span> <span class="n">event_hooked_before_step_for_market</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span></div>
+        <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="TradingHaltRule.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule.hooked_after_execution">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_after_execution</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="n">Simulator</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="n">ExecutionLog</span>

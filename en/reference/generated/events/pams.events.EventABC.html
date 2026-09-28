@@ -295,8 +295,8 @@ All events should inherit this class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hook_registration">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hook_registration" title="Permalink to this definition">#</a></dt>
-<dd><p>Define when this event should be hooked by simulator.
-This method is automatically hooked by simulator at the beginning of simulation.
+<dd><p>Define when this event should be hooked by simulator.</p>
+<p>This method is automatically hooked by simulator at the beginning of simulation.
 You must implement this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -345,8 +345,8 @@ You must implement this.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_after_order">
 <span class="sig-name descname"><span class="pre">hooked_after_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order_log</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_after_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_after_order" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked after order placements if you set the event hook.
-Please be careful that the order haven’t yet been executed if it could be executed immediately.</p>
+<dd><p>This method is hooked after order placements if you set the event hook.</p>
+<p>Please be careful that the order haven’t yet been executed if it could be executed immediately.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -397,8 +397,8 @@ Please be careful that the order haven’t yet been executed if it could be exec
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_cancel">
 <span class="sig-name descname"><span class="pre">hooked_before_cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_cancel" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked before order cancellations if you set the event hook.
-Please be careful that the cancel order haven’t yet been executed.</p>
+<dd><p>This method is hooked before order cancellations if you set the event hook.</p>
+<p>Please be careful that the cancel order haven’t yet been executed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -415,8 +415,9 @@ Please be careful that the cancel order haven’t yet been executed.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.EventABC.hooked_before_order">
 <span class="sig-name descname"><span class="pre">hooked_before_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventABC.hooked_before_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.EventABC.hooked_before_order" title="Permalink to this definition">#</a></dt>
-<dd><p>This method is hooked before order placements if you set the event hook.
-Please be careful that the order haven’t yet been accepted by markets and it could be leakage of order information.</p>
+<dd><p>This method is hooked before order placements if you set the event hook.</p>
+<p>Please be careful that the order haven’t yet been accepted by markets and it could be leakage of
+order information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -470,7 +471,11 @@ Please be careful that the order haven’t yet been accepted by markets and it c
 <dd><p>event setup. Usually be called from simulator/runner automatically.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration. Usually, automatically set from json config of simulator.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration. Usually, automatically set from json config of simulator.</p></li>
+<li><p><strong>*args</strong> – not used.</p></li>
+<li><p><strong>**kwargs</strong> – not used.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

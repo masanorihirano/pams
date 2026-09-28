@@ -512,12 +512,7 @@
             <span class="n">accessible_market_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_settings</span><span class="p">[</span><span class="s2">"markets"</span><span class="p">]</span>
             <span class="n">accessible_market_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="nb">list</span><span class="p">(</span>
-                        <span class="nb">map</span><span class="p">(</span>
-                            <span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets_group_name2market</span><span class="p">[</span><span class="n">x</span><span class="p">],</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">market_id</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets_group_name2market</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
                     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">accessible_market_names</span>
                 <span class="p">],</span>
                 <span class="p">[],</span>
@@ -544,13 +539,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_fundamental_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""set fundamental correlation. (Internal method)"""</span>
+        <span class="c1"># pylint: disable=too-many-nested-blocks</span>
         <span class="k">if</span> <span class="s2">"fundamentalCorrelations"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]:</span>
             <span class="n">corr_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"fundamentalCorrelations"</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">corr_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"pairwise"</span><span class="p">:</span>
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-                        <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                        <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
                     <span class="p">):</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                             <span class="s2">"simulation.fundamentalCorrelations.pairwise has invalid format data"</span>
@@ -654,7 +650,7 @@
         <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"markets"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market_type_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">market_type_names</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">market_type_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.markets in json file have to be list[str]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_markets</span><span class="p">(</span><span class="n">market_type_names</span><span class="o">=</span><span class="n">market_type_names</span><span class="p">)</span>
@@ -665,7 +661,7 @@
         <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"agents"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">agent_type_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">agent_type_names</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">agent_type_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.agents in json file have to be list[str]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_agents</span><span class="p">(</span><span class="n">agent_type_names</span><span class="o">=</span><span class="n">agent_type_names</span><span class="p">)</span>
@@ -675,7 +671,7 @@
         <span class="n">session_settings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"sessions"</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session_settings</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="nb">sum</span><span class="p">([</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">session_settings</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">session_settings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"simulation.sessions in json file have to be List[Dict]"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generate_sessions</span><span class="p">()</span>
@@ -686,7 +682,8 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">"""collect orders from normal_agents. (Internal method)</span>
-<span class="sd">        orders are corrected until the total number of orders reaches max_normal_orders</span>
+
+<span class="sd">        orders are collected until the total number of orders reaches max_normal_orders</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
@@ -705,7 +702,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
                     <span class="p">)</span>
@@ -715,10 +712,91 @@
                 <span class="n">n_orders</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">all_orders</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""process one order or cancel order and the executions caused by it. (Internal method)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): session.</span>
+<span class="sd">            order (Union[Order, Cancel]): order or cancel order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
+        <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
+        <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_add_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
+            <span class="n">agent</span><span class="o">.</span><span class="n">submitted_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_order</span><span class="p">(</span><span class="n">order_log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_cancel</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">log_</span><span class="p">:</span> <span class="n">CancelLog</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_cancel_order</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
+            <span class="n">agent</span><span class="o">.</span><span class="n">canceled_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="ow">and</span> <span class="n">market</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
+            <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span><span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">execution_log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">buy_agent_id</span><span class="p">]</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
+                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">sell_agent_id</span><span class="p">]</span>
+                <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_execution</span><span class="p">(</span>
+                    <span class="n">execution_log</span><span class="o">=</span><span class="n">execution_log</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_high_frequency_orders</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">"""collect and process the orders from high frequency agents. (Internal method)</span>
+
+<span class="sd">        High frequency agents are asked in random order until the number of agents submitting orders</span>
+<span class="sd">        reaches max_high_frequency_orders. The orders are processed immediately.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (Session): session.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[List[Union[Order, Cancel]]]: order lists submitted by high frequency agents.</span>
+<span class="sd">        """</span>
+        <span class="n">all_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">n_high_freq_orders</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">high_frequency_agents</span>
+        <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_high_freq_orders</span> <span class="o">&gt;=</span> <span class="n">session</span><span class="o">.</span><span class="n">max_high_frequency_orders</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">high_freq_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">submit_orders</span><span class="p">(</span>
+                <span class="n">markets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
+                <span class="p">)</span>
+            <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
+            <span class="c1"># TODO: currently the original impl is used</span>
+            <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># n_high_freq_orders += len(high_freq_orders)</span>
+            <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_order</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_orders</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_handle_orders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">local_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">"""handle orders. (Internal method)</span>
+
 <span class="sd">        processing local orders and correct and process the orders from high frequency agents.</span>
 
 <span class="sd">        Args:</span>
@@ -732,100 +810,11 @@
         <span class="n">all_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">sequential_orders</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">orders</span> <span class="ow">in</span> <span class="n">sequential_orders</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
-                <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                    <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_add_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                    <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
-                    <span class="n">agent</span><span class="o">.</span><span class="n">submitted_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_order</span><span class="p">(</span><span class="n">order_log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_cancel</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                    <span class="n">log_</span><span class="p">:</span> <span class="n">CancelLog</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_cancel_order</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                    <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
-                    <span class="n">agent</span><span class="o">.</span><span class="n">canceled_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="ow">and</span> <span class="n">market</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-                    <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span><span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">execution_log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-                        <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">buy_agent_id</span><span class="p">]</span>
-                        <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
-                        <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">execution_log</span><span class="o">.</span><span class="n">sell_agent_id</span><span class="p">]</span>
-                        <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_execution</span><span class="p">(</span>
-                            <span class="n">execution_log</span><span class="o">=</span><span class="n">execution_log</span>
-                        <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_order</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">high_frequency_submission_rate</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">random</span><span class="p">():</span>
                 <span class="k">continue</span>
-
-            <span class="n">n_high_freq_orders</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">high_frequency_agents</span>
-            <span class="n">agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">agents</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">n_high_freq_orders</span> <span class="o">&gt;=</span> <span class="n">session</span><span class="o">.</span><span class="n">max_high_frequency_orders</span><span class="p">:</span>
-                    <span class="k">break</span>
-
-                <span class="n">high_freq_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">submit_orders</span><span class="p">(</span>
-                    <span class="n">markets</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span>
-                <span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="nb">sum</span><span class="p">(</span>
-                            <span class="p">[</span>
-                                <span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span>
-                                <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span>
-                            <span class="p">]</span>
-                        <span class="p">)</span>
-                        <span class="o">&gt;</span> <span class="mi">0</span>
-                    <span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
-                        <span class="p">)</span>
-                    <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
-                    <span class="c1"># TODO: currently the original impl is used</span>
-                    <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="c1"># n_high_freq_orders += len(high_freq_orders)</span>
-                    <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">:</span>
-                        <span class="n">market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Order</span><span class="p">):</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                            <span class="n">log</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_add_order</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
-                            <span class="n">agent</span><span class="o">.</span><span class="n">submitted_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_order</span><span class="p">(</span><span class="n">order_log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
-                        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_cancel</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                            <span class="n">log_</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_cancel_order</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-                            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
-                            <span class="n">agent</span><span class="o">.</span><span class="n">canceled_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-                        <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_execution</span> <span class="ow">and</span> <span class="n">market</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-                            <span class="n">logs</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_execution</span><span class="p">()</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_update_agents_for_execution</span><span class="p">(</span>
-                                <span class="n">execution_logs</span><span class="o">=</span><span class="n">logs</span>
-                            <span class="p">)</span>
-                            <span class="k">for</span> <span class="n">execution_log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-                                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span>
-                                    <span class="n">execution_log</span><span class="o">.</span><span class="n">buy_agent_id</span>
-                                <span class="p">]</span>
-                                <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
-                                <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span>
-                                    <span class="n">execution_log</span><span class="o">.</span><span class="n">sell_agent_id</span>
-                                <span class="p">]</span>
-                                <span class="n">agent</span><span class="o">.</span><span class="n">executed_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">execution_log</span><span class="p">)</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_execution</span><span class="p">(</span>
-                                    <span class="n">execution_log</span><span class="o">=</span><span class="n">execution_log</span>
-                                <span class="p">)</span>
+            <span class="n">all_orders</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_handle_high_frequency_orders</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">all_orders</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

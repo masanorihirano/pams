@@ -286,7 +286,8 @@
 <dd><p>random generator from json.</p>
 <dl class="simple">
 <dt>The following direction can be used for config as randomized values:</dt><dd><ul class="simple">
-<li><p><code class="code docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>: uniform distribution started from a and ended to b. Not that the value should be int, this automatically converted into int. This always satisfy <span class="math notranslate nohighlight">\(a \leq x &lt; b\)</span></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b]</span></code>: uniform distribution on <span class="math notranslate nohighlight">\([a, b)\)</span>. Both bounds are converted into float and
+a float is returned, so <span class="math notranslate nohighlight">\(a \leq x &lt; b\)</span> always holds; convert it into int by yourself if needed.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">{&quot;const&quot;:</span> <span class="pre">[a]}</span></code>: constant value. Always set to a.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">{&quot;uniform&quot;:</span> <span class="pre">[a,</span> <span class="pre">b]}</span></code>: same as [a, b]</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">{&quot;normal&quot;:</span> <span class="pre">[u,</span> <span class="pre">s]}</span></code>: normal distribution whose mean and deviation is u and s.</p></li>
@@ -316,7 +317,8 @@
 <dd><p>get a random value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>json_value</strong> (<em>JsonValue</em>) – random type. This can include the parameter “const”, “uniform”, “normal”, and “expon”.</p>
+<dd class="field-odd"><p><strong>json_value</strong> (<em>JsonValue</em>) – random type.
+This can include the parameter “const”, “uniform”, “normal”, and “expon”.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>random value.</p>

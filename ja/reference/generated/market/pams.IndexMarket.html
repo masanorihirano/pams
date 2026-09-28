@@ -304,7 +304,8 @@
 <p class="admonition-title">注釈</p>
 <dl>
 <dt>In an index market, there are two types of fundamental values:</dt><dd><ol class="arabic">
-<li><p>fundamental value set from outside such as runner (<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.compute_fundamental_index()</span></code>)</p></li>
+<li><p>fundamental value set from outside such as runner
+(<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.compute_fundamental_index()</span></code>)</p></li>
 <li><p>fundamental value calculated from components' fundamental value
 (<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.get_fundamental_index()</span></code>,</p>
 <blockquote>
@@ -369,7 +370,8 @@ This method return 1st one.</p>
 <p class="admonition-title">注釈</p>
 <dl>
 <dt>In an index market, there are two types of fundamental values:</dt><dd><ol class="arabic">
-<li><p>fundamental value set from outside such as runner (<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.compute_fundamental_index()</span></code>)</p></li>
+<li><p>fundamental value set from outside such as runner
+(<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.compute_fundamental_index()</span></code>)</p></li>
 <li><p>fundamental value calculated from components' fundamental value
 (<code class="xref py py-func docutils literal notranslate"><span class="pre">pams.index_market.IndexMarket.get_fundamental_index()</span></code>,</p>
 <blockquote>
@@ -438,9 +440,13 @@ This method return 2nd one.</p>
 <dd><p>setup market configuration from setting format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) -- market configuration. Usually, automatically set from json config of simulator.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) -- market configuration. Usually, automatically set from json config of simulator.
 This must include the parameter &quot;markets&quot;.
-This should include the parameter &quot;requires&quot;.</p>
+This should include the parameter &quot;requires&quot;.</p></li>
+<li><p><strong>*args</strong> -- not used.</p></li>
+<li><p><strong>**kwargs</strong> -- not used.</p></li>
+</ul>
 </dd>
 <dt class="field-even">戻り値の型<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

@@ -298,7 +298,7 @@
 
 
 <div class="viewcode-block" id="FCNAgent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FCNAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""FCN (Fundamental, Chartist, Noise) Agent class</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""FCN (Fundamental, Chartist, Noise) Agent class</span>
 
 <span class="sd">    This class inherits from the :class:`pams.agents.Agent` class.</span>
 
@@ -354,10 +354,12 @@
 <span class="w">        </span><span class="sd">"""agent setup.  Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight", "chartWeight",</span>
-<span class="sd">                                       "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin", "marginType",</span>
-<span class="sd">                                       and "meanReversionTime".</span>
+<span class="sd">            settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight",</span>
+<span class="sd">                                       "chartWeight", "noiseWeight", "noiseScale", "timeWindowSize", "orderMargin",</span>
+<span class="sd">                                       "marginType", and "meanReversionTime".</span>
 <span class="sd">            accessible_markets_ids (List[int]): list of market IDs.</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>

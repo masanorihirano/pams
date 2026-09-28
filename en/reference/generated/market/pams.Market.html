@@ -327,7 +327,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.Market.convert_to_tick_level">
 <span class="sig-name descname"><span class="pre">convert_to_tick_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">price</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_buy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.convert_to_tick_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.convert_to_tick_level" title="Permalink to this definition">#</a></dt>
-<dd><p>convert price to tick level. If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</p>
+<dd><p>convert price to tick level.</p>
+<p>If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -772,9 +773,14 @@ Otherwise, the execution price cannot be determined and nothing is executed
 <dd><p>setup market configuration from setting format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – market configuration. Usually, automatically set from json config of simulator.
-This must include the parameters “tickSize” and either “marketPrice” or “fundamentalPrice”.
-This can include the parameter “outstandingShares” and “tradeVolume”.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – market configuration. Usually, automatically set from json config of simulator.
+This must include the parameters “tickSize” and either “marketPrice”
+or “fundamentalPrice”.
+This can include the parameter “outstandingShares” and “tradeVolume”.</p></li>
+<li><p><strong>*args</strong> – not used.</p></li>
+<li><p><strong>**kwargs</strong> – not used.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>

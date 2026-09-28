@@ -363,8 +363,11 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): market configuration. Usually, automatically set from json config of simulator.</span>
-<span class="sd">                                       This must include the parameters "tickSize" and either "marketPrice" or "fundamentalPrice".</span>
+<span class="sd">                                       This must include the parameters "tickSize" and either "marketPrice"</span>
+<span class="sd">                                       or "fundamentalPrice".</span>
 <span class="sd">                                       This can include the parameter "outstandingShares" and "tradeVolume".</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -402,7 +405,7 @@
         <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">times</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">times</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="n">t</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">t</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"Cannot refer the future parameters"</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">parameters</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">allow_none</span> <span class="ow">and</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
@@ -828,7 +831,9 @@
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">price</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">tick_size</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_tick_level"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_tick_level">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tick_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_buy</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""convert price to tick level. If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</span>
+<span class="w">        </span><span class="sd">"""convert price to tick level.</span>
+
+<span class="sd">        If it is buy order price, it is rounded lower. If it is sell order price, it is rounded upper.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            price (float): price.</span>
@@ -839,8 +844,7 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">is_buy</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level_rounded_lower</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level_rounded_upper</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level_rounded_upper</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Market.convert_to_price"><a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.convert_to_price">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tick_level</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""convert tick to price.</span>
@@ -1073,7 +1077,8 @@
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">tick_level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="s2">"order price does not accord to the tick size. price will be modified"</span>
+                    <span class="s2">"order price does not accord to the tick size. price will be modified"</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">tick_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_to_tick_level</span><span class="p">(</span>
                     <span class="n">price</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">is_buy</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">is_buy</span>
@@ -1125,38 +1130,30 @@
         <span class="k">if</span> <span class="n">sell_best</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">buy_best</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">sell_best</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">buy_best</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">sell_best</span><span class="o">.</span><span class="n">price</span> <span class="o">&lt;=</span> <span class="n">buy_best</span><span class="o">.</span><span class="n">price</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sell_book</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
-                <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span>
-            <span class="n">buy_book</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
-                <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span>
-            <span class="k">if</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sell_book</span> <span class="ow">or</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">buy_book</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">AssertionError</span>
-            <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">!=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-                <span class="c1"># the excess market orders of the larger side have to be absorbed</span>
-                <span class="c1"># by the limit orders of the other side. Otherwise, as in a batch</span>
-                <span class="c1"># auction, the execution price cannot be determined and no execution</span>
-                <span class="c1"># happens (special quote).</span>
-                <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-                    <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
-                    <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sell_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
-                    <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">buy_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">sell_book</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span>
+        <span class="n">buy_book</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">get_price_volume</span><span class="p">()</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sell_book</span> <span class="ow">or</span> <span class="kc">None</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">buy_book</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span>
+        <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">!=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+            <span class="c1"># the excess market orders of the larger side have to be absorbed</span>
+            <span class="c1"># by the limit orders of the other side. Otherwise, as in a batch</span>
+            <span class="c1"># auction, the execution price cannot be determined and no execution</span>
+            <span class="c1"># happens (special quote).</span>
+            <span class="k">if</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+                <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
                 <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sell_book</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">buy_book</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="kc">False</span>
-                <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">sell_book</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span>
-                    <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">buy_book</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-                <span class="p">)</span></div>
+                <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sell_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
+            <span class="n">additional_required_volume</span> <span class="o">=</span> <span class="n">sell_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">buy_book</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+            <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">buy_book</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">additional_required_volume</span>
+        <span class="n">sell_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">buy_book</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sell_book</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">buy_book</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">sell_book</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">buy_book</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""execute for market. (Usually, only triggered by runner)</span>
@@ -1252,17 +1249,12 @@
         <span class="p">]</span>
         <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
         <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sell_order_book</span><span class="o">.</span><span class="n">priority_queue</span><span class="p">)</span>
-        <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
-            <span class="nb">map</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_orders</span><span class="p">(</span>
-                    <span class="n">price</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">price</span><span class="p">),</span>
-                    <span class="n">volume</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                    <span class="n">buy_order</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">sell_order</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                <span class="p">),</span>
-                <span class="n">pending</span><span class="p">,</span>
+        <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ExecutionLog</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execute_orders</span><span class="p">(</span>
+                <span class="n">price</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">price</span><span class="p">),</span> <span class="n">volume</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">buy_order</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sell_order</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">pending</span>
+        <span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remain_executable_orders</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
         <span class="k">return</span> <span class="n">logs</span>

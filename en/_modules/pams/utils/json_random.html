@@ -288,10 +288,11 @@
 
 
 <div class="viewcode-block" id="JsonRandom"><a class="viewcode-back" href="../../../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">JsonRandom</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""random generator from json.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""random generator from json.</span>
 
 <span class="sd">    The following direction can be used for config as randomized values:</span>
-<span class="sd">     - :code:`[a, b]`: uniform distribution started from a and ended to b. Not that the value should be int, this automatically converted into int. This always satisfy :math:`a \leq x &lt; b`</span>
+<span class="sd">     - :code:`[a, b]`: uniform distribution on :math:`[a, b)`. Both bounds are converted into float and</span>
+<span class="sd">       a float is returned, so :math:`a \leq x &lt; b` always holds; convert it into int by yourself if needed.</span>
 <span class="sd">     - :code:`{"const": [a]}`: constant value. Always set to a.</span>
 <span class="sd">     - :code:`{"uniform": [a, b]}`: same as [a, b]</span>
 <span class="sd">     - :code:`{"normal": [u, s]}`: normal distribution whose mean and deviation is u and s.</span>
@@ -325,7 +326,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span> <span class="o">=</span> <span class="n">prng</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_uniform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">max_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get next uniform.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Get next uniform.</span>
 
 <span class="sd">        Its probability density function is</span>
 <span class="sd">        :math:`p(x) = \frac{1}{max - min}`</span>
@@ -337,15 +338,16 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: uniform.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">max_value</span> <span class="o">-</span> <span class="n">min_value</span><span class="p">)</span> <span class="o">+</span> <span class="n">min_value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get next normal.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Get next normal.</span>
 
 <span class="sd">        Its probability density function is</span>
-<span class="sd">        :math:`p(x) = \frac{1}{\\sqrt{2 \\pi \\sigma^2}e^{- \frac{(x - \\mu)^2}{2 \\sigma^2}}}`</span>
-<span class="sd">        where :math:`\\mu` is the mean and :math:`\\sigma` is the standard deviation.</span>
+<span class="sd">        :math:`p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{- \frac{(x - \mu)^2}{2 \sigma^2}}`</span>
+<span class="sd">        where :math:`\mu` is the mean and :math:`\sigma` is the standard deviation.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            mu (float): mu.</span>
@@ -353,21 +355,24 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: normal.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">gauss</span><span class="p">(</span><span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_next_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lam</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""get next exponential.</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Get next exponential.</span>
 
 <span class="sd">        Its probability density function is</span>
-<span class="sd">        :math:`p(x) = \\lambda exp(- \\lambda x)`</span>
-<span class="sd">        for :math:`x \\gt 0` and 0 elsewhere. Where :math:`\\lambda` is the scale parameter.</span>
+<span class="sd">        :math:`p(x) = \frac{1}{\lambda} e^{- x / \lambda}`</span>
+<span class="sd">        for :math:`x \geq 0` and 0 elsewhere, where :math:`\lambda` is the scale parameter,</span>
+<span class="sd">        i.e., both the mean and the standard deviation of the distribution.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            lam (float): lambda.</span>
+<span class="sd">            lam (float): lambda (mean of the distribution).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: exponential.</span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">lam</span> <span class="o">*</span> <span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">random</span><span class="p">())</span>
 
@@ -375,7 +380,8 @@
 <span class="w">        </span><span class="sd">"""get a random value.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            json_value (JsonValue): random type. This can include the parameter "const", "uniform", "normal", and "expon".</span>
+<span class="sd">            json_value (JsonValue): random type.</span>
+<span class="sd">                                    This can include the parameter "const", "uniform", "normal", and "expon".</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: random value.</span>

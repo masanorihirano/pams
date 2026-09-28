@@ -286,6 +286,7 @@
 <div class="viewcode-block" id="OrderKind"><a class="viewcode-back" href="../../reference/generated/order/pams.OrderKind.html#pams.OrderKind">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OrderKind</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Kind of order.</span>
+
 <span class="sd">    This class has an order kind ID and an order name.</span>
 
 <span class="sd">    You should use the following pre-defined order kinds:</span>
@@ -365,7 +366,8 @@
 <span class="sd">            is_buy (bool): whether the order is buy order or not.</span>
 <span class="sd">            kind (:class:`pams.order.OrderKind`): kind of order.</span>
 <span class="sd">            volume (int): order volume.</span>
-<span class="sd">            placed_at (int, Optional): time step that the order is placed. (Set by market. Please do not set it in agent)</span>
+<span class="sd">            placed_at (int, Optional): time step that the order is placed.</span>
+<span class="sd">                                       (Set by market. Please do not set it in agent)</span>
 <span class="sd">            price (float, Optional): order price.</span>
 <span class="sd">            order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)</span>
 <span class="sd">            ttl (int, Optional): time to order expiration.</span>
@@ -375,7 +377,7 @@
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="n">LIMIT_ORDER</span> <span class="ow">and</span> <span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"price have to be set when kind is LIMIT_ORDER"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">price</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"price should be positive"</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"price should be positive"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"volume have to be positive"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ttl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ttl</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -420,16 +422,16 @@
 <span class="sd">            bool: whether the order is expired or not.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">"this order is not yet placed to a market"</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"this order is not yet placed to a market"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">&lt;</span> <span class="n">time</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">&lt;</span> <span class="n">time</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order_id</span><span class="si">}</span><span class="s2">, kind=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">, "</span>
-            <span class="sa">f</span><span class="s2">"is_buy=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_buy</span><span class="si">}</span><span class="s2">, price=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">, volume=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="si">}</span><span class="s2">, agent=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, market=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"is_buy=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_buy</span><span class="si">}</span><span class="s2">, price=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="si">}</span><span class="s2">, volume=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"agent=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">, market=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">, "</span>
             <span class="sa">f</span><span class="s2">"placed_at=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="si">}</span><span class="s2">, ttl=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ttl</span><span class="si">}</span><span class="s2">, is_canceled=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_canceled</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
 
@@ -463,51 +465,33 @@
         <span class="k">def</span><span class="w"> </span><span class="nf">_compare_placed_at</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Order</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orders still not placed cannot be compared"</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="kc">False</span>
-            <span class="k">elif</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="kc">True</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="p">(</span>
-                        <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">gt</span>
-                        <span class="k">else</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orders still not placed cannot be compared"</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="p">(</span>
-                        <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span>
-                    <span class="p">)</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">gt</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="ow">not</span> <span class="n">gt</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">placed_at</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">placed_at</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orders still not placed cannot be compared"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">order_id</span> <span class="o">&lt;</span> <span class="n">b</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_compare_placed_at</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">other</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">other</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">LIMIT_ORDER</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">LIMIT_ORDER</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_buy</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="p">(</span>
-                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">gt</span>
-                            <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="p">(</span>
-                            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
-                            <span class="k">if</span> <span class="n">gt</span>
-                            <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">_compare_placed_at</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="n">gt</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">MARKET_ORDER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">gt</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">LIMIT_ORDER</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">LIMIT_ORDER</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_buy</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span> <span class="k">if</span> <span class="n">gt</span> <span class="k">else</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">price</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">price</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_compare_placed_at</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gt_lt</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -542,7 +526,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">placed_at</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | placed_at=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="si">}</span><span class="s2">, order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">&gt;"</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | "</span>
+            <span class="sa">f</span><span class="s2">"placed_at=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">placed_at</span><span class="si">}</span><span class="s2">, order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="si">}</span><span class="s2">&gt;"</span>
+        <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">agent_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>

@@ -320,7 +320,8 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
-<span class="sd">                                       This must include the parameters "triggerDays", "target", "triggerTime", and "priceChangeRate".</span>
+<span class="sd">                                       This must include the parameters "triggerDays", "target", "triggerTime",</span>
+<span class="sd">                                       and "priceChangeRate".</span>
 <span class="sd">                                       This can include the parameters "enabled" and "shockTimeLength".</span>
 
 <span class="sd">        Returns:</span>
@@ -357,12 +358,11 @@
                 <span class="n">specific_instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_market</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">event_hook</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span></div>
+        <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="FundamentalPriceShock.hooked_before_step_for_market"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock.hooked_before_step_for_market">[ドキュメント]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_before_step_for_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">"Market"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="n">time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">&lt;=</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">shock_time_length</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">&lt;=</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">shock_time_length</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
         <span class="k">if</span> <span class="n">market</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_market</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>

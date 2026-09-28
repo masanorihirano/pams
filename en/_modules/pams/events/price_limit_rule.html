@@ -332,7 +332,7 @@
 <span class="sd">            None</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="s2">"referenceMarket"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"referenceMarket is obsoleted"</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"referenceMarket is obsoleted"</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"targetMarkets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"targetMarkets is required for PriceLimitRule"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"targetMarkets"</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
@@ -358,8 +358,7 @@
                 <span class="n">event</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">hook_type</span><span class="o">=</span><span class="s2">"order"</span><span class="p">,</span> <span class="n">is_before</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">event_hook</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span></div>
+        <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="PriceLimitRule.get_limited_price"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule.get_limited_price">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_limited_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Calculate the limited price for an order.</span>
@@ -369,7 +368,8 @@
 <span class="sd">            market (Market): market that order belongs to</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            Optional[float]: price after price limit. If the input order is market order, the return become None (market order).</span>
+<span class="sd">            Optional[float]: price after price limit.</span>
+<span class="sd">                             If the input order is market order, the return become None (market order).</span>
 <span class="sd">        """</span>
         <span class="n">reference_price</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_markets</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>

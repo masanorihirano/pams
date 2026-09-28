@@ -284,8 +284,10 @@
 <dt class="sig sig-object py" id="pams.agents.Agent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.agents.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/base.html#Agent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.agents.Agent" title="Permalink to this definition">#</a></dt>
 <dd><p>Agent class (abstract class)</p>
-<p>Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents using the class you define.
-Therefore, you don’t need to call __init__ or any other method and simulator automatically call them if it is necessary.</p>
+<p>Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents
+using the class you define.
+Therefore, you don’t need to call __init__ or any other method and simulator automatically call them
+if it is necessary.</p>
 <p><cite>submit_orders(self, markets: List[Market])</cite> is required to be implemented.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -453,6 +455,8 @@ Therefore, you don’t need to call __init__ or any other method and simulator a
 <li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration.  Usually, automatically set from json config of simulator.
 This must include the parameters “cashAmount” and “assetVolume”.</p></li>
 <li><p><strong>accessible_markets_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – list of market IDs.</p></li>
+<li><p><strong>*args</strong> – not used.</p></li>
+<li><p><strong>**kwargs</strong> – not used.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>

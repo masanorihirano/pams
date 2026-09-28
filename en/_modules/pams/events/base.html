@@ -280,6 +280,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
@@ -289,14 +290,26 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pams.market</span><span class="w"> </span><span class="kn">import</span> <span class="n">Market</span>
 
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelLog</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutionLog</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderLog</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cancel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pams.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+
 
 <div class="viewcode-block" id="EventHook"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventHook.html#pams.events.EventHook">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">EventHook</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Event Hook class.</span>
 
 <span class="sd">    Event hook define when and what events are hooked from simulator.</span>
-<span class="sd">    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook using the evnet.</span>
-<span class="sd">    Event can be hooked before and after order placements, order cancellations, order executions, each session, and each step mor markets.</span>
-<span class="sd">    You can also filter hooking point by market time, classes, instances of markets. (Currently, only market class and instances are supported.)</span>
+<span class="sd">    It means that Event ( :class:`Event` ) can be used for multiple time if you appropriately set the event hook</span>
+<span class="sd">    using the event.</span>
+<span class="sd">    Event can be hooked before and after order placements, order cancellations, order executions, each session,</span>
+<span class="sd">    and each step for markets.</span>
+<span class="sd">    You can also filter hooking point by market time, classes, instances of markets.</span>
+<span class="sd">    (Currently, only market class and instances are supported.)</span>
 
 <span class="sd">    .. seealso:</span>
 <span class="sd">        - :class:FundamentalPriceShock</span>
@@ -320,7 +333,8 @@
 <span class="sd">            time (List[int], Optional): event execution time.</span>
 <span class="sd">            specific_class (Type, Optional): specific class. If this is specified, the hook_type must be "market".</span>
 <span class="sd">                                             (In future, it could be expanded to other types.)</span>
-<span class="sd">            specific_instance (object, Optional): specific instance. If this is specified, the hook_type must be "market".</span>
+<span class="sd">            specific_instance (object, Optional): specific instance.</span>
+<span class="sd">                                                  If this is specified, the hook_type must be "market".</span>
 <span class="sd">                                                  (In future, it could be expanded to other types.)</span>
 
 <span class="sd">        Returns:</span>
@@ -341,20 +355,12 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="s2">"specific_class and specific_instance are not supported except for market"</span>
                 <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">hook_type</span> <span class="o">==</span> <span class="s2">"market"</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">specific_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span>
-                        <span class="n">specific_class</span><span class="p">,</span> <span class="n">Market</span>
-                    <span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"specific_class and hook_type is incompatible"</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">specific_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-                        <span class="n">specific_instance</span><span class="p">,</span> <span class="n">Market</span>
-                    <span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                            <span class="s2">"specific_instance and hook_type is incompatible"</span>
-                        <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">AssertionError</span>
+            <span class="k">if</span> <span class="n">specific_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">specific_class</span><span class="p">,</span> <span class="n">Market</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"specific_class and hook_type is incompatible"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">specific_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">specific_instance</span><span class="p">,</span> <span class="n">Market</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"specific_instance and hook_type is incompatible"</span><span class="p">)</span>
         <span class="n">specific_class</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">],</span> <span class="n">specific_class</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">specific_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">specific_instance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="n">specific_instance</span>
@@ -409,31 +415,34 @@
             <span class="sa">f</span><span class="s2">"session=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="EventABC.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="EventABC.setup"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # noqa: B027</span>
 <span class="w">        </span><span class="sd">"""event setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
-<span class="sd">        """</span>
-        <span class="k">pass</span></div>
+<span class="sd">        """</span></div>
 
 <div class="viewcode-block" id="EventABC.hook_registration"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hook_registration">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hook_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EventHook</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Define when this event should be hooked by simulator.</span>
+
 <span class="sd">        This method is automatically hooked by simulator at the beginning of simulation.</span>
 <span class="sd">        You must implement this.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[EventHook]: The list of event hook ( :class:`EventHook` )</span>
-<span class="sd">        """</span>
-        <span class="k">pass</span></div>
+<span class="sd">        """</span></div>
 
 <div class="viewcode-block" id="EventABC.hooked_before_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_before_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="s2">"Order"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">"""This method is hooked before order placements if you set the event hook.</span>
-<span class="sd">        Please be careful that the order haven't yet been accepted by markets and it could be leakage of order information.</span>
+
+<span class="sd">        Please be careful that the order haven't yet been accepted by markets and it could be leakage of</span>
+<span class="sd">        order information.</span>
 
 <span class="sd">        .. seealso:</span>
 <span class="sd">            - ToDo: simulation flow</span>
@@ -446,6 +455,7 @@
 
 <div class="viewcode-block" id="EventABC.hooked_after_order"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_after_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">order_log</span><span class="p">:</span> <span class="s2">"OrderLog"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">"""This method is hooked after order placements if you set the event hook.</span>
+
 <span class="sd">        Please be careful that the order haven't yet been executed if it could be executed immediately.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -459,6 +469,7 @@
 
 <div class="viewcode-block" id="EventABC.hooked_before_cancel"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_before_cancel">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_before_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="s2">"Cancel"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
 <span class="w">        </span><span class="sd">"""This method is hooked before order cancellations if you set the event hook.</span>
+
 <span class="sd">        Please be careful that the cancel order haven't yet been executed.</span>
 
 <span class="sd">        .. seealso:</span>
@@ -482,7 +493,9 @@
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="EventABC.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_after_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">"ExecutionLog"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore  # NOQA</span>
+<div class="viewcode-block" id="EventABC.hooked_after_execution"><a class="viewcode-back" href="../../../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_execution">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">hooked_after_execution</span><span class="p">(</span>  <span class="c1"># type: ignore  # noqa: B027</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="n">execution_log</span><span class="p">:</span> <span class="s2">"ExecutionLog"</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""This method is hooked after order executions if you set the event hook.</span>
 
 <span class="sd">        .. seealso:</span>

@@ -299,8 +299,10 @@
 <div class="viewcode-block" id="Agent"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Agent</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Agent class (abstract class)</span>
 
-<span class="sd">    Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents using the class you define.</span>
-<span class="sd">    Therefore, you don't need to call __init__ or any other method and simulator automatically call them if it is necessary.</span>
+<span class="sd">    Once you define the agent class inheriting this agent ABC class, simulator automatically generate agents</span>
+<span class="sd">    using the class you define.</span>
+<span class="sd">    Therefore, you don't need to call __init__ or any other method and simulator automatically call them</span>
+<span class="sd">    if it is necessary.</span>
 
 <span class="sd">    `submit_orders(self, markets: List[Market])` is required to be implemented.</span>
 
@@ -349,13 +351,21 @@
             <span class="sa">f</span><span class="s2">"logger=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Agent.setup"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">accessible_markets_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<div class="viewcode-block" id="Agent.setup"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">accessible_markets_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""agent setup. Usually be called from simulator/runner automatically.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            settings (Dict[str, Any]): agent configuration.  Usually, automatically set from json config of simulator.</span>
 <span class="sd">                                       This must include the parameters "cashAmount" and "assetVolume".</span>
 <span class="sd">            accessible_markets_ids (List[int]): list of market IDs.</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
@@ -415,7 +425,7 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">market_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">asset_volumes</span></div>
 
-<div class="viewcode-block" id="Agent.submitted_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submitted_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Agent.submitted_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submitted_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">"""call back when an order submission is accepted by a market.</span>
 
 <span class="sd">        Args:</span>
@@ -426,7 +436,7 @@
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Agent.executed_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.executed_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">executed_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Agent.executed_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.executed_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">executed_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">"""call back when a submitted order is executed in a market.</span>
 
 <span class="sd">        Args:</span>
@@ -437,7 +447,7 @@
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Agent.canceled_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.canceled_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">canceled_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">CancelLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Agent.canceled_order"><a class="viewcode-back" href="../../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.canceled_order">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">canceled_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">CancelLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">"""call back when cancel order is accepted by a market.</span>
 
 <span class="sd">        Args:</span>

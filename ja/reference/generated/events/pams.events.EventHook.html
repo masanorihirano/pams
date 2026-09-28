@@ -285,9 +285,12 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.events.</span></span><span class="sig-name descname"><span class="pre">EventHook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hook_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_before</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specific_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specific_instance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/base.html#EventHook"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.events.EventHook" title="この定義へのパーマリンク">#</a></dt>
 <dd><p>Event Hook class.</p>
 <p>Event hook define when and what events are hooked from simulator.
-It means that Event ( <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code> ) can be used for multiple time if you appropriately set the event hook using the evnet.
-Event can be hooked before and after order placements, order cancellations, order executions, each session, and each step mor markets.
-You can also filter hooking point by market time, classes, instances of markets. (Currently, only market class and instances are supported.)</p>
+It means that Event ( <code class="xref py py-class docutils literal notranslate"><span class="pre">Event</span></code> ) can be used for multiple time if you appropriately set the event hook
+using the event.
+Event can be hooked before and after order placements, order cancellations, order executions, each session,
+and each step for markets.
+You can also filter hooking point by market time, classes, instances of markets.
+(Currently, only market class and instances are supported.)</p>
 </dd></dl>
 
 </section>

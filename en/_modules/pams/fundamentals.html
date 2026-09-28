@@ -409,7 +409,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        """</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span> <span class="o">&lt;</span> <span class="n">corr</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="o">-</span><span class="mf">1.0</span> <span class="o">&lt;</span> <span class="n">corr</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"corr must be in (-1.0, 1.0)"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">market_id1</span> <span class="o">==</span> <span class="n">market_id2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"market_id1 and market_id2 must be different"</span><span class="p">)</span>
@@ -511,7 +511,9 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""execute to next step. (Internal method)</span>
-<span class="sd">        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or :func:`pams.Fundamentals.get_fundamental_prices`.</span>
+
+<span class="sd">        This method is called by :func:`pams.Fundamentals.get_fundamental_price` or</span>
+<span class="sd">        :func:`pams.Fundamentals.get_fundamental_prices`.</span>
 <span class="sd">        """</span>
         <span class="n">setting_change_points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_at</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generated_until</span>

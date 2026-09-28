@@ -288,8 +288,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.FundamentalPriceShock.hook_registration">
 <span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/fundamental_price_shock.html#FundamentalPriceShock.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.FundamentalPriceShock.hook_registration" title="Permalink to this definition">#</a></dt>
-<dd><p>Define when this event should be hooked by simulator.
-This method is automatically hooked by simulator at the beginning of simulation.
+<dd><p>Define when this event should be hooked by simulator.</p>
+<p>This method is automatically hooked by simulator at the beginning of simulation.
 You must implement this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -325,7 +325,8 @@ You must implement this.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – agent configuration. Usually, automatically set from json config of simulator.
-This must include the parameters “triggerDays”, “target”, “triggerTime”, and “priceChangeRate”.
+This must include the parameters “triggerDays”, “target”, “triggerTime”,
+and “priceChangeRate”.
 This can include the parameters “enabled” and “shockTimeLength”.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
