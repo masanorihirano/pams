@@ -13,10 +13,20 @@ from .base import EventHook
 class OrderMistakeShock(EventABC):
     """This suddenly changes the market price.
 
-     It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
-     at an extremely cheap or expensive price.
+    It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
+    at an extremely cheap or expensive price.
+    At the trigger time, the first order submitted to the target market is overridden by a limit order
+    at the market price multiplied by (1 + priceChangeRate), with the volume orderVolume and the ttl orderTimeLength.
+    It is a buy order if priceChangeRate is positive, otherwise a sell order.
+    Like other orders, its price is rounded to the tick size by the market (down for buy, up for sell).
+    This event is only called via :func:`hooked_before_order` at designated step.
 
-    This event is only called via :func:`hooked_before_step_for_market` at designated step.
+    Note:
+        The trigger time, price, side, volume, and ttl of the mistaken order follow OrderMistakeShock of plhamJ,
+        but the way the order enters the market differs. plhamJ submits an additional order of the first agent
+        at the beginning of the trigger step. This event creates no order: the agent whose order is overridden
+        owns the mistaken order, which is processed like the original order (logs, executions, and callbacks).
+        Therefore, nothing happens if no order is submitted to the target market at the trigger time.
     """
 
     target_market: "Market"  # type: ignore  # NOQA
