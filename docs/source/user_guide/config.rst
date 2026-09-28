@@ -1234,8 +1234,10 @@ TensorFlow once, before it runs any task, with these keys in ``simulation``, whi
    * - ``tensorflowIntraOpThreads`` |optional|
      - int ≥ 1
      - The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
-       worker process. Default: the number of CPUs divided by ``numParallel`` (at least 1), so that the worker
-       processes do not use more threads than the CPUs in total.
+       worker process. Default: the number of CPUs divided by the smaller of ``numParallel`` and ``maxNormalOrders``
+       (at least 1), so that the worker processes running at the same time do not use more threads than the CPUs in
+       total. The results of large operations can depend on this number, so set it explicitly for reproducible
+       results (see :doc:`platform`).
    * - ``tensorflowInterOpThreads`` |optional|
      - int ≥ 1
      - The number of threads that TensorFlow uses to run independent operations at the same time on each worker

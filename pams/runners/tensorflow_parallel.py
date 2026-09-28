@@ -110,7 +110,8 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
     prepared for agents that use `TensorFlow <https://www.tensorflow.org/>`_ in
     :func:`pams.agents.Agent.submit_orders`, e.g., Keras models. The simulation results are
     identical to those of :class:`pams.runners.SequentialRunner` with the same settings and the same
-    seed as long as the agents are deterministic (see below).
+    seed as long as the agents are deterministic and TensorFlow uses the same number of threads
+    (see below).
 
     TensorFlow is an optional dependency of PAMS: ``import pams`` does not import it, and this
     runner imports it when it is created. If TensorFlow is not installed, an ImportError is raised.
@@ -134,8 +135,11 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
 
     - ``tensorflowIntraOpThreads`` (int ≥ 1): number of threads that TensorFlow uses to run one
       operation, e.g., a matrix multiplication, in each worker process. The default is the number
-      of CPUs divided by ``numParallel`` (at least 1), so that the worker processes do not use more
-      threads than the CPUs in total. TensorFlow uses all the CPUs in each process by default.
+      of CPUs divided by the number of worker processes running tasks at the same time, i.e., the
+      smaller of ``numParallel`` and the largest ``maxNormalOrders`` of the sessions (at least 1),
+      so that the worker processes do not use more threads than the CPUs in total. TensorFlow
+      uses all the CPUs in each process by default. The results of TensorFlow can depend on this
+      number (see below).
     - ``tensorflowInterOpThreads`` (int ≥ 1): number of threads that TensorFlow uses to run
       independent operations at the same time in each worker process. The default is 1.
     - ``tensorflowGpuMemoryGrowth`` (bool): whether to enable memory growth for all the visible GPUs
@@ -146,7 +150,10 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
 
     Then, the initializer given by ``_get_worker_initializer`` is called as in
     :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., to load a read-only model once per
-    worker process. These keys do not configure TensorFlow on the main process.
+    worker process. These keys do not configure TensorFlow on the main process. If
+    ``tensorflowGpuMemoryGrowth`` is true, TensorFlow lists the GPUs before the initializer is
+    called, so the initializer cannot select the GPUs of a worker process by the environment
+    variable ``CUDA_VISIBLE_DEVICES``; use ``tf.config.set_visible_devices`` instead.
 
     .. note::
         As :class:`pams.runners.MultiProcessAgentParallelRunner`, this runner pickles the agents and
@@ -168,10 +175,21 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
         and ``tf.random.Generator``, are not returned, and which worker process runs an agent
         changes from run to run. For the same results as :class:`pams.runners.SequentialRunner`,
         agents should draw random numbers from ``prng``, e.g., the seeds of stateless random
-        operations such as ``tf.random.stateless_normal``. Models must also give the same
-        outputs on every process: TensorFlow on CPUs is deterministic in general, but some
-        operations on GPUs are not unless ``tf.config.experimental.enable_op_determinism`` is
-        called on the main process and in the worker processes.
+        operations such as ``tf.random.stateless_normal``.
+
+        Models must also give the same outputs on every process. On CPUs, the outputs of the
+        operations that TensorFlow splits among threads, e.g., reductions and matrix
+        multiplications over long axes, depend on the number of intra-op threads, even with
+        ``tf.config.experimental.enable_op_determinism``. The default number of this runner
+        depends on the number of CPUs, ``numParallel`` and ``maxNormalOrders``, and it can differ
+        from that of the main process, where TensorFlow uses all the CPUs. Therefore, for results
+        identical to :class:`pams.runners.SequentialRunner`, or across different ``numParallel``,
+        set ``tensorflowIntraOpThreads`` explicitly, and set the same number on the process
+        running :class:`pams.runners.SequentialRunner` by
+        ``tf.config.threading.set_intra_op_parallelism_threads`` before TensorFlow is
+        initialized there. On GPUs, some operations are not deterministic unless
+        ``tf.config.experimental.enable_op_determinism`` is called on the main process and in the
+        worker processes.
 
     .. warning::
         This runner makes the simulation faster only if the TensorFlow computations in
@@ -243,13 +261,20 @@ class TensorFlowAgentParallelRunner(MultiProcessAgentParallelRunner):
 
         Returns:
             int: ``intra_op_parallelism_threads`` if it is set by
-            ``simulation.tensorflowIntraOpThreads``; otherwise, the number of CPUs divided by
-            ``num_parallel`` (at least 1).
+            ``simulation.tensorflowIntraOpThreads``; otherwise, the number of CPUs divided by the
+            number of worker processes running tasks at the same time, i.e., the smaller of
+            ``num_parallel`` and the largest ``max_normal_orders`` of the sessions (at least 1).
 
         """
         if self.intra_op_parallelism_threads is not None:
             return self.intra_op_parallelism_threads
-        return max((os.cpu_count() or 1) // self.num_parallel, 1)
+        # at most max_normal_orders agents are asked at the same time
+        max_normal_orders: int = max(
+            (session.max_normal_orders for session in self.simulator.sessions),
+            default=0,
+        )
+        n_concurrent_workers: int = max(min(self.num_parallel, max_normal_orders), 1)
+        return max((os.cpu_count() or 1) // n_concurrent_workers, 1)
 
     def _create_executor(self) -> Executor:
         """Create a new executor (internal method).

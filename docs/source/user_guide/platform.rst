@@ -124,8 +124,10 @@ it separately, e.g., ``pip install tensorflow`` (or ``pip install tensorflow-cpu
   ``simulation.tensorflowIntraOpThreads``, ``simulation.tensorflowInterOpThreads`` and
   ``simulation.tensorflowGpuMemoryGrowth`` (see :ref:`config-parallel-tensorflow`), and then calls the worker
   initializer given by ``_get_worker_initializer()``, e.g., ``load_model`` above. By default, the CPUs are divided
-  among the worker processes, and the memory growth of the GPUs is enabled so that the worker processes can share a
-  GPU. The main process is not configured.
+  among the worker processes running at the same time, and the memory growth of the GPUs is enabled so that the
+  worker processes can share a GPU. The main process is not configured. To give each worker process its own GPU,
+  call ``tf.config.set_visible_devices`` in the initializer; ``CUDA_VISIBLE_DEVICES`` set there has no effect by
+  default, because the GPUs are already listed to enable their memory growth.
 - The agents are pickled in every task (see :ref:`config-parallel`). ``tf.Tensor`` and ``tf.Variable`` are pickled
   as copies of their values, a Keras 3 model is pickled by saving it in the ``.keras`` format, which takes tens of
   milliseconds even for a small model, and a function made by ``tf.function`` cannot be pickled. Therefore, keep a
@@ -137,6 +139,13 @@ it separately, e.g., ``pip install tensorflow`` (or ``pip install tensorflow-cpu
 - Derive the random numbers, e.g., the seeds of ``tf.random.stateless_normal``, from ``agent.prng``, so that the
   results are the same as :class:`pams.runners.SequentialRunner`. The random states of TensorFlow on the worker
   processes are not returned to the main process.
+- On CPUs, the results of large operations, such as reductions and matrix multiplications over long axes, depend on
+  the number of intra-op threads, even with ``tf.config.experimental.enable_op_determinism()``. The default number
+  on the worker processes can differ from the main process, where TensorFlow uses all the CPUs, and it changes with
+  ``numParallel`` and ``maxNormalOrders``. For results identical to :class:`pams.runners.SequentialRunner`, set
+  ``simulation.tensorflowIntraOpThreads``, and set the same number by
+  ``tf.config.threading.set_intra_op_parallelism_threads`` on the process running
+  :class:`pams.runners.SequentialRunner` before TensorFlow runs there.
 - The runner is faster than :class:`pams.runners.SequentialRunner` only if the TensorFlow computations of the agents
   are much heavier than the copy of the simulation in every task. Starting each worker process, which imports
   TensorFlow, also takes seconds.
@@ -174,7 +183,9 @@ it separately, e.g., ``pip install tensorflow`` (or ``pip install tensorflow-cpu
     from pams.runners import TensorFlowAgentParallelRunner
 
     if __name__ == "__main__":
-        runner = TensorFlowAgentParallelRunner(settings=config, prng=random.Random(42))
+        runner = TensorFlowAgentParallelRunner(
+            settings=setting_dict_or_json, prng=random.Random(42)
+        )
         runner.class_register(MyKerasAgent)
         runner.main()
 

@@ -5,6 +5,7 @@ import os
 import random
 import subprocess
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -26,9 +27,11 @@ from .dummy import DummyLogger2
 from .dummy import initialize_worker
 from .tensorflow_dummy import TensorFlowAgent
 from .tensorflow_dummy import TensorFlowModelHoldingAgent
+from .tensorflow_dummy import TensorFlowReductionAgent
 from .tensorflow_dummy import get_n_cached_price_models
 from .tensorflow_dummy import get_tensorflow_config
 from .tensorflow_dummy import load_price_model
+from .tensorflow_dummy import run_sequential_runner
 from .test_agent_parallel import _assert_same_results
 
 # the tests using TensorFlow run only if TensorFlow is installed, e.g., by
@@ -106,6 +109,7 @@ class TestTensorFlowAgentParallelRunner:
         )
         runner.class_register(cls=TensorFlowAgent)
         runner.class_register(cls=TensorFlowModelHoldingAgent)
+        runner.class_register(cls=TensorFlowReductionAgent)
         return runner
 
     def test_import_does_not_import_tensorflow(self) -> None:
@@ -151,15 +155,43 @@ class TestTensorFlowAgentParallelRunner:
         assert runner._get_mp_context().get_start_method() == start_method
         runner._shutdown_executor()
 
-    @pytest.mark.parametrize("num_parallel", [1, 2, 3, None])
+    @pytest.mark.parametrize(
+        "cpu_count,num_parallel,max_normal_orders,expected_threads",
+        [
+            (12, 1, [4], 12),
+            (12, 2, [4], 6),
+            (12, 3, [4], 4),
+            # numParallel is 11 (the number of CPUs minus 1) by default
+            (12, None, [4], 3),
+            (12, 5, [7], 2),
+            # at most maxNormalOrders worker processes run at the same time
+            (12, 3, [1], 12),
+            (12, 5, [2], 6),
+            (12, 5, [1, 2], 6),
+            (2, 3, [4], 1),
+            (None, 3, [4], 1),
+        ],
+    )
     def test_config_default(
-        self, num_parallel: Any, fake_tensorflow: mock.MagicMock
+        self,
+        cpu_count: Optional[int],
+        num_parallel: Optional[int],
+        max_normal_orders: List[int],
+        expected_threads: int,
+        fake_tensorflow: mock.MagicMock,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
+        monkeypatch.setattr(os, "cpu_count", lambda: cpu_count)
         setting = copy.deepcopy(self.default_setting)
         if num_parallel is None:
             del setting["simulation"]["numParallel"]
         else:
             setting["simulation"]["numParallel"] = num_parallel
+        session_setting = setting["simulation"]["sessions"][0]
+        setting["simulation"]["sessions"] = [
+            dict(session_setting, sessionName=i, maxNormalOrders=value)
+            for i, value in enumerate(max_normal_orders)
+        ]
         runner = self._make_runner(setting=setting)
         assert runner.intra_op_parallelism_threads is None
         assert runner.inter_op_parallelism_threads == 1
@@ -167,10 +199,8 @@ class TestTensorFlowAgentParallelRunner:
         runner._setup()
         runner._shutdown_executor()
         assert runner.intra_op_parallelism_threads is None
-        # the CPUs are divided among the worker processes
-        assert runner._get_intra_op_parallelism_threads() == max(
-            (os.cpu_count() or 1) // runner.num_parallel, 1
-        )
+        # the CPUs are divided among the worker processes running at the same time
+        assert runner._get_intra_op_parallelism_threads() == expected_threads
 
     def test_config(self, fake_tensorflow: mock.MagicMock) -> None:
         setting = copy.deepcopy(self.default_setting)
@@ -314,6 +344,37 @@ class TestTensorFlowAgentParallelRunner:
         assert isinstance(parallel_runner.logger, DummyLogger2)
         assert parallel_runner.logger.n_execution_log > 0
         assert parallel_runner.executor is None
+
+    @requires_tensorflow
+    def test_same_result_as_sequential_with_same_threads(self) -> None:
+        # TensorFlowReductionAgent reduces about a million samples on several threads, so the
+        # results depend on the number of intra-op threads. SequentialRunner runs on a new process
+        # whose TensorFlow is configured in the same way as the worker processes.
+        n_threads = 2
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["tensorflowIntraOpThreads"] = n_threads
+        # with a tiny tick size, the rounding errors of TensorFlow change the prices
+        setting["Market"]["tickSize"] = 1e-9
+        setting["TensorFlowAgents"]["class"] = "TensorFlowReductionAgent"
+        with ProcessPoolExecutor(
+            max_workers=1,
+            mp_context=multiprocessing.get_context("spawn"),
+            initializer=_initialize_tensorflow_worker,
+            initargs=(n_threads, 1, True, None, ()),
+        ) as executor:
+            sequential_runner = executor.submit(
+                run_sequential_runner, copy.deepcopy(setting), 42
+            ).result()
+        parallel_runner = self._make_runner(setting=setting)
+        parallel_runner._setup()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="TensorFlowReductionAgent",
+        )
+        assert isinstance(parallel_runner.logger, DummyLogger2)
+        assert parallel_runner.logger.n_execution_log > 0
 
     @requires_tensorflow
     @pytest.mark.parametrize(

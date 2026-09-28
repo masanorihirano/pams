@@ -6,6 +6,7 @@ import them.
 """
 import functools
 import math
+import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -19,10 +20,15 @@ from pams.agents import Agent
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
+from pams.runners import SequentialRunner
+
+from .dummy import DummyLogger2
 
 N_RETURNS = 3
 N_FEATURES = N_RETURNS + 1
 N_HIDDEN = 8
+# shape of the samples of TensorFlowReductionAgent, large enough to be reduced on several threads
+N_SAMPLES_SHAPE = (2048, 512)
 
 
 @functools.lru_cache(maxsize=None)
@@ -159,3 +165,58 @@ class TensorFlowModelHoldingAgent(TensorFlowAgent):
 
     def get_model(self) -> Any:
         return self.model
+
+
+class TensorFlowReductionAgent(TensorFlowAgent):
+    """TensorFlowAgent whose noise is the mean of about a million samples drawn by TensorFlow.
+
+    The samples are drawn by a stateless random operation seeded from the agent's prng, so the
+    agent is deterministic. However, TensorFlow computes the mean on several threads, and its
+    rounding errors depend on the number of intra-op threads.
+    """
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        import tensorflow as tf
+
+        orders: List[Union[Order, Cancel]] = []
+        for market in markets:
+            if not self.is_market_accessible(market_id=market.market_id):
+                continue
+            seed = [self.prng.randrange(2**31), self.prng.randrange(2**31)]
+            samples = tf.random.stateless_normal(N_SAMPLES_SHAPE, seed=seed)
+            # the mean of the samples is multiplied by the square root of their number
+            # so that the noise follows the standard normal distribution
+            noise = float(tf.reduce_mean(samples).numpy()) * math.sqrt(
+                math.prod(N_SAMPLES_SHAPE)
+            )
+            market_price = market.get_market_price()
+            order_price = market_price * math.exp(self.noise_scale * noise)
+            orders.append(
+                Order(
+                    agent_id=self.agent_id,
+                    market_id=market.market_id,
+                    is_buy=order_price > market_price,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=order_price,
+                    ttl=20,
+                )
+            )
+        return orders
+
+
+def run_sequential_runner(setting: Dict, seed: int) -> SequentialRunner:
+    """Run SequentialRunner with the agents of this module on the current process.
+
+    This is called on a new process to run SequentialRunner with TensorFlow configured in the
+    same way as the worker processes of TensorFlowAgentParallelRunner.
+    """
+    runner = SequentialRunner(
+        settings=setting, prng=random.Random(seed), logger=DummyLogger2()
+    )
+    runner.class_register(cls=TensorFlowAgent)
+    runner.class_register(cls=TensorFlowModelHoldingAgent)
+    runner.class_register(cls=TensorFlowReductionAgent)
+    runner._setup()
+    runner._run()
+    return runner
