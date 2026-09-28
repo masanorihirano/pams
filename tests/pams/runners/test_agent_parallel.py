@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -51,6 +52,42 @@ class CustomThreadPoolExecutor(ThreadPoolExecutor):
 
 class CustomProcessPoolExecutor(ProcessPoolExecutor):
     pass
+
+
+@pytest.fixture(autouse=True)
+def shut_down_executors(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Shut down the executors created by the runners after each test.
+
+    Some tests, e.g., the ones inherited from TestSequentialRunner, leave the executor running.
+    When such an executor is garbage-collected, its manager thread shuts it down in the
+    background. With the fork start method (the default on Linux before Python 3.14), a worker
+    process forked by another executor meanwhile can inherit a lock held by that thread and hang
+    when it exits.
+    """
+    executors: List[Executor] = []
+
+    def track(
+        create_executor: Callable[[MultiThreadAgentParallelRunner], Executor]
+    ) -> Callable[[MultiThreadAgentParallelRunner], Executor]:
+        def create_and_track_executor(
+            runner: MultiThreadAgentParallelRunner,
+        ) -> Executor:
+            executor = create_executor(runner)
+            executors.append(executor)
+            return executor
+
+        return create_and_track_executor
+
+    for runner_class in [
+        MultiThreadAgentParallelRunner,
+        MultiProcessAgentParallelRunner,
+    ]:
+        monkeypatch.setattr(
+            runner_class, "_create_executor", track(runner_class._create_executor)
+        )
+    yield
+    for executor in executors:
+        executor.shutdown(wait=True)
 
 
 def _order_keys(orders: List[Union[Order, Cancel]]) -> List[Any]:
