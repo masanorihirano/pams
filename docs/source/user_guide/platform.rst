@@ -32,6 +32,29 @@ Moreover, simulator and its components generate logs and push it to logger.
 
 The key concept of this platform is that runner is replaceable to realize more complex simulator controlling.
 
+Parallel runners
+~~~~~~~~~~~~~~~~~~~~~~~~~
+:class:`pams.runners.MultiThreadAgentParallelRunner` and :class:`pams.runners.MultiProcessAgentParallelRunner` are experimental runners
+that parallelize the order submissions of normal (non high-frequency) agents in each step.
+They are drop-in replacements of :class:`pams.runners.SequentialRunner`, and the simulation results are the same as
+:class:`pams.runners.SequentialRunner` with the same settings and the same seed.
+The number of workers can be set by ``simulation.numParallel`` in the config, but the number of agents that can be
+parallelized in each step is limited by ``maxNormalOrders`` of the session.
+
+.. code-block:: python
+
+    runner = MultiThreadAgentParallelRunner(
+        settings=setting_dict_or_json,
+        prng=random.Random(seed),
+        logger=MarketStepPrintLogger(),
+    )
+    runner.main()
+
+Because of the GIL of python, :class:`pams.runners.MultiThreadAgentParallelRunner` is beneficial only when
+the order submission of agents waits for I/O (e.g., external models or services).
+:class:`pams.runners.MultiProcessAgentParallelRunner` copies agents and markets to worker processes for each order submission,
+so it is much slower and the user-defined classes must be picklable and importable from the worker processes.
+
 
 
 
