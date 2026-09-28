@@ -351,6 +351,37 @@ class TestMarket:
         expected = [1, None]
         assert results == expected
 
+    def test_extract_sequential_data_by_time_with_iterators(self) -> None:
+        m = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        m.time = 4
+        parameters: List[Optional[int]] = [0, 1, 2, 3, 4]
+        assert m._extract_sequential_data_by_time(
+            times=(t for t in [1, 2]), parameters=parameters
+        ) == [1, 2]
+        assert m._extract_sequential_data_by_time(
+            times=iter([3, 0, 3, 1]), parameters=parameters
+        ) == [3, 0, 3, 1]
+        assert m._extract_sequential_data_by_time(
+            times=range(1, 4), parameters=parameters
+        ) == [1, 2, 3]
+        assert (
+            m._extract_sequential_data_by_time(times=iter([]), parameters=parameters)
+            == []
+        )
+        with pytest.raises(AssertionError):
+            m._extract_sequential_data_by_time(
+                times=(t for t in [1, 5]), parameters=parameters + [5]
+            )
+        m._market_prices = [1.0, 1.1, 1.2, 1.3, 1.4]
+        assert m.get_market_prices(iter([0])) == [1.0]
+        assert m.get_market_prices(t for t in [4, 2]) == [1.4, 1.2]
+
     def test_extract_data_by_time(self) -> None:
         m = self.base_class(
             market_id=0,
