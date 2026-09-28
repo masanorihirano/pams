@@ -51,6 +51,49 @@ def _agent_states(agents: List[Agent]) -> List[Dict[str, Any]]:
     ]
 
 
+def _assert_same_results(
+    sequential_runner: SequentialRunner,
+    parallel_runner: SequentialRunner,
+    agent_class: str,
+) -> None:
+    sequential_market = sequential_runner.simulator.markets[0]
+    parallel_market = parallel_runner.simulator.markets[0]
+    times = range(sequential_market.get_time() + 1)
+    assert sequential_market.get_time() == parallel_market.get_time()
+    assert sequential_market.get_market_prices(
+        times
+    ) == parallel_market.get_market_prices(times)
+    assert sequential_market.get_fundamental_prices(
+        times
+    ) == parallel_market.get_fundamental_prices(times)
+    assert sequential_market.get_executed_volumes(
+        times
+    ) == parallel_market.get_executed_volumes(times)
+    assert sequential_market.get_n_buy_orders(
+        times
+    ) == parallel_market.get_n_buy_orders(times)
+    assert sequential_market.get_n_sell_orders(
+        times
+    ) == parallel_market.get_n_sell_orders(times)
+    assert _agent_states(sequential_runner.simulator.agents) == _agent_states(
+        parallel_runner.simulator.agents
+    )
+    assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
+    sequential_logger = sequential_runner.logger
+    parallel_logger = parallel_runner.logger
+    assert isinstance(sequential_logger, DummyLogger2)
+    assert isinstance(parallel_logger, DummyLogger2)
+    assert sequential_logger.n_order_log == parallel_logger.n_order_log
+    assert sequential_logger.n_cancel_log == parallel_logger.n_cancel_log
+    assert sequential_logger.n_execution_log == parallel_logger.n_execution_log
+    assert sequential_logger.n_order_log > 0
+    if agent_class == "CancelingAgent":
+        assert parallel_logger.n_cancel_log > 0
+        for market in parallel_runner.simulator.markets:
+            for order in market.buy_order_book.priority_queue:
+                assert not order.is_canceled
+
+
 class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
     runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRunner
     default_setting: Dict = {
@@ -140,42 +183,11 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         sequential_runner._run()
         parallel_runner._run()
 
-        sequential_market = sequential_runner.simulator.markets[0]
-        parallel_market = parallel_runner.simulator.markets[0]
-        times = range(sequential_market.get_time() + 1)
-        assert sequential_market.get_time() == parallel_market.get_time()
-        assert sequential_market.get_market_prices(
-            times
-        ) == parallel_market.get_market_prices(times)
-        assert sequential_market.get_fundamental_prices(
-            times
-        ) == parallel_market.get_fundamental_prices(times)
-        assert sequential_market.get_executed_volumes(
-            times
-        ) == parallel_market.get_executed_volumes(times)
-        assert sequential_market.get_n_buy_orders(
-            times
-        ) == parallel_market.get_n_buy_orders(times)
-        assert sequential_market.get_n_sell_orders(
-            times
-        ) == parallel_market.get_n_sell_orders(times)
-        assert _agent_states(sequential_runner.simulator.agents) == _agent_states(
-            parallel_runner.simulator.agents
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class=agent_class,
         )
-        assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
-        sequential_logger = sequential_runner.logger
-        parallel_logger = parallel_runner.logger
-        assert isinstance(sequential_logger, DummyLogger2)
-        assert isinstance(parallel_logger, DummyLogger2)
-        assert sequential_logger.n_order_log == parallel_logger.n_order_log
-        assert sequential_logger.n_cancel_log == parallel_logger.n_cancel_log
-        assert sequential_logger.n_execution_log == parallel_logger.n_execution_log
-        assert sequential_logger.n_order_log > 0
-        if agent_class == "CancelingAgent":
-            assert parallel_logger.n_cancel_log > 0
-            for market in parallel_runner.simulator.markets:
-                for order in market.buy_order_book.priority_queue:
-                    assert not order.is_canceled
 
     def test_collect_orders_from_normal_agents_asks_same_agents(self) -> None:
         setting = copy.deepcopy(self.default_setting)
