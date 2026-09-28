@@ -14,6 +14,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     # The type of runner that the job will run on
@@ -25,9 +28,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -37,6 +40,8 @@ jobs:
           poetry install
           # the CPU-only build of TensorFlow, installed into the environment of poetry
           poetry run pip install tensorflow-cpu
+          # fail here instead of skipping the tests if TensorFlow cannot be imported
+          poetry run python -c "import tensorflow as tf; print(tf.__version__)"
       - name: Test
         run: |
           poetry run pytest tests/pams/runners/test_tensorflow_parallel.py
