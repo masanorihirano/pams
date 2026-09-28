@@ -51,6 +51,17 @@ jobs:
           TAG: ${{ steps.get_version.outputs.TAG }}
       - name: Tag the merge commit
         run: |
+          # "Re-run all jobs" finds the tag that the first run pushed. Accept it
+          # if it points to this commit; refuse a tag on any other commit.
+          tagged_commit=$(git ls-remote --tags origin "refs/tags/${TAG}^{}" | cut -f1)
+          if [ -n "$tagged_commit" ]; then
+            if [ "$tagged_commit" = "$(git rev-parse HEAD)" ]; then
+              echo "Tag ${TAG} already points to this commit; not creating it again."
+              exit 0
+            fi
+            echo "::error::Tag ${TAG} already exists on another commit (${tagged_commit})."
+            exit 1
+          fi
           git config user.email "masa.hirano.1996@gmail.com"
           git config user.name "Masanori HIRANO"
           git tag -a "$TAG" -m " "
@@ -184,10 +195,12 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # The credentials are kept for deleting the release branch at the end.
+      # No git credentials are left on disk: only the two gh steps below get
+      # the write token.
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
+          persist-credentials: false
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
@@ -216,16 +229,19 @@ jobs:
             echo "Please see the pull request."
             echo "[${PR_URL}](${PR_URL})"
           } > "${RUNNER_TEMP}/release-notes.md"
-          gh release create "$TAG" dist/* --verify-tag --title "$TAG" \
-            --notes-file "${RUNNER_TEMP}/release-notes.md"
+          gh release create "$TAG" dist/* --verify-tag --target "$MERGE_SHA" \
+            --title "$TAG" --notes-file "${RUNNER_TEMP}/release-notes.md"
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TAG: ${{ needs.tagging.outputs.tag }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_URL: ${{ github.event.pull_request.html_url }}
       - name: remove branch
         run: |
-          git push --delete origin "refs/heads/${HEAD_REF}"
+          gh api -X DELETE "repos/${GH_REPO}/git/refs/heads/${HEAD_REF}"
         env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
