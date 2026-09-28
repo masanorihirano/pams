@@ -252,7 +252,7 @@ class SequentialRunner(Runner):
                         raise ValueError(
                             "simulation.fundamentalCorrelations.pairwise has invalid format data"
                         )
-                    for (market1_name, market2_name, corr) in value:
+                    for market1_name, market2_name, corr in value:
                         market1 = self.simulator.name2market[market1_name]
                         market2 = self.simulator.name2market[market2_name]
                         for m in [market1, market2]:
