@@ -866,12 +866,12 @@ msgstr ""
 msgid ""
 "Class name, e.g. ``\"Market\"`` or ``\"FCNAgent\"``. Use the plain class "
 "name (case-sensitive), not a dotted path. Built-in classes are found "
-"automatically; your own classes must be registered (see :ref:`config-user-"
-"classes`)."
+"automatically; your own classes must be registered, or set as the class "
+"itself in a Python dict config (see :ref:`config-user-classes`)."
 msgstr ""
 "``\"Market\"`` や ``\"FCNAgent\"`` "
-"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録する必要があります（:ref"
-":`config-user-classes` を参照）。"
+"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録するか、Python"
+" の dict による設定ではクラスそのものを指定する必要があります（:ref:`config-user-classes` を参照）。"
 
 #: ../../source/user_guide/config.rst:423
 msgid "``extends`` |optional|"
@@ -2283,6 +2283,25 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1150
 msgid ""
+"When the config is a Python dict, you can instead set the class itself as "
+"the value of ``class``. Such a class is used as is, so it needs no "
+"``class_register`` and its name does not have to be unique:"
+msgstr ""
+"設定が Python の dict の場合は、名前の代わりにクラスそのものを ``class`` "
+"の値に指定することもできます。このクラスはそのまま使われるため、``class_register`` "
+"は不要で、名前が一意である必要もありません："
+
+#: ../../source/user_guide/config.rst:1162
+msgid ""
+"This works only with a Python dict, because a JSON file cannot hold a class."
+" A class set in a block is inherited through ``extends`` like any other "
+"value."
+msgstr ""
+"JSON ファイルはクラスを保持できないため、これは Python の dict でのみ使えます。ブロックに指定したクラスは、他の値と同じように "
+"``extends`` で継承されます。"
+
+#: ../../source/user_guide/config.rst:1165
+msgid ""
 "The block (after ``extends`` is resolved, without ``numAgents`` / "
 "``numMarkets``, ``from``, ``to`` and ``prefix``) is passed to "
 "``setup(settings=...)``, so any extra key you add is available there. To "
@@ -2299,23 +2318,25 @@ msgstr ""
 ":class:`~pams.utils.JsonRandom` を参照）。戻り値は常に float なので、整数パラメータには自分で ``int()``"
 " を適用してください。"
 
-#: ../../source/user_guide/config.rst:1155
+#: ../../source/user_guide/config.rst:1170
 msgid ""
-"Class names must be unique: a class with the same name as a built-in class "
-"(e.g. your own ``FCNAgent``) is ambiguous and fails. Register each class "
-"only once."
+"Class names given as strings must be unique: a class with the same name as "
+"a built-in class (e.g. your own ``FCNAgent``) is ambiguous and fails. "
+"Register each class only once."
 msgstr ""
-"クラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
+"文字列で指定するクラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
 "``FCNAgent``）は曖昧となりエラーになります。各クラスは一度だけ登録してください。"
 
-#: ../../source/user_guide/config.rst:1157
+#: ../../source/user_guide/config.rst:1172
 msgid ""
-"Agent classes must inherit from :class:`~pams.agents.Agent` and market "
-"classes from :class:`~pams.Market`. An agent that inherits from "
+"Agent classes must inherit from :class:`~pams.agents.Agent`, market classes "
+"from :class:`~pams.Market` and event classes from "
+":class:`~pams.events.EventABC`. An agent that inherits from "
 ":class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency "
 "agent."
 msgstr ""
 "エージェントクラスは :class:`~pams.agents.Agent` を、市場クラスは :class:`~pams.Market` "
+"を、イベントクラスは :class:`~pams.events.EventABC` "
 "を継承する必要があります。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
 "を継承している場合、高頻度エージェントとしてスケジュールされます。"
 
@@ -2538,6 +2559,28 @@ msgid ""
 "one), or the same class was registered twice. Rename the class or register "
 "it once."
 msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か、同じクラスが2回登録されています。クラス名を変更するか、1回だけ登録してください。"
+
+#: ../../source/user_guide/config.rst:1256
+msgid ""
+"``market class for X does not inherit Market class`` (the same for agent "
+"and event classes)"
+msgstr "``market class for X does not inherit Market class`` （エージェントクラスとイベントクラスも同様）"
+
+#: ../../source/user_guide/config.rst:1257
+msgid ""
+"The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a "
+"market block."
+msgstr "ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している）。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``class must be a class name (str) or a class, but X is given``"
+msgstr ""
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"The value of ``class`` in a Python dict config is neither a string nor a "
+"class, e.g. ``None``."
+msgstr "Python の dict による設定で、``class`` の値が文字列でもクラスでもありません（例：``None``）。"
 
 #: ../../source/user_guide/config.rst:1240
 msgid "``X setting is missing in config``"

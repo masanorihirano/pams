@@ -418,8 +418,8 @@ created and how they are named.
    * - ``class`` |required|
      - string
      - Class name, e.g. ``"Market"`` or ``"FCNAgent"``. Use the plain class name (case-sensitive), not a dotted
-       path. Built-in classes are found automatically; your own classes must be registered
-       (see :ref:`config-user-classes`).
+       path. Built-in classes are found automatically; your own classes must be registered, or set as the
+       class itself in a Python dict config (see :ref:`config-user-classes`).
    * - ``extends`` |optional|
      - block name
      - Inherit the keys of another block. See :ref:`config-extends`.
@@ -1147,15 +1147,31 @@ before calling ``main()``, then refer to it by its class name:
 
    "MyAgents": {"extends": "FCNAgents", "class": "MyAgent", "myParameter": 2.0}
 
+When the config is a Python dict, you can instead set the class itself as the value of ``class``. Such a class
+is used as is, so it needs no ``class_register`` and its name does not have to be unique:
+
+.. code-block:: python
+
+   config = {
+       # ... the other blocks
+       "MyAgents": {"extends": "FCNAgents", "class": MyAgent, "myParameter": 2.0},
+   }
+   runner = SequentialRunner(settings=config)
+   runner.main()
+
+This works only with a Python dict, because a JSON file cannot hold a class. A class set in a block is inherited
+through ``extends`` like any other value.
+
 - The block (after ``extends`` is resolved, without ``numAgents`` / ``numMarkets``, ``from``, ``to`` and
   ``prefix``) is passed to ``setup(settings=...)``, so any extra key you add is available there. To accept JsonRandom notation, draw the value in ``setup`` with
   ``JsonRandom(prng=self.prng).random(settings["myParameter"])`` (``from pams.utils import JsonRandom``; see
   :class:`~pams.utils.JsonRandom`). It always returns a float, so apply ``int()`` yourself for integer
   parameters.
-- Class names must be unique: a class with the same name as a built-in class (e.g. your own ``FCNAgent``)
-  is ambiguous and fails. Register each class only once.
-- Agent classes must inherit from :class:`~pams.agents.Agent` and market classes from :class:`~pams.Market`.
-  An agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
+- Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
+  ``FCNAgent``) is ambiguous and fails. Register each class only once.
+- Agent classes must inherit from :class:`~pams.agents.Agent`, market classes from :class:`~pams.Market` and
+  event classes from :class:`~pams.events.EventABC`. An agent that inherits from
+  :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
 - ``samples/user_class`` and ``samples/market_share`` show complete examples.
 
 
@@ -1237,6 +1253,10 @@ Common errors
    * - ``class for X is found 2 times``
      - Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
        registered twice. Rename the class or register it once.
+   * - ``market class for X does not inherit Market class`` (the same for agent and event classes)
+     - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
+   * - ``class must be a class name (str) or a class, but X is given``
+     - The value of ``class`` in a Python dict config is neither a string nor a class, e.g. ``None``.
    * - ``X setting is missing in config``
      - A name in ``simulation.markets`` or ``simulation.agents`` has no block. Check the spelling.
    * - ``KeyError: 'X'``
