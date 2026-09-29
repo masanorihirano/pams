@@ -58,7 +58,7 @@
 		"noiseWeight": {"expon": [1.0]},
 		"noiseScale": 0.001,
 		"timeWindowSize": [100, 200],
-		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS",
+		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS because FCNAgent of PAMS decides the side of a normal-margin order against the market price, not the order price",
 		"orderMargin": [0.0, 0.1]
 	},
 
@@ -77,11 +77,11 @@
 		"noiseWeight": {"expon": [1.0]},
 		"noiseScale": 0.001,
 		"timeWindowSize": [100, 200],
-		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS",
+		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS because FCNAgent of PAMS decides the side of a normal-margin order against the market price, not the order price",
 		"orderMargin": [0.0, 0.1],
 
 		"MEMO": "InvestDivFCNAgent class",
-		"leverageRatio": 1.0,
+		"leverageRatio": 1.0,    "MEMO": "Always 1.0 in plhamJ, which ignores the configured value",
 		"diversityRatio": 0.4
 	}
 }

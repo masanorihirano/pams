@@ -31,6 +31,11 @@ class InvestDivFCNAgent(FCNAgent):
       it is replaced by a market order of one unit that reduces the position in the market. The market order is
       submitted only if it can be executed at once (see :meth:`is_market_order_executable`).
 
+    Note:
+        This is a port of ``InvestDivFCNAgent`` of plhamJ with two differences. In plhamJ, a local variable
+        shadows the configured ``leverageRatio``, so the leverage limit is always 1.0, while this class uses the
+        configured value. And plhamJ submits the market order even if it cannot be executed at once.
+
     References:
         - Nozaki, Mizuta, Yagi (2016) Investigation of the rule for investment diversification at the time of
           a market crash using an artificial market (in Japanese).
@@ -153,6 +158,7 @@ class InvestDivFCNAgent(FCNAgent):
             total_asset_value_abs += abs(asset_value)
 
         orders: List[Union[Order, Cancel]] = []
+        # plhamJ always uses 1.0 here because a local variable shadows the configured leverageRatio.
         if total_asset_value_abs > self.leverage_ratio * net_asset_value:
             return orders
 
