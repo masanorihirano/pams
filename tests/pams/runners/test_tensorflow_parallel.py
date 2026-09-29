@@ -3,7 +3,7 @@ import importlib.util
 import multiprocessing
 import os
 import random
-import subprocess
+import subprocess  # nosec B404 # only runs the current Python with fixed code
 import sys
 from concurrent.futures import ProcessPoolExecutor
 from typing import Any
@@ -41,8 +41,8 @@ requires_tensorflow = pytest.mark.skipif(
 )
 
 
-@pytest.fixture
-def fake_tensorflow(monkeypatch: pytest.MonkeyPatch) -> mock.MagicMock:
+@pytest.fixture(name="fake_tensorflow")
+def fixture_fake_tensorflow(monkeypatch: pytest.MonkeyPatch) -> mock.MagicMock:
     """Replace TensorFlow with a mock that has two GPUs."""
     tensorflow = mock.MagicMock()
     tensorflow.config.list_physical_devices.return_value = ["GPU:0", "GPU:1"]
@@ -119,7 +119,9 @@ class TestTensorFlowAgentParallelRunner:
             "from pams.runners import TensorFlowAgentParallelRunner\n"
             "assert 'tensorflow' not in sys.modules, 'TensorFlow is imported'\n"
         )
-        subprocess.run([sys.executable, "-c", code], check=True)
+        # a new interpreter is needed because the other tests may import TensorFlow;
+        # the command is fixed, so it does not execute untrusted input
+        subprocess.run([sys.executable, "-c", code], check=True)  # nosec B603
 
     def test_tensorflow_not_installed(self, monkeypatch: pytest.MonkeyPatch) -> None:
         # None in sys.modules makes the import fail as if TensorFlow were not installed
@@ -133,7 +135,8 @@ class TestTensorFlowAgentParallelRunner:
         with pytest.raises(ImportError, match="requires TensorFlow"):
             _initialize_tensorflow_worker(1, 1, True, None, ())
 
-    def test_start_method_default(self, fake_tensorflow: mock.MagicMock) -> None:
+    @pytest.mark.usefixtures("fake_tensorflow")
+    def test_start_method_default(self) -> None:
         assert TensorFlowAgentParallelRunner.default_start_method == "spawn"
         runner = self._make_runner(setting=self.default_setting)
         assert isinstance(runner, MultiProcessAgentParallelRunner)
@@ -143,10 +146,9 @@ class TestTensorFlowAgentParallelRunner:
         assert runner._get_mp_context().get_start_method() == "spawn"
         runner._shutdown_executor()
 
+    @pytest.mark.usefixtures("fake_tensorflow")
     @pytest.mark.parametrize("start_method", multiprocessing.get_all_start_methods())
-    def test_start_method_config(
-        self, start_method: str, fake_tensorflow: mock.MagicMock
-    ) -> None:
+    def test_start_method_config(self, start_method: str) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["startMethod"] = start_method
         runner = self._make_runner(setting=setting)
@@ -155,6 +157,7 @@ class TestTensorFlowAgentParallelRunner:
         assert runner._get_mp_context().get_start_method() == start_method
         runner._shutdown_executor()
 
+    @pytest.mark.usefixtures("fake_tensorflow")
     @pytest.mark.parametrize(
         "cpu_count,num_parallel,max_normal_orders,expected_threads",
         [
@@ -178,7 +181,6 @@ class TestTensorFlowAgentParallelRunner:
         num_parallel: Optional[int],
         max_normal_orders: List[int],
         expected_threads: int,
-        fake_tensorflow: mock.MagicMock,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         monkeypatch.setattr(os, "cpu_count", lambda: cpu_count)
@@ -202,7 +204,8 @@ class TestTensorFlowAgentParallelRunner:
         # the CPUs are divided among the worker processes running at the same time
         assert runner._get_intra_op_parallelism_threads() == expected_threads
 
-    def test_config(self, fake_tensorflow: mock.MagicMock) -> None:
+    @pytest.mark.usefixtures("fake_tensorflow")
+    def test_config(self) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["tensorflowIntraOpThreads"] = 3
         setting["simulation"]["tensorflowInterOpThreads"] = 2
@@ -215,12 +218,10 @@ class TestTensorFlowAgentParallelRunner:
         assert runner.gpu_memory_growth is False
         assert runner._get_intra_op_parallelism_threads() == 3
 
+    @pytest.mark.usefixtures("fake_tensorflow")
     @pytest.mark.parametrize("initializer", [None, initialize_worker])
     def test_create_executor(
-        self,
-        initializer: Optional[Callable[..., Any]],
-        fake_tensorflow: mock.MagicMock,
-        monkeypatch: pytest.MonkeyPatch,
+        self, initializer: Optional[Callable[..., Any]], monkeypatch: pytest.MonkeyPatch
     ) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["tensorflowIntraOpThreads"] = 3
@@ -228,7 +229,8 @@ class TestTensorFlowAgentParallelRunner:
         setting["simulation"]["tensorflowGpuMemoryGrowth"] = False
         runner = self._make_runner(setting=setting)
         assert runner._get_worker_initializer() is None
-        assert runner._get_worker_initargs() == ()
+        assert isinstance(runner._get_worker_initargs(), tuple)
+        assert not runner._get_worker_initargs()
         initargs: Tuple[Any, ...] = () if initializer is None else ("token",)
         monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
         monkeypatch.setattr(runner, "_get_worker_initargs", lambda: initargs)
@@ -248,6 +250,7 @@ class TestTensorFlowAgentParallelRunner:
             (3, 2, False, initializer, initargs),
         )
 
+    @pytest.mark.usefixtures("fake_tensorflow")
     @pytest.mark.parametrize(
         "key,value",
         [
@@ -257,9 +260,7 @@ class TestTensorFlowAgentParallelRunner:
         ]
         + [("tensorflowGpuMemoryGrowth", value) for value in [1, 0, "true", None]],
     )
-    def test_config_invalid(
-        self, key: str, value: Any, fake_tensorflow: mock.MagicMock
-    ) -> None:
+    def test_config_invalid(self, key: str, value: Any) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"][key] = value
         runner = self._make_runner(setting=setting)

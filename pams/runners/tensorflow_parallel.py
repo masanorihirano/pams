@@ -27,7 +27,7 @@ def _import_tensorflow() -> ModuleType:
 
     """
     try:
-        import tensorflow
+        import tensorflow  # pylint: disable=import-outside-toplevel # optional dependency
     except ImportError as e:
         raise ImportError(
             "TensorFlowAgentParallelRunner requires TensorFlow, which is not installed."
