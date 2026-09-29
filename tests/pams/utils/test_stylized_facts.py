@@ -26,6 +26,7 @@ class TestLogReturns:
         )
         assert len(log_returns(list(range(1, 22)), interval=10)) == 2
         assert len(log_returns([100.0], interval=1)) == 0
+        assert len(log_returns([], interval=2)) == 0
 
     def test_drop_unchanged(self) -> None:
         prices: List[float] = [100.0, 100.0, 110.0, 110.0, 110.0, 99.0, 99.0]
@@ -68,7 +69,14 @@ class TestExcessKurtosis:
 
     def test_invalid_arguments(self) -> None:
         with pytest.raises(ValueError):
+            excess_kurtosis([])
+        with pytest.raises(ValueError):
             excess_kurtosis([1.0, 1.0, 1.0])
+        # the rounded means of these constant series differ from their values
+        with pytest.raises(ValueError):
+            excess_kurtosis([0.1] * 3)
+        with pytest.raises(ValueError):
+            excess_kurtosis([math.log(1.1)] * 7)
 
 
 class TestAutocorrelation:
@@ -95,6 +103,8 @@ class TestAutocorrelation:
             autocorrelation([1.0, 2.0, 3.0], lag=3)
         with pytest.raises(ValueError):
             autocorrelation([1.0, 1.0, 1.0], lag=1)
+        with pytest.raises(ValueError):
+            autocorrelation([0.1] * 3, lag=1)
 
 
 class TestHillTailIndex:

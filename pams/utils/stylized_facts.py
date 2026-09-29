@@ -30,7 +30,7 @@ def log_returns(
 
     Returns:
         np.ndarray: log returns. Without ``drop_unchanged``, the length is
-        ``(len(prices) - 1) // interval``.
+        ``max(len(prices) - 1, 0) // interval``.
 
     Examples:
         >>> from pams.utils import log_returns
@@ -77,10 +77,14 @@ def excess_kurtosis(values: Union[Sequence[float], np.ndarray]) -> float:
         3.14
     """
     values_array: np.ndarray = np.asarray(values, dtype=float)
+    if len(values_array) == 0:
+        raise ValueError("values must not be empty")
+    # the raw values are compared because the deviations of a constant series from
+    # its mean may not be exactly zero after rounding
+    if np.all(values_array == values_array[0]):
+        raise ValueError("values must not be constant")
     deviations: np.ndarray = values_array - values_array.mean()
     second_moment: float = float(np.mean(deviations**2))
-    if second_moment == 0.0:
-        raise ValueError("values must not be constant")
     fourth_moment: float = float(np.mean(deviations**4))
     return fourth_moment / second_moment**2 - 3.0
 
@@ -112,10 +116,11 @@ def autocorrelation(values: Union[Sequence[float], np.ndarray], lag: int) -> flo
     values_array: np.ndarray = np.asarray(values, dtype=float)
     if lag < 1 or lag >= len(values_array):
         raise ValueError("lag must be positive and smaller than the length of values")
+    # the raw values are compared for the same reason as in excess_kurtosis
+    if np.all(values_array == values_array[0]):
+        raise ValueError("values must not be constant")
     deviations: np.ndarray = values_array - values_array.mean()
     denominator: float = float(np.dot(deviations, deviations))
-    if denominator == 0.0:
-        raise ValueError("values must not be constant")
     return float(np.dot(deviations[:-lag], deviations[lag:])) / denominator
 
 

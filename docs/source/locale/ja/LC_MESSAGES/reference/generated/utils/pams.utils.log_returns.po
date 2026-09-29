@@ -72,11 +72,11 @@ msgstr "戻り値"
 
 #: of pams.utils.stylized_facts.log_returns:23
 msgid ""
-"log returns. Without ``drop_unchanged``, the length is ``(len(prices) - "
-"1) // interval``."
+"log returns. Without ``drop_unchanged``, the length is ``max(len(prices) "
+"- 1, 0) // interval``."
 msgstr ""
-"対数リターン。``drop_unchanged`` を指定しない場合、長さは ``(len(prices) - 1) // interval`` "
-"です。"
+"対数リターン。``drop_unchanged`` を指定しない場合、長さは ``max(len(prices) - 1, 0) // "
+"interval`` です。"
 
 #: of pams.utils.stylized_facts.log_returns
 msgid "Return type"
