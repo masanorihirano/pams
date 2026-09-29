@@ -391,9 +391,11 @@ msgstr "検査はテストスイートの一部であるため、サポートし
 #: ../../source/user_guide/stylized_facts.rst:164
 msgid ""
 "The two runs take a few seconds in total. The statistics are public "
-"functions of :mod:`pams.utils`, so they also work on the prices of your "
-"own simulations:"
-msgstr "2回の実行には合計で数秒かかります。統計量は :mod:`pams.utils` の公開関数なので、独自のシミュレーションの価格にも使えます："
+"functions of ``pams.utils`` (see :doc:`../reference/utils`), so they also"
+" work on the prices of your own simulations:"
+msgstr ""
+"2回の実行には合計で数秒かかります。統計量は ``pams.utils`` の公開関数なので（:doc:`../reference/utils` "
+"を参照）、独自のシミュレーションの価格にも使えます："
 
 #: ../../source/user_guide/stylized_facts.rst:186
 msgid "Out of scope"

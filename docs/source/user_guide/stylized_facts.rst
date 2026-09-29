@@ -161,8 +161,8 @@ Python version. To run only them:
 
    python -m pytest tests/validation
 
-The two runs take a few seconds in total. The statistics are public functions of
-:mod:`pams.utils`, so they also work on the prices of your own simulations:
+The two runs take a few seconds in total. The statistics are public functions of ``pams.utils``
+(see :doc:`../reference/utils`), so they also work on the prices of your own simulations:
 
 .. code-block:: python
 
