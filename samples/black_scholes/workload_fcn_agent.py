@@ -123,6 +123,13 @@ class WorkloadFCNAgent(FCNAgent):
         ``bs_load_shutdown``. If ``bs_load_shutdown`` is 0 or negative, the workload is
         never shut down.
 
+        plhamJ counts down ``bs_load_shutdown`` on every call of ``submit_orders``
+        instead. The time is used here because
+        :class:`pams.runners.MultiProcessAgentParallelRunner` discards the attributes
+        changed in :func:`submit_orders`, so a countdown would make the results differ
+        from those of :class:`pams.runners.SequentialRunner`. Both are the same if the
+        agent is asked to submit orders once in every step from the time 0.
+
         Args:
             time (int): time.
 
@@ -138,8 +145,10 @@ class WorkloadFCNAgent(FCNAgent):
         """Process the workload and submit orders with the probability ``order_rate``.
 
         If none of the markets is accessible, neither the workload is processed nor
-        orders are submitted. The orders are made by
-        :func:`pams.agents.FCNAgent.submit_orders`.
+        orders are submitted. The time is taken from the first accessible market.
+        plhamJ checks only the first of the markets instead, so only the agents that
+        can access the first market of the simulation would work. The orders are made
+        by :func:`pams.agents.FCNAgent.submit_orders`.
 
         Args:
             markets (List[Market]): markets to order.
