@@ -207,23 +207,28 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
     ]
     custom_pool_provider: Type[Executor] = CustomThreadPoolExecutor
 
+    def _make_runner(
+        self, runner_class: Type[SequentialRunner], setting: Dict, seed: int = 42
+    ) -> SequentialRunner:
+        runner = runner_class(
+            settings=copy.deepcopy(setting),
+            prng=random.Random(seed),
+            logger=DummyLogger2(),
+        )
+        for cls in self.user_classes:
+            runner.class_register(cls=cls)
+        return runner
+
     def _make_runners(
         self, setting: Dict, seed: int = 42
     ) -> Tuple[SequentialRunner, MultiThreadAgentParallelRunner]:
-        sequential_runner = SequentialRunner(
-            settings=copy.deepcopy(setting),
-            prng=random.Random(seed),
-            logger=DummyLogger2(),
+        sequential_runner = self._make_runner(
+            runner_class=SequentialRunner, setting=setting, seed=seed
         )
-        parallel_runner = self.runner_class(
-            settings=copy.deepcopy(setting),
-            prng=random.Random(seed),
-            logger=DummyLogger2(),
+        parallel_runner = self._make_runner(
+            runner_class=self.runner_class, setting=setting, seed=seed
         )
         assert isinstance(parallel_runner, MultiThreadAgentParallelRunner)
-        for cls in self.user_classes:
-            sequential_runner.class_register(cls=cls)
-            parallel_runner.class_register(cls=cls)
         return sequential_runner, parallel_runner
 
     @pytest.mark.parametrize(
@@ -421,7 +426,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         )
         runner._setup()
         executor = runner.executor
-        assert type(executor) is self.custom_pool_provider
+        assert isinstance(executor, self.custom_pool_provider)
         assert executor.submit(sum, [1, 2]).result() == 3
         runner._shutdown_executor()
 
@@ -486,7 +491,8 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         setting["simulation"]["sessions"][0]["iterationSteps"] = 1
         _, runner = self._make_runners(setting=setting)
         assert runner._get_worker_initializer() is None
-        assert runner._get_worker_initargs() == ()
+        assert isinstance(runner._get_worker_initargs(), tuple)
+        assert not runner._get_worker_initargs()
         # without the initializer, WorkerInitializationCheckingAgent fails
         runner._setup()
         with pytest.raises(RuntimeError, match="worker is initialized with None"):
@@ -630,7 +636,12 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         setting["simulation"]["startMethod"] = start_method
         setting["simulation"]["numParallel"] = 2
         setting["simulation"]["sessions"][0]["iterationSteps"] = 10
-        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        sequential_runner = self._make_runner(
+            runner_class=SequentialRunner, setting=setting
+        )
+        parallel_runner = self._make_runner(
+            runner_class=MultiProcessAgentParallelRunner, setting=setting
+        )
         assert isinstance(parallel_runner, MultiProcessAgentParallelRunner)
         assert parallel_runner.start_method is None
         sequential_runner._setup()

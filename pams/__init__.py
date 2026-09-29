@@ -1,3 +1,4 @@
+"""PAMS: Platform for Artificial Market Simulations."""
 from pams import agents
 from pams import events
 from pams import runners

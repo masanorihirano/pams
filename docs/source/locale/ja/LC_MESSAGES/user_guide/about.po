@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/about.rst:2
+msgid "About this project"
+msgstr "このプロジェクトについて"
+
+#: ../../source/user_guide/about.rst:4
+msgid ""
+"Platform for Artificial Market Simulations is OSS project for artificial "
+"market simulations. This is implemented and distributed as a python package."
+" This project inherits the concept of `plham "
+"<https://plham.github.io/Project>`_ . However, corresponding to the recent "
+"usage of deep learning on python, this project decided to employ a python-"
+"based system."
+msgstr ""
+"Platform for Artificial Market "
+"Simulationsは、人工市場シミュレーションのためのOSSプロジェクトです。Pythonパッケージとして実装・配布されています。このプロジェクトは"
+" `plham <https://plham.github.io/Project>`_ "
+"のコンセプトを継承しています。ただし、近年Pythonで深層学習が用いられるようになっていることに対応して、このプロジェクトではPythonベースのシステムを採用することにしました。"
+
+#: ../../source/user_guide/about.rst:10
+msgid "Goals"
+msgstr "目標"
+
+#: ../../source/user_guide/about.rst:11
+msgid ""
+"Artificial market simulation is a multi-agent simulation and run virtual "
+"markets on your computer. In artificial markets, there exists virtual "
+"markets and virtual agents imitating the real traders. By piling up the "
+"agents' behaviors, markets works well and the market prices are decided. "
+"Through artificial market simulations, we can analyze the mechanisms of what"
+" happens in the actual markets."
+msgstr "人工市場シミュレーションはマルチエージェントシミュレーションであり、コンピューター上で仮想的な市場を動かします。人工市場には、仮想的な市場と、実際のトレーダーを模した仮想的なエージェントが存在します。エージェントの行動が積み重なることで市場が機能し、市場価格が決まります。人工市場シミュレーションを通じて、実際の市場で起こる現象のメカニズムを分析できます。"
+
+#: ../../source/user_guide/about.rst:16
+msgid ""
+"Recently, deep leaning is introduced to many researches, and it is also "
+"important for financial markets. Owing to the development of deep learning, "
+"the combination of artificial market simulations and deep learning also "
+"become important. For addressing this motivation, PAMS are developed."
+msgstr "近年、多くの研究に深層学習が導入されており、金融市場においても重要になっています。深層学習の発展に伴い、人工市場シミュレーションと深層学習の組み合わせも重要になっています。こうした要請に応えるため、PAMSが開発されました。"
+
+#: ../../source/user_guide/about.rst:21
+msgid "Features"
+msgstr "特徴"
+
+#: ../../source/user_guide/about.rst:22
+msgid "The features of PAMS are the following:"
+msgstr "PAMSの特徴は以下のとおりです："
+
+#: ../../source/user_guide/about.rst:24
+msgid "time scale is tick-time"
+msgstr "時間スケールはティック時間"
+
+#: ../../source/user_guide/about.rst:25
+msgid "can replicate flash crashes"
+msgstr "フラッシュクラッシュを再現可能"
+
+#: ../../source/user_guide/about.rst:26
+msgid "long-term simulations, such as simulations over the years, are also possible"
+msgstr "数年にわたるシミュレーションなど、長期間のシミュレーションも可能"
+
+#: ../../source/user_guide/about.rst:27
+msgid "multiple stocks can be simulated"
+msgstr "複数銘柄のシミュレーションが可能"
+
+#: ../../source/user_guide/about.rst:28
+msgid "index-ETF or options can be handled"
+msgstr "インデックスETFやオプションを扱うことが可能"
+
+#: ../../source/user_guide/about.rst:30
+msgid "Moreover, the followings are the feature of this platform:"
+msgstr "さらに、このプラットフォームには以下の特徴があります："
+
+#: ../../source/user_guide/about.rst:32
+msgid ""
+"It can be run on stand-alone computer, clusters, google colab, or many other"
+" computers"
+msgstr "スタンドアロンのコンピューター、クラスター、Google Colab、その他さまざまなコンピューター上で実行可能"
+
+#: ../../source/user_guide/about.rst:33
+msgid "Small setting modification can be available only by changing config file"
+msgstr "設定ファイルを変更するだけで、小規模な設定変更が可能"
+
+#: ../../source/user_guide/about.rst:34
+msgid "New classes (agents, markets) are easy to be introduced"
+msgstr "新しいクラス（エージェント、市場）を容易に導入可能"
+

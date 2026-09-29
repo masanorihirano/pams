@@ -8,7 +8,7 @@ from .base import EventHook
 
 
 class FundamentalPriceShock(EventABC):
-    """This suddenly changes the fundamental price (just changing it).
+    """Event that suddenly changes the fundamental price (just changing it).
 
     This event is only called via :func:`hooked_before_step_for_market` at designated step.
     """
@@ -26,6 +26,7 @@ class FundamentalPriceShock(EventABC):
         simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
     ) -> None:
+        """Initialize the fundamental price shock (see :class:`pams.events.EventABC` for the arguments)."""
         super().__init__(
             event_id=event_id,
             prng=prng,
@@ -37,7 +38,7 @@ class FundamentalPriceShock(EventABC):
         self.shock_time_length: int = 1
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """event setup. Usually be called from simulator/runner automatically.
+        """Event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -47,6 +48,7 @@ class FundamentalPriceShock(EventABC):
 
         Returns:
             None
+
         """
         if "triggerDays" in settings:
             raise ValueError("triggerDays and numStepsOneDay are obsoleted.")
