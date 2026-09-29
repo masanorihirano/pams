@@ -42,6 +42,7 @@ def log_returns(
         >>> prices = [100.0, 100.0, 110.0, 110.0, 110.0, 99.0]
         >>> log_returns(prices, drop_unchanged=True).round(4).tolist()
         [0.0953, -0.1054]
+
     """
     if interval < 1:
         raise ValueError("interval must be positive")
@@ -75,6 +76,7 @@ def excess_kurtosis(values: Union[Sequence[float], np.ndarray]) -> float:
         -2.0
         >>> round(excess_kurtosis([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0]), 2)
         3.14
+
     """
     values_array: np.ndarray = np.asarray(values, dtype=float)
     if len(values_array) == 0:
@@ -112,6 +114,7 @@ def autocorrelation(values: Union[Sequence[float], np.ndarray], lag: int) -> flo
         0.4
         >>> autocorrelation([1.0, -1.0, 1.0, -1.0], lag=1)
         -0.75
+
     """
     values_array: np.ndarray = np.asarray(values, dtype=float)
     if lag < 1 or lag >= len(values_array):
@@ -154,6 +157,7 @@ def hill_tail_index(
         >>> pareto_quantiles = [(i / 1000) ** -0.5 for i in range(1, 1001)]
         >>> round(hill_tail_index(pareto_quantiles, tail_fraction=0.05), 2)
         2.08
+
     """
     if not 0.0 < tail_fraction < 1.0:
         raise ValueError("tail_fraction must be in (0, 1)")
