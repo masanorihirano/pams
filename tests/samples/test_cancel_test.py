@@ -9,11 +9,14 @@ from unittest import mock
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
 from pams import Simulator
+from pams.agents import FCNAgent
 from pams.logs import CancelLog
+from pams.logs import ExecutionLog
 from pams.logs import Logger
 from pams.logs import OrderLog
 from pams.logs import SimulationEndLog
@@ -25,9 +28,11 @@ from samples.cancel_test.main import main
 
 class OrderAndCancelLogger(Logger):
     def __init__(self) -> None:
+        """Initialize the log lists."""
         super().__init__()
         self.order_logs: List[OrderLog] = []
         self.cancel_logs: List[CancelLog] = []
+        self.execution_logs: List[ExecutionLog] = []
         self.book_orders: List[Order] = []
 
     def process_order_log(self, log: OrderLog) -> None:
@@ -35,6 +40,9 @@ class OrderAndCancelLogger(Logger):
 
     def process_cancel_log(self, log: CancelLog) -> None:
         self.cancel_logs.append(log)
+
+    def process_execution_log(self, log: ExecutionLog) -> None:
+        self.execution_logs.append(log)
 
     def process_simulation_end_log(self, log: SimulationEndLog) -> None:
         for market in log.simulator.markets:
@@ -150,7 +158,59 @@ class TestCancelFCNAgent:
             assert cancel0.order is order0
             assert cancel1.order is order1
 
-        assert agent.submit_orders_by_market(market=market2) == []
+        prng_state = agent.prng.getstate()
+        assert not agent.submit_orders_by_market(market=market2)
+        # no random number is drawn when no order is made
+        assert agent.prng.getstate() == prng_state
+
+    def test_submit_orders_by_market_multiple_orders(self) -> None:
+        agent = self._create_agent(seed=42, cancel_rate=1.0)
+        market = self._create_market(agent=agent, market_id=0)
+        order0 = Order(
+            agent_id=1,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=290.0,
+        )
+        order1 = Order(
+            agent_id=1,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=299.0,
+        )
+        order2 = Order(
+            agent_id=1,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=301.0,
+        )
+        cancel = Cancel(order=order0)
+        prng_state = agent.prng.getstate()
+        with mock.patch.object(
+            FCNAgent, "submit_orders_by_market", return_value=[order1, cancel, order2]
+        ):
+            orders = agent.submit_orders_by_market(market=market)
+        # the cancel orders follow all the orders and
+        # a cancel order made by FCNAgent is passed through as it is
+        assert len(orders) == 5
+        assert orders[0] is order1
+        assert orders[1] is cancel
+        assert orders[2] is order2
+        for cancel_, order in zip(orders[3:], [order1, order2]):
+            assert isinstance(cancel_, Cancel)
+            assert cancel_.order is order
+        # one random number is drawn per order and none for the cancel order
+        _prng = random.Random()
+        _prng.setstate(prng_state)
+        _prng.random()
+        _prng.random()
+        assert agent.prng.getstate() == _prng.getstate()
 
 
 class TestCancelFCNAgentSimulation:
@@ -213,14 +273,28 @@ class TestCancelFCNAgentSimulation:
         }
         assert len(order_logs) == 70
         assert 0 < len(logger.cancel_logs) < len(order_logs)
+        executed_volumes: Dict[int, int] = {}
+        for execution_log in logger.execution_logs:
+            for order_id in [execution_log.buy_order_id, execution_log.sell_order_id]:
+                executed_volumes[order_id] = (
+                    executed_volumes.get(order_id, 0) + execution_log.volume
+                )
+        n_executed_cancels = 0
         for cancel_log in logger.cancel_logs:
             order_log = order_logs[cancel_log.order_id]
             assert cancel_log.agent_id == order_log.agent_id
             # each order is canceled at the step when it is placed
             assert cancel_log.cancel_time == order_log.time == cancel_log.order_time
+            executed_volume = executed_volumes.get(cancel_log.order_id, 0)
             if cancel_log.cancel_time < 20:
                 # no order is executed in the first session
-                assert cancel_log.volume == order_log.volume
+                assert executed_volume == 0
+            # the cancel order only removes the volume that is not executed and
+            # has no effect if the order is fully executed when it is placed
+            assert cancel_log.volume == order_log.volume - executed_volume
+            if cancel_log.volume == 0:
+                n_executed_cancels += 1
+        assert n_executed_cancels > 0
         canceled_ids = {log.order_id for log in logger.cancel_logs}
         assert len(logger.book_orders) > 0
         for order in logger.book_orders:
@@ -237,7 +311,7 @@ class TestCancelFCNAgentSimulation:
         assert [log.order_id for log in logger.cancel_logs] == [
             log.order_id for log in logger.order_logs
         ]
-        assert logger.book_orders == []
+        assert not logger.book_orders
 
     @pytest.mark.parametrize("seed", [1, 42])
     def test_deterministic(self, seed: int) -> None:
