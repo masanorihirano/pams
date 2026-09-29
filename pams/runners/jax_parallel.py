@@ -26,7 +26,8 @@ def _import_jax() -> Any:
 
     """
     try:
-        import jax
+        # not imported at the top level so that importing pams does not require JAX
+        import jax  # pylint: disable=import-outside-toplevel
     except ImportError as e:
         raise ImportError(
             "JaxAgentParallelRunner requires JAX, which could not be imported (it may not be"
