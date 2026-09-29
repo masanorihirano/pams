@@ -2597,7 +2597,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1254
 msgid "``order for an inaccessible market is not allowed``"
-msgstr ""
+msgstr "``order for an inaccessible market is not allowed``"
 
 #: ../../source/user_guide/config.rst:1255
 msgid ""
