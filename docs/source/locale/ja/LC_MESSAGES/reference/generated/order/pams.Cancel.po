@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -28,11 +28,11 @@ msgid "Cancel order class."
 msgstr "取消注文クラス。"
 
 #: of pams.Cancel.agent_id:1
-msgid "getter for agent ID."
+#, fuzzy
+msgid "Getter for agent ID."
 msgstr "エージェントIDのゲッター。"
 
-#: of pams.Cancel.agent_id pams.Cancel.market_id
-#: pams.order.Cancel.check_system_acceptable
+#: ../../source/reference/generated/order/pams.Cancel.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -40,21 +40,21 @@ msgstr "戻り値"
 msgid "agent ID."
 msgstr "エージェントID。"
 
-#: of pams.Cancel.agent_id pams.Cancel.market_id
-#: pams.order.Cancel.check_system_acceptable
+#: ../../source/reference/generated/order/pams.Cancel.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of pams.order.Cancel.check_system_acceptable:1
-msgid "check system acceptable. (Usually, markets automatically check it.)"
+#, fuzzy
+msgid "Check system acceptable (usually, markets automatically check it)."
 msgstr "システム上受け付け可能かどうかを確認します。（通常は、市場が自動的に確認します。）"
 
-#: of pams.order.Cancel.check_system_acceptable
+#: ../../source/reference/generated/order/pams.Cancel.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
 #: of pams.order.Cancel.check_system_acceptable:7
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
 #: of pams.order.Cancel.check_system_acceptable:8
@@ -62,10 +62,14 @@ msgid "None"
 msgstr ""
 
 #: of pams.Cancel.market_id:1
-msgid "getter for market ID."
+#, fuzzy
+msgid "Getter for market ID."
 msgstr "市場IDのゲッター。"
 
 #: of pams.Cancel.market_id:3
 msgid "market ID."
 msgstr "市場ID。"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

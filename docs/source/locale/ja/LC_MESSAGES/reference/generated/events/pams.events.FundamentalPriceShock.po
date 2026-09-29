@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -24,7 +24,8 @@ msgid "FundamentalPriceShock"
 msgstr ""
 
 #: of pams.events.fundamental_price_shock.FundamentalPriceShock:1
-msgid "This suddenly changes the fundamental price (just changing it)."
+#, fuzzy
+msgid "Event that suddenly changes the fundamental price (just changing it)."
 msgstr "ファンダメンタル価格を突然変化させます（単に変更するだけです）。"
 
 #: of pams.events.fundamental_price_shock.FundamentalPriceShock:3
@@ -45,8 +46,7 @@ msgid ""
 "simulation. You must implement this."
 msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
 
-#: of pams.events.fundamental_price_shock.FundamentalPriceShock.hook_registration
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.setup
+#: ../../source/reference/generated/events/pams.events.FundamentalPriceShock.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -55,22 +55,19 @@ msgstr "戻り値"
 msgid "The list of event hook ( :class:`EventHook` )"
 msgstr "イベントフック（:class:`EventHook`）のリスト"
 
-#: of pams.events.fundamental_price_shock.FundamentalPriceShock.hook_registration
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.hooked_before_step_for_market
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.setup
+#: ../../source/reference/generated/events/pams.events.FundamentalPriceShock.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of
 #: pams.events.fundamental_price_shock.FundamentalPriceShock.hooked_before_step_for_market:1
+#, fuzzy
 msgid ""
-"This method is hooked at each step before market processing if you set the "
-"event hook."
+"Hook called at each step before market processing if you set the event "
+"hook."
 msgstr "イベントフックを設定した場合、このメソッドは各ステップで市場の処理前に呼び出されます。"
 
-#: of
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.hooked_before_step_for_market
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.setup
+#: ../../source/reference/generated/events/pams.events.FundamentalPriceShock.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -85,24 +82,28 @@ msgid "market to be processed."
 msgstr "処理される市場。"
 
 #: of
-#: pams.events.fundamental_price_shock.FundamentalPriceShock.hooked_before_step_for_market:14
+#: pams.events.fundamental_price_shock.FundamentalPriceShock.hooked_before_step_for_market:13
 #: pams.events.fundamental_price_shock.FundamentalPriceShock.setup:10
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
 #: of pams.events.fundamental_price_shock.FundamentalPriceShock.setup:1
-msgid "event setup. Usually be called from simulator/runner automatically."
+#, fuzzy
+msgid "Event setup. Usually be called from simulator/runner automatically."
 msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
 
 #: of pams.events.fundamental_price_shock.FundamentalPriceShock.setup:4
 msgid ""
 "agent configuration. Usually, automatically set from json config of "
 "simulator. This must include the parameters \"triggerDays\", \"target\", "
-"\"triggerTime\", and \"priceChangeRate\". This can include the parameters "
-"\"enabled\" and \"shockTimeLength\"."
+"\"triggerTime\", and \"priceChangeRate\". This can include the parameters"
+" \"enabled\" and \"shockTimeLength\"."
 msgstr "イベントの設定。通常、シミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ「triggerDays」、「target」、「triggerTime」、「priceChangeRate」を含める必要があります。パラメータ「enabled」および「shockTimeLength」を含めることもできます。"
 
 #: of pams.events.fundamental_price_shock.FundamentalPriceShock.setup:11
 msgid "None"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

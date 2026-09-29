@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -25,8 +25,8 @@ msgstr "イベント"
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
 msgid ""
-":py:obj:`events.EventABC <pams.events.EventABC>`\\ \\(event\\_id\\, prng\\, "
-"session\\, ...\\)"
+":py:obj:`events.EventABC <pams.events.EventABC>`\\ \\(event\\_id\\, "
+"prng\\, session\\, ...\\)"
 msgstr ""
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
@@ -45,12 +45,13 @@ msgstr "イベントフッククラス。"
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
 msgid ""
-":py:obj:`events.FundamentalPriceShock <pams.events.FundamentalPriceShock>`\\"
-" \\(event\\_id\\, prng\\, ...\\)"
+":py:obj:`events.FundamentalPriceShock "
+"<pams.events.FundamentalPriceShock>`\\ \\(event\\_id\\, prng\\, ...\\)"
 msgstr ""
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
-msgid "This suddenly changes the fundamental price (just changing it)."
+#, fuzzy
+msgid "Event that suddenly changes the fundamental price (just changing it)."
 msgstr "ファンダメンタル価格を突然変化させます（単に変更するだけです）。"
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
@@ -60,7 +61,8 @@ msgid ""
 msgstr ""
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
-msgid "This limits the price range."
+#, fuzzy
+msgid "Event that limits the price range."
 msgstr "価格の範囲を制限します。"
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
@@ -82,6 +84,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/reference/events.rst:14:<autosummary>:1
-msgid "This suddenly changes the market price."
+#, fuzzy
+msgid "Event that suddenly changes the market price."
 msgstr "市場価格を突然変化させます。"
 

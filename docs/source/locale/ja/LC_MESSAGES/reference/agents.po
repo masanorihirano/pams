@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -30,7 +30,8 @@ msgid ""
 msgstr ""
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
-msgid "Agent class (abstract class)"
+#, fuzzy
+msgid "Agent class (abstract class)."
 msgstr "エージェントクラス（抽象クラス）"
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
@@ -45,12 +46,13 @@ msgstr "高頻度取引エージェントクラス。"
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
 msgid ""
-":py:obj:`agents.FCNAgent <pams.agents.FCNAgent>`\\ \\(agent\\_id\\, prng\\, "
-"simulator\\, name\\)"
+":py:obj:`agents.FCNAgent <pams.agents.FCNAgent>`\\ \\(agent\\_id\\, "
+"prng\\, simulator\\, name\\)"
 msgstr ""
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
-msgid "FCN (Fundamental, Chartist, Noise) Agent class"
+#, fuzzy
+msgid "FCN (Fundamental, Chartist, Noise) Agent class."
 msgstr "FCN（ファンダメンタル、チャーティスト、ノイズ）エージェントクラス"
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
@@ -70,6 +72,7 @@ msgid ""
 msgstr ""
 
 #: ../../source/reference/agents.rst:13:<autosummary>:1
-msgid "Market Share FCN Agent class"
+#, fuzzy
+msgid "Market Share FCN Agent class."
 msgstr "市場シェアFCNエージェントクラス"
 
