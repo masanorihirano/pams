@@ -2506,7 +2506,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1234
 msgid "``tensorflowIntraOpThreads`` |optional|"
-msgstr ""
+msgstr "``tensorflowIntraOpThreads`` |optional|"
 
 #: ../../source/user_guide/config.rst:1236
 msgid ""
@@ -2524,21 +2524,21 @@ msgstr ""
 "数より多くのスレッドを使わないようにするためです。大きな演算の結果はこの値によって変わることがあるため、結果を再現できるようにするには明示的に設定してください（:doc:`platform`"
 " を参照）。"
 
-#: ../../source/user_guide/config.rst:1239
-msgid "``tensorflowInterOpThreads`` |optional|"
-msgstr ""
-
 #: ../../source/user_guide/config.rst:1241
+msgid "``tensorflowInterOpThreads`` |optional|"
+msgstr "``tensorflowInterOpThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:1243
 msgid ""
 "The number of threads that TensorFlow uses to run independent operations "
 "at the same time on each worker process. Default: ``1``."
 msgstr "各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：``1``。"
 
-#: ../../source/user_guide/config.rst:1243
-msgid "``tensorflowGpuMemoryGrowth`` |optional|"
-msgstr ""
-
 #: ../../source/user_guide/config.rst:1245
+msgid "``tensorflowGpuMemoryGrowth`` |optional|"
+msgstr "``tensorflowGpuMemoryGrowth`` |optional|"
+
+#: ../../source/user_guide/config.rst:1247
 msgid ""
 "Whether memory growth is enabled for all the visible GPUs on each worker "
 "process. Default: ``true``, so that the worker processes can share a GPU "
@@ -2549,7 +2549,7 @@ msgstr ""
 "growth）を有効にするかどうかです。デフォルト：``true``。ワーカープロセスが GPU "
 "を共有できるようにするためです（TensorFlow はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。"
 
-#: ../../source/user_guide/config.rst:1249
+#: ../../source/user_guide/config.rst:1251
 msgid ""
 "These keys do not configure TensorFlow on the main process. See "
 ":doc:`platform` for how to write agents for this runner."
