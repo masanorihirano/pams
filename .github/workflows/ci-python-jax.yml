@@ -13,14 +13,17 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set up Python 3.11
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -40,9 +43,9 @@ jobs:
           JAX_PLATFORMS: cpu
         run: |
           poetry run pytest --cov=./ --cov-report=xml tests/pams/runners/test_jax_parallel.py tests/pams/runners/test_jax_parallel_import.py
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v7
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
           files: ./coverage.xml
           flags: jax
           verbose: true
