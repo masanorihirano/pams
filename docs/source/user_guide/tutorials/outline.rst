@@ -16,4 +16,14 @@ Here is what you should take care for your implementations:
   However, if you should access them is always depending on what you want to do.
   Therefore, some accessible parameters and methods could not be appropriate to be used correspondence to the actual markets.
 
-TBD...
+The tutorials
+~~~~~~~~~~~~~~~~~~~
+The tutorials start from the same small simulation, one market and 100 FCN agents:
+
+- :doc:`first_simulation`: run a simulation from Python, save and read its results, and plot the prices.
+- :doc:`custom_agent`: write your own agent, and change a built-in one.
+- :doc:`custom_event`: write an event that changes the simulation while it runs, and extend a market.
+- :doc:`custom_logger`: write a logger that records the results in your own format.
+
+Each tutorial comes with a complete script that you can download and run. Every key of the configuration is
+explained in :ref:`config`.
