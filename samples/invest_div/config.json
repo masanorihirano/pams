@@ -7,13 +7,15 @@
 				"iterationSteps": 100,
 				"withOrderPlacement": true,
 				"withOrderExecution": false,
-				"withPrint": true
+				"withPrint": true,
+				"maxNormalOrders": 2, "MEMO": "The same number as #markets"
 			},
 			{	"sessionName": 1,
 				"iterationSteps": 3000,
 				"withOrderPlacement": true,
 				"withOrderExecution": true,
 				"withPrint": true,
+				"maxNormalOrders": 2, "MEMO": "The same number as #markets",
 				"events": ["FundamentalPriceShock"]
 			}
 		]
