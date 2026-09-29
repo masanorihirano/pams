@@ -1892,25 +1892,33 @@ class TestSequentialRunner(TestRunner):
         ):
             runner._handle_high_frequency_orders(session=session)
 
+    @pytest.mark.parametrize("cancels", [False, True])
     @pytest.mark.parametrize(
         "agent_class", ["GivenOrdersAgent", "HighFrequencyGivenOrdersAgent"]
     )
-    def test_spoofing_order_is_checked_first(self, agent_class: str) -> None:
+    def test_spoofing_order_is_checked_first(
+        self, agent_class: str, cancels: bool
+    ) -> None:
         runner = self._setup_market_access_runner(agent_class=agent_class)
         session = runner.simulator.sessions[0]
+        other_market = runner.simulator.markets[2]
         for agent in runner.simulator.agents:
             assert isinstance(agent, GivenOrdersAgent)
             # an order of another agent for an inaccessible market
-            agent.orders_to_submit = [
-                Order(
-                    agent_id=agent.agent_id + 1,
-                    market_id=2,
-                    is_buy=True,
-                    kind=LIMIT_ORDER,
-                    volume=1,
-                    price=300.0,
-                )
-            ]
+            order = Order(
+                agent_id=agent.agent_id + 1,
+                market_id=other_market.market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            if cancels:
+                # a cancel order of the order of another agent
+                other_market._add_order(order=order)
+                agent.orders_to_submit = [Cancel(order=order)]
+            else:
+                agent.orders_to_submit = [order]
         with pytest.raises(
             ValueError,
             match="^"
@@ -1921,6 +1929,9 @@ class TestSequentialRunner(TestRunner):
                 runner._collect_orders_from_normal_agents(session=session)
             else:
                 runner._handle_high_frequency_orders(session=session)
+        placed_orders = other_market.buy_order_book.priority_queue
+        assert len(placed_orders) == (len(runner.simulator.agents) if cancels else 0)
+        assert all(not order.is_canceled for order in placed_orders)
 
     def test_run_with_order_for_inaccessible_market(self) -> None:
         runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
