@@ -172,6 +172,36 @@ def test_same_result_as_sequential(num_parallel: int, max_normal_orders: int) ->
     assert parallel_runner.executor is None
 
 
+def test_same_result_as_sequential_with_two_markets() -> None:
+    # each agent submits orders only to the market accessible to it
+    setting = copy.deepcopy(DEFAULT_SETTING)
+    setting["simulation"]["markets"] = ["Market", "OtherMarket"]
+    setting["simulation"]["agents"] = ["FlaxAgents", "OtherFlaxAgents"]
+    setting["OtherMarket"] = {"extends": "Market", "marketPrice": 200.0}
+    setting["OtherFlaxAgents"] = {"extends": "FlaxAgents", "markets": ["OtherMarket"]}
+    sequential_runner, parallel_runner = _make_runners(setting=setting)
+    sequential_runner._setup()
+    parallel_runner._setup()
+    sequential_runner._run()
+    parallel_runner._run()
+    _assert_same_results(
+        sequential_runner=sequential_runner,
+        parallel_runner=parallel_runner,
+        agent_class="FlaxPriceAgent",
+    )
+    sequential_market = sequential_runner.simulator.markets[1]
+    parallel_market = parallel_runner.simulator.markets[1]
+    assert parallel_market.name == "OtherMarket"
+    times = range(sequential_market.get_time() + 1)
+    assert sequential_market.get_market_prices(
+        times
+    ) == parallel_market.get_market_prices(times)
+    assert sequential_market.get_executed_volumes(
+        times
+    ) == parallel_market.get_executed_volumes(times)
+    assert sum(parallel_market.get_executed_volumes(times)) > 0
+
+
 def test_same_result_as_sequential_with_shared_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -196,6 +226,25 @@ def test_same_result_as_sequential_with_shared_model(
         parallel_runner=parallel_runner,
         agent_class="SharedFlaxModelAgent",
     )
+
+
+def test_shared_model_not_copied_to_workers(monkeypatch: pytest.MonkeyPatch) -> None:
+    # restore the state of the main process after the test
+    monkeypatch.setattr(jax_dummy.PROCESS_STATE, "shared_params", None)
+    monkeypatch.setattr(jax_dummy.PROCESS_STATE, "preallocate_at_load", None)
+    setting = copy.deepcopy(DEFAULT_SETTING)
+    setting["FlaxAgents"]["class"] = "SharedFlaxModelAgent"
+    setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+    runner = _make_runner(setting=setting)
+    # the model loaded on the main process is not available on the spawned worker processes
+    # without the worker initializer
+    jax_dummy.load_shared_model(seed=SHARED_MODEL_SEED)
+    runner._setup()
+    with pytest.raises(
+        RuntimeError, match="the shared model is not loaded on this process"
+    ):
+        runner._run()
+    assert runner.executor is None
 
 
 def test_jit_compiled_once_per_worker(monkeypatch: pytest.MonkeyPatch) -> None:

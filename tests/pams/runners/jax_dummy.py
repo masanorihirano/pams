@@ -7,6 +7,7 @@ worker processes.
 import math
 import os
 import random
+from abc import abstractmethod
 from typing import Any
 from typing import Dict
 from typing import List
@@ -126,8 +127,9 @@ class PriceModelAgent(Agent):
     runner.
     """
 
+    @abstractmethod
     def _get_model_and_params(self) -> Tuple[PriceModel, Any]:
-        raise NotImplementedError
+        """Get the model and its parameters used by submit_orders."""
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         model, params = self._get_model_and_params()
