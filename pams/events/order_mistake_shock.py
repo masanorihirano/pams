@@ -27,6 +27,8 @@ class OrderMistakeShock(EventABC):
         at the beginning of the trigger step. This event creates no order: the agent whose order is overridden
         owns the mistaken order, which is processed like the original order (logs, executions, and callbacks).
         Therefore, nothing happens if no order is submitted to the target market at the trigger time.
+        Also, while plhamJ silently skips a mistaken order with a negative price or a non-positive volume,
+        :func:`setup` rejects a priceChangeRate of -1.0 or less and a non-positive orderVolume.
     """
 
     target_market: "Market"  # type: ignore  # NOQA
@@ -82,11 +84,15 @@ class OrderMistakeShock(EventABC):
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
         if not isinstance(settings["priceChangeRate"], float):
             raise ValueError("priceChangeRate have to be float")
+        if settings["priceChangeRate"] <= -1.0:
+            raise ValueError("priceChangeRate have to be greater than -1.0")
         self.price_change_rate = settings["priceChangeRate"]
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for OrderMistakeShock")
         if not isinstance(settings["orderVolume"], int):
             raise ValueError("orderVolume have to be int")
+        if settings["orderVolume"] <= 0:
+            raise ValueError("orderVolume have to be positive")
         self.order_volume = settings["orderVolume"]
         if "orderTimeLength" not in settings:
             raise ValueError("orderTimeLength is required for OrderMistakeShock")

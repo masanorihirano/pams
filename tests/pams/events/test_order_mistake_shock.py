@@ -3,6 +3,7 @@ import random
 from typing import Callable
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Set
 
 import pytest
@@ -259,6 +260,64 @@ class TestOrderMistakeShock(TestEventABC):
         with pytest.raises(ValueError):
             event.setup(settings=setting12)
         return event
+
+    @pytest.mark.parametrize(
+        "price_change_rate, order_volume, message",
+        [
+            (-1.5, 10000, "priceChangeRate have to be greater than -1.0"),
+            (-1.0, 10000, "priceChangeRate have to be greater than -1.0"),
+            (-0.05, 0, "orderVolume have to be positive"),
+            (-0.05, -5, "orderVolume have to be positive"),
+            (-0.99, 1, None),
+        ],
+    )
+    def test_setup_range(
+        self, price_change_rate: float, order_volume: int, message: Optional[str]
+    ) -> None:
+        # plhamJ silently skips a mistaken order with a negative price or a non-positive
+        # volume, but such settings are rejected at the setup
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=logger,
+        )
+        market = Market(
+            market_id=0,
+            prng=random.Random(42),
+            simulator=sim,
+            name="market1",
+            logger=logger,
+        )
+        market.setup(
+            settings={"tickSize": 0.01, "marketPrice": 300.0, "outstandingShares": 2000}
+        )
+        sim._add_market(market=market)
+        event = OrderMistakeShock(
+            event_id=1,
+            prng=random.Random(42),
+            session=session,
+            simulator=sim,
+            name="event",
+        )
+        settings = {
+            "target": "market1",
+            "triggerTime": 100,
+            "priceChangeRate": price_change_rate,
+            "orderVolume": order_volume,
+            "orderTimeLength": 10,
+        }
+        if message is None:
+            event.setup(settings=settings)
+            assert event.price_change_rate == price_change_rate
+            assert event.order_volume == order_volume
+        else:
+            with pytest.raises(ValueError, match=message):
+                event.setup(settings=settings)
 
     def test_hook_registration(self) -> None:
         sim = Simulator(prng=random.Random(4))
