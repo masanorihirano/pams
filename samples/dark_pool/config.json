@@ -1,0 +1,58 @@
+{
+	"simulation": {
+		"markets": ["LitMarket", "DarkPoolMarket"],
+		"agents": ["DarkPoolFCNAgents"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true,
+				"maxNormalOrders": 2, "MEMO": "The same number as #markets"
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 500,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"maxNormalOrders": 2, "MEMO": "The same number as #markets"
+			}
+		]
+	},
+
+	"LitMarket": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"DarkPoolMarket": {
+		"class": "DarkPoolMarket",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000,
+		"markets": ["LitMarket"]
+	},
+
+	"DarkPoolFCNAgents": {
+		"class": "DarkPoolFCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["LitMarket", "DarkPoolMarket"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [1.0]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1],
+
+		"MEMO": "DarkPoolFCNAgent class",
+		"darkPoolChance": 0.3
+	}
+}

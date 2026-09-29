@@ -1,4 +1,6 @@
+import json
 import math
+import os.path
 import random
 from typing import Any
 from typing import Dict
@@ -11,6 +13,7 @@ import pytest
 
 from pams.agents import FCNAgent
 from pams.logs.base import CancelLog
+from pams.logs.base import ExecutionLog
 from pams.logs.base import Logger
 from pams.logs.base import MarketStepEndLog
 from pams.logs.base import OrderLog
@@ -19,6 +22,7 @@ from pams.order import LIMIT_ORDER
 from pams.order import MARKET_ORDER
 from pams.order import Cancel
 from pams.order import Order
+from pams.runners.sequential import SequentialRunner
 from pams.session import Session
 from pams.simulator import Simulator
 from samples.dark_pool.dark_pool_fcn_agent import DarkPoolFCNAgent
@@ -26,6 +30,7 @@ from samples.dark_pool.dark_pool_market import DarkPoolMarket
 from samples.dark_pool.dark_pool_print_logger import DarkPoolPrintLogger
 from samples.dark_pool.dark_pool_print_logger import find_market_pair
 from samples.dark_pool.dark_pool_print_logger import get_trade_price
+from samples.dark_pool.main import main
 
 MARKET_SETTINGS: Dict[str, Any] = {
     "tickSize": 0.01,
@@ -512,3 +517,105 @@ class TestDarkPoolPrintLogger:
             "1 0 0 LitMarket 301.0 300.0 300.0 1",
             "1 0 1 DarkPoolMarket 300.0 300.0 300.0 2",
         ]
+
+
+SAMPLE_DIR: str = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "samples", "dark_pool"
+)
+
+
+def test_dark_pool(capsys: pytest.CaptureFixture[str]) -> None:
+    with mock.patch(
+        "sys.argv", ["main.py", "--config", f"{SAMPLE_DIR}/config.json", "--seed", "1"]
+    ):
+        main()
+    lines = [
+        line.split(" ")
+        for line in capsys.readouterr().out.splitlines()
+        if not line.startswith("#")
+    ]
+    assert len(lines) == 2 * 600
+    assert all(len(line) == 8 for line in lines)
+    assert {(line[2], line[3]) for line in lines} == {
+        ("0", "LitMarket"),
+        ("1", "DarkPoolMarket"),
+    }
+    assert [int(line[1]) for line in lines[::2]] == list(range(600))
+    for line in lines:
+        assert line[0] == ("0" if int(line[1]) < 100 else "1")
+    session0_lines = [line for line in lines if line[0] == "0"]
+    assert all(line[6] == "nan" and line[7] == "0" for line in session0_lines)
+    assert sum(int(line[7]) for line in lines if line[3] == "LitMarket") > 0
+    assert sum(int(line[7]) for line in lines if line[3] == "DarkPoolMarket") > 0
+
+
+class RecordingLogger(Logger):
+    def __init__(self) -> None:
+        super().__init__()
+        self.order_logs: List[OrderLog] = []
+        self.cancel_logs: List[CancelLog] = []
+        self.execution_logs: List[ExecutionLog] = []
+
+    def process_order_log(self, log: OrderLog) -> None:
+        self.order_logs.append(log)
+
+    def process_cancel_log(self, log: CancelLog) -> None:
+        self.cancel_logs.append(log)
+
+    def process_execution_log(self, log: ExecutionLog) -> None:
+        self.execution_logs.append(log)
+
+
+def run_sample(dark_pool_chance: float) -> Tuple[SequentialRunner, RecordingLogger]:
+    with open(os.path.join(SAMPLE_DIR, "config.json"), encoding="utf-8") as f:
+        config: Dict[str, Any] = json.load(f)
+    config["simulation"]["sessions"][1]["iterationSteps"] = 200
+    config["DarkPoolFCNAgents"]["darkPoolChance"] = dark_pool_chance
+    logger = RecordingLogger()
+    runner = SequentialRunner(settings=config, prng=random.Random(1), logger=logger)
+    runner.class_register(cls=DarkPoolMarket)
+    runner.class_register(cls=DarkPoolFCNAgent)
+    runner.main()
+    return runner, logger
+
+
+class TestDarkPoolSimulation:
+    def test_simulation(self) -> None:
+        runner, logger = run_sample(dark_pool_chance=0.3)
+        lit_market, dark_pool = runner.simulator.markets
+        assert isinstance(dark_pool, DarkPoolMarket)
+        assert dark_pool.lit_market is lit_market
+        dark_order_logs = [
+            log for log in logger.order_logs if log.market_id == dark_pool.market_id
+        ]
+        assert all(log.kind == MARKET_ORDER for log in dark_order_logs)
+        canceled_order_ids = {log.order_id for log in logger.cancel_logs}
+        session0_dark_order_ids = {
+            log.order_id for log in dark_order_logs if log.time < 100
+        }
+        assert len(session0_dark_order_ids) > 0
+        assert session0_dark_order_ids <= canceled_order_ids
+        assert all(log.time >= 100 for log in logger.execution_logs)
+        dark_execution_logs = [
+            log for log in logger.execution_logs if log.market_id == dark_pool.market_id
+        ]
+        assert len(dark_execution_logs) > 0
+        assert len(dark_execution_logs) < len(logger.execution_logs)
+        agents = runner.simulator.agents
+        for market in [lit_market, dark_pool]:
+            assert sum(agent.asset_volumes[market.market_id] for agent in agents) == (
+                50 * len(agents)
+            )
+        assert sum(agent.cash_amount for agent in agents) == pytest.approx(
+            10000 * len(agents)
+        )
+
+    @pytest.mark.parametrize("dark_pool_chance", [0.0, 1.0])
+    def test_simulation_with_extreme_dark_pool_chance(
+        self, dark_pool_chance: float
+    ) -> None:
+        runner, logger = run_sample(dark_pool_chance=dark_pool_chance)
+        market_ids = {log.market_id for log in logger.order_logs}
+        dark_pool_id = runner.simulator.name2market["DarkPoolMarket"].market_id
+        lit_market_id = runner.simulator.name2market["LitMarket"].market_id
+        assert market_ids == {dark_pool_id if dark_pool_chance else lit_market_id}
