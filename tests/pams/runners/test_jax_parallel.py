@@ -1,6 +1,6 @@
 import copy
 import os
-import pickle
+import pickle  # nosec B403 # only objects created by the tests are unpickled
 import random
 from concurrent.futures import Executor
 from typing import Any
@@ -22,14 +22,13 @@ from .dummy import DummyLogger2
 from .dummy import fail_to_initialize_worker
 from .test_agent_parallel import _assert_same_results
 
-# the tests below require JAX and Flax, which are optional dependencies of pams. The tests that do
-# not require them are in test_jax_parallel_import.py.
+# the tests below require JAX and Flax, which are optional dependencies of pams, so jax_dummy,
+# which imports them, is imported after they are found. The tests that do not require them are in
+# test_jax_parallel_import.py.
 jax = pytest.importorskip("jax", reason="JAX is not installed")
 pytest.importorskip("flax", reason="Flax is not installed")
 
-from . import jax_dummy  # noqa: E402
-from .jax_dummy import FlaxPriceAgent  # noqa: E402
-from .jax_dummy import SharedFlaxModelAgent  # noqa: E402
+from . import jax_dummy  # noqa: E402  # pylint: disable=wrong-import-position
 
 SHARED_MODEL_SEED = 1234
 
@@ -123,7 +122,7 @@ def _make_runners(
     parallel_runner = runner_class(
         settings=copy.deepcopy(setting), prng=random.Random(seed), logger=DummyLogger2()
     )
-    for cls in [FlaxPriceAgent, SharedFlaxModelAgent]:
+    for cls in [jax_dummy.FlaxPriceAgent, jax_dummy.SharedFlaxModelAgent]:
         sequential_runner.class_register(cls=cls)
         parallel_runner.class_register(cls=cls)
     return sequential_runner, parallel_runner
@@ -219,12 +218,12 @@ def test_agents_are_picklable() -> None:
     runner = SequentialRunner(
         settings=copy.deepcopy(DEFAULT_SETTING), prng=random.Random(42)
     )
-    runner.class_register(cls=FlaxPriceAgent)
+    runner.class_register(cls=jax_dummy.FlaxPriceAgent)
     runner._setup()
     agent = runner.simulator.normal_frequency_agents[0]
-    assert isinstance(agent, FlaxPriceAgent)
-    copied_agent = pickle.loads(pickle.dumps(agent))
-    assert isinstance(copied_agent, FlaxPriceAgent)
+    assert isinstance(agent, jax_dummy.FlaxPriceAgent)
+    copied_agent = pickle.loads(pickle.dumps(agent))  # nosec B301 # trusted data
+    assert isinstance(copied_agent, jax_dummy.FlaxPriceAgent)
     assert copied_agent.model == agent.model
     assert jax.tree_util.tree_structure(
         copied_agent.params

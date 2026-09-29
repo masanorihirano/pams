@@ -1,7 +1,7 @@
 """Tests of JaxAgentParallelRunner that do not require JAX, so they run whether it is installed."""
 import copy
 import os
-import subprocess
+import subprocess  # nosec B404 # only runs the current Python with fixed code
 import sys
 from typing import Dict
 
@@ -50,7 +50,7 @@ def test_import_does_not_import_jax() -> None:
         "from pams.runners import JaxAgentParallelRunner\n"
         "print([name for name in ['jax', 'flax'] if name in sys.modules])\n"
     )
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603 # fixed arguments, without a shell
         [sys.executable, "-c", code],
         cwd=os.path.dirname(os.path.dirname(os.path.abspath(pams.__file__))),
         capture_output=True,
