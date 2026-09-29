@@ -1,24 +1,24 @@
 <!doctype html>
-<html class="no-js" lang="ja">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="索引" href="../genindex.html" /><link rel="search" title="検索" href="../search.html" /><link rel="next" title="チュートリアル" href="tutorials/index.html" /><link rel="prev" title="プラットフォーム" href="platform.html" />
+<html class="no-js" lang="ja" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="検索" href="../search.html"><link rel="next" title="チュートリアル" href="tutorials/index.html"><link rel="prev" title="プラットフォーム" href="platform.html">
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>JSON設定 - pams ドキュメント</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -69,7 +69,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -84,34 +84,73 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -119,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -128,16 +166,15 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -145,7 +182,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
-  
   
   <span class="sidebar-brand-text">pams  ドキュメント</span>
   
@@ -156,13 +192,13 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">ユーザーガイド</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">ユーザーガイド</a><input aria-label="Toggle navigation of ユーザーガイド" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="preface.html">はじめに</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html">このプロジェクトについて</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html">インストール</a></li>
 <li class="toctree-l2"><a class="reference internal" href="platform.html">プラットフォーム</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">JSON設定</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/index.html">チュートリアル</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/index.html">チュートリアル</a><input aria-label="Toggle navigation of チュートリアル" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/outline.html">概要</a></li>
 </ul>
 </li>
@@ -171,31 +207,31 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">APIリファレンス</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/runners.html">ランナー</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/runners.html">ランナー</a><input aria-label="Toggle navigation of ランナー" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">シミュレーター</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">シミュレーター</a><input aria-label="Toggle navigation of シミュレーター" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/simulator/pams.Simulator.html">Simulator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/sessions.html">セッション</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/sessions.html">セッション</a><input aria-label="Toggle navigation of セッション" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/session/pams.Session.html">Session</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/markets.html">市場</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/markets.html">市場</a><input aria-label="Toggle navigation of 市場" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/market/pams.Market.html">Market</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/market/pams.IndexMarket.html">IndexMarket</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/fundamentals.html">ファンダメンタルズ</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/fundamentals.html">ファンダメンタルズ</a><input aria-label="Toggle navigation of ファンダメンタルズ" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/orders.html">注文</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/orders.html">注文</a><input aria-label="Toggle navigation of 注文" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.Order.html">Order</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.Cancel.html">Cancel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.OrderKind.html">OrderKind</a></li>
@@ -203,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/events.html">イベント</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/events.html">イベント</a><input aria-label="Toggle navigation of イベント" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.EventABC.html">EventABC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
@@ -212,7 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/logs.html">ログ</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/logs.html">ログ</a><input aria-label="Toggle navigation of ログ" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.Log.html">Log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
@@ -225,13 +261,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/loggers.html">ロガー</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/loggers.html">ロガー</a><input aria-label="Toggle navigation of ロガー" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/agents.html">エージェント</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/agents.html">エージェント</a><input aria-label="Toggle navigation of エージェント" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -239,7 +275,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/utils.html">ユーティリティ</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/utils.html">ユーティリティ</a><input aria-label="Toggle navigation of ユーティリティ" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
@@ -264,23 +300,27 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/user_guide/config.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="json-configuration">
-<span id="config"></span><h1>JSON設定<a class="headerlink" href="#json-configuration" title="この見出しへのパーマリンク">#</a></h1>
+<span id="config"></span><h1>JSON設定<a class="headerlink" href="#json-configuration" title="Link to this heading">¶</a></h1>
 <p>PAMSのシミュレーションは1つのJSONファイルで記述します。このファイルでは、どの市場が存在するか、どのエージェントがそれらの市場で取引するか、シミュレーションをどのようにセッションに分割するか、どのイベント（ショック、サーキットブレーカーなど）が発生するかを定めます。市場の構成、エージェント集団、シナリオを変更する場合でも、通常Pythonコードはまったく必要ありません：設定ファイルを編集するだけです。</p>
 <p>このページでは、ファイルの構成を説明し、組み込みクラスが解釈するすべてのキーを記載します。</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
@@ -292,7 +332,7 @@
 クイックスタート</div>
 <p class="sd-card-text">よくある構成のための、そのまま実行できる完全な設定ファイル。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-quickstart"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-quickstart"><span class="std std-ref">クイックスタート</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -301,7 +341,7 @@
 ファイル構造</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">simulation</span></code> ブロック、名前付きブロック、およびそれらが互いを参照する方法。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-structure"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-structure"><span class="std std-ref">ファイル構造</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -310,7 +350,7 @@
 セッション</div>
 <p class="sd-card-text">ステップ、発注と約定、1ステップにおける注文の流れ。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-sessions"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-sessions"><span class="std std-ref">セッション</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -319,7 +359,7 @@
 グループと命名</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">numMarkets</span></code> / <code class="docutils literal notranslate"><span class="pre">numAgents</span></code>、<code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>、<code class="docutils literal notranslate"><span class="pre">prefix</span></code> および <code class="docutils literal notranslate"><span class="pre">extends</span></code>。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-groups"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-groups"><span class="std std-ref">市場グループとエージェントグループ</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -328,7 +368,7 @@
 市場</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">Market</span></code>、<code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>、ファンダメンタル価格および相関。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-markets"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-markets"><span class="std std-ref">市場</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -337,7 +377,7 @@
 エージェント</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>、<code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code>、<code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> など。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-agents"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-agents"><span class="std std-ref">エージェント</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -346,7 +386,7 @@
 イベント</div>
 <p class="sd-card-text">価格ショック、値幅制限、売買停止、誤発注。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-events"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-events"><span class="std std-ref">イベント</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -355,7 +395,7 @@
 JsonRandom</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">[100,</span> <span class="pre">200]</span></code> や <code class="docutils literal notranslate"><span class="pre">{&quot;expon&quot;:</span> <span class="pre">[1.0]}</span></code> のような、ランダムなエージェントパラメータ。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-jsonrandom"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-jsonrandom"><span class="std std-ref">ランダムパラメータ（JsonRandom）</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -364,12 +404,12 @@ JsonRandom</div>
 トラブルシューティング</div>
 <p class="sd-card-text">よくある間違い、エラーにならない落とし穴、エラーメッセージ。</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-troubleshooting"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-troubleshooting"><span class="std std-ref">トラブルシューティング</span></a></div>
 </div>
 </div>
 </div>
 <section id="quick-start">
-<span id="config-quickstart"></span><h2>クイックスタート<a class="headerlink" href="#quick-start" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-quickstart"></span><h2>クイックスタート<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
 <p>以下の設定ファイルのいずれかを <code class="docutils literal notranslate"><span class="pre">config.json</span></code> として保存し、ランナーで実行してください：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
@@ -387,7 +427,7 @@ JsonRandom</div>
 </div>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
+<label class="sd-tab-label" for="sd-tab-item-0">
 最小構成</label><div class="sd-tab-content docutils">
 <p>1つの市場と100体の <a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FCNAgent</span></code></a> エージェントからなる構成です。最初のセッションでは板の構築のみを行い（約定なし）、2番目のセッションで取引します。デフォルトのセッション設定では、各ステップで注文を出すのはランダムに選ばれた1体のエージェントのみです（<a class="reference internal" href="#config-sessions"><span class="std std-ref">セッション</span></a> の <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> を参照）。これは <code class="docutils literal notranslate"><span class="pre">samples/CI2002</span></code> にあるChiarella and Iori (2002) の設定に従ったもので、そちらではさらに <code class="docutils literal notranslate"><span class="pre">meanReversionTime</span></code> も設定しています。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -434,7 +474,7 @@ JsonRandom</div>
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
+<label class="sd-tab-label" for="sd-tab-item-1">
 イベント</label><div class="sd-tab-content docutils">
 <p>最小構成に加えて、<code class="docutils literal notranslate"><span class="pre">main</span></code> セッションに2つのイベントを設定した構成です：セッション開始から100ステップ後にファンダメンタル価格が10%下落し、市場価格がステップ0の値から5%乖離するとサーキットブレーカーが50ステップの間売買を停止します（2回目の停止は10%、3回目は15%、以降同様）。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -494,7 +534,7 @@ JsonRandom</div>
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-2">
+<label class="sd-tab-label" for="sd-tab-item-2">
 インデックスと裁定</label><div class="sd-tab-content docutils">
 <p>相関のある2つの現物市場、それらから構成されるインデックス市場、各市場のFCNエージェント、そしてインデックス市場の市場価格とインデックス値の乖離を利用して取引する <a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent" title="pams.agents.ArbitrageAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code></a> エージェントからなる構成です。FCNグループは <code class="docutils literal notranslate"><span class="pre">extends</span></code> によって設定を共有します。現物市場では <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code> （インデックスのすべての構成市場で必須）と <code class="docutils literal notranslate"><span class="pre">fundamentalVolatility</span></code> （相関に必須）を設定しています。インデックス市場と相関は、現物市場をインスタンス名 <code class="docutils literal notranslate"><span class="pre">SpotMarkets-0</span></code> と <code class="docutils literal notranslate"><span class="pre">SpotMarkets-1</span></code> で参照し、エージェントはグループ名 <code class="docutils literal notranslate"><span class="pre">SpotMarkets</span></code> を使います（<a class="reference internal" href="#config-names"><span class="std std-ref">グループ名とインスタンス名</span></a> を参照）。セッションでは1ステップあたり3体のFCNエージェントが注文を出せるようにし（<code class="docutils literal notranslate"><span class="pre">maxNormalOrders:</span> <span class="pre">3</span></code>）、ウォームアップ中は裁定エージェントを動作させません（<code class="docutils literal notranslate"><span class="pre">maxHighFrequencyOrders:</span> <span class="pre">0</span></code>）。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -573,7 +613,7 @@ JsonRandom</div>
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<label class="sd-tab-label" for="sd-tab-item-3">
 マーケットメイカー</label><div class="sd-tab-content docutils">
 <p>FCNエージェントに加えて、市場の買いと売りの両方に気配値を提示する2体の <code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> エージェントを置いた構成です。マーケットメイカーは高頻度エージェントなので、セッションのキー <code class="docutils literal notranslate"><span class="pre">maxHighFrequencyOrders</span></code> と <code class="docutils literal notranslate"><span class="pre">highFrequencySubmitRate</span></code> によって行動の頻度が決まります。ここではウォームアップ中は動作させません（<code class="docutils literal notranslate"><span class="pre">maxHighFrequencyOrders:</span> <span class="pre">0</span></code>）。<code class="docutils literal notranslate"><span class="pre">main</span></code> では、約半数のステップで（<code class="docutils literal notranslate"><span class="pre">highFrequencySubmitRate:</span> <span class="pre">0.5</span></code>）、2体のマーケットメイカーのうちランダムに選ばれた1体が、通常エージェントの注文の後に気配値を提示します。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -633,7 +673,7 @@ JsonRandom</div>
 </div>
 </div>
 <input id="sd-tab-item-4" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-4">
+<label class="sd-tab-label" for="sd-tab-item-4">
 並列ランナー</label><div class="sd-tab-content docutils">
 <p>同じ形式は <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiThreadAgentParallelRunner</span></code></a> と <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a> （いずれも実験的機能）でも使えます。<code class="docutils literal notranslate"><span class="pre">simulation.numParallel</span></code> でワーカー数を設定します。並列に注文を問い合わせるのは最大 <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> 体のエージェントなので、<code class="docutils literal notranslate"><span class="pre">numParallel</span></code> はこれを超えないようにしてください（ここではどちらも4です）。<code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> は1ステップあたりに注文を出すエージェント数を決めるため、モデルの一部です：まずこれを決め、その後に <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> を設定してください。この設定ファイルを実行するには、上のコード例の <code class="docutils literal notranslate"><span class="pre">SequentialRunner</span></code> をこれらのクラスのいずれかに置き換えてください（<code class="docutils literal notranslate"><span class="pre">SequentialRunner</span></code> は <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> を無視します）。また、マルチプロセスのランナーを使う前に <a class="reference internal" href="#config-parallel"><span class="std std-ref">並列ランナー</span></a> を参照してください。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -686,7 +726,7 @@ JsonRandom</div>
 <p>より完全な例は、リポジトリの <code class="docutils literal notranslate"><span class="pre">samples</span></code> ディレクトリにあります（<a class="reference internal" href="#config-samples"><span class="std std-ref">設定ファイルのサンプル</span></a> を参照）。</p>
 </section>
 <section id="file-structure">
-<span id="config-structure"></span><h2>ファイル構造<a class="headerlink" href="#file-structure" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-structure"></span><h2>ファイル構造<a class="headerlink" href="#file-structure" title="Link to this heading">¶</a></h2>
 <p>ファイルのルートはJSONオブジェクトで、2種類のエントリを持ちます：</p>
 <ul class="simple">
 <li><p>何をどの順序で生成するかを列挙する <code class="docutils literal notranslate"><span class="pre">simulation</span></code> ブロック、および</p></li>
@@ -722,7 +762,7 @@ JsonRandom</div>
 </div>
 <p>ブロック名とクラスは互いに独立しています：クラスは <code class="docutils literal notranslate"><span class="pre">&quot;class&quot;</span></code> で選択され、名前は単なるラベルです。<code class="docutils literal notranslate"><span class="pre">&quot;FCNAgents&quot;:</span> <span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;,</span> <span class="pre">...}</span></code> と <code class="docutils literal notranslate"><span class="pre">&quot;Noise</span> <span class="pre">traders&quot;:</span> <span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;,</span> <span class="pre">...}</span></code> はどちらも同じように有効です。</p>
 <section id="group-names-and-instance-names">
-<span id="config-names"></span><h3>グループ名とインスタンス名<a class="headerlink" href="#group-names-and-instance-names" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-names"></span><h3>グループ名とインスタンス名<a class="headerlink" href="#group-names-and-instance-names" title="Link to this heading">¶</a></h3>
 <p>市場グループは複数の市場を作成できます（<code class="docutils literal notranslate"><span class="pre">&quot;numMarkets&quot;:</span> <span class="pre">2</span></code>）。このとき、グループは <strong>グループ名</strong> （ブロック名、例えば <code class="docutils literal notranslate"><span class="pre">SpotMarkets</span></code>）を持ち、各市場は <strong>インスタンス名</strong> （例えば <code class="docutils literal notranslate"><span class="pre">SpotMarkets-0</span></code> と <code class="docutils literal notranslate"><span class="pre">SpotMarkets-1</span></code>、<a class="reference internal" href="#config-naming"><span class="std std-ref">インスタンス名</span></a> を参照）を持ちます。キーによって、指定する名前の種類が異なります：</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -751,7 +791,7 @@ JsonRandom</div>
 <p>グループが市場を1つだけ作成し、<code class="docutils literal notranslate"><span class="pre">prefix</span></code> も <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code> も使わない場合は両者の名前が一致するため、この区別が主に重要になるのは複数の市場を持つグループです。これらのキーを使う場合は、市場が1つでも名前が異なります： <code class="docutils literal notranslate"><span class="pre">&quot;prefix&quot;:</span> <span class="pre">&quot;Stock&quot;</span></code> とするとインスタンス名は <code class="docutils literal notranslate"><span class="pre">Stock</span></code> になります。</p>
 </section>
 <section id="notation-used-on-this-page">
-<span id="config-notation"></span><h3>このページで使う表記<a class="headerlink" href="#notation-used-on-this-page" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-notation"></span><h3>このページで使う表記<a class="headerlink" href="#notation-used-on-this-page" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -788,7 +828,7 @@ JsonRandom</div>
 </section>
 </section>
 <section id="the-simulation-block">
-<span id="config-simulation"></span><h2><code class="docutils literal notranslate"><span class="pre">simulation</span></code> ブロック<a class="headerlink" href="#the-simulation-block" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-simulation"></span><h2><code class="docutils literal notranslate"><span class="pre">simulation</span></code> ブロック<a class="headerlink" href="#the-simulation-block" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -829,7 +869,7 @@ JsonRandom</div>
 <p><code class="docutils literal notranslate"><span class="pre">simulation</span></code> 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。</p>
 </section>
 <section id="sessions">
-<span id="config-sessions"></span><h2>セッション<a class="headerlink" href="#sessions" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-sessions"></span><h2>セッション<a class="headerlink" href="#sessions" title="Link to this heading">¶</a></h2>
 <p>シミュレーションは、0から始まる1つの時計に沿って離散的な <strong>ステップ</strong> で進みます。ステップは <strong>セッション</strong> に分割され、セッションは順に1つずつ実行されます。各セッションは、エージェントが注文を出せるかどうかと、注文が約定するかどうかを決めます。典型的な設定では、板を埋めるだけのウォームアップセッションの後に、メインの取引セッションが続きます：</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"sessions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span><span class="nt">"sessionName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"warmup"</span><span class="p">,</span><span class="w"> </span><span class="nt">"iterationSteps"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
@@ -904,11 +944,7 @@ JsonRandom</div>
 <p>セッションのキーはいずれも <a class="reference internal" href="#config-jsonrandom"><span class="std std-ref">JsonRandom</span></a> 記法を受け付けません。また、セッションオブジェクトは <code class="docutils literal notranslate"><span class="pre">extends</span></code> に対応していません（他の未知のキーと同様に無視されます）。</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-list-ordered" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.003 2.5a.5.5 0 00-.723-.447l-1.003.5a.5.5 0 00.446.895l.28-.14V6H.5a.5.5 0 000 1h2.006a.5.5 0 100-1h-.503V2.5zM5 3.25a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 3.25zm0 5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 8.25zm0 5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5a.75.75 0 01-.75-.75zM.924 10.32l.003-.004a.851.851 0 01.144-.153A.66.66 0 011.5 10c.195 0 .306.068.374.146a.57.57 0 01.128.376c0 .453-.269.682-.8 1.078l-.035.025C.692 11.98 0 12.495 0 13.5a.5.5 0 00.5.5h2.003a.5.5 0 000-1H1.146c.132-.197.351-.372.654-.597l.047-.035c.47-.35 1.156-.858 1.156-1.845 0-.365-.118-.744-.377-1.038-.268-.303-.658-.484-1.126-.484-.48 0-.84.202-1.068.392a1.858 1.858 0 00-.348.384l-.007.011-.002.004-.001.002-.001.001a.5.5 0 00.851.525zM.5 10.055l-.427-.26.427.26z"></path></svg></span>1ステップで行われる処理<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-list-ordered" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.25a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 3.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 8.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75ZM.924 10.32a.5.5 0 0 1-.851-.525l.001-.001.001-.002.002-.004.007-.011c.097-.144.215-.273.348-.384.228-.19.588-.392 1.068-.392.468 0 .858.181 1.126.484.259.294.377.673.377 1.038 0 .987-.686 1.495-1.156 1.845l-.047.035c-.303.225-.522.4-.654.597h1.357a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5c0-1.005.692-1.52 1.167-1.875l.035-.025c.531-.396.8-.625.8-1.078a.57.57 0 0 0-.128-.376C1.806 10.068 1.695 10 1.5 10a.658.658 0 0 0-.429.163.835.835 0 0 0-.144.153ZM2.003 2.5V6h.503a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1h.503V3.308l-.28.14a.5.5 0 0 1-.446-.895l1.003-.5a.5.5 0 0 1 .723.447Z"></path></svg></span><span class="sd-summary-text">1ステップで行われる処理</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">セッションの各ステップでは、次の処理が行われます：</p>
 <ol class="arabic simple">
 <li><p class="sd-card-text">ステップの前にフックされたイベントが実行されます（<a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock" title="pams.events.FundamentalPriceShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">FundamentalPriceShock</span></code></a> など）。</p></li>
@@ -928,7 +964,7 @@ JsonRandom</div>
 </div>
 </section>
 <section id="market-and-agent-groups">
-<span id="config-groups"></span><h2>市場グループとエージェントグループ<a class="headerlink" href="#market-and-agent-groups" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-groups"></span><h2>市場グループとエージェントグループ<a class="headerlink" href="#market-and-agent-groups" title="Link to this heading">¶</a></h2>
 <p>市場ブロックとエージェントブロックには、使用するクラス、作成するオブジェクトの数、およびその命名方法を決める共通のキーがあります。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -968,7 +1004,7 @@ JsonRandom</div>
 </table>
 </div>
 <section id="instance-names">
-<span id="config-naming"></span><h3>インスタンス名<a class="headerlink" href="#instance-names" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-naming"></span><h3>インスタンス名<a class="headerlink" href="#instance-names" title="Link to this heading">¶</a></h3>
 <p>名前は、他のキーから個々の市場を参照する際に使われます（<a class="reference internal" href="#config-names"><span class="std std-ref">グループ名とインスタンス名</span></a> を参照）。そのため、名前がどのように生成されるかを知っておくと役に立ちます：</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1011,7 +1047,7 @@ JsonRandom</div>
 <p>市場名はすべての市場グループを通じて、エージェント名はすべてのエージェントグループを通じて一意でなければなりません。ID（<code class="docutils literal notranslate"><span class="pre">market_id</span></code> と <code class="docutils literal notranslate"><span class="pre">agent_id</span></code>）は、<code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code> に関係なく、<code class="docutils literal notranslate"><span class="pre">simulation.markets</span></code> および <code class="docutils literal notranslate"><span class="pre">simulation.agents</span></code> の順に0から割り当てられます。</p>
 </section>
 <section id="inheritance-with-extends">
-<span id="config-extends"></span><h3><code class="docutils literal notranslate"><span class="pre">extends</span></code> による継承<a class="headerlink" href="#inheritance-with-extends" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-extends"></span><h3><code class="docutils literal notranslate"><span class="pre">extends</span></code> による継承<a class="headerlink" href="#inheritance-with-extends" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;extends&quot;:</span> <span class="pre">&quot;OtherBlock&quot;</span></code> は <code class="docutils literal notranslate"><span class="pre">OtherBlock</span></code> のすべてのキーをこのブロックにコピーし、このブロックに書かれたキーは継承されたキーを上書きします。親ブロック自体も <code class="docutils literal notranslate"><span class="pre">extends</span></code> を使えるため、継承の連鎖は再帰的に解決されます。ブロックの親は1つだけです： <code class="docutils literal notranslate"><span class="pre">extends</span></code> はリストではなく単一のブロック名を取ります。市場グループ、エージェントグループ、イベントブロックはいずれも <code class="docutils literal notranslate"><span class="pre">extends</span></code> に対応しています。</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"FCNBase"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FCNAgent"</span><span class="p">,</span><span class="w"> </span><span class="nt">"numAgents"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nt">"assetVolume"</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="nt">"cashAmount"</span><span class="p">:</span><span class="w"> </span><span class="mi">10000</span><span class="p">,</span>
@@ -1033,10 +1069,10 @@ JsonRandom</div>
 </section>
 </section>
 <section id="markets">
-<span id="config-markets"></span><h2>市場<a class="headerlink" href="#markets" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-markets"></span><h2>市場<a class="headerlink" href="#markets" title="Link to this heading">¶</a></h2>
 <p>市場ブロックは、板を持つ市場を1つ以上作成します。グループキー（<code class="docutils literal notranslate"><span class="pre">class</span></code>、<code class="docutils literal notranslate"><span class="pre">extends</span></code>、<code class="docutils literal notranslate"><span class="pre">numMarkets</span></code>、<code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>、<code class="docutils literal notranslate"><span class="pre">prefix</span></code>）に加えて、市場ブロックには以下のキーがあります。これらはいずれも <a class="reference internal" href="#config-jsonrandom"><span class="std std-ref">JsonRandom</span></a> 記法を受け付けません。</p>
 <section id="market">
-<h3>Market<a class="headerlink" href="#market" title="この見出しへのパーマリンク">#</a></h3>
+<h3>Market<a class="headerlink" href="#market" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;Market&quot;</span></code> (<a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.Market</span></code></a>)</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1082,11 +1118,7 @@ JsonRandom</div>
 <p><code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> と <code class="docutils literal notranslate"><span class="pre">fundamentalPrice</span></code> の一方のみが指定された場合、両方の価格がその値から始まります。両方が指定された場合、市場価格は <code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> から、ファンダメンタル価格は <code class="docutils literal notranslate"><span class="pre">fundamentalPrice</span></code> から始まります。</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-graph" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.5 1.75a.75.75 0 00-1.5 0v12.5c0 .414.336.75.75.75h14.5a.75.75 0 000-1.5H1.5V1.75zm14.28 2.53a.75.75 0 00-1.06-1.06L10 7.94 7.53 5.47a.75.75 0 00-1.06 0L3.22 8.72a.75.75 0 001.06 1.06L7 7.06l2.47 2.47a.75.75 0 001.06 0l5.25-5.25z"></path></svg></span>ファンダメンタル価格の動き方<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-graph" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">ファンダメンタル価格の動き方</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">各市場のファンダメンタル価格 <span class="math notranslate nohighlight">\(P^f_t\)</span> は、シミュレーションの1ステップごとに1歩進む幾何ランダムウォークに従います：</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
@@ -1096,17 +1128,13 @@ JsonRandom</div>
 </div>
 </details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>市場価格の決まり方<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">市場価格の決まり方</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">ステップ0の開始時には、エージェントは初期の市場価格を参照します。それ以降、セッションが注文を約定させている間は、市場価格は直近の約定価格、まだ何も約定していなければ仲値になります。注文が約定しない間（<code class="docutils literal notranslate"><span class="pre">withOrderExecution:</span> <span class="pre">false</span></code> の場合や売買停止中）は、市場価格は直前の値のまま変わりません。</p>
 <p class="sd-card-text">新たに到着した注文は、板上でマッチングした注文（先に出されていた注文）の価格で約定します。成行注文は、マッチングした指値注文の価格で約定します。1つの注文が一度に複数の価格水準にまたがって約定する場合、それらの約定はすべて、そのうち最後の（最も不利な）価格で行われます。</p>
 </div>
 </details></section>
 <section id="indexmarket">
-<span id="config-indexmarket"></span><h3>IndexMarket<a class="headerlink" href="#indexmarket" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-indexmarket"></span><h3>IndexMarket<a class="headerlink" href="#indexmarket" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;IndexMarket&quot;</span></code> （<a class="reference internal" href="../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket" title="pams.IndexMarket"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.IndexMarket</span></code></a>）は、構成市場のファンダメンタル価格の加重平均をファンダメンタル価格とする市場です。独自の板と市場価格を持ち、その市場価格は、構成市場の <strong>市場</strong> 価格（ファンダメンタル価格ではありません）を <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code> で加重平均した <strong>インデックス値</strong> と乖離することがあります。<a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent" title="pams.agents.ArbitrageAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code></a> はこの乖離を利用して取引します。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1153,7 +1181,7 @@ JsonRandom</div>
 <p>ここで <span class="math notranslate nohighlight">\(S_i\)</span> は構成市場 <span class="math notranslate nohighlight">\(i\)</span> の <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code> です。<code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> の <code class="docutils literal notranslate"><span class="pre">fundamentalDrift</span></code> と <code class="docutils literal notranslate"><span class="pre">fundamentalVolatility</span></code> は無視されます。開始時に人為的な乖離が生じないよう、インデックスの <code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> を構成市場の価格の加重平均に設定してください。</p>
 </section>
 <section id="correlated-fundamental-prices">
-<span id="config-correlations"></span><h3>ファンダメンタル価格の相関<a class="headerlink" href="#correlated-fundamental-prices" title="この見出しへのパーマリンク">#</a></h3>
+<span id="config-correlations"></span><h3>ファンダメンタル価格の相関<a class="headerlink" href="#correlated-fundamental-prices" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">simulation.fundamentalCorrelations</span></code> は、市場のペアについて、ファンダメンタル価格のランダムなショックに相関を持たせます：</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"fundamentalCorrelations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nt">"pairwise"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
@@ -1172,7 +1200,7 @@ JsonRandom</div>
 </section>
 </section>
 <section id="agents">
-<span id="config-agents"></span><h2>エージェント<a class="headerlink" href="#agents" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-agents"></span><h2>エージェント<a class="headerlink" href="#agents" title="Link to this heading">¶</a></h2>
 <p>エージェントブロックは、1つのクラスのエージェントを1体以上作成します。グループのキー（<code class="docutils literal notranslate"><span class="pre">class</span></code>、<code class="docutils literal notranslate"><span class="pre">extends</span></code>、<code class="docutils literal notranslate"><span class="pre">numAgents</span></code>、<code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>、<code class="docutils literal notranslate"><span class="pre">prefix</span></code>）に加えて、すべてのエージェントブロックは以下のキーを持ちます。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1243,7 +1271,7 @@ JsonRandom</div>
 </table>
 </div>
 <section id="fcnagent">
-<h3>FCNAgent<a class="headerlink" href="#fcnagent" title="この見出しへのパーマリンク">#</a></h3>
+<h3>FCNAgent<a class="headerlink" href="#fcnagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;</span></code> （<a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.FCNAgent</span></code></a>）は、ファンダメンタリスト、チャーティスト、ノイズの各成分を組み合わせたエージェントです（Chiarella and Iori, 2002）。数値パラメータ（<code class="docutils literal notranslate"><span class="pre">marginType</span></code> 以外のすべてのキー）はすべて <a class="reference internal" href="#config-jsonrandom"><span class="std std-ref">JsonRandom</span></a> 記法に対応しているため、エージェントごとに異なる値を与えられます。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1296,11 +1324,7 @@ JsonRandom</div>
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>FCNエージェントが注文を決める仕組み<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg></span><span class="sd-summary-text">FCNエージェントが注文を決める仕組み</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">ステップ <span class="math notranslate nohighlight">\(t\)</span> において、エージェントは、市場価格が <span class="math notranslate nohighlight">\(P_t\)</span>、ファンダメンタル価格が <span class="math notranslate nohighlight">\(P^f_t\)</span> である取引可能な各市場について、次の期待対数リターンを計算します。</p>
 <div class="math-wrapper docutils container">
 <div class="math notranslate nohighlight">
@@ -1325,12 +1349,12 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </div>
 </section>
 <section id="marketsharefcnagent">
-<h3>MarketShareFCNAgent<a class="headerlink" href="#marketsharefcnagent" title="この見出しへのパーマリンク">#</a></h3>
+<h3>MarketShareFCNAgent<a class="headerlink" href="#marketsharefcnagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;MarketShareFCNAgent&quot;</span></code> （<a class="reference internal" href="../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent" title="pams.agents.MarketShareFCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.MarketShareFCNAgent</span></code></a>）は <code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code> とまったく同じキーを持ちます。取引可能なすべての市場に注文を出す代わりに、意思決定のたびに <strong>1つ</strong> の市場を選びます。各市場が選ばれる確率は、現在のステップとその前の <code class="docutils literal notranslate"><span class="pre">timeWindowSize</span></code> ステップにその市場で約定した数量に比例します。取引可能な市場が少なくとも1つ必要です。</p>
 <p>時間窓内にいずれかの市場で約定がある間は、約定のない市場が選ばれる確率はほぼ0になります（重みは約定数量に <code class="docutils literal notranslate"><span class="pre">1e-10</span></code> を加えた値です）。そのため、ある市場で取引が始まると、エージェントは通常その市場を選び続け、他の市場の出来高は0のままになります。どの市場にも約定がない場合は、すべての市場が等確率で選ばれます。開始時の配分については <code class="docutils literal notranslate"><span class="pre">samples/market_share</span></code> が、初期の出来高（<code class="docutils literal notranslate"><span class="pre">tradeVolume</span></code>）を設定するユーザー定義の市場クラスを用いて制御しています。</p>
 </section>
 <section id="arbitrageagent">
-<h3>ArbitrageAgent<a class="headerlink" href="#arbitrageagent" title="この見出しへのパーマリンク">#</a></h3>
+<h3>ArbitrageAgent<a class="headerlink" href="#arbitrageagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;ArbitrageAgent&quot;</span></code> （<a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent" title="pams.agents.ArbitrageAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.ArbitrageAgent</span></code></a>）は、取引可能なすべての <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> を監視する高頻度エージェントです。インデックス市場の市場価格がインデックス値（構成市場の市場価格の加重平均。詳しくは <a class="reference internal" href="#config-indexmarket"><span class="std std-ref">IndexMarket</span></a> を参照）を下回り、その差が <code class="docutils literal notranslate"><span class="pre">orderThresholdPrice</span></code> を超えると、インデックスを買い、各構成市場で売ります（いずれも各市場の現在の市場価格での指値注文）。逆の場合はその反対の売買を行います。このエージェント固有のキーはいずれも JsonRandom 記法に対応していません（<code class="docutils literal notranslate"><span class="pre">cashAmount</span></code> と <code class="docutils literal notranslate"><span class="pre">assetVolume</span></code> は対応しています）。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1368,7 +1392,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </ul>
 </section>
 <section id="marketmakeragent">
-<h3>MarketMakerAgent<a class="headerlink" href="#marketmakeragent" title="この見出しへのパーマリンク">#</a></h3>
+<h3>MarketMakerAgent<a class="headerlink" href="#marketmakeragent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;MarketMakerAgent&quot;</span></code> は、発注を求められるたびに <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> に買いと売りの指値注文（数量1）を1つずつ出す高頻度エージェントです。注文は、取引可能な <strong>すべての</strong> 市場の最良価格を中心に配置されます（下記参照）。古い注文は取り消されず、発注から <code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code> ステップ後に失効します。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1401,21 +1425,17 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>マーケットメイカーの価格の決め方<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg></span><span class="sd-summary-text">マーケットメイカーの価格の決め方</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">2つの注文は、エージェントが取引可能な <strong>すべての</strong> 市場（<code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> だけではありません）における最も高い最良買い価格と最も低い最良売り価格の中点 <span class="math notranslate nohighlight">\(c\)</span> を中心に配置されます。取引可能などの市場にも買い注文がない場合や、どの市場にも売り注文がない場合には <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> の市場価格を <span class="math notranslate nohighlight">\(c\)</span> とします。ここで <code class="docutils literal notranslate"><span class="pre">netInterestSpread</span></code> を <span class="math notranslate nohighlight">\(s\)</span> とし、<code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> のファンダメンタル価格を <span class="math notranslate nohighlight">\(P^f\)</span> とすると、エージェントは買い注文を <span class="math notranslate nohighlight">\(c - P^f s / 2\)</span> に、売り注文を <span class="math notranslate nohighlight">\(c + P^f s / 2\)</span> に出します。</p>
 </div>
 </details></section>
 <section id="testagent">
-<h3>TestAgent<a class="headerlink" href="#testagent" title="この見出しへのパーマリンク">#</a></h3>
+<h3>TestAgent<a class="headerlink" href="#testagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;TestAgent&quot;</span></code> はランダムな注文を出すエージェントで、<code class="docutils literal notranslate"><span class="pre">markets</span></code>、<code class="docutils literal notranslate"><span class="pre">cashAmount</span></code>、<code class="docutils literal notranslate"><span class="pre">assetVolume</span></code> 以外に固有のキーはありません。PAMS自体をテストするためのものであり、研究には使用しないでください。</p>
 </section>
 </section>
 <section id="events">
-<span id="config-events"></span><h2>イベント<a class="headerlink" href="#events" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-events"></span><h2>イベント<a class="headerlink" href="#events" title="Link to this heading">¶</a></h2>
 <p>イベントは、価格にショックを与える、注文価格を制限する、売買を停止する、誤った注文を投入するといった形でシミュレーションの流れを変えます。イベントは名前付きブロックで定義し、その <code class="docutils literal notranslate"><span class="pre">&quot;class&quot;</span></code> （必須）でイベントクラスを指定します。セッションの <code class="docutils literal notranslate"><span class="pre">events</span></code> にブロック名を記載すると、そのセッションにイベントが割り当てられます：</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"sessions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span><span class="nt">"sessionName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"warmup"</span><span class="p">,</span><span class="w"> </span><span class="nt">"iterationSteps"</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="nt">"..."</span><span class="p">:</span><span class="w"> </span><span class="s2">"..."</span><span class="p">},</span>
@@ -1438,7 +1458,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <p>どのイベントも <code class="docutils literal notranslate"><span class="pre">&quot;enabled&quot;:</span> <span class="pre">false</span></code> を受け付け、これによりイベントを削除せずに無効化できます（デフォルトは <code class="docutils literal notranslate"><span class="pre">true</span></code>）。対照実験にはこれを使ってください：同じシードを使えば、イベントを無効化した実行は、イベントが作用するステップまではイベントありの実行と一致します。一方でイベントを <code class="docutils literal notranslate"><span class="pre">events</span></code> から削除すると、最初から乱数が変わってしまいます。</p>
 <p>率はすべて比率で指定します（<code class="docutils literal notranslate"><span class="pre">0.05</span></code> は5%を意味します）。イベントのキーはいずれもJsonRandom記法を受け付けません。</p>
 <section id="fundamentalpriceshock">
-<h3>FundamentalPriceShock<a class="headerlink" href="#fundamentalpriceshock" title="この見出しへのパーマリンク">#</a></h3>
+<h3>FundamentalPriceShock<a class="headerlink" href="#fundamentalpriceshock" title="Link to this heading">¶</a></h3>
 <p>1つの市場のファンダメンタル価格を <span class="math notranslate nohighlight">\(1 + r\)</span> 倍します（<a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock" title="pams.events.FundamentalPriceShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.FundamentalPriceShock</span></code></a>）。この変化は恒久的で、ファンダメンタル価格は新しい水準からランダムウォークを続けます。ショック以降は <strong>すべての</strong> 市場のファンダメンタル価格が新たに生成された乱数で推移するため、同じシードでも、ショックありの実行となしの実行とでは、それ以降のファンダメンタル価格のノイズは一致しません（ドリフトとボラティリティは変わりません）。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1483,7 +1503,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </div>
 </section>
 <section id="pricelimitrule">
-<h3>PriceLimitRule<a class="headerlink" href="#pricelimitrule" title="この見出しへのパーマリンク">#</a></h3>
+<h3>PriceLimitRule<a class="headerlink" href="#pricelimitrule" title="Link to this heading">¶</a></h3>
 <p>指値注文の価格を、初期価格を中心とする価格帯の中に制限します（<a class="reference internal" href="../reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule" title="pams.events.PriceLimitRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.PriceLimitRule</span></code></a>）。価格が <span class="math notranslate nohighlight">\([P_0 (1 - r), P_0 (1 + r)]\)</span> の範囲外にある指値注文は、価格帯の最も近い端に移動されます。ここで <span class="math notranslate nohighlight">\(P_0\)</span> はステップ0における市場価格で、以後シミュレーション終了まで固定されます。最初のセッションが <code class="docutils literal notranslate"><span class="pre">withOrderExecution:</span> <span class="pre">false</span></code> の場合（本ページの例と同様）、<span class="math notranslate nohighlight">\(P_0\)</span> は市場の <code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> になります。そうでない場合は、ステップ0の間の取引によって変化することがあります。成行注文は影響を受けません。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1520,7 +1540,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </div>
 </section>
 <section id="tradinghaltrule">
-<h3>TradingHaltRule<a class="headerlink" href="#tradinghaltrule" title="この見出しへのパーマリンク">#</a></h3>
+<h3>TradingHaltRule<a class="headerlink" href="#tradinghaltrule" title="Link to this heading">¶</a></h3>
 <p>サーキットブレーカーです（<a class="reference internal" href="../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule" title="pams.events.TradingHaltRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.TradingHaltRule</span></code></a>）。対象市場のいずれかで約定が発生した後、市場価格がステップ0における価格 <span class="math notranslate nohighlight">\(P_0\)</span> （<code class="docutils literal notranslate"><span class="pre">PriceLimitRule</span></code> と同じ定義）から <span class="math notranslate nohighlight">\(P_0 \times r \times (n + 1)\)</span> 以上乖離していた場合、<strong>すべての</strong> 対象市場が売買停止になります（<span class="math notranslate nohighlight">\(n\)</span> はそれまでの売買停止の回数）。売買停止中も注文は受け付けられますが、約定は一切行われません。売買は、売買停止の開始から <code class="docutils literal notranslate"><span class="pre">haltingTimeLength</span></code> + 1 ステップ後に再開されます。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1562,7 +1582,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <p>セッション終了時点で継続中の売買停止は、次のセッションに持ち越されます。売買停止が終了したとき、約定が再開されるのはその時点のセッションが <code class="docutils literal notranslate"><span class="pre">withOrderExecution:</span> <span class="pre">true</span></code> の場合のみです。</p>
 </section>
 <section id="ordermistakeshock">
-<h3>OrderMistakeShock<a class="headerlink" href="#ordermistakeshock" title="この見出しへのパーマリンク">#</a></h3>
+<h3>OrderMistakeShock<a class="headerlink" href="#ordermistakeshock" title="Link to this heading">¶</a></h3>
 <p>誤発注です（<a class="reference internal" href="../reference/generated/events/pams.events.OrderMistakeShock.html#pams.events.OrderMistakeShock" title="pams.events.OrderMistakeShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.OrderMistakeShock</span></code></a>）。トリガーとなるステップで、<strong>対象市場に最初に出された注文</strong> が大口の指値注文に置き換えられます。この注文は、<span class="math notranslate nohighlight">\(r &gt; 0\)</span> の場合は <span class="math notranslate nohighlight">\(P (1 + r)\)</span> での買い注文、そうでない場合は <span class="math notranslate nohighlight">\(P (1 + r)\)</span> での売り注文です（<span class="math notranslate nohighlight">\(P\)</span> は現在の市場価格）。新しい注文は作成されず、誤発注された注文は元の注文を出したエージェントのものになります。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1613,7 +1633,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </section>
 </section>
 <section id="random-parameters-jsonrandom">
-<span id="config-jsonrandom"></span><h2>ランダムパラメータ（JsonRandom）<a class="headerlink" href="#random-parameters-jsonrandom" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-jsonrandom"></span><h2>ランダムパラメータ（JsonRandom）<a class="headerlink" href="#random-parameters-jsonrandom" title="Link to this heading">¶</a></h2>
 <p>エージェントのパラメータのうち <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">JsonRandom</span> が付いたものには、固定の数値または分布を指定できます。1つのグループが多数のエージェントを生成する場合、<strong>各エージェントが自分の値を1回だけサンプリングします</strong> （<code class="docutils literal notranslate"><span class="pre">assetVolume</span></code> は取引可能な市場ごとに1回）。サンプリングはシミュレーションのセットアップ時に行われ、シミュレーション中に値が変わることはありません。これにより、1つのブロックで異質なエージェントの集団を記述できます。</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1664,7 +1684,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <p>JsonRandom が使えるのは、このページで <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">JsonRandom</span> が付いているエージェントのキーだけです。それ以外のキーには通常の値しか指定できません。すなわち、市場、セッション、イベント、および <code class="docutils literal notranslate"><span class="pre">simulation</span></code> のキーと、バッジのないエージェントのキー（<code class="docutils literal notranslate"><span class="pre">marginType</span></code>、<code class="docutils literal notranslate"><span class="pre">targetMarket</span></code>、および <code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code> のキーである <code class="docutils literal notranslate"><span class="pre">orderVolume</span></code>、<code class="docutils literal notranslate"><span class="pre">orderThresholdPrice</span></code>、<code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code> など）です。これらのキーに分布を指定すると失敗します。場合によっては、シミュレーションの実行中になって初めて失敗します。</p>
 </section>
 <section id="user-defined-classes">
-<span id="config-user-classes"></span><h2>ユーザー定義クラス<a class="headerlink" href="#user-defined-classes" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-user-classes"></span><h2>ユーザー定義クラス<a class="headerlink" href="#user-defined-classes" title="Link to this heading">¶</a></h2>
 <p>独自の市場、エージェント、イベントも組み込みのものと同じように設定します。各クラスを <code class="docutils literal notranslate"><span class="pre">main()</span></code> の呼び出し前にランナーに登録し、クラス名で参照してください：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">FCNAgent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">SequentialRunner</span>
@@ -1693,7 +1713,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </ul>
 </section>
 <section id="parallel-runners">
-<span id="config-parallel"></span><h2>並列ランナー<a class="headerlink" href="#parallel-runners" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-parallel"></span><h2>並列ランナー<a class="headerlink" href="#parallel-runners" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiThreadAgentParallelRunner</span></code></a> と <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a> （いずれも実験的機能）は同じ設定ファイルを読み込み、同じシードであれば <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a> と同じ結果になります。これらは通常エージェントの <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> を並列に呼び出し、それ以外はすべて逐次的に処理します。</p>
 <ul class="simple">
 <li><p><strong>速度</strong>：Python の GIL のため、スレッドランナーが効果を持つのは <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> が I/O を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、呼び出しのたびにエージェントと市場がワーカープロセスにコピーされるため、はるかに低速です。あわせて <a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> も参照してください。</p></li>
@@ -1705,9 +1725,9 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <p>プロセスランナーは呼び出しのたびに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle 可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code> で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。</p>
 </section>
 <section id="troubleshooting">
-<span id="config-troubleshooting"></span><h2>トラブルシューティング<a class="headerlink" href="#troubleshooting" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-troubleshooting"></span><h2>トラブルシューティング<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
 <section id="silent-pitfalls">
-<h3>エラーにならない落とし穴<a class="headerlink" href="#silent-pitfalls" title="この見出しへのパーマリンク">#</a></h3>
+<h3>エラーにならない落とし穴<a class="headerlink" href="#silent-pitfalls" title="Link to this heading">¶</a></h3>
 <p>以下の誤りはエラーにはなりませんが、シミュレーションの内容を変えてしまいます：</p>
 <ul class="simple">
 <li><p><strong>綴りや配置を誤ったキーは無視されます</strong>：例えば <code class="docutils literal notranslate"><span class="pre">&quot;numMarket&quot;</span></code> や <code class="docutils literal notranslate"><span class="pre">&quot;maxNormalOrder&quot;</span></code> と書くとデフォルト値が使われ、セッション内ではなく <code class="docutils literal notranslate"><span class="pre">simulation</span></code> 内に書いた <code class="docutils literal notranslate"><span class="pre">events</span></code> からはイベントが作成されません。</p></li>
@@ -1721,7 +1741,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </ul>
 </section>
 <section id="common-errors">
-<h3>よくあるエラー<a class="headerlink" href="#common-errors" title="この見出しへのパーマリンク">#</a></h3>
+<h3>よくあるエラー<a class="headerlink" href="#common-errors" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -1792,7 +1812,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </section>
 </section>
 <section id="sample-configurations">
-<span id="config-samples"></span><h2>設定ファイルのサンプル<a class="headerlink" href="#sample-configurations" title="この見出しへのパーマリンク">#</a></h2>
+<span id="config-samples"></span><h2>設定ファイルのサンプル<a class="headerlink" href="#sample-configurations" title="Link to this heading">¶</a></h2>
 <p>リポジトリの <a class="reference external" href="https://github.com/masanorihirano/pams/tree/main/samples">samples</a> ディレクトリには、完全な設定ファイルと、それらを実行するための <code class="docutils literal notranslate"><span class="pre">main.py</span></code> が含まれています。サンプルはパッケージと一緒にはインストールされないため、リポジトリをクローンし、そのルートから実行してください。例：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>samples.CI2002.main<span class="w"> </span>--config<span class="w"> </span>samples/CI2002/config.json<span class="w"> </span>--seed<span class="w"> </span><span class="m">1</span>
 </pre></div>
@@ -1954,15 +1974,12 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
-    <script src="../_static/translations.js"></script>
-    <script src="../_static/design-tabs.js"></script>
+</div><script src="../_static/documentation_options.js?v=c033477b"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/translations.js?v=4755f45a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

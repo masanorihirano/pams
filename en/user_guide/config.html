@@ -1,24 +1,24 @@
 <!doctype html>
-<html class="no-js" lang="en">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Tutorials" href="tutorials/index.html" /><link rel="prev" title="Platform" href="platform.html" />
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Tutorials" href="tutorials/index.html"><link rel="prev" title="Platform" href="platform.html">
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>JSON configuration - pams documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -69,7 +69,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -84,34 +84,73 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -119,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -128,16 +166,15 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -145,7 +182,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
-  
   
   <span class="sidebar-brand-text">pams  documentation</span>
   
@@ -156,13 +192,13 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User Guide</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="preface.html">Preface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="about.html">About this project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="install.html">Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="platform.html">Platform</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">JSON configuration</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/outline.html">Outline</a></li>
 </ul>
 </li>
@@ -171,31 +207,31 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/runners.html">Runner</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/runners.html">Runner</a><input aria-label="Toggle navigation of Runner" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/simulator/pams.Simulator.html">Simulator</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/sessions.html">Session</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/sessions.html">Session</a><input aria-label="Toggle navigation of Session" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/session/pams.Session.html">Session</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/markets.html">Market</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/markets.html">Market</a><input aria-label="Toggle navigation of Market" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/market/pams.Market.html">Market</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/market/pams.IndexMarket.html">IndexMarket</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/fundamentals.html">Fundamentals</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/fundamentals.html">Fundamentals</a><input aria-label="Toggle navigation of Fundamentals" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/orders.html">Order</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/orders.html">Order</a><input aria-label="Toggle navigation of Order" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.Order.html">Order</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.Cancel.html">Cancel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.OrderKind.html">OrderKind</a></li>
@@ -203,7 +239,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/events.html">Events</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/events.html">Events</a><input aria-label="Toggle navigation of Events" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.EventABC.html">EventABC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
@@ -212,7 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/logs.html">Logs</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/logs.html">Logs</a><input aria-label="Toggle navigation of Logs" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.Log.html">Log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
@@ -225,13 +261,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/loggers.html">Logger</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/loggers.html">Logger</a><input aria-label="Toggle navigation of Logger" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/agents.html">Agents</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/agents.html">Agents</a><input aria-label="Toggle navigation of Agents" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
@@ -239,7 +275,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/utils.html">Utils</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/utils.html">Utils</a><input aria-label="Toggle navigation of Utils" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
@@ -264,23 +300,27 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/user_guide/config.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="json-configuration">
-<span id="config"></span><h1>JSON configuration<a class="headerlink" href="#json-configuration" title="Permalink to this heading">#</a></h1>
+<span id="config"></span><h1>JSON configuration<a class="headerlink" href="#json-configuration" title="Link to this heading">¶</a></h1>
 <p>A PAMS simulation is described by a single JSON file: which markets exist, which agents trade on them,
 how the simulation is split into sessions, and which events (shocks, circuit breakers, …) happen.
 Changing the market setup, the population of agents or the scenario usually needs no Python code at all:
@@ -295,7 +335,7 @@ you only edit the config file.</p>
 Quick start</div>
 <p class="sd-card-text">Complete, runnable configs for common setups.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-quickstart"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-quickstart"><span class="std std-ref">Quick start</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -304,7 +344,7 @@ Quick start</div>
 File structure</div>
 <p class="sd-card-text">The <code class="docutils literal notranslate"><span class="pre">simulation</span></code> block, named blocks and how they refer to each other.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-structure"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-structure"><span class="std std-ref">File structure</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -313,7 +353,7 @@ File structure</div>
 Sessions</div>
 <p class="sd-card-text">Steps, order placement and execution, the order flow of one step.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-sessions"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-sessions"><span class="std std-ref">Sessions</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -322,7 +362,7 @@ Sessions</div>
 Groups and naming</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">numMarkets</span></code> / <code class="docutils literal notranslate"><span class="pre">numAgents</span></code>, <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>, <code class="docutils literal notranslate"><span class="pre">prefix</span></code> and <code class="docutils literal notranslate"><span class="pre">extends</span></code>.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-groups"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-groups"><span class="std std-ref">Market and agent groups</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -331,7 +371,7 @@ Groups and naming</div>
 Markets</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">Market</span></code>, <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>, fundamental prices and correlations.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-markets"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-markets"><span class="std std-ref">Markets</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -340,7 +380,7 @@ Markets</div>
 Agents</div>
 <p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>, <code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code>, <code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> and more.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-agents"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-agents"><span class="std std-ref">Agents</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -349,7 +389,7 @@ Agents</div>
 Events</div>
 <p class="sd-card-text">Price shocks, price limits, trading halts and fat-finger orders.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-events"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-events"><span class="std std-ref">Events</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -358,7 +398,7 @@ Events</div>
 JsonRandom</div>
 <p class="sd-card-text">Random agent parameters such as <code class="docutils literal notranslate"><span class="pre">[100,</span> <span class="pre">200]</span></code> or <code class="docutils literal notranslate"><span class="pre">{&quot;expon&quot;:</span> <span class="pre">[1.0]}</span></code>.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-jsonrandom"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-jsonrandom"><span class="std std-ref">Random parameters (JsonRandom)</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
@@ -367,12 +407,12 @@ JsonRandom</div>
 Troubleshooting</div>
 <p class="sd-card-text">Common mistakes, silent pitfalls and error messages.</p>
 </div>
-<a class="sd-stretched-link reference internal" href="#config-troubleshooting"><span class="std std-ref"></span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="#config-troubleshooting"><span class="std std-ref">Troubleshooting</span></a></div>
 </div>
 </div>
 </div>
 <section id="quick-start">
-<span id="config-quickstart"></span><h2>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this heading">#</a></h2>
+<span id="config-quickstart"></span><h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
 <p>Save one of the configs below as <code class="docutils literal notranslate"><span class="pre">config.json</span></code> and run it with a runner:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
@@ -390,7 +430,7 @@ Troubleshooting</div>
 </div>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
+<label class="sd-tab-label" for="sd-tab-item-0">
 Minimal</label><div class="sd-tab-content docutils">
 <p>One market and 100 <a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FCNAgent</span></code></a> agents.
 The first session only builds the order book (no execution), the second one trades.
@@ -442,7 +482,7 @@ It follows the Chiarella and Iori (2002) setup of <code class="docutils literal 
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
+<label class="sd-tab-label" for="sd-tab-item-1">
 Events</label><div class="sd-tab-content docutils">
 <p>The minimal setup plus two events in the <code class="docutils literal notranslate"><span class="pre">main</span></code> session:
 the fundamental price drops by 10% 100 steps into the session,
@@ -505,7 +545,7 @@ step 0 (10% for the second halt, 15% for the third, and so on).</p>
 </div>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-2">
+<label class="sd-tab-label" for="sd-tab-item-2">
 Index and arbitrage</label><div class="sd-tab-content docutils">
 <p>Two correlated spot markets, an index market made of them, FCN agents on each market,
 and <a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent" title="pams.agents.ArbitrageAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code></a> agents that trade the gap between the index market price
@@ -592,7 +632,7 @@ markets by their instance names <code class="docutils literal notranslate"><span
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<label class="sd-tab-label" for="sd-tab-item-3">
 Market maker</label><div class="sd-tab-content docutils">
 <p>FCN agents plus two <code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> agents that quote both sides of the market.
 Market makers are high-frequency agents, so the session keys <code class="docutils literal notranslate"><span class="pre">maxHighFrequencyOrders</span></code> and
@@ -656,7 +696,7 @@ one of the two market makers, chosen at random, quotes after the normal agent’
 </div>
 </div>
 <input id="sd-tab-item-4" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-4">
+<label class="sd-tab-label" for="sd-tab-item-4">
 Parallel runner</label><div class="sd-tab-content docutils">
 <p>The same format works with <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiThreadAgentParallelRunner</span></code></a> and
 <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a> (both experimental).
@@ -716,7 +756,7 @@ runner.</p>
 <p>More complete examples are in the <code class="docutils literal notranslate"><span class="pre">samples</span></code> directory of the repository (see <a class="reference internal" href="#config-samples"><span class="std std-ref">Sample configurations</span></a>).</p>
 </section>
 <section id="file-structure">
-<span id="config-structure"></span><h2>File structure<a class="headerlink" href="#file-structure" title="Permalink to this heading">#</a></h2>
+<span id="config-structure"></span><h2>File structure<a class="headerlink" href="#file-structure" title="Link to this heading">¶</a></h2>
 <p>The root of the file is a JSON object with two kinds of entries:</p>
 <ul class="simple">
 <li><p>the <code class="docutils literal notranslate"><span class="pre">simulation</span></code> block, which lists what is created and in which order, and</p></li>
@@ -755,7 +795,7 @@ A block that is only used through <code class="docutils literal notranslate"><sp
 <p>The block name and the class are independent: <code class="docutils literal notranslate"><span class="pre">&quot;class&quot;</span></code> selects the class, and the name is only a label.
 <code class="docutils literal notranslate"><span class="pre">&quot;FCNAgents&quot;:</span> <span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;,</span> <span class="pre">...}</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;Noise</span> <span class="pre">traders&quot;:</span> <span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;,</span> <span class="pre">...}</span></code> are equally valid.</p>
 <section id="group-names-and-instance-names">
-<span id="config-names"></span><h3>Group names and instance names<a class="headerlink" href="#group-names-and-instance-names" title="Permalink to this heading">#</a></h3>
+<span id="config-names"></span><h3>Group names and instance names<a class="headerlink" href="#group-names-and-instance-names" title="Link to this heading">¶</a></h3>
 <p>A market group can create several markets (<code class="docutils literal notranslate"><span class="pre">&quot;numMarkets&quot;:</span> <span class="pre">2</span></code>). The group then has a <strong>group name</strong>
 (the block name, e.g. <code class="docutils literal notranslate"><span class="pre">SpotMarkets</span></code>) and each market has an <strong>instance name</strong> (e.g. <code class="docutils literal notranslate"><span class="pre">SpotMarkets-0</span></code> and
 <code class="docutils literal notranslate"><span class="pre">SpotMarkets-1</span></code>, see <a class="reference internal" href="#config-naming"><span class="std std-ref">Instance names</span></a>). Different keys expect different kinds of names:</p>
@@ -789,7 +829,7 @@ so the distinction mostly matters for groups with several markets. With those ke
 single market: <code class="docutils literal notranslate"><span class="pre">&quot;prefix&quot;:</span> <span class="pre">&quot;Stock&quot;</span></code> gives the instance name <code class="docutils literal notranslate"><span class="pre">Stock</span></code>.</p>
 </section>
 <section id="notation-used-on-this-page">
-<span id="config-notation"></span><h3>Notation used on this page<a class="headerlink" href="#notation-used-on-this-page" title="Permalink to this heading">#</a></h3>
+<span id="config-notation"></span><h3>Notation used on this page<a class="headerlink" href="#notation-used-on-this-page" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -835,7 +875,7 @@ raise an error; the default is used instead. Check spelling and case carefully.<
 </section>
 </section>
 <section id="the-simulation-block">
-<span id="config-simulation"></span><h2>The <code class="docutils literal notranslate"><span class="pre">simulation</span></code> block<a class="headerlink" href="#the-simulation-block" title="Permalink to this heading">#</a></h2>
+<span id="config-simulation"></span><h2>The <code class="docutils literal notranslate"><span class="pre">simulation</span></code> block<a class="headerlink" href="#the-simulation-block" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -880,7 +920,7 @@ Ignored by
 <p>Other keys in <code class="docutils literal notranslate"><span class="pre">simulation</span></code> are ignored. In particular, events are not listed here but in each session.</p>
 </section>
 <section id="sessions">
-<span id="config-sessions"></span><h2>Sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">#</a></h2>
+<span id="config-sessions"></span><h2>Sessions<a class="headerlink" href="#sessions" title="Link to this heading">¶</a></h2>
 <p>A simulation runs in discrete <strong>steps</strong> on one clock that starts at 0. The steps are divided into
 <strong>sessions</strong>, which run one after another. Each session decides whether agents may place orders and whether
 orders are executed. A typical setup has a warm-up session that only fills the order book, followed by
@@ -968,11 +1008,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">1</span></
 <code class="docutils literal notranslate"><span class="pre">extends</span></code> (it is ignored like any unknown key).</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-list-ordered" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M2.003 2.5a.5.5 0 00-.723-.447l-1.003.5a.5.5 0 00.446.895l.28-.14V6H.5a.5.5 0 000 1h2.006a.5.5 0 100-1h-.503V2.5zM5 3.25a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 3.25zm0 5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5A.75.75 0 015 8.25zm0 5a.75.75 0 01.75-.75h8.5a.75.75 0 010 1.5h-8.5a.75.75 0 01-.75-.75zM.924 10.32l.003-.004a.851.851 0 01.144-.153A.66.66 0 011.5 10c.195 0 .306.068.374.146a.57.57 0 01.128.376c0 .453-.269.682-.8 1.078l-.035.025C.692 11.98 0 12.495 0 13.5a.5.5 0 00.5.5h2.003a.5.5 0 000-1H1.146c.132-.197.351-.372.654-.597l.047-.035c.47-.35 1.156-.858 1.156-1.845 0-.365-.118-.744-.377-1.038-.268-.303-.658-.484-1.126-.484-.48 0-.84.202-1.068.392a1.858 1.858 0 00-.348.384l-.007.011-.002.004-.001.002-.001.001a.5.5 0 00.851.525zM.5 10.055l-.427-.26.427.26z"></path></svg></span>What happens in one step<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-list-ordered" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.25a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 3.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5A.75.75 0 0 1 5 8.25Zm0 5a.75.75 0 0 1 .75-.75h8.5a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1-.75-.75ZM.924 10.32a.5.5 0 0 1-.851-.525l.001-.001.001-.002.002-.004.007-.011c.097-.144.215-.273.348-.384.228-.19.588-.392 1.068-.392.468 0 .858.181 1.126.484.259.294.377.673.377 1.038 0 .987-.686 1.495-1.156 1.845l-.047.035c-.303.225-.522.4-.654.597h1.357a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5c0-1.005.692-1.52 1.167-1.875l.035-.025c.531-.396.8-.625.8-1.078a.57.57 0 0 0-.128-.376C1.806 10.068 1.695 10 1.5 10a.658.658 0 0 0-.429.163.835.835 0 0 0-.144.153ZM2.003 2.5V6h.503a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1h.503V3.308l-.28.14a.5.5 0 0 1-.446-.895l1.003-.5a.5.5 0 0 1 .723.447Z"></path></svg></span><span class="sd-summary-text">What happens in one step</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">For every step of a session:</p>
 <ol class="arabic simple">
 <li><p class="sd-card-text">Events hooked before the step run (e.g. <a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock" title="pams.events.FundamentalPriceShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">FundamentalPriceShock</span></code></a>).</p></li>
@@ -1004,7 +1040,7 @@ where no normal agent submitted an order, and <code class="docutils literal notr
 </div>
 </section>
 <section id="market-and-agent-groups">
-<span id="config-groups"></span><h2>Market and agent groups<a class="headerlink" href="#market-and-agent-groups" title="Permalink to this heading">#</a></h2>
+<span id="config-groups"></span><h2>Market and agent groups<a class="headerlink" href="#market-and-agent-groups" title="Link to this heading">¶</a></h2>
 <p>Market blocks and agent blocks share a set of keys that decide which class is used, how many objects are
 created and how they are named.</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -1050,7 +1086,7 @@ object. An explicit <code class="docutils literal notranslate"><span class="pre"
 </table>
 </div>
 <section id="instance-names">
-<span id="config-naming"></span><h3>Instance names<a class="headerlink" href="#instance-names" title="Permalink to this heading">#</a></h3>
+<span id="config-naming"></span><h3>Instance names<a class="headerlink" href="#instance-names" title="Link to this heading">¶</a></h3>
 <p>Names are what other keys use to refer to a single market (see <a class="reference internal" href="#config-names"><span class="std std-ref">Group names and instance names</span></a>), so it helps to know
 how they are built:</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -1098,7 +1134,7 @@ IDs (<code class="docutils literal notranslate"><span class="pre">market_id</spa
 <code class="docutils literal notranslate"><span class="pre">simulation.agents</span></code>, regardless of <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>.</p>
 </section>
 <section id="inheritance-with-extends">
-<span id="config-extends"></span><h3>Inheritance with <code class="docutils literal notranslate"><span class="pre">extends</span></code><a class="headerlink" href="#inheritance-with-extends" title="Permalink to this heading">#</a></h3>
+<span id="config-extends"></span><h3>Inheritance with <code class="docutils literal notranslate"><span class="pre">extends</span></code><a class="headerlink" href="#inheritance-with-extends" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;extends&quot;:</span> <span class="pre">&quot;OtherBlock&quot;</span></code> copies every key of <code class="docutils literal notranslate"><span class="pre">OtherBlock</span></code> into this block, and keys written in this block
 override the inherited ones. The parent can itself use <code class="docutils literal notranslate"><span class="pre">extends</span></code>, so chains are resolved recursively.
 A block has only one parent: <code class="docutils literal notranslate"><span class="pre">extends</span></code> takes a single block name, not a list.
@@ -1132,12 +1168,12 @@ Otherwise give each group its own <code class="docutils literal notranslate"><sp
 </section>
 </section>
 <section id="markets">
-<span id="config-markets"></span><h2>Markets<a class="headerlink" href="#markets" title="Permalink to this heading">#</a></h2>
+<span id="config-markets"></span><h2>Markets<a class="headerlink" href="#markets" title="Link to this heading">¶</a></h2>
 <p>A market block creates one or more order-book markets. Besides the group keys (<code class="docutils literal notranslate"><span class="pre">class</span></code>, <code class="docutils literal notranslate"><span class="pre">extends</span></code>,
 <code class="docutils literal notranslate"><span class="pre">numMarkets</span></code>, <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>, <code class="docutils literal notranslate"><span class="pre">prefix</span></code>), a market block has the keys below. None of them accepts
 <a class="reference internal" href="#config-jsonrandom"><span class="std std-ref">JsonRandom</span></a> notation.</p>
 <section id="market">
-<h3>Market<a class="headerlink" href="#market" title="Permalink to this heading">#</a></h3>
+<h3>Market<a class="headerlink" href="#market" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;Market&quot;</span></code> (<a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.Market</span></code></a>)</p>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
@@ -1188,11 +1224,7 @@ If both are given, the market price starts at <code class="docutils literal notr
 <code class="docutils literal notranslate"><span class="pre">fundamentalPrice</span></code>.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-graph" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M1.5 1.75a.75.75 0 00-1.5 0v12.5c0 .414.336.75.75.75h14.5a.75.75 0 000-1.5H1.5V1.75zm14.28 2.53a.75.75 0 00-1.06-1.06L10 7.94 7.53 5.47a.75.75 0 00-1.06 0L3.22 8.72a.75.75 0 001.06 1.06L7 7.06l2.47 2.47a.75.75 0 001.06 0l5.25-5.25z"></path></svg></span>How the fundamental price moves<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-graph" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"></path></svg></span><span class="sd-summary-text">How the fundamental price moves</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">The fundamental price <span class="math notranslate nohighlight">\(P^f_t\)</span> of each market follows a geometric random walk with one step per
 simulation step:</p>
 <div class="math-wrapper docutils container">
@@ -1206,11 +1238,7 @@ every session, including sessions without order execution.</p>
 </div>
 </details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>How the market price is determined<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">How the market price is determined</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">Agents see the initial market price at the start of step 0. From then on, while the session executes orders,
 the market price is the last execution price, or the mid price if nothing has been executed yet.
 While orders are not executed (<code class="docutils literal notranslate"><span class="pre">withOrderExecution:</span> <span class="pre">false</span></code> or during a trading halt), the market price
@@ -1221,7 +1249,7 @@ at once, all of these fills use the last (worst) of those prices.</p>
 </div>
 </details></section>
 <section id="indexmarket">
-<span id="config-indexmarket"></span><h3>IndexMarket<a class="headerlink" href="#indexmarket" title="Permalink to this heading">#</a></h3>
+<span id="config-indexmarket"></span><h3>IndexMarket<a class="headerlink" href="#indexmarket" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;IndexMarket&quot;</span></code> (<a class="reference internal" href="../reference/generated/market/pams.IndexMarket.html#pams.IndexMarket" title="pams.IndexMarket"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.IndexMarket</span></code></a>) is a market whose fundamental price is the weighted
 average of the fundamental prices of its component markets. It has its own order book and market price,
 which can differ from the <strong>index value</strong>, the <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code>-weighted average of the component markets’
@@ -1276,7 +1304,7 @@ of the index is always computed from the components.</p></td>
 <code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> to the weighted average of the component prices.</p>
 </section>
 <section id="correlated-fundamental-prices">
-<span id="config-correlations"></span><h3>Correlated fundamental prices<a class="headerlink" href="#correlated-fundamental-prices" title="Permalink to this heading">#</a></h3>
+<span id="config-correlations"></span><h3>Correlated fundamental prices<a class="headerlink" href="#correlated-fundamental-prices" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">simulation.fundamentalCorrelations</span></code> correlates the random shocks of the fundamental prices of pairs of
 markets:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"fundamentalCorrelations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -1299,7 +1327,7 @@ than 0. Index markets cannot be used, because their fundamental price is compute
 </section>
 </section>
 <section id="agents">
-<span id="config-agents"></span><h2>Agents<a class="headerlink" href="#agents" title="Permalink to this heading">#</a></h2>
+<span id="config-agents"></span><h2>Agents<a class="headerlink" href="#agents" title="Link to this heading">¶</a></h2>
 <p>An agent block creates one or more agents of one class. Besides the group keys (<code class="docutils literal notranslate"><span class="pre">class</span></code>, <code class="docutils literal notranslate"><span class="pre">extends</span></code>,
 <code class="docutils literal notranslate"><span class="pre">numAgents</span></code>, <code class="docutils literal notranslate"><span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">to</span></code>, <code class="docutils literal notranslate"><span class="pre">prefix</span></code>), every agent block has the keys below.</p>
 <div class="table-wrapper colwidths-given docutils container">
@@ -1374,7 +1402,7 @@ orders (see <em>What happens in one step</em> in <a class="reference internal" h
 </table>
 </div>
 <section id="fcnagent">
-<h3>FCNAgent<a class="headerlink" href="#fcnagent" title="Permalink to this heading">#</a></h3>
+<h3>FCNAgent<a class="headerlink" href="#fcnagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;FCNAgent&quot;</span></code> (<a class="reference internal" href="../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.FCNAgent</span></code></a>) combines a fundamentalist, a chartist and a noise
 component (Chiarella and Iori, 2002). All its numeric parameters (every key except <code class="docutils literal notranslate"><span class="pre">marginType</span></code>) accept
 <a class="reference internal" href="#config-jsonrandom"><span class="std std-ref">JsonRandom</span></a> notation, so every agent can get different values.</p>
@@ -1433,11 +1461,7 @@ Default: the agent’s own <code class="docutils literal notranslate"><span clas
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>How an FCN agent decides its orders<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg></span><span class="sd-summary-text">How an FCN agent decides its orders</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">At step <span class="math notranslate nohighlight">\(t\)</span>, for every tradable market with market price <span class="math notranslate nohighlight">\(P_t\)</span> and fundamental price
 <span class="math notranslate nohighlight">\(P^f_t\)</span>, the agent computes an expected log return</p>
 <div class="math-wrapper docutils container">
@@ -1470,7 +1494,7 @@ the agent silently never place orders, and a negative one stops the simulation w
 </div>
 </section>
 <section id="marketsharefcnagent">
-<h3>MarketShareFCNAgent<a class="headerlink" href="#marketsharefcnagent" title="Permalink to this heading">#</a></h3>
+<h3>MarketShareFCNAgent<a class="headerlink" href="#marketsharefcnagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;MarketShareFCNAgent&quot;</span></code> (<a class="reference internal" href="../reference/generated/agents/pams.agents.MarketShareFCNAgent.html#pams.agents.MarketShareFCNAgent" title="pams.agents.MarketShareFCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.MarketShareFCNAgent</span></code></a>) has exactly the same keys as
 <code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>. Instead of ordering in every tradable market, it picks <strong>one</strong> market per decision, with a
 probability proportional to the volume executed in that market in the current step and the <code class="docutils literal notranslate"><span class="pre">timeWindowSize</span></code>
@@ -1482,7 +1506,7 @@ the other markets get no volume. If no market has executions, every market is eq
 starting split with a user-defined market class that sets an initial traded volume (<code class="docutils literal notranslate"><span class="pre">tradeVolume</span></code>).</p>
 </section>
 <section id="arbitrageagent">
-<h3>ArbitrageAgent<a class="headerlink" href="#arbitrageagent" title="Permalink to this heading">#</a></h3>
+<h3>ArbitrageAgent<a class="headerlink" href="#arbitrageagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;ArbitrageAgent&quot;</span></code> (<a class="reference internal" href="../reference/generated/agents/pams.agents.ArbitrageAgent.html#pams.agents.ArbitrageAgent" title="pams.agents.ArbitrageAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.ArbitrageAgent</span></code></a>) is a high-frequency agent that watches every
 tradable <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>. When the index market price is lower than the index value (the weighted average of the
 component market prices, see <a class="reference internal" href="#config-indexmarket"><span class="std std-ref">IndexMarket</span></a>) by more than <code class="docutils literal notranslate"><span class="pre">orderThresholdPrice</span></code>, it buys the index and sells each component (limit orders
@@ -1527,7 +1551,7 @@ when the first one is executed.</p></li>
 </ul>
 </section>
 <section id="marketmakeragent">
-<h3>MarketMakerAgent<a class="headerlink" href="#marketmakeragent" title="Permalink to this heading">#</a></h3>
+<h3>MarketMakerAgent<a class="headerlink" href="#marketmakeragent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;MarketMakerAgent&quot;</span></code> is a high-frequency agent that places one buy and one sell limit order (volume 1)
 in <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> every time it is asked, centered on the best prices of <strong>all</strong> its tradable markets (see
 below). Old orders are not cancelled; they expire after <code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code> steps.</p>
@@ -1563,11 +1587,7 @@ stops with a <code class="docutils literal notranslate"><span class="pre">KeyErr
 </div>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
-<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 01-1.484.211c-.04-.282-.163-.547-.37-.847a8.695 8.695 0 00-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.75.75 0 01-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75zM6 15.25a.75.75 0 01.75-.75h2.5a.75.75 0 010 1.5h-2.5a.75.75 0 01-.75-.75zM5.75 12a.75.75 0 000 1.5h4.5a.75.75 0 000-1.5h-4.5z"></path></svg></span>How a market maker sets its prices<div class="sd-summary-down docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
-<div class="sd-summary-up docutils">
-<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
-</summary><div class="sd-summary-content sd-card-body docutils">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-light-bulb" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg></span><span class="sd-summary-text">How a market maker sets its prices</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
 <p class="sd-card-text">The two orders are centered on the midpoint <span class="math notranslate nohighlight">\(c\)</span> between the highest best buy price and the lowest best
 sell price over <strong>all</strong> tradable markets of the agent, not only <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code>. If no tradable market has a
 buy order, or none has a sell order, <span class="math notranslate nohighlight">\(c\)</span> is the market price of <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code>. With <span class="math notranslate nohighlight">\(s\)</span> =
@@ -1576,13 +1596,13 @@ buy order, or none has a sell order, <span class="math notranslate nohighlight">
 </div>
 </details></section>
 <section id="testagent">
-<h3>TestAgent<a class="headerlink" href="#testagent" title="Permalink to this heading">#</a></h3>
+<h3>TestAgent<a class="headerlink" href="#testagent" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;class&quot;:</span> <span class="pre">&quot;TestAgent&quot;</span></code> places random orders and has no keys of its own besides <code class="docutils literal notranslate"><span class="pre">markets</span></code>, <code class="docutils literal notranslate"><span class="pre">cashAmount</span></code>
 and <code class="docutils literal notranslate"><span class="pre">assetVolume</span></code>. It exists to test PAMS itself and should not be used for research.</p>
 </section>
 </section>
 <section id="events">
-<span id="config-events"></span><h2>Events<a class="headerlink" href="#events" title="Permalink to this heading">#</a></h2>
+<span id="config-events"></span><h2>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h2>
 <p>Events change the course of the simulation: they shock prices, restrict order prices, halt trading or inject
 erroneous orders. An event is defined by a named block, whose <code class="docutils literal notranslate"><span class="pre">&quot;class&quot;</span></code> (required) names the event class, and
 is attached to a session by listing the block name in the session’s <code class="docutils literal notranslate"><span class="pre">events</span></code>:</p>
@@ -1615,7 +1635,7 @@ the step where the event acts, while removing the event from <code class="docuti
 start.</p>
 <p>All rates are fractions: <code class="docutils literal notranslate"><span class="pre">0.05</span></code> means 5%. None of the event keys accepts JsonRandom notation.</p>
 <section id="fundamentalpriceshock">
-<h3>FundamentalPriceShock<a class="headerlink" href="#fundamentalpriceshock" title="Permalink to this heading">#</a></h3>
+<h3>FundamentalPriceShock<a class="headerlink" href="#fundamentalpriceshock" title="Link to this heading">¶</a></h3>
 <p>Multiplies the fundamental price of one market by <span class="math notranslate nohighlight">\(1 + r\)</span> (<a class="reference internal" href="../reference/generated/events/pams.events.FundamentalPriceShock.html#pams.events.FundamentalPriceShock" title="pams.events.FundamentalPriceShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.FundamentalPriceShock</span></code></a>).
 The change is permanent: the fundamental price continues its random walk from the new level. From the shock
 onwards, the fundamental prices of <strong>all</strong> markets continue with newly drawn random numbers, so even with the same
@@ -1667,7 +1687,7 @@ component markets.</p></td>
 </div>
 </section>
 <section id="pricelimitrule">
-<h3>PriceLimitRule<a class="headerlink" href="#pricelimitrule" title="Permalink to this heading">#</a></h3>
+<h3>PriceLimitRule<a class="headerlink" href="#pricelimitrule" title="Link to this heading">¶</a></h3>
 <p>Restricts the prices of limit orders to a band around the initial price (<a class="reference internal" href="../reference/generated/events/pams.events.PriceLimitRule.html#pams.events.PriceLimitRule" title="pams.events.PriceLimitRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.PriceLimitRule</span></code></a>).
 A limit order priced outside <span class="math notranslate nohighlight">\([P_0 (1 - r), P_0 (1 + r)]\)</span> is moved to the nearest edge of the band,
 where <span class="math notranslate nohighlight">\(P_0\)</span> is the market price at step 0 and stays fixed for the rest of the simulation. <span class="math notranslate nohighlight">\(P_0\)</span> is
@@ -1709,7 +1729,7 @@ an order to a market that is not listed stops the simulation with an <code class
 </div>
 </section>
 <section id="tradinghaltrule">
-<h3>TradingHaltRule<a class="headerlink" href="#tradinghaltrule" title="Permalink to this heading">#</a></h3>
+<h3>TradingHaltRule<a class="headerlink" href="#tradinghaltrule" title="Link to this heading">¶</a></h3>
 <p>A circuit breaker (<a class="reference internal" href="../reference/generated/events/pams.events.TradingHaltRule.html#pams.events.TradingHaltRule" title="pams.events.TradingHaltRule"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.TradingHaltRule</span></code></a>). After an execution in one of the target markets, if
 the market price has moved away from its price at step 0 (<span class="math notranslate nohighlight">\(P_0\)</span>, as for <code class="docutils literal notranslate"><span class="pre">PriceLimitRule</span></code>) by at least
 <span class="math notranslate nohighlight">\(P_0 \times r \times (n + 1)\)</span>,
@@ -1757,7 +1777,7 @@ per market. A market must not be watched by two <code class="docutils literal no
 resumes only if the current session has <code class="docutils literal notranslate"><span class="pre">withOrderExecution:</span> <span class="pre">true</span></code>.</p>
 </section>
 <section id="ordermistakeshock">
-<h3>OrderMistakeShock<a class="headerlink" href="#ordermistakeshock" title="Permalink to this heading">#</a></h3>
+<h3>OrderMistakeShock<a class="headerlink" href="#ordermistakeshock" title="Link to this heading">¶</a></h3>
 <p>A fat-finger error (<a class="reference internal" href="../reference/generated/events/pams.events.OrderMistakeShock.html#pams.events.OrderMistakeShock" title="pams.events.OrderMistakeShock"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.events.OrderMistakeShock</span></code></a>). At the trigger step, the <strong>first order submitted
 to the target market</strong> is replaced by a large limit order: a buy at <span class="math notranslate nohighlight">\(P (1 + r)\)</span> if <span class="math notranslate nohighlight">\(r &gt; 0\)</span>,
 otherwise a sell at <span class="math notranslate nohighlight">\(P (1 + r)\)</span>, where <span class="math notranslate nohighlight">\(P\)</span> is the current market price. No new order is created;
@@ -1813,7 +1833,7 @@ exactly this step, nothing happens.</p></td>
 </section>
 </section>
 <section id="random-parameters-jsonrandom">
-<span id="config-jsonrandom"></span><h2>Random parameters (JsonRandom)<a class="headerlink" href="#random-parameters-jsonrandom" title="Permalink to this heading">#</a></h2>
+<span id="config-jsonrandom"></span><h2>Random parameters (JsonRandom)<a class="headerlink" href="#random-parameters-jsonrandom" title="Link to this heading">¶</a></h2>
 <p>Agent parameters marked <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">JsonRandom</span> can be a fixed number or a distribution. When a group creates many
 agents, <strong>each agent draws its own value once</strong> (<code class="docutils literal notranslate"><span class="pre">assetVolume</span></code> once for each tradable market), when the simulation is
 set up; the value does not change
@@ -1873,7 +1893,7 @@ market, session, event and <code class="docutils literal notranslate"><span clas
 <code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code>. A distribution there fails, in some cases only while the simulation is running.</p>
 </section>
 <section id="user-defined-classes">
-<span id="config-user-classes"></span><h2>User-defined classes<a class="headerlink" href="#user-defined-classes" title="Permalink to this heading">#</a></h2>
+<span id="config-user-classes"></span><h2>User-defined classes<a class="headerlink" href="#user-defined-classes" title="Link to this heading">¶</a></h2>
 <p>Your own markets, agents and events are configured like the built-in ones. Register each class with the runner
 before calling <code class="docutils literal notranslate"><span class="pre">main()</span></code>, then refer to it by its class name:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">FCNAgent</span>
@@ -1909,7 +1929,7 @@ An agent that inherits from <a class="reference internal" href="../reference/gen
 </ul>
 </section>
 <section id="parallel-runners">
-<span id="config-parallel"></span><h2>Parallel runners<a class="headerlink" href="#parallel-runners" title="Permalink to this heading">#</a></h2>
+<span id="config-parallel"></span><h2>Parallel runners<a class="headerlink" href="#parallel-runners" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiThreadAgentParallelRunner</span></code></a> and <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a>
 (both experimental) read the same config and give the same results as <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a> for
 the same seed. They call <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> of normal agents in parallel; everything else stays sequential.</p>
@@ -1938,9 +1958,9 @@ therefore be picklable: for example, a logger that keeps an open file fails with
 <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code>. Keep such data in memory and write the file after the run.</p>
 </section>
 <section id="troubleshooting">
-<span id="config-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading">#</a></h2>
+<span id="config-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
 <section id="silent-pitfalls">
-<h3>Silent pitfalls<a class="headerlink" href="#silent-pitfalls" title="Permalink to this heading">#</a></h3>
+<h3>Silent pitfalls<a class="headerlink" href="#silent-pitfalls" title="Link to this heading">¶</a></h3>
 <p>These mistakes do not raise an error but change the simulation:</p>
 <ul class="simple">
 <li><p><strong>Misspelled or misplaced keys are ignored</strong>: <code class="docutils literal notranslate"><span class="pre">&quot;numMarket&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;maxNormalOrder&quot;</span></code> falls back to the
@@ -1960,7 +1980,7 @@ the same seed. To switch an event off for a comparison run, keep it listed with 
 </ul>
 </section>
 <section id="common-errors">
-<h3>Common errors<a class="headerlink" href="#common-errors" title="Permalink to this heading">#</a></h3>
+<h3>Common errors<a class="headerlink" href="#common-errors" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-given docutils container">
 <table class="docutils align-default">
 <colgroup>
@@ -2042,7 +2062,7 @@ FCN agents.</p></td>
 </section>
 </section>
 <section id="sample-configurations">
-<span id="config-samples"></span><h2>Sample configurations<a class="headerlink" href="#sample-configurations" title="Permalink to this heading">#</a></h2>
+<span id="config-samples"></span><h2>Sample configurations<a class="headerlink" href="#sample-configurations" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://github.com/masanorihirano/pams/tree/main/samples">samples</a> directory of the repository contains
 complete configs with a <code class="docutils literal notranslate"><span class="pre">main.py</span></code> to run them. The samples are not installed with the package, so clone the
 repository and run them from its root, e.g.</p>
@@ -2214,14 +2234,11 @@ A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceS
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx_highlight.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
-    <script src="../_static/design-tabs.js"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>
