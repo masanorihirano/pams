@@ -1,5 +1,6 @@
 import math
 import random
+import types
 from typing import Any
 from typing import Dict
 from typing import List
@@ -108,3 +109,37 @@ def get_torch_settings() -> Tuple[int, str]:
 def inspect_tensor(tensor: Any) -> Tuple[bool, float]:
     """Get whether the tensor is in shared memory and its sum on the current process."""
     return tensor.is_shared(), float(tensor.sum())
+
+
+class FakeTorchMultiprocessing(types.ModuleType):
+    """Fake :mod:`torch.multiprocessing` with only the functions used by the runner."""
+
+    def __init__(self) -> None:
+        """Initialize the module with the default sharing strategy of Linux."""
+        super().__init__("torch.multiprocessing")
+        self.sharing_strategy: str = "file_descriptor"
+
+    def get_sharing_strategy(self) -> str:
+        return self.sharing_strategy
+
+    def set_sharing_strategy(self, new_strategy: str) -> None:
+        self.sharing_strategy = new_strategy
+
+
+class FakeTorch(types.ModuleType):
+    """Fake :mod:`torch` with only the functions used by the runner.
+
+    It lets the tests check the logic of the runner on the main process without PyTorch.
+    """
+
+    def __init__(self, num_threads: int) -> None:
+        """Initialize the module with the given number of threads."""
+        super().__init__("torch")
+        self.num_threads: int = num_threads
+        self.multiprocessing: FakeTorchMultiprocessing = FakeTorchMultiprocessing()
+
+    def get_num_threads(self) -> int:
+        return self.num_threads
+
+    def set_num_threads(self, num_threads: int) -> None:
+        self.num_threads = num_threads
