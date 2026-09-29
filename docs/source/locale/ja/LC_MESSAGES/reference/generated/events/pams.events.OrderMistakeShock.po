@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/events/pams.events.OrderMistakeShock.rst:7
+msgid "OrderMistakeShock"
+msgstr ""
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock:1
+msgid "This suddenly changes the market price."
+msgstr "市場価格を突然変化させます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock:3
+msgid ""
+"It is as a consequence of a fat finger error, e.g., caused by a huge amount "
+"of orders at an extremely cheap or expensive price."
+msgstr "これは誤発注の結果として起こるもので、例えば極端に安い価格または高い価格での大量の注文によって引き起こされます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock:6
+msgid ""
+"This event is only called via :func:`hooked_before_step_for_market` at "
+"designated step."
+msgstr "このイベントは、指定されたステップにおいて :func:`hooked_before_step_for_market` を介してのみ呼び出されます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration:1
+msgid "Define when this event should be hooked by simulator."
+msgstr "このイベントをシミュレーターがいつフックすべきかを定義します。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration:3
+msgid ""
+"This method is automatically hooked by simulator at the beginning of "
+"simulation. You must implement this."
+msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration
+#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration:6
+msgid "The list of event hook ( :class:`EventHook` )"
+msgstr "イベントフック（:class:`EventHook`）のリスト"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hook_registration
+#: pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order
+#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:1
+msgid "This method is hooked before order placements if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは発注の前に呼び出されます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:3
+msgid ""
+"Please be careful that the order haven't yet been accepted by markets and it"
+" could be leakage of order information."
+msgstr "この時点では注文はまだ市場に受け付けられておらず、注文情報の漏洩につながる可能性があることに注意してください。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order
+#: pams.events.order_mistake_shock.OrderMistakeShock.setup
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:10
+msgid "simulator for reference."
+msgstr "参照用のシミュレーター。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:13
+msgid "order accepting now."
+msgstr "現在受け付け中の注文。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.hooked_before_order:17
+#: pams.events.order_mistake_shock.OrderMistakeShock.setup:9
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.setup:1
+msgid "event setup. Usually be called from simulator/runner automatically."
+msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.setup:4
+msgid ""
+"agent configuration. Usually, automatically set from json config of "
+"simulator. This must include the parameters \"target\", \"triggerTime\", "
+"\"priceChangeRate\", \"orderVolume\", and \"orderTimeLength\". This can "
+"include the parameters \"enabled\"."
+msgstr "イベントの設定。通常、シミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ「target」、「triggerTime」、「priceChangeRate」、「orderVolume」、「orderTimeLength」を含める必要があります。パラメータ「enabled」を含めることもできます。"
+
+#: of pams.events.order_mistake_shock.OrderMistakeShock.setup:10
+msgid "None"
+msgstr ""
+

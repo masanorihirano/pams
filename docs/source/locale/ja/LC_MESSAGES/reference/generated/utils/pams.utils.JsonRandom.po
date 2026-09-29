@@ -1,0 +1,96 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.JsonRandom.rst:7
+msgid "JsonRandom"
+msgstr ""
+
+#: of pams.utils.json_random.JsonRandom:1
+msgid "random generator from json."
+msgstr "JSONの指定に基づく乱数生成器。"
+
+#: of pams.utils.json_random.JsonRandom:9
+msgid "The following direction can be used for config as randomized values:"
+msgstr "設定ファイルでは、ランダムな値として次の指定を使用できます："
+
+#: of pams.utils.json_random.JsonRandom:4
+msgid ""
+":code:`[a, b]`: uniform distribution on :math:`[a, b)`. Both bounds are "
+"converted into float and a float is returned, so :math:`a \\leq x < b` "
+"always holds; convert it into int by yourself if needed."
+msgstr ""
+":code:`[a, b]`：:math:`[a, b)` 上の一様分布。両端の値はfloatに変換され、floatが返されるため、常に "
+":math:`a \\leq x < b` が成り立ちます。必要であれば、自分でintに変換してください。"
+
+#: of pams.utils.json_random.JsonRandom:6
+#, python-brace-format
+msgid ":code:`{\"const\": [a]}`: constant value. Always set to a."
+msgstr ":code:`{\"const\": [a]}`：定数値。常にaに設定されます。"
+
+#: of pams.utils.json_random.JsonRandom:7
+#, python-brace-format
+msgid ":code:`{\"uniform\": [a, b]}`: same as [a, b]"
+msgstr ":code:`{\"uniform\": [a, b]}`：[a, b] と同じ"
+
+#: of pams.utils.json_random.JsonRandom:8
+#, python-brace-format
+msgid ""
+":code:`{\"normal\": [u, s]}`: normal distribution whose mean and deviation "
+"is u and s."
+msgstr ":code:`{\"normal\": [u, s]}`：平均がu、標準偏差がsの正規分布。"
+
+#: of pams.utils.json_random.JsonRandom:9
+#, python-brace-format
+msgid ""
+":code:`{\"expon\": [lam]}`: exponential distribution whose mean and "
+"deviation is lam."
+msgstr ":code:`{\"expon\": [lam]}`：平均と標準偏差がともにlamの指数分布。"
+
+#: of pams.utils.json_random.JsonRandom:12
+msgid "Examples"
+msgstr "例"
+
+#: of pams.utils.json_random.JsonRandom.random:1
+msgid "get a random value."
+msgstr "乱数値を取得します。"
+
+#: of pams.utils.json_random.JsonRandom.random
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.json_random.JsonRandom.random:4
+msgid ""
+"random type. This can include the parameter \"const\", \"uniform\", "
+"\"normal\", and \"expon\"."
+msgstr "乱数の種類。「const」、「uniform」、「normal」、「expon」のパラメータを含めることができます。"
+
+#: of pams.utils.json_random.JsonRandom.random
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.json_random.JsonRandom.random:8
+msgid "random value."
+msgstr "乱数値。"
+
+#: of pams.utils.json_random.JsonRandom.random
+msgid "Return type"
+msgstr "戻り値の型"
+

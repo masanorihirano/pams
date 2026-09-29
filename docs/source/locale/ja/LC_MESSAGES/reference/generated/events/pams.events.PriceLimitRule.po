@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/events/pams.events.PriceLimitRule.rst:7
+msgid "PriceLimitRule"
+msgstr ""
+
+#: of pams.events.price_limit_rule.PriceLimitRule:1
+msgid "This limits the price range."
+msgstr "価格の範囲を制限します。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule:3
+msgid ""
+"The order having the price that is out of the price range, the price is "
+"overridden to the edge of range. This event is only called via "
+":func:`hooked_before_order` at designated step."
+msgstr ""
+"価格が範囲外の注文については、その価格が範囲の端の値に上書きされます。このイベントは、指定されたステップで "
+":func:`hooked_before_order` を介してのみ呼び出されます。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:1
+msgid "Calculate the limited price for an order."
+msgstr "注文に対する制限後の価格を計算します。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price
+#: pams.events.price_limit_rule.PriceLimitRule.hooked_before_order
+#: pams.events.price_limit_rule.PriceLimitRule.setup
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:4
+msgid "order whose price is calculated"
+msgstr "価格を計算する対象の注文"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:7
+msgid "market that order belongs to"
+msgstr "注文が属する市場"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price
+#: pams.events.price_limit_rule.PriceLimitRule.hook_registration
+#: pams.events.price_limit_rule.PriceLimitRule.setup
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:10
+msgid ""
+"price after price limit.                  If the input order is market "
+"order, the return become None (market order)."
+msgstr "値幅制限適用後の価格。入力された注文が成行注文の場合、戻り値はNone（成行注文）になります。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:12
+msgid "price after price limit."
+msgstr "値幅制限適用後の価格。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price:13
+msgid "If the input order is market order, the return become None (market order)."
+msgstr "入力された注文が成行注文の場合、戻り値はNone（成行注文）になります。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.get_limited_price
+#: pams.events.price_limit_rule.PriceLimitRule.hook_registration
+#: pams.events.price_limit_rule.PriceLimitRule.hooked_before_order
+#: pams.events.price_limit_rule.PriceLimitRule.setup
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hook_registration:1
+msgid "Define when this event should be hooked by simulator."
+msgstr "このイベントをシミュレーターがいつフックすべきかを定義します。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hook_registration:3
+msgid ""
+"This method is automatically hooked by simulator at the beginning of "
+"simulation. You must implement this."
+msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hook_registration:6
+msgid "The list of event hook ( :class:`EventHook` )"
+msgstr "イベントフック（:class:`EventHook`）のリスト"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hooked_before_order:1
+msgid "This method is hooked before order placements if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは発注の前に呼び出されます。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hooked_before_order:3
+msgid ""
+"Please be careful that the order haven't yet been accepted by markets and it"
+" could be leakage of order information."
+msgstr "この時点では注文はまだ市場に受け付けられておらず、注文情報の漏洩につながる可能性があることに注意してください。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hooked_before_order:10
+msgid "simulator for reference."
+msgstr "参照用のシミュレーター。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hooked_before_order:13
+msgid "order accepting now."
+msgstr "現在受け付け中の注文。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.hooked_before_order:17
+#: pams.events.price_limit_rule.PriceLimitRule.setup:10
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.events.price_limit_rule.PriceLimitRule.setup:1
+msgid "event setup. Usually be called from simulator/runner automatically."
+msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.setup:4
+msgid ""
+"agent configuration. Usually, automatically set from json config of "
+"simulator. This must include the parameters \"targetMarkets\" and "
+"\"triggerChangeRate\". This can include the parameters \"enabled\". The "
+"parameter \"referenceMarket\" is obsoleted."
+msgstr ""
+"イベントの設定。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ \"targetMarkets\" と "
+"\"triggerChangeRate\" を含める必要があります。パラメータ \"enabled\" を含めることもできます。パラメータ "
+"\"referenceMarket\" は廃止されました。"
+
+#: of pams.events.price_limit_rule.PriceLimitRule.setup:11
+msgid "None"
+msgstr ""
+
