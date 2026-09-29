@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -28,7 +28,7 @@ msgid "Requirements"
 msgstr "動作要件"
 
 #: ../../source/user_guide/install.rst:7
-msgid "python3 (>= 3.8)"
+msgid "python3 (>= 3.10)"
 msgstr ""
 
 #: ../../source/user_guide/install.rst:10
@@ -66,4 +66,7 @@ msgstr "(2) Google ColabまたはJupyter Notebookで実行する例"
 #: ../../source/user_guide/install.rst:36
 msgid "https://github.com/masanorihirano/pams/tree/main/examples"
 msgstr ""
+
+#~ msgid "python3 (>= 3.8)"
+#~ msgstr ""
 

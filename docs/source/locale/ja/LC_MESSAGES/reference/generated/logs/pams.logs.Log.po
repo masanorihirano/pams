@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -28,11 +28,11 @@ msgid "Log class."
 msgstr "ログクラス。"
 
 #: of pams.logs.base.Log.read_and_write:1
-msgid "writing a log. (The actual writing timing depends on the logger.)"
+#, fuzzy
+msgid "Writing a log (the actual writing timing depends on the logger)."
 msgstr "ログを書き込みます。（実際の書き込みタイミングはロガーに依存します。）"
 
-#: of pams.logs.base.Log.read_and_write
-#: pams.logs.base.Log.read_and_write_with_direct_process
+#: ../../source/reference/generated/logs/pams.logs.Log.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -41,18 +41,16 @@ msgstr "パラメータ"
 msgid "logger."
 msgstr "ロガー。"
 
-#: of pams.logs.base.Log.read_and_write
-#: pams.logs.base.Log.read_and_write_with_direct_process
+#: ../../source/reference/generated/logs/pams.logs.Log.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of pams.logs.base.Log.read_and_write:7
 #: pams.logs.base.Log.read_and_write_with_direct_process:7
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.logs.base.Log.read_and_write
-#: pams.logs.base.Log.read_and_write_with_direct_process
+#: ../../source/reference/generated/logs/pams.logs.Log.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -62,8 +60,12 @@ msgid "None"
 msgstr ""
 
 #: of pams.logs.base.Log.read_and_write_with_direct_process:1
+#, fuzzy
 msgid ""
-"direct writing a log. (This method is intended to call logger to write the "
-"log immediately.)"
+"Direct writing a log (this method is intended to call logger to write the"
+" log immediately)."
 msgstr "ログを直接書き込みます。（このメソッドは、ロガーを呼び出してログを即座に書き込むためのものです。）"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 
