@@ -1,0 +1,85 @@
+{
+	"simulation": {
+		"markets": ["Market-1", "Market-2"],
+		"agents": ["InvestDivFCNAgents", "FCNAgents"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 3000,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"events": ["FundamentalPriceShock"]
+			}
+		]
+	},
+
+	"FundamentalPriceShock": {
+		"class": "FundamentalPriceShock",
+		"target": "Market-1",
+		"triggerTime": 0,    "MEMO": "At the beginning of the session 2",
+		"priceChangeRate": -0.1,    "MEMO": "Sign: negative for down; positive for up; zero for no change",
+		"enabled": true
+	},
+
+	"Market-1": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"Market-2": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"FCNAgents": {
+		"class": "FCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["Market-1", "Market-2"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [2.0]},
+		"chartWeight": {"expon": [1.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS",
+		"orderMargin": [0.0, 0.1]
+	},
+
+	"InvestDivFCNAgents": {
+		"class": "InvestDivFCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["Market-1", "Market-2"],
+		"assetVolume": [10, 50],
+		"cashAmount": [1000, 10000],
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [2.0]},
+		"chartWeight": {"expon": [1.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"marginType": "fixed",    "MEMO": "normal in plhamJ, but the prices diverge with it in PAMS",
+		"orderMargin": [0.0, 0.1],
+
+		"MEMO": "InvestDivFCNAgent class",
+		"leverageRatio": 1.0,
+		"diversityRatio": 0.4
+	}
+}
