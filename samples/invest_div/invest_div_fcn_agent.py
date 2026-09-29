@@ -39,6 +39,7 @@ class InvestDivFCNAgent(FCNAgent):
     References:
         - Nozaki, Mizuta, Yagi (2016) Investigation of the rule for investment diversification at the time of
           a market crash using an artificial market (in Japanese).
+
     """
 
     def __init__(
@@ -78,6 +79,7 @@ class InvestDivFCNAgent(FCNAgent):
 
         Returns:
             None
+
         """
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
         if "leverageRatio" not in settings:
@@ -99,6 +101,7 @@ class InvestDivFCNAgent(FCNAgent):
 
         Returns:
             List[Market]: accessible markets.
+
         """
         return [
             market
@@ -114,6 +117,7 @@ class InvestDivFCNAgent(FCNAgent):
 
         Returns:
             float: the asset volume times the market price. It is negative for a short position.
+
         """
         return market.get_market_price() * self.get_asset_volume(
             market_id=market.market_id
@@ -148,6 +152,7 @@ class InvestDivFCNAgent(FCNAgent):
 
         .. seealso::
             - :func:`pams.agents.FCNAgent.submit_orders`
+
         """
         accessible_markets: List[Market] = self.filter_markets(markets=markets)
         net_asset_value: float = self.get_cash_amount()
