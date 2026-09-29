@@ -53,10 +53,9 @@ def main() -> None:
     config: str = args.config
     seed: Optional[int] = args.seed
 
-    # the simulation needs a seedable PRNG, not a cryptographic one.
     runner = SequentialRunner(
         settings=config,
-        prng=random.Random(seed) if seed is not None else None,  # nosec B311
+        prng=random.Random(seed) if seed is not None else None,
         logger=DarkPoolPrintLogger(),
     )
     runner.class_register(cls=DarkPoolMarket)
