@@ -14,7 +14,7 @@ DEFAULT_CANCEL_RATE: float = 0.3
 
 
 class CancelFCNAgent(FCNAgent):
-    """Cancel FCN Agent class
+    """Cancel FCN Agent class.
 
     This agent submits orders in the same way as FCN agents and cancels each of them with the probability
     ``cancel_rate`` right after submitting it.
@@ -30,7 +30,7 @@ class CancelFCNAgent(FCNAgent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup.  Usually be called from simulator/runner automatically.
+        """Agent setup.  Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. This can include the parameter "cancelRate"
@@ -42,6 +42,7 @@ class CancelFCNAgent(FCNAgent):
 
         Returns:
             None
+
         """
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         if "cancelRate" in settings:
@@ -53,7 +54,7 @@ class CancelFCNAgent(FCNAgent):
             raise ValueError("cancelRate have to be between 0.0 and 1.0")
 
     def submit_orders_by_market(self, market: Market) -> List[Union[Order, Cancel]]:
-        """submit orders by market and cancel some of them (internal usage).
+        """Submit orders by market and cancel some of them (internal usage).
 
         Each order made by :func:`pams.agents.FCNAgent.submit_orders_by_market` is canceled with the probability
         ``cancel_rate``. The cancel orders follow all the orders, so that each order is placed before it is canceled.
@@ -64,6 +65,7 @@ class CancelFCNAgent(FCNAgent):
 
         Returns:
             List[Union[Order, Cancel]]: order list.
+
         """
         orders: List[Union[Order, Cancel]] = super().submit_orders_by_market(
             market=market

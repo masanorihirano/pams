@@ -1,3 +1,13 @@
+"""Cancel test sample.
+
+Port of the CancelTest sample of plhamJ: FCN agents (``CancelFCNAgent``) cancel each of
+their orders with the probability ``cancelRate`` right after submitting it.
+
+``CancelFCNAgent`` is imported from the ``samples.cancel_test`` package, so run this
+sample as a module from the root of the repository (or add the root to ``PYTHONPATH``)::
+
+    python -m samples.cancel_test.main --config samples/cancel_test/config.json --seed 1
+"""
 import argparse
 import random
 from typing import Optional
