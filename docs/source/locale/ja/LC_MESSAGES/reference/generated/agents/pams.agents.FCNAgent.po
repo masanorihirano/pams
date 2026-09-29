@@ -1,0 +1,149 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/agents/pams.agents.FCNAgent.rst:7
+msgid "FCNAgent"
+msgstr ""
+
+#: of pams.agents.fcn_agent.FCNAgent:1
+#, fuzzy
+msgid "FCN (Fundamental, Chartist, Noise) Agent class."
+msgstr "FCN（ファンダメンタル、チャーティスト、ノイズ）エージェントクラス"
+
+#: of pams.agents.fcn_agent.FCNAgent:3
+msgid "This class inherits from the :class:`pams.agents.Agent` class."
+msgstr "このクラスは :class:`pams.agents.Agent` クラスを継承しています。"
+
+#: of pams.agents.fcn_agent.FCNAgent:5
+msgid ""
+"An order decision mechanism proposed in Chiarella & Iori (2004). It "
+"employs two simple margin-based random tradings. Given an expected future"
+" price p, submit an order of price"
+msgstr ""
+"Chiarella & Iori (2004) "
+"で提案された注文決定メカニズムです。マージンに基づく2種類の単純なランダム取引を用います。将来の予想価格 p "
+"が与えられたとき、次の価格で注文を出します："
+
+#: of pams.agents.fcn_agent.FCNAgent:8
+msgid "\"fixed\" : :math:`p (1 ± k)` where :math:`0 \\leq k \\leq 1`"
+msgstr "\"fixed\" : :math:`p (1 ± k)`、ただし :math:`0 \\leq k \\leq 1`"
+
+#: of pams.agents.fcn_agent.FCNAgent:9
+msgid "\"normal\" : :math:`p + N(0, k)` where :math:`k > 0`"
+msgstr "\"normal\" : :math:`p + N(0, k)`、ただし :math:`k > 0`"
+
+#: of pams.agents.fcn_agent.FCNAgent:12
+msgid "References"
+msgstr "参考文献"
+
+#: of pams.agents.fcn_agent.FCNAgent:13
+msgid ""
+"Chiarella, C., & Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. Quantitative Finance, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+msgstr ""
+
+#: of pams.agents.fcn_agent.FCNAgent.is_finite:1
+#, fuzzy
+msgid "Determine if it is a valid value."
+msgstr "有効な値かどうかを判定します。"
+
+#: ../../source/reference/generated/agents/pams.agents.FCNAgent.rst
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.agents.fcn_agent.FCNAgent.is_finite:4
+msgid "value."
+msgstr "値。"
+
+#: ../../source/reference/generated/agents/pams.agents.FCNAgent.rst
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.agents.fcn_agent.FCNAgent.is_finite:7
+msgid "whether or not it is a valid (not NaN, finite) value."
+msgstr "有効な値（NaNでなく有限）かどうか。"
+
+#: ../../source/reference/generated/agents/pams.agents.FCNAgent.rst
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:1
+#, fuzzy
+msgid "Agent setup.  Usually be called from simulator/runner automatically."
+msgstr "エージェントのセットアップ。通常はシミュレーター/ランナーから自動的に呼び出されます。"
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:4
+msgid ""
+"agent configuration. This can include the parameters "
+"\"fundamentalWeight\", \"chartWeight\", \"noiseWeight\", \"noiseScale\", "
+"\"timeWindowSize\", \"orderMargin\", \"marginType\", and "
+"\"meanReversionTime\"."
+msgstr "エージェントの設定。パラメータ「fundamentalWeight」、「chartWeight」、「noiseWeight」、「noiseScale」、「timeWindowSize」、「orderMargin」、「marginType」、「meanReversionTime」を含めることができます。"
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:9
+msgid "list of market IDs."
+msgstr "市場IDのリスト。"
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:12
+#: pams.agents.fcn_agent.FCNAgent.setup:14
+msgid "not used."
+msgstr "未使用。"
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:16
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
+msgstr ""
+
+#: of pams.agents.fcn_agent.FCNAgent.setup:17
+msgid "None"
+msgstr ""
+
+#: of pams.agents.fcn_agent.FCNAgent.submit_orders:1
+#, fuzzy
+msgid "Submit orders based on FCN-based calculation."
+msgstr "FCNに基づく計算により注文を出します。"
+
+#: of pams.agents.fcn_agent.FCNAgent.submit_orders:3
+#: pams.agents.fcn_agent.FCNAgent.submit_orders_by_market:7
+msgid "order list."
+msgstr "注文のリスト。"
+
+#: of pams.agents.fcn_agent.FCNAgent.submit_orders:7
+msgid ":func:`pams.agents.Agent.submit_orders`"
+msgstr ""
+
+#: of pams.agents.fcn_agent.FCNAgent.submit_orders_by_market:1
+#, fuzzy
+msgid "Submit orders by market (internal usage)."
+msgstr "市場ごとに注文を出します（内部用）。"
+
+#: of pams.agents.fcn_agent.FCNAgent.submit_orders_by_market:4
+msgid "market to order."
+msgstr "注文先の市場。"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ ":py:class:`~typing.List`\\[:py:data:`~typing.Union`\\[:py:class:`~pams.order.Order`,"
+#~ " :py:class:`~pams.order.Cancel`]]"
+#~ msgstr ""
+

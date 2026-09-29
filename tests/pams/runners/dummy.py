@@ -1,3 +1,4 @@
+import random
 import threading
 import time
 from typing import Any
@@ -7,6 +8,7 @@ from typing import Optional
 from typing import Union
 
 from pams import LIMIT_ORDER
+from pams import Simulator
 from pams.agents import Agent
 from pams.agents.fcn_agent import FCNAgent
 from pams.logs import CancelLog
@@ -213,6 +215,18 @@ class WorkerInitializationCheckingAgent(FCNAgent):
     The token is given by ``workerToken`` in the settings.
     """
 
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent without the token, which is set by setup."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.worker_token: Optional[str] = None
+
     def setup(
         self,
         settings: Dict[str, Any],
@@ -221,7 +235,7 @@ class WorkerInitializationCheckingAgent(FCNAgent):
         **kwargs: Any,
     ) -> None:
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
-        self.worker_token: str = settings["workerToken"]
+        self.worker_token = settings["workerToken"]
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         worker_token = get_worker_token()
