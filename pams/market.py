@@ -771,10 +771,10 @@ class Market:
             elif self._mid_prices[self.time] is not None:
                 self._market_prices[self.time] = self._mid_prices[self.time]
 
-    def compute_transaction_costs(
+    def compute_transaction_costs(  # pylint: disable=unused-argument  # the orders are for overrides
         self, price: float, volume: int, buy_order: Order, sell_order: Order
     ) -> Tuple[float, float]:
-        """compute the transaction costs of an execution.
+        """Compute the transaction costs of an execution.
 
         This is called by the market for every execution. The costs are recorded in
         :class:`pams.logs.ExecutionLog` and subtracted from the cash of the buyer and the seller
@@ -795,6 +795,7 @@ class Market:
 
         Returns:
             Tuple[float, float]: transaction costs charged to the buyer and the seller.
+
         """
         transaction_cost: float = price * volume * self.transaction_cost_rate
         return transaction_cost, transaction_cost
