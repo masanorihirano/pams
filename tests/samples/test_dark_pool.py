@@ -1,19 +1,24 @@
 import random
 from typing import Any
 from typing import Dict
+from typing import List
 from typing import Optional
 from typing import Tuple
+from unittest import mock
 
 import pytest
 
+from pams.agents import FCNAgent
 from pams.logs.base import CancelLog
 from pams.logs.base import Logger
 from pams.logs.base import OrderLog
 from pams.market import Market
 from pams.order import LIMIT_ORDER
 from pams.order import MARKET_ORDER
+from pams.order import Cancel
 from pams.order import Order
 from pams.simulator import Simulator
+from samples.dark_pool.dark_pool_fcn_agent import DarkPoolFCNAgent
 from samples.dark_pool.dark_pool_market import DarkPoolMarket
 
 MARKET_SETTINGS: Dict[str, Any] = {
@@ -242,3 +247,164 @@ class TestDarkPoolMarket:
         assert len(dark_pool.buy_order_book) == 1
         assert len(dark_pool.sell_order_book) == 0
         assert dark_pool.get_executed_volume() == 4
+
+
+AGENT_SETTINGS: Dict[str, Any] = {
+    "assetVolume": 50,
+    "cashAmount": 10000,
+    "fundamentalWeight": 1.0,
+    "chartWeight": 0.0,
+    "noiseWeight": 1.0,
+    "noiseScale": 0.001,
+    "timeWindowSize": 100,
+    "orderMargin": 0.1,
+}
+
+
+def create_agent(
+    simulator: Simulator,
+    dark_pool_chance: Any,
+    accessible_markets_ids: Optional[List[int]] = None,
+) -> DarkPoolFCNAgent:
+    agent = DarkPoolFCNAgent(
+        agent_id=0, prng=random.Random(42), simulator=simulator, name="DarkPoolAgent"
+    )
+    agent.setup(
+        settings={**AGENT_SETTINGS, "darkPoolChance": dark_pool_chance},
+        accessible_markets_ids=(
+            [0, 1] if accessible_markets_ids is None else accessible_markets_ids
+        ),
+    )
+    return agent
+
+
+def create_fcn_agent(simulator: Simulator) -> FCNAgent:
+    agent = FCNAgent(
+        agent_id=0, prng=random.Random(42), simulator=simulator, name="FCNAgent"
+    )
+    agent.setup(settings=AGENT_SETTINGS, accessible_markets_ids=[0, 1])
+    return agent
+
+
+class TestDarkPoolFCNAgent:
+    def test_setup(self) -> None:
+        simulator, _, _ = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=0.3)
+        assert agent.dark_pool_chance == 0.3
+        assert agent.time_window_size == 100
+        assert agent.is_market_accessible(market_id=0)
+        assert agent.is_market_accessible(market_id=1)
+        agent = create_agent(simulator=simulator, dark_pool_chance=[0.2, 0.4])
+        assert 0.2 <= agent.dark_pool_chance <= 0.4
+
+    @pytest.mark.parametrize("dark_pool_chance", [None, 1.5, -0.1])
+    def test_setup_invalid(self, dark_pool_chance: Optional[float]) -> None:
+        simulator, _, _ = create_markets()
+        agent = DarkPoolFCNAgent(
+            agent_id=0, prng=random.Random(42), simulator=simulator, name="Agent"
+        )
+        settings: Dict[str, Any] = dict(AGENT_SETTINGS)
+        if dark_pool_chance is not None:
+            settings["darkPoolChance"] = dark_pool_chance
+        with pytest.raises(ValueError):
+            agent.setup(settings=settings, accessible_markets_ids=[0, 1])
+
+    def test_submit_orders_by_market_to_lit_market(self) -> None:
+        simulator, lit_market, _ = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=0.0)
+        assert len(agent.submit_orders_by_market(market=lit_market)) == 0
+
+    @pytest.mark.parametrize("accessible_markets_ids", [[0], [1]])
+    def test_submit_orders_by_market_inaccessible(
+        self, accessible_markets_ids: List[int]
+    ) -> None:
+        simulator, _, dark_pool = create_markets()
+        agent = create_agent(
+            simulator=simulator,
+            dark_pool_chance=1.0,
+            accessible_markets_ids=accessible_markets_ids,
+        )
+        assert len(agent.submit_orders_by_market(market=dark_pool)) == 0
+
+    def test_submit_orders_by_market_to_dark_pool(self) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=1.0)
+        fcn_agent = create_fcn_agent(simulator=simulator)
+        lit_orders = fcn_agent.submit_orders_by_market(market=lit_market)
+        orders = agent.submit_orders_by_market(market=dark_pool)
+        assert len(orders) == len(lit_orders) == 1
+        for order, lit_order in zip(orders, lit_orders):
+            assert isinstance(order, Order)
+            assert isinstance(lit_order, Order)
+            assert order.agent_id == agent.agent_id
+            assert order.market_id == dark_pool.market_id
+            assert order.kind == MARKET_ORDER
+            assert order.price is None
+            assert order.is_buy == lit_order.is_buy
+            assert order.volume == lit_order.volume
+            assert order.ttl == lit_order.ttl
+
+    def test_submit_orders_by_market_without_dark_pool_chance(self) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=0.0)
+        fcn_agent = create_fcn_agent(simulator=simulator)
+        lit_orders = fcn_agent.submit_orders_by_market(market=lit_market)
+        orders = agent.submit_orders_by_market(market=dark_pool)
+        assert len(orders) == len(lit_orders) == 1
+        for order, lit_order in zip(orders, lit_orders):
+            assert isinstance(order, Order)
+            assert isinstance(lit_order, Order)
+            assert order.market_id == lit_market.market_id
+            assert order.kind == LIMIT_ORDER
+            assert order.price == lit_order.price
+            assert order.is_buy == lit_order.is_buy
+            assert order.volume == lit_order.volume
+            assert order.ttl == lit_order.ttl
+
+    def test_submit_orders_by_market_for_each_order(self) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=0.3)
+        buy_order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=2,
+            price=301.0,
+            ttl=100,
+        )
+        sell_order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=299.0,
+            ttl=100,
+        )
+        cancel = Cancel(order=sell_order)
+        with mock.patch.object(
+            FCNAgent,
+            "submit_orders_by_market",
+            return_value=[buy_order, sell_order, cancel],
+        ) as submit_mock, mock.patch.object(
+            agent.prng, "random", side_effect=[0.2, 0.5]
+        ) as random_mock:
+            orders = agent.submit_orders_by_market(market=dark_pool)
+        submit_mock.assert_called_once_with(market=lit_market)
+        assert random_mock.call_count == 2
+        dark_order, lit_order, passed_cancel = orders
+        assert isinstance(dark_order, Order)
+        assert dark_order.market_id == dark_pool.market_id
+        assert dark_order.kind == MARKET_ORDER
+        assert dark_order.is_buy
+        assert dark_order.volume == 2
+        assert dark_order.ttl == 100
+        assert lit_order is sell_order
+        assert passed_cancel is cancel
+
+    def test_submit_orders(self) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        agent = create_agent(simulator=simulator, dark_pool_chance=0.5)
+        assert len(agent.submit_orders(markets=[lit_market, dark_pool])) == 1
+        assert len(agent.submit_orders(markets=[lit_market])) == 0
