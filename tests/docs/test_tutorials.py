@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 import re
+import runpy
 from pathlib import Path
 from types import ModuleType
 from typing import Dict
@@ -45,6 +46,11 @@ def load_tutorial(name: str) -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def run_tutorial(name: str) -> None:
+    """Run a tutorial script as ``python <name>.py`` does."""
+    runpy.run_path(os.path.join(CODE_DIR, f"{name}.py"), run_name="__main__")
 
 
 def read_page(page: str) -> List[str]:
@@ -169,9 +175,8 @@ def test_first_simulation_results(tmp_path: Path) -> None:
 def test_first_simulation_main(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    tutorial = load_tutorial("tutorial_first_simulation")
     monkeypatch.chdir(tmp_path)
-    tutorial.main()
+    run_tutorial("tutorial_first_simulation")
     assert os.path.getsize(tmp_path / "prices.png") > 0
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the summary of seed 42
@@ -225,8 +230,7 @@ def test_custom_agent() -> None:
 
 
 def test_custom_agent_main(capsys: pytest.CaptureFixture[str]) -> None:
-    tutorial = load_tutorial("tutorial_custom_agent")
-    tutorial.main()
+    run_tutorial("tutorial_custom_agent")
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the report of seed 42 after the two time lines
     assert_shown(list(TIME_LABELS) + text_blocks("custom_agent.rst")[0], lines)
@@ -252,8 +256,7 @@ def test_custom_event(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_custom_event_main(capsys: pytest.CaptureFixture[str]) -> None:
-    tutorial = load_tutorial("tutorial_custom_event")
-    tutorial.main()
+    run_tutorial("tutorial_custom_event")
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the output of seed 42
     assert_shown(text_blocks("custom_event.rst")[0], lines)
@@ -305,9 +308,8 @@ def test_custom_logger(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> No
 def test_custom_logger_main(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    tutorial = load_tutorial("tutorial_custom_logger")
     monkeypatch.chdir(tmp_path)
-    tutorial.main()
+    run_tutorial("tutorial_custom_logger")
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the summaries and the time lines, then the head of the CSV file
     blocks: List[List[str]] = text_blocks("custom_logger.rst")
