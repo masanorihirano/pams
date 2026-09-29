@@ -252,15 +252,14 @@ def report(runner: SequentialRunner) -> None:
     """
     market = runner.simulator.name2market["Market"]
     for agent in runner.simulator.agents_group_name2agent["MovingAverageAgents"]:
-        if not isinstance(agent, MovingAverageAgent):
-            continue
-        print(
-            f"{agent.name}: window {agent.window_size}, "
-            f"orders {agent.n_submitted}, cancels {agent.n_canceled}, "
-            f"trades {len(agent.trades)}, "
-            f"shares {agent.get_asset_volume(market_id=market.market_id)}, "
-            f"cash {agent.get_cash_amount():.2f}"
-        )
+        if isinstance(agent, MovingAverageAgent):
+            print(
+                f"{agent.name}: window {agent.window_size}, "
+                f"orders {agent.n_submitted}, cancels {agent.n_canceled}, "
+                f"trades {len(agent.trades)}, "
+                f"shares {agent.get_asset_volume(market_id=market.market_id)}, "
+                f"cash {agent.get_cash_amount():.2f}"
+            )
 
 
 # [run-end]

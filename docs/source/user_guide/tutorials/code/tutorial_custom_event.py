@@ -4,6 +4,7 @@ import random
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import cast
 
 from pams import Market
 from pams import Session
@@ -167,9 +168,7 @@ def run_simulation(seed: int) -> SequentialRunner:
 def main() -> None:
     """Run the simulation with seed 42 and print the fundamental price at each news."""
     runner = run_simulation(seed=42)
-    news = runner.simulator.name2event["News"]
-    if not isinstance(news, NewsShock):
-        raise TypeError("News is not a NewsShock")
+    news = cast(NewsShock, runner.simulator.name2event["News"])
     market = runner.simulator.name2market["Market"]
     for time in news.news_times:
         before = market.get_fundamental_price(time=time - 1)
