@@ -1194,7 +1194,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:557 ../../source/user_guide/config.rst:642
 msgid "``transactionCostRate`` |optional|"
-msgstr ""
+msgstr "``transactionCostRate`` |optional|"
 
 #: ../../source/user_guide/config.rst:558 ../../source/user_guide/config.rst:643
 msgid "number in [0, 1)"
@@ -1206,7 +1206,7 @@ msgid ""
 " a fraction of the executed value (price × volume), e.g. ``0.001`` for 0.1% "
 "(see below). Default: ``0.0``, i.e. no costs."
 msgstr ""
-"各約定において買い手と売り手の双方が支払う取引コストを、約定金額（価格 × 数量）に対する割合で指定します（例： 0.1% なら "
+"各約定において買い手と売り手の双方が支払う取引コストを、約定金額（価格 × 数量）に対する割合で指定します（例：0.1% なら "
 "``0.001``。下記参照）。デフォルトは ``0.0`` で、この場合コストはかかりません。"
 
 #: ../../source/user_guide/config.rst:558
