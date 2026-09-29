@@ -1,3 +1,4 @@
+import copy
 import csv
 import importlib.util
 import json
@@ -13,6 +14,7 @@ import matplotlib
 import pytest
 
 from pams.agents import FCNAgent
+from pams.runners import SequentialRunner
 
 # the first tutorial imports matplotlib.pyplot: never open a window in the tests
 matplotlib.use("Agg")
@@ -255,6 +257,17 @@ def test_custom_event_main(capsys: pytest.CaptureFixture[str]) -> None:
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the output of seed 42
     assert_shown(text_blocks("custom_event.rst")[0], lines)
+
+
+@pytest.mark.parametrize("key", ["target", "interval", "jumpScale"])
+def test_custom_event_required_keys(key: str) -> None:
+    tutorial = load_tutorial("tutorial_custom_event")
+    config = copy.deepcopy(tutorial.CONFIG)
+    del config["News"][key]
+    runner = SequentialRunner(settings=config)
+    runner.class_register(cls=tutorial.NewsShock)
+    with pytest.raises(ValueError, match=f"^{key} is required for NewsShock$"):
+        runner.main()
 
 
 def test_custom_logger(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
