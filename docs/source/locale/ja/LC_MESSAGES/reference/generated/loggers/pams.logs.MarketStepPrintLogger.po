@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -29,11 +29,11 @@ msgstr "市場ステップ用のロガークラス。"
 
 #: of
 #: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log:1
-msgid "print the market log."
+#, fuzzy
+msgid "Print the market log."
 msgstr "市場ログを出力します。"
 
-#: of
-#: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log
+#: ../../source/reference/generated/loggers/pams.logs.MarketStepPrintLogger.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -42,18 +42,16 @@ msgstr "パラメータ"
 msgid "matket log."
 msgstr "市場ログ。"
 
-#: of
-#: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log
+#: ../../source/reference/generated/loggers/pams.logs.MarketStepPrintLogger.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of
 #: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log:7
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of
-#: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log
+#: ../../source/reference/generated/loggers/pams.logs.MarketStepPrintLogger.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -61,4 +59,7 @@ msgstr "戻り値"
 #: pams.logs.market_step_loggers.MarketStepPrintLogger.process_market_step_end_log:8
 msgid "None"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

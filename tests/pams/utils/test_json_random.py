@@ -2,6 +2,7 @@ import math
 import random
 from statistics import mean
 from statistics import stdev
+from typing import get_type_hints
 
 import pytest
 
@@ -13,6 +14,11 @@ class TestJsonRandom:
         prng = random.Random(42)
         jr = JsonRandom(prng=prng)
         assert jr.prng == prng
+
+    def test__init__annotations(self) -> None:
+        # On Python 3.14+ annotations are evaluated lazily in the class scope (PEP 649),
+        # where ``random`` would be the JsonRandom.random method, not the module.
+        assert get_type_hints(JsonRandom.__init__)["prng"] is random.Random
 
     def test_next_uniform(self) -> None:
         jr = JsonRandom(prng=random.Random(42))

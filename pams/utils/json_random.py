@@ -1,6 +1,9 @@
 import json
 import math
-import random
+
+# Import the class, not the module: annotations are evaluated lazily on Python 3.14+
+# (PEP 649), so ``random`` in a method annotation would resolve to JsonRandom.random.
+from random import Random
 from typing import Dict
 from typing import List
 from typing import Union
@@ -36,7 +39,7 @@ class JsonRandom:
 
     """  # NOQA
 
-    def __init__(self, prng: random.Random) -> None:
+    def __init__(self, prng: Random) -> None:
         """Initialization.
 
         Args:
@@ -46,7 +49,7 @@ class JsonRandom:
             None
 
         """
-        self.prng: random.Random = prng
+        self.prng: Random = prng
 
     def _next_uniform(self, min_value: float, max_value: float) -> float:
         r"""Get next uniform.

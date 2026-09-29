@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -32,19 +32,19 @@ msgid ":class:`pams.runners.SequentialRunner`"
 msgstr ""
 
 #: of pams.runners.base.Runner.class_register:1
-msgid "register class. This method is used for user-defined classes."
+#, fuzzy
+msgid "Register class. This method is used for user-defined classes."
 msgstr "クラスを登録します。このメソッドはユーザー定義クラスのために使用します。"
 
 #: of pams.runners.base.Runner.class_register:3
 msgid ""
-"Usually, user-defined classes, i.e., the classes you implemented for your "
-"original simulation, cannot be referred from pams package, especially from "
-"simulation runners. Therefore, the class registration to the runner is "
-"necessary."
+"Usually, user-defined classes, i.e., the classes you implemented for your"
+" original simulation, cannot be referred from pams package, especially "
+"from simulation runners. Therefore, the class registration to the runner "
+"is necessary."
 msgstr "通常、ユーザー定義クラス、すなわち独自のシミュレーションのために実装したクラスは、pamsパッケージから、特にシミュレーションのランナーからは参照できません。そのため、ランナーへのクラスの登録が必要です。"
 
-#: of pams.runners.base.Runner.class_register
-#: pams.runners.base.Runner.judge_hft_or_not
+#: ../../source/reference/generated/runner/pams.runners.Runner.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -52,17 +52,16 @@ msgstr "パラメータ"
 msgid "class to register."
 msgstr "登録するクラス。"
 
-#: of pams.runners.base.Runner.class_register
-#: pams.runners.base.Runner.judge_hft_or_not pams.runners.base.Runner.main
+#: ../../source/reference/generated/runner/pams.runners.Runner.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
-#: of pams.runners.base.Runner.class_register:11 pams.runners.base.Runner.main:4
-msgid ":py:obj:`None`"
+#: of pams.runners.base.Runner.class_register:11
+#: pams.runners.base.Runner.main:4
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.runners.base.Runner.class_register
-#: pams.runners.base.Runner.judge_hft_or_not
+#: ../../source/reference/generated/runner/pams.runners.Runner.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -71,8 +70,9 @@ msgid "None"
 msgstr ""
 
 #: of pams.runners.base.Runner.judge_hft_or_not:1
+#, fuzzy
 msgid ""
-"determine if the agent is type of the "
+"Determine if the agent is type of the "
 ":class:`pams.agents.HighFrequencyAgent`."
 msgstr "エージェントが :class:`pams.agents.HighFrequencyAgent` 型であるかどうかを判定します。"
 
@@ -82,11 +82,15 @@ msgstr "エージェントのインスタンス。"
 
 #: of pams.runners.base.Runner.judge_hft_or_not:7
 msgid ""
-"whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or "
-"not."
+"whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or"
+" not."
 msgstr "エージェントのクラスが :class:`pams.agents.HighFrequencyAgent` であるかどうか。"
 
 #: of pams.runners.base.Runner.main:1
-msgid "main process. The process is executed while measuring time."
+#, fuzzy
+msgid "Main process. The process is executed while measuring time."
 msgstr "メイン処理。時間を計測しながら処理を実行します。"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

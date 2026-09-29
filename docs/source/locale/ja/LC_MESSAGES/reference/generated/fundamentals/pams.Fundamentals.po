@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -28,17 +28,11 @@ msgid "Fundamental generator for simulator."
 msgstr "シミュレーター用のファンダメンタル価格生成器。"
 
 #: of pams.fundamentals.Fundamentals.add_market:1
-msgid "add a market whose fundamental prices are generated in this class."
+#, fuzzy
+msgid "Add a market whose fundamental prices are generated in this class."
 msgstr "このクラスでファンダメンタル価格を生成する市場を追加します。"
 
-#: of pams.fundamentals.Fundamentals.add_market
-#: pams.fundamentals.Fundamentals.change_drift
-#: pams.fundamentals.Fundamentals.change_volatility
-#: pams.fundamentals.Fundamentals.get_fundamental_price
-#: pams.fundamentals.Fundamentals.get_fundamental_prices
-#: pams.fundamentals.Fundamentals.remove_correlation
-#: pams.fundamentals.Fundamentals.remove_market
-#: pams.fundamentals.Fundamentals.set_correlation
+#: ../../source/reference/generated/fundamentals/pams.Fundamentals.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -63,14 +57,7 @@ msgstr "ボラティリティ。"
 msgid "time step to start simulation (default 0)."
 msgstr "シミュレーションを開始するステップ（デフォルトは0）。"
 
-#: of pams.fundamentals.Fundamentals.add_market
-#: pams.fundamentals.Fundamentals.change_drift
-#: pams.fundamentals.Fundamentals.change_volatility
-#: pams.fundamentals.Fundamentals.get_fundamental_price
-#: pams.fundamentals.Fundamentals.get_fundamental_prices
-#: pams.fundamentals.Fundamentals.remove_correlation
-#: pams.fundamentals.Fundamentals.remove_market
-#: pams.fundamentals.Fundamentals.set_correlation
+#: ../../source/reference/generated/fundamentals/pams.Fundamentals.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
@@ -80,17 +67,10 @@ msgstr "戻り値の型"
 #: pams.fundamentals.Fundamentals.remove_correlation:13
 #: pams.fundamentals.Fundamentals.remove_market:7
 #: pams.fundamentals.Fundamentals.set_correlation:16
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.fundamentals.Fundamentals.add_market
-#: pams.fundamentals.Fundamentals.change_drift
-#: pams.fundamentals.Fundamentals.change_volatility
-#: pams.fundamentals.Fundamentals.get_fundamental_price
-#: pams.fundamentals.Fundamentals.get_fundamental_prices
-#: pams.fundamentals.Fundamentals.remove_correlation
-#: pams.fundamentals.Fundamentals.remove_market
-#: pams.fundamentals.Fundamentals.set_correlation
+#: ../../source/reference/generated/fundamentals/pams.Fundamentals.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -104,7 +84,8 @@ msgid "None"
 msgstr ""
 
 #: of pams.fundamentals.Fundamentals.change_drift:1
-msgid "change drift."
+#, fuzzy
+msgid "Change drift."
 msgstr "ドリフトを変更します。"
 
 #: of pams.fundamentals.Fundamentals.change_drift:4
@@ -123,7 +104,8 @@ msgid "time step to apply the change (default 0)."
 msgstr "変更を適用するステップ（デフォルトは0）。"
 
 #: of pams.fundamentals.Fundamentals.change_volatility:1
-msgid "change volatility."
+#, fuzzy
+msgid "Change volatility."
 msgstr "ボラティリティを変更します。"
 
 #: of pams.fundamentals.Fundamentals.change_volatility:10
@@ -131,7 +113,8 @@ msgid "time step to apply the change(default 0)."
 msgstr "変更を適用するステップ（デフォルトは0）。"
 
 #: of pams.fundamentals.Fundamentals.get_fundamental_price:1
-msgid "get a fundamental price."
+#, fuzzy
+msgid "Get a fundamental price."
 msgstr "ファンダメンタル価格を取得します。"
 
 #: of pams.fundamentals.Fundamentals.get_fundamental_price:7
@@ -143,7 +126,8 @@ msgid "fundamental price at the specified time step."
 msgstr "指定したステップにおけるファンダメンタル価格。"
 
 #: of pams.fundamentals.Fundamentals.get_fundamental_prices:1
-msgid "get some fundamental prices."
+#, fuzzy
+msgid "Get some fundamental prices."
 msgstr "複数のファンダメンタル価格を取得します。"
 
 #: of pams.fundamentals.Fundamentals.get_fundamental_prices:7
@@ -155,7 +139,8 @@ msgid "fundamental prices in specified range of time steps."
 msgstr "指定した各ステップにおけるファンダメンタル価格。"
 
 #: of pams.fundamentals.Fundamentals.remove_correlation:1
-msgid "remove correlation."
+#, fuzzy
+msgid "Remove correlation."
 msgstr "相関を削除します。"
 
 #: of pams.fundamentals.Fundamentals.remove_correlation:4
@@ -172,8 +157,9 @@ msgid "time step to apply the correlation (default 0)."
 msgstr "相関の変更を適用するステップ（デフォルトは0）。"
 
 #: of pams.fundamentals.Fundamentals.remove_market:1
+#, fuzzy
 msgid ""
-"remove a market from the list of markets whose fundamental prices are "
+"Remove a market from the list of markets whose fundamental prices are "
 "generated in this class."
 msgstr "このクラスでファンダメンタル価格を生成する市場のリストから、市場を削除します。"
 
@@ -182,7 +168,8 @@ msgid "market ID to remove."
 msgstr "削除する市場ID。"
 
 #: of pams.fundamentals.Fundamentals.set_correlation:1
-msgid "set correlation between fundamental prices of markets."
+#, fuzzy
+msgid "Set correlation between fundamental prices of markets."
 msgstr "市場間のファンダメンタル価格の相関を設定します。"
 
 #: of pams.fundamentals.Fundamentals.set_correlation:4
@@ -196,4 +183,7 @@ msgstr "相関を設定する市場IDのもう一方。"
 #: of pams.fundamentals.Fundamentals.set_correlation:10
 msgid "correlation."
 msgstr "相関。"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 
