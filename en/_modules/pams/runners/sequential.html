@@ -442,6 +442,11 @@
             <span class="n">prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"-"</span> <span class="k">if</span> <span class="n">n_entities</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group_settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be a class name (str) or a class, "</span>
+                <span class="sa">f</span><span class="s2">"but </span><span class="si">{</span><span class="n">group_settings</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is given"</span>
+            <span class="p">)</span>
         <span class="n">group_class</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">group_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span> <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span>
         <span class="p">)</span>
@@ -468,7 +473,9 @@
             <span class="n">market_settings</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">numbered</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">market_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_group</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">count_key</span><span class="o">=</span><span class="s2">"numMarkets"</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">market_class</span><span class="p">,</span> <span class="n">Market</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span>
+                <span class="n">market_class</span><span class="p">,</span> <span class="n">Market</span>
+            <span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"market class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Market class"</span>
                 <span class="p">)</span>
@@ -523,7 +530,7 @@
             <span class="n">agent_settings</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">numbered</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">agent_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_group</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">count_key</span><span class="o">=</span><span class="s2">"numAgents"</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent_class</span><span class="p">,</span> <span class="n">Agent</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">agent_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">agent_class</span><span class="p">,</span> <span class="n">Agent</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"agent class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit Agent class"</span><span class="p">)</span>
             <span class="k">if</span> <span class="s2">"markets"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">agent_settings</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"markets is required in </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -634,11 +641,21 @@
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">event_setting</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is required in </span><span class="si">{</span><span class="n">event_name</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-                    <span class="n">event_class_name</span> <span class="o">=</span> <span class="n">event_setting</span><span class="p">[</span><span class="s2">"class"</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event_setting</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">)):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"class for </span><span class="si">{</span><span class="n">event_name</span><span class="si">}</span><span class="s2"> must be a class name (str) "</span>
+                            <span class="sa">f</span><span class="s2">"or a class, but </span><span class="si">{</span><span class="n">event_setting</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is given"</span>
+                        <span class="p">)</span>
                     <span class="n">event_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">EventABC</span><span class="p">]</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
-                        <span class="n">name</span><span class="o">=</span><span class="n">event_class_name</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">event_setting</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span>
                         <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span><span class="p">,</span>
                     <span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span>
+                        <span class="n">event_class</span><span class="p">,</span> <span class="n">EventABC</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">"event class for </span><span class="si">{</span><span class="n">event_name</span><span class="si">}</span><span class="s2"> does not inherit EventABC class"</span>
+                        <span class="p">)</span>
                     <span class="n">event</span> <span class="o">=</span> <span class="n">event_class</span><span class="p">(</span>
                         <span class="n">event_id</span><span class="o">=</span><span class="n">i_event</span><span class="p">,</span>
                         <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">)),</span>

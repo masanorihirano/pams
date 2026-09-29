@@ -1064,10 +1064,10 @@ created and how they are named.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">class</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
-<td><p>string</p></td>
+<td><p>string or class</p></td>
 <td><p>Class name, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Market&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;FCNAgent&quot;</span></code>. Use the plain class name (case-sensitive), not a dotted
-path. Built-in classes are found automatically; your own classes must be registered
-(see <a class="reference internal" href="#config-user-classes"><span class="std std-ref">User-defined classes</span></a>).</p></td>
+path. Built-in classes are found automatically; your own classes must be registered, or set as the
+class itself in a Python dict config (see <a class="reference internal" href="#config-user-classes"><span class="std std-ref">User-defined classes</span></a>).</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">extends</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
 <td><p>block name</p></td>
@@ -1921,16 +1921,29 @@ before calling <code class="docutils literal notranslate"><span class="pre">main
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"MyAgents"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"extends"</span><span class="p">:</span><span class="w"> </span><span class="s2">"FCNAgents"</span><span class="p">,</span><span class="w"> </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MyAgent"</span><span class="p">,</span><span class="w"> </span><span class="nt">"myParameter"</span><span class="p">:</span><span class="w"> </span><span class="mf">2.0</span><span class="p">}</span>
 </pre></div>
 </div>
+<p>When the config is a Python dict, you can instead set the class itself as the value of <code class="docutils literal notranslate"><span class="pre">class</span></code>. Such a class
+is used as is, so it needs no <code class="docutils literal notranslate"><span class="pre">class_register</span></code> and its name does not have to be unique:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># ... the other blocks</span>
+    <span class="s2">"MyAgents"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"extends"</span><span class="p">:</span> <span class="s2">"FCNAgents"</span><span class="p">,</span> <span class="s2">"class"</span><span class="p">:</span> <span class="n">MyAgent</span><span class="p">,</span> <span class="s2">"myParameter"</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">SequentialRunner</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This works only with a Python dict, because a JSON file cannot hold a class. A class set in a block is inherited
+through <code class="docutils literal notranslate"><span class="pre">extends</span></code> like any other value.</p>
 <ul class="simple">
 <li><p>The block (after <code class="docutils literal notranslate"><span class="pre">extends</span></code> is resolved, without <code class="docutils literal notranslate"><span class="pre">numAgents</span></code> / <code class="docutils literal notranslate"><span class="pre">numMarkets</span></code>, <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code> and
 <code class="docutils literal notranslate"><span class="pre">prefix</span></code>) is passed to <code class="docutils literal notranslate"><span class="pre">setup(settings=...)</span></code>, so any extra key you add is available there. To accept JsonRandom notation, draw the value in <code class="docutils literal notranslate"><span class="pre">setup</span></code> with
 <code class="docutils literal notranslate"><span class="pre">JsonRandom(prng=self.prng).random(settings[&quot;myParameter&quot;])</span></code> (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pams.utils</span> <span class="pre">import</span> <span class="pre">JsonRandom</span></code>; see
 <a class="reference internal" href="../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom" title="pams.utils.JsonRandom"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonRandom</span></code></a>). It always returns a float, so apply <code class="docutils literal notranslate"><span class="pre">int()</span></code> yourself for integer
 parameters.</p></li>
-<li><p>Class names must be unique: a class with the same name as a built-in class (e.g. your own <code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>)
-is ambiguous and fails. Register each class only once.</p></li>
-<li><p>Agent classes must inherit from <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a> and market classes from <a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">Market</span></code></a>.
-An agent that inherits from <a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HighFrequencyAgent</span></code></a> is scheduled as a high-frequency agent.</p></li>
+<li><p>Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
+<code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>) is ambiguous and fails. Register each class only once.</p></li>
+<li><p>Agent classes must inherit from <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a>, market classes from <a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">Market</span></code></a> and
+event classes from <a class="reference internal" href="../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC" title="pams.events.EventABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventABC</span></code></a>. An agent that inherits from
+<a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HighFrequencyAgent</span></code></a> is scheduled as a high-frequency agent.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">samples/user_class</span></code> and <code class="docutils literal notranslate"><span class="pre">samples/market_share</span></code> show complete examples.</p></li>
 </ul>
 </section>
@@ -2021,6 +2034,13 @@ the same seed. To switch an event off for a comparison run, keep it listed with 
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">is</span> <span class="pre">found</span> <span class="pre">2</span> <span class="pre">times</span></code></p></td>
 <td><p>Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
 registered twice. Rename the class or register it once.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">market</span> <span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">inherit</span> <span class="pre">Market</span> <span class="pre">class</span></code> (the same for agent and event classes)</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">class</span></code> of block <code class="docutils literal notranslate"><span class="pre">X</span></code> is of the wrong kind, e.g. an agent class in a market block.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">class</span> <span class="pre">name</span> <span class="pre">(str)</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">class,</span> <span class="pre">but</span> <span class="pre">Y</span> <span class="pre">is</span> <span class="pre">given</span></code></p></td>
+<td><p>The value <code class="docutils literal notranslate"><span class="pre">Y</span></code> of <code class="docutils literal notranslate"><span class="pre">class</span></code> in block <code class="docutils literal notranslate"><span class="pre">X</span></code> of a Python dict config is neither a string nor a class,
+e.g. <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">setting</span> <span class="pre">is</span> <span class="pre">missing</span> <span class="pre">in</span> <span class="pre">config</span></code></p></td>
 <td><p>A name in <code class="docutils literal notranslate"><span class="pre">simulation.markets</span></code> or <code class="docutils literal notranslate"><span class="pre">simulation.agents</span></code> has no block. Check the spelling.</p></td>

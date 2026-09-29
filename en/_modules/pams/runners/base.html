@@ -406,6 +406,12 @@
 <span class="sd">        cannot be referred from pams package, especially from simulation runners.</span>
 <span class="sd">        Therefore, the class registration to the runner is necessary.</span>
 
+<span class="sd">        .. note::</span>
+<span class="sd">            When the settings are given as a python dictionary, you can also set the class itself</span>
+<span class="sd">            instead of its name as the value of "class", e.g., ``{"class": UserDefinedAgent}``.</span>
+<span class="sd">            Such a class is used as is, and the registration is not necessary.</span>
+<span class="sd">            This is not available for JSON files because JSON cannot hold classes.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            cls (Type): class to register.</span>
 

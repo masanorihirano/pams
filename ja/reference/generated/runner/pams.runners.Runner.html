@@ -336,6 +336,10 @@
 <span class="sig-name descname"><span class="pre">class_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/runners/base.html#Runner.class_register"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.runners.Runner.class_register" title="Link to this definition">¶</a></dt>
 <dd><p>Register class. This method is used for user-defined classes.</p>
 <p>通常、ユーザー定義クラス、すなわち独自のシミュレーションのために実装したクラスは、pamsパッケージから、特にシミュレーションのランナーからは参照できません。そのため、ランナーへのクラスの登録が必要です。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>設定を Python の辞書として与える場合は、&quot;class&quot; の値として名前の代わりにクラスそのものを指定することもできます（例：<code class="docutils literal notranslate"><span class="pre">{&quot;class&quot;:</span> <span class="pre">UserDefinedAgent}</span></code>）。このようなクラスはそのまま使われるため、登録は不要です。JSON はクラスを保持できないため、JSON ファイルではこの方法は使えません。</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">パラメータ<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> (<em>Type</em>) -- 登録するクラス。</p>

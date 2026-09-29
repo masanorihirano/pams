@@ -338,6 +338,13 @@
 <p>Usually, user-defined classes, i.e., the classes you implemented for your original simulation,
 cannot be referred from pams package, especially from simulation runners.
 Therefore, the class registration to the runner is necessary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When the settings are given as a python dictionary, you can also set the class itself
+instead of its name as the value of “class”, e.g., <code class="docutils literal notranslate"><span class="pre">{&quot;class&quot;:</span> <span class="pre">UserDefinedAgent}</span></code>.
+Such a class is used as is, and the registration is not necessary.
+This is not available for JSON files because JSON cannot hold classes.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cls</strong> (<em>Type</em>) – class to register.</p>
