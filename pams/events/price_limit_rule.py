@@ -14,7 +14,7 @@ from .base import EventHook
 
 
 class PriceLimitRule(EventABC):
-    """This limits the price range.
+    """Event that limits the price range.
 
     The order having the price that is out of the price range, the price is overridden to the edge of range.
     This event is only called via :func:`hooked_before_order` at designated step.
@@ -28,6 +28,7 @@ class PriceLimitRule(EventABC):
         simulator: Simulator,
         name: str,
     ) -> None:
+        """Initialize the price limit rule (see :class:`pams.events.EventABC` for the arguments)."""
         super().__init__(
             event_id=event_id,
             prng=prng,
@@ -41,7 +42,7 @@ class PriceLimitRule(EventABC):
         self.trigger_change_rate: float = 0.0
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """event setup. Usually be called from simulator/runner automatically.
+        """Event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -51,6 +52,7 @@ class PriceLimitRule(EventABC):
 
         Returns:
             None
+
         """
         if "referenceMarket" in settings:
             warnings.warn("referenceMarket is obsoleted", stacklevel=2)
@@ -91,6 +93,7 @@ class PriceLimitRule(EventABC):
         Returns:
             Optional[float]: price after price limit.
                              If the input order is market order, the return become None (market order).
+
         """
         reference_price = market.get_market_price(0)
         if market not in self.target_markets.values():
