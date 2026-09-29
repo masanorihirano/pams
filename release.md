@@ -17,8 +17,8 @@ You create one branch, merge two pull requests and check the result.
 main ──(you) create branch──▶ release/X.Y.Z
                                    │  `create` event
                                    ▼
-             bump.yml opens "Bumping version from A to X.Y.Z"
-             create-pull-request/patch-<sha> ──(you) merge──▶ release/X.Y.Z
+        bump.yml opens "Bumping version from A to X.Y.Z"
+        create-pull-request/patch-<sha> ──(you) merge──▶ release/X.Y.Z
                                    │
        (you) open PR release/X.Y.Z ──▶ main; its body is the release notes
        (you) merge it with a merge commit
@@ -38,7 +38,7 @@ release.yml
 In past releases, the time from merging the release PR to the published GitHub
 release was about 20 to 30 minutes.
 
-**Rules that matter most**
+### Rules that matter most
 
 - Name the branch exactly `release/X.Y.Z`, for example `release/0.3.0`. Do not
   use a `v` prefix. The tag is `X.Y.Z`, taken from the branch name.
@@ -85,10 +85,12 @@ VERSION=0.3.0
 4. **The version is unused.** All of these must be empty or `404`:
 
    ```bash
-   curl -s -o /dev/null -w '%{http_code}\n' "https://pypi.org/pypi/pams/${VERSION}/json"       # 404
-   curl -s -o /dev/null -w '%{http_code}\n' "https://test.pypi.org/pypi/pams/${VERSION}/json"  # 404
-   git ls-remote --tags origin "$VERSION"                  # empty
-   git ls-remote --heads origin 'release/*' 'create-pull-request/*'   # empty
+   for index in pypi.org test.pypi.org; do   # both must print 404
+     curl -s -o /dev/null -w "${index} %{http_code}\n" \
+       "https://${index}/pypi/pams/${VERSION}/json"
+   done
+   git ls-remote --tags origin "$VERSION"    # must print nothing
+   git ls-remote --heads origin 'release/*' 'create-pull-request/*'  # nothing
    ```
 
    These checks do not show files that were uploaded and then deleted, and such
@@ -113,7 +115,8 @@ VERSION=0.3.0
    - If in doubt, create a new token scoped to the project `pams` and store it:
 
      ```bash
-     gh secret set PYPI_TOKEN -R masanorihirano/pams        # prompts for the value
+     # Each command prompts for the value.
+     gh secret set PYPI_TOKEN -R masanorihirano/pams
      gh secret set TEST_PYPI_TOKEN -R masanorihirano/pams
      ```
 
@@ -138,8 +141,9 @@ type `release/X.Y.Z` and choose "Create branch: release/X.Y.Z from main".
 
 Why it has to be done this way:
 
-- The `create` event runs `bump.yml` **as it exists in the new branch**. A branch
-  created from an old commit, such as an old tag, runs an old `bump.yml`.
+- The `create` event runs `bump.yml` **as it exists in the new branch**. A
+  branch created from an old commit, such as an old tag, runs an old
+  `bump.yml`.
 - Only a branch created with your own credentials (git push, the web UI or
   `gh api`) triggers the workflow. A branch created by another workflow with
   `GITHUB_TOKEN` does not.
@@ -169,10 +173,10 @@ Pushing the branch also starts CI-min, CI-notebooks and codecov CI on it.
      `uv.lock` is not committed, so it does not appear.
 
    The PR is created with `GITHUB_TOKEN`, so its checks may not start, or may
-   wait behind an "Approve workflows to run" button. `release/*` branches have no
-   required checks, so this does not block the merge. Merging the PR pushes to
-   `release/X.Y.Z`, which runs CI-min, CI-notebooks and codecov CI on the bumped
-   branch anyway.
+   wait behind an "Approve workflows to run" button. `release/*` branches have
+   no required checks, so this does not block the merge. Merging the PR pushes
+   to `release/X.Y.Z`, which runs CI-min, CI-notebooks and codecov CI on the
+   bumped branch anyway.
 
 3. Merge it with a merge commit, and delete its head branch. Deleting the
    `create-pull-request/...` branch is safe.
@@ -223,7 +227,8 @@ Please see the pull request.
 - You can edit the body at any time before merging. Use the web UI, or:
 
   ```bash
-  gh api -X PATCH repos/masanorihirano/pams/pulls/<release-PR-number> -F body=@release-notes.md
+  gh api -X PATCH repos/masanorihirano/pams/pulls/<release-PR-number> \
+    -F body=@release-notes.md
   ```
 
 - Editing the body **after** the merge does not change the release, and
@@ -272,9 +277,9 @@ bullet.
    failed jobs" on that run.
 
 2. Branch protection on `main` requires one approving review. Either get an
-   approval from another maintainer, or merge as an administrator. In the web UI,
-   tick the option to bypass the branch protection rules. On the command line,
-   use `--admin`.
+   approval from another maintainer, or merge as an administrator. In the web
+   UI, tick the option to bypass the branch protection rules. On the command
+   line, use `--admin`.
 
 3. Merge with **a merge commit**, as for every past release. Do not delete the
    branch.
@@ -296,15 +301,38 @@ gh run list --workflow=release.yml --limit 3
 gh run watch <run-id>
 ```
 
-The workflow runs these jobs in order:
+The workflow runs these jobs in order. The names are as shown in the Actions
+UI; the quoted names are steps.
 
-| Job in the UI | What it does | State if it fails |
-|---|---|---|
-| `tagging` | "Check that the version was bumped": `pyproject.toml` and `pams/version.py` at the merge commit must both equal `X.Y.Z`. "Tag the merge commit" pushes the annotated tag `X.Y.Z`. If the tag already points to this commit, it succeeds without doing anything. | No tag, nothing uploaded. |
-| `final test (<os>, <python>)` | 15 legs, at most 5 at a time, with fail-fast: lint, mypy and `pytest tests/`. | Tag pushed, nothing uploaded. |
-| `release test (3.11)` | `uv build`, then "test release" runs `uv publish` to TestPyPI with `TEST_PYPI_TOKEN`. It records the uv version it used. | Tag pushed, maybe some files on TestPyPI. |
-| `release test check (3.11)` | Polls TestPyPI for up to 30 x 20 s, installs `pams==X.Y.Z` from there and the latest `pytest`, removes `pams/` and `pyproject.toml` from the checkout and runs `pytest tests/` against the installed package. | Files on TestPyPI, nothing on PyPI. |
-| `release (3.11)` | Builds again with the **same uv version** as `release test`, so the files are byte-identical. "release" runs `uv publish` to PyPI with `PYPI_TOKEN`. "Generate checksum" writes `pams-X.Y.Z-checksums.txt`. "Create release" runs `gh release create`. "remove branch" deletes `release/X.Y.Z`. | Depends on the step, see below. |
+1. **`tagging`**
+   - "Check that the version was bumped": `pyproject.toml` and
+     `pams/version.py` at the merge commit must both equal `X.Y.Z`.
+   - "Tag the merge commit" pushes the annotated tag `X.Y.Z`. If the tag
+     already points to this commit, it succeeds without doing anything.
+   - If it fails: no tag, nothing uploaded.
+2. **`final test (<os>, <python>)`**
+   - 15 legs, at most 5 at a time, with fail-fast: black, isort, pflake8, mypy
+     and `pytest tests/`.
+   - If it fails: the tag is pushed, nothing is uploaded.
+3. **`release test (3.11)`**
+   - "Build" runs `uv build`, then "test release" runs `uv publish` to TestPyPI
+     with `TEST_PYPI_TOKEN`.
+   - It records the uv version it used, for the `release` job.
+   - If it fails: the tag is pushed, and some files may be on TestPyPI.
+4. **`release test check (3.11)`**
+   - Polls TestPyPI for up to 30 x 20 s and installs `pams==X.Y.Z` from there,
+     plus the latest `pytest`.
+   - Removes `pams/` and `pyproject.toml` from the checkout and runs
+     `pytest tests/` against the installed package.
+   - If it fails: the files are on TestPyPI, nothing is on PyPI.
+5. **`release (3.11)`**
+   - "Build" builds again with the **same uv version** as `release test`, so
+     the files are byte-identical to the ones on TestPyPI.
+   - "release" runs `uv publish` to PyPI with `PYPI_TOKEN`.
+   - "Generate checksum" writes `pams-X.Y.Z-checksums.txt`.
+   - "Create release" runs `gh release create` with the three files.
+   - "remove branch" deletes `release/X.Y.Z`.
+   - If it fails: it depends on the step, see below.
 
 If a job fails, find its entry in
 [Troubleshooting](#troubleshooting-and-recovery) before doing anything else.
@@ -313,22 +341,24 @@ If a job fails, find its entry in
 
 ```bash
 git fetch origin --tags
-git cat-file -t "$VERSION"                  # tag (annotated)
-git rev-parse "${VERSION}^{commit}"         # must equal the next line
+git cat-file -t "$VERSION"              # "tag": an annotated tag
+git rev-parse "${VERSION}^{commit}"     # must equal the next line
 gh pr view <release-PR-number> --json mergeCommit -q .mergeCommit.oid
-git ls-remote --heads origin "release/${VERSION}"   # empty: the branch was deleted
+git ls-remote --heads origin "release/${VERSION}"   # nothing: deleted
 ```
 
-**GitHub release.** It should be named `X.Y.Z`, be marked Latest, and have three
-assets: `pams-X.Y.Z-py3-none-any.whl`, `pams-X.Y.Z.tar.gz` and
-`pams-X.Y.Z-checksums.txt`. Check the checksums and compare them with PyPI:
+**GitHub release.** It should be named `X.Y.Z`, be marked Latest, and have
+three assets: `pams-X.Y.Z-py3-none-any.whl`, `pams-X.Y.Z.tar.gz` and
+`pams-X.Y.Z-checksums.txt`. Check the checksums, and compare them with the
+hashes that PyPI lists:
 
 ```bash
 gh release view "$VERSION"
 gh release download "$VERSION" -D "release-${VERSION}"
 (cd "release-${VERSION}" && sha256sum -c "pams-${VERSION}-checksums.txt")
-curl -s "https://pypi.org/pypi/pams/${VERSION}/json" \
-  | python -c "import json,sys; [print(u['digests']['sha256'], u['filename']) for u in json.load(sys.stdin)['urls']]"
+cat "release-${VERSION}/pams-${VERSION}-checksums.txt"
+curl -s https://pypi.org/simple/pams/ \
+  | grep -o "pams-${VERSION}[-.][^\"]*sha256=[0-9a-f]*"
 ```
 
 **PyPI page.** Open `https://pypi.org/project/pams/X.Y.Z/`. Check the README,
@@ -460,11 +490,12 @@ first.`
 
 ### `release test` fails
 
-- **Authentication error (403) from TestPyPI:** replace `TEST_PYPI_TOKEN`, then
-  `gh run rerun <run-id> --failed`. Nothing has been uploaded, so a newer uv does
-  no harm here. `release` uses whatever version this re-run records.
-- **Only some files were uploaded:** `gh run rerun <run-id> --failed`. This works
-  if uv has not had a new release in the meantime; otherwise see the next item.
+- **Authentication error (403) from TestPyPI:** replace `TEST_PYPI_TOKEN`,
+  then `gh run rerun <run-id> --failed`. Nothing has been uploaded, so a newer
+  uv does no harm here. `release` uses whatever version this re-run records.
+- **Only some files were uploaded:** `gh run rerun <run-id> --failed`. This
+  works if uv has not had a new release in the meantime; otherwise see the next
+  item.
 - **`400 File already exists`:** TestPyPI already has a different file with this
   name, and this version can no longer be used.
   - Release the next version (for example `X.Y.(Z+1)`) with the full procedure.
@@ -488,33 +519,40 @@ first.`
   `gh run rerun <run-id> --failed`. uv is pinned to the version `release test`
   used, so the rebuilt files are identical.
 - **Network error or partial upload:** `gh run rerun <run-id> --failed`.
-  Identical files are skipped and missing ones are uploaded. Do it within 14 days
-  of the first PyPI upload.
+  Identical files are skipped and missing ones are uploaded. Do it within 14
+  days of the first PyPI upload.
 
 ### `release` fails in "Create release"
 
 PyPI has the version, but there is no GitHub release: `gh` deletes its draft
 when an upload fails.
 
-- Run `gh run rerun <run-id> --failed`. It rebuilds identical files, `uv publish`
-  skips them, then it creates the release and deletes the branch.
+- Run `gh run rerun <run-id> --failed`. It rebuilds identical files,
+  `uv publish` skips them, then it creates the release and deletes the branch.
 - If a re-run is no longer possible, create the release by hand from the files
   on PyPI:
 
   ```bash
   mkdir "release-${VERSION}" && cd "release-${VERSION}"
-  curl -s "https://pypi.org/pypi/pams/${VERSION}/json" \
-    | python -c "import json,sys; print('\n'.join(u['url'] for u in json.load(sys.stdin)['urls']))" \
+  # Download the wheel and the sdist exactly as they are on PyPI.
+  curl -s https://pypi.org/simple/pams/ \
+    | grep -o "https://[^\"#]*/pams-${VERSION}[-.][^\"#]*" \
     | xargs -n1 curl -sSLO
   sha256sum -- * > "pams-${VERSION}-checksums.txt"
+  # Release notes: the release PR body plus the footer that release.yml adds.
   PR=<release-PR-number>
-  PR_URL=$(gh pr view "$PR" --json url -q .url)
-  gh pr view "$PR" --json body -q .body > notes.md
-  printf '\nThis release is automatically generated.\nPlease see the pull request.\n[%s](%s)\n' \
-    "$PR_URL" "$PR_URL" >> notes.md
-  gh release create "$VERSION" "pams-${VERSION}-py3-none-any.whl" "pams-${VERSION}.tar.gz" \
-    "pams-${VERSION}-checksums.txt" --verify-tag --title "$VERSION" --notes-file notes.md
-  git push origin --delete "release/${VERSION}"
+  REPO=masanorihirano/pams
+  PR_URL=$(gh pr view "$PR" -R "$REPO" --json url -q .url)
+  gh pr view "$PR" -R "$REPO" --json body -q .body > ../notes.md
+  {
+    echo
+    echo "This release is automatically generated."
+    echo "Please see the pull request."
+    echo "[${PR_URL}](${PR_URL})"
+  } >> ../notes.md
+  gh release create "$VERSION" ./* -R "$REPO" --verify-tag \
+    --title "$VERSION" --notes-file ../notes.md
+  gh api -X DELETE "repos/${REPO}/git/refs/heads/release/${VERSION}"
   ```
 
 ### `release` fails in "remove branch"
@@ -566,5 +604,5 @@ example with the "Delete branch" button.
     `build.os`.
   - The current `.readthedocs.yml` builds, so the 0.3.0 tag should update
     `stable`. Check it after the release.
-- **Open PRs.** The open PRs are based on a commit before the switch to uv. Merge
-  `main` into them and let CI pass before merging them into the release.
+- **Open PRs.** The open PRs are based on a commit before the switch to uv.
+  Merge `main` into them and let CI pass before merging them into the release.
