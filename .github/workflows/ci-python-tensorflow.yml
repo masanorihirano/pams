@@ -46,4 +46,12 @@ jobs:
           poetry run python -c "import tensorflow as tf; print(tf.__version__)"
       - name: Test
         run: |
-          poetry run pytest tests/pams/runners/test_tensorflow_parallel.py
+          poetry run pytest --cov=./ --cov-report=xml tests/pams/runners/test_tensorflow_parallel.py
+      # the other workflows skip the tests using TensorFlow, so Codecov merges this coverage
+      # with the one uploaded by codecov.yml
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
+          files: ./coverage.xml
+          flags: tensorflow
+          verbose: true
