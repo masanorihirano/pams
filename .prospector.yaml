@@ -1,0 +1,28 @@
+# Prospector configuration used by Codacy (and available for local runs with
+# ``prospector`` at the repository root).
+#
+# Pylint and Ruff run as separate Codacy tools configured by .pylintrc and
+# pyproject.toml, so Prospector is only used for the docstring (pydocstyle) and
+# complexity (mccabe) checks.
+strictness: medium
+doc-warnings: true
+test-warnings: true
+
+pylint:
+  run: false
+
+pyflakes:
+  run: false
+
+pycodestyle:
+  run: false
+
+pydocstyle:
+  disable:
+    # Google style docstrings (see ``[tool.ruff.lint.pydocstyle]`` in
+    # pyproject.toml): the summary starts on the first line (D212, not D213)
+    # and sections are ``Args:`` without dashed underlines (D416, not D406/D407).
+    - D203
+    - D213
+    - D406
+    - D407
