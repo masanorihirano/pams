@@ -350,7 +350,42 @@
 <span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>PythonのGILのため、<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> が効果を発揮するのは、エージェントの注文の提出がI/O（外部のモデルやサービスなど）を待つ場合に限られます。<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> は注文の提出のたびにエージェントと市場をワーカープロセスにコピーするため、はるかに低速になります。また、ユーザー定義のクラスはpickle可能であり、かつワーカープロセスからインポート可能である必要があります。</p>
+<p>PythonのGILのため、<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> が効果を発揮するのは、エージェントの注文の提出がI/O（外部のモデルやサービスなど）を待つ場合に限られます。<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> はステップごとにシミュレーション全体をワーカープロセスにコピーするため、はるかに低速になります。また、ユーザー定義のクラスはpickle可能であり、かつワーカープロセスからインポート可能である必要があります。ワーカープロセスの開始方式（<code class="docutils literal notranslate"><span class="pre">spawn</span></code>、<code class="docutils literal notranslate"><span class="pre">fork</span></code>、<code class="docutils literal notranslate"><span class="pre">forkserver</span></code>）は設定ファイルの <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> で設定できます。詳細とコピーのコストについては <a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">並列ランナー</span></a> を参照してください。</p>
+<section id="customizing-the-workers">
+<h3>ワーカーのカスタマイズ<a class="headerlink" href="#customizing-the-workers" title="Link to this heading">¶</a></h3>
+<p>並列ランナーのサブクラスは、以下のメンバーをオーバーライドすることでワーカーをカスタマイズできます。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">default_start_method</span></code> （クラス属性、プロセスランナーのみ）：<code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が設定されていない場合に使われる開始方式です。デフォルトの <code class="docutils literal notranslate"><span class="pre">None</span></code> はプラットフォームのデフォルトを意味します。実際に使われる開始方式は <code class="docutils literal notranslate"><span class="pre">start_method</span></code> に格納されます。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_mp_context()</span></code> （プロセスランナーのみ）：ワーカープロセスの <code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code> コンテキストです。デフォルトは <code class="docutils literal notranslate"><span class="pre">multiprocessing.get_context(self.start_method)</span></code> です。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_worker_initializer()</span></code> と <code class="docutils literal notranslate"><span class="pre">_get_worker_initargs()</span></code>：各ワーカー（スレッドまたはプロセス）がタスクを実行する前に一度だけ呼び出される関数と、その引数です。デフォルトでは何も呼び出されません。プロセスランナーでは、この関数はワーカープロセスがインポートできるモジュールのトップレベルで定義する必要があり、引数はpickle可能でなければなりません。あるワーカーでこの関数が <code class="docutils literal notranslate"><span class="pre">SystemExit</span></code> などの <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> を含む何らかの例外を送出すると、そのワーカー上のタスクはその例外を原因とする <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> を送出し、シミュレーションは失敗します。プロセスランナーでは、この <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> の <code class="docutils literal notranslate"><span class="pre">__cause__</span></code> は例外そのものではなく、ワーカーのトレースバックのテキストです。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_create_executor()</span></code>：タスクを実行する <code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Executor</span></code> です。デフォルトでは、上記のメンバーを用いて、<code class="docutils literal notranslate"><span class="pre">numParallel</span></code> 個のワーカーを持つ <code class="docutils literal notranslate"><span class="pre">_parallel_pool_provider</span></code> （<code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ThreadPoolExecutor</span></code> または <code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ProcessPoolExecutor</span></code>）を作成します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_split_agents_into_chunks(agents)</span></code>：同時に注文の提出を求められるエージェントをタスクに分ける方法です。1つのタスクのエージェントには、同じワーカー上で1つずつ注文の提出を求めます。スレッドランナーはエージェントごとに1つのタスクを作成し、プロセスランナーは、各タスクでシミュレーション全体がコピーされるため、連続するエージェントからなるタスクを最大 <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> 個作成します。結果が <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> と同じになるよう、タスクはすべてのエージェントを与えられた順序のまま含む必要があります。そうでない場合、シミュレーションは <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> で失敗します。</p></li>
+</ul>
+<p>例えば、以下のランナーはワーカープロセスを <code class="docutils literal notranslate"><span class="pre">spawn</span></code> で起動し、各ワーカープロセスでモデルを一度だけ読み込みます。モデルがタスクごとにコピーされないよう、エージェントはモデルを自身の属性として保持する代わりに、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> 内で <code class="docutils literal notranslate"><span class="pre">my_runner.MODEL</span></code> を使います。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_runner.py, which the worker processes can import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiProcessAgentParallelRunner</span>
+
+<span class="n">MODEL</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">MODEL</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># load the model from path</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRunner</span><span class="p">(</span><span class="n">MultiProcessAgentParallelRunner</span><span class="p">):</span>
+    <span class="n">default_start_method</span> <span class="o">=</span> <span class="s2">"spawn"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">load_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"model.bin"</span><span class="p">,)</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -411,7 +446,10 @@
             <ul>
 <li><a class="reference internal" href="#">プラットフォーム</a><ul>
 <li><a class="reference internal" href="#class-architecture">クラス構成</a></li>
-<li><a class="reference internal" href="#parallel-runners">並列ランナー</a></li>
+<li><a class="reference internal" href="#parallel-runners">並列ランナー</a><ul>
+<li><a class="reference internal" href="#customizing-the-workers">ワーカーのカスタマイズ</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -914,6 +914,12 @@ Default: all fundamental prices move independently.</p></td>
 Ignored by
 <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a>. See <a class="reference internal" href="#config-parallel"><span class="std std-ref">Parallel runners</span></a>.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">startMethod</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;fork&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;forkserver&quot;</span></code></p></td>
+<td><p>How <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a> starts its worker processes (default: the
+platform’s default). Only the start methods available on the platform are accepted: Windows has only
+<code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code>. Ignored by the other runners. See <a class="reference internal" href="#config-parallel"><span class="std std-ref">Parallel runners</span></a>.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1936,7 +1942,7 @@ the same seed. They call <code class="docutils literal notranslate"><span class=
 <ul class="simple">
 <li><p><strong>Speed</strong>: because of Python’s GIL, the thread runner only helps when <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> waits for I/O (for
 example a call to an external model); it does not speed up the built-in agents. The process runner is much
-slower, because the agent and the markets are copied to a worker process at every call. See also
+slower, because the whole simulation is copied to the worker processes in every step (see below). See also
 <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>.</p></li>
 <li><p><strong>User-defined agents</strong> must not change shared objects (markets, other agents, the logger) in
 <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>. With the process runner, changes an agent makes to its own attributes in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>
@@ -1952,10 +1958,22 @@ Choose it for your model first, then set <code class="docutils literal notransla
 (required on Windows and macOS, and on Linux from Python 3.14, where worker processes are no longer started by
 <code class="docutils literal notranslate"><span class="pre">fork</span></code>; without it the run fails or hangs), and define user-defined classes in a <code class="docutils literal notranslate"><span class="pre">.py</span></code>
 file, not in a notebook or an interactive session, so that the worker processes can import them.</p>
-<p>The process runner pickles the agent and the markets at every call, together with everything they refer to (the
+<p><code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> sets how the process runner starts its worker processes: <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> (the default on
+Windows and macOS), <code class="docutils literal notranslate"><span class="pre">&quot;fork&quot;</span></code> (the default on Linux up to Python 3.13) or <code class="docutils literal notranslate"><span class="pre">&quot;forkserver&quot;</span></code> (the default on Linux
+from Python 3.14). Only the values that <code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.get_all_start_methods()</span></code> returns on the platform are
+accepted; any other value is an error. Without the key, the platform’s default is used, unless a subclass of the
+runner sets another default. Use <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> when agents use a library that does not work in a forked process,
+such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.</p>
+<p>The process runner pickles the agents and the markets for each task, together with everything they refer to (the
 simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
 therefore be picklable: for example, a logger that keeps an open file fails with
 <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code>. Keep such data in memory and write the file after the run.</p>
+<p>Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
+state of each agent’s random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,
+much longer than <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> of the built-in agents. To limit this cost, the agents asked at the same time
+are split into at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> tasks. An object held by an agent, such as a neural network model, is copied
+in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
+<code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>), and if it is read-only, load it once per worker process instead (see <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>).</p>
 </section>
 <section id="troubleshooting">
 <span id="config-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>

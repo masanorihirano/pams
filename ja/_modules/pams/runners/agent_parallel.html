@@ -313,15 +313,19 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>pams.runners.agent_parallel のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Executor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Future</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolExecutor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIOWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseContext</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
@@ -338,28 +342,78 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sequential</span><span class="w"> </span><span class="kn">import</span> <span class="n">SequentialRunner</span>
 
+<span class="c1"># state of the current worker thread or process, set by _initialize_worker</span>
+<span class="n">_worker_state</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">local</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_initialize_worker</span><span class="p">(</span>
+    <span class="n">initializer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">initargs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Call the worker initializer on a worker (internal function).</span>
+
+<span class="sd">    If the initializer raises an exception, the exception is kept and</span>
+<span class="sd">    :func:`_submit_orders_in_worker` raises an error on this worker instead of breaking the</span>
+<span class="sd">    executor. This is because a broken :class:`concurrent.futures.ProcessPoolExecutor` can hang</span>
+<span class="sd">    on Python 3.10 or earlier when large tasks, such as the pickled simulation, are waiting to be</span>
+<span class="sd">    sent to the worker processes. Any :class:`BaseException`, including :class:`SystemExit` and</span>
+<span class="sd">    :class:`KeyboardInterrupt`, is kept because the executors break on any</span>
+<span class="sd">    :class:`BaseException` of the initializer. This is consistent with the executors, which pass</span>
+<span class="sd">    any :class:`BaseException` of a task to its future. A :class:`KeyboardInterrupt` by Ctrl+C</span>
+<span class="sd">    usually interrupts the main process as well, which stops the simulation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        initializer (Callable[..., Any], Optional): worker initializer. If it is None, nothing is</span>
+<span class="sd">            called.</span>
+<span class="sd">        initargs (Tuple[Any, ...]): arguments of the worker initializer.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    """</span>
+    <span class="n">_worker_state</span><span class="o">.</span><span class="n">initializer_error</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">initializer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">initializer</span><span class="p">(</span><span class="o">*</span><span class="n">initargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
+            <span class="c1"># any error of the user-defined initializer, even SystemExit, is raised by the</span>
+            <span class="c1"># tasks on this worker because the executor breaks on any BaseException</span>
+            <span class="n">_worker_state</span><span class="o">.</span><span class="n">initializer_error</span> <span class="o">=</span> <span class="n">e</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_submit_orders_in_worker</span><span class="p">(</span>
-    <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]],</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Call :func:`pams.agents.Agent.submit_orders` on a worker (internal function).</span>
+    <span class="n">agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">],</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]],</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""Call :func:`pams.agents.Agent.submit_orders` of agents on a worker (internal function).</span>
 
 <span class="sd">    This function is a module-level function so that it can be pickled and executed</span>
 <span class="sd">    on a worker process of :class:`concurrent.futures.ProcessPoolExecutor`.</span>
+<span class="sd">    The agents are asked one by one in the given order.</span>
+<span class="sd">    If the worker initializer failed on this worker, a RuntimeError is raised with the exception</span>
+<span class="sd">    raised by the initializer, which can be any :class:`BaseException`, as its cause.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        agent (Agent): agent.</span>
+<span class="sd">        agents (List[Agent]): agents.</span>
 <span class="sd">        markets (List[Market]): markets.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        Tuple[List[Union[Order, Cancel]], Any]: orders submitted by the agent and the state of</span>
-<span class="sd">            the agent's pseudo random number generator after the submission. The state is</span>
-<span class="sd">            required to update the agent on the main process when this function runs on</span>
+<span class="sd">        List[Tuple[List[Union[Order, Cancel]], Any]]: for each agent, orders submitted by the agent</span>
+<span class="sd">            and the state of the agent's pseudo random number generator after the submission. The</span>
+<span class="sd">            state is required to update the agent on the main process when this function runs on</span>
 <span class="sd">            another process.</span>
 
 <span class="sd">    """</span>
-    <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">submit_orders</span><span class="p">(</span><span class="n">markets</span><span class="o">=</span><span class="n">markets</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">orders</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">getstate</span><span class="p">()</span>
+    <span class="n">initializer_error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+        <span class="n">_worker_state</span><span class="p">,</span> <span class="s2">"initializer_error"</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">initializer_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">"the worker initializer failed on this worker"</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">initializer_error</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">:</span>
+        <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">submit_orders</span><span class="p">(</span><span class="n">markets</span><span class="o">=</span><span class="n">markets</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">orders</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">getstate</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">results</span>
 
 
 <div class="viewcode-block" id="MultiThreadAgentParallelRunner">
@@ -386,6 +440,14 @@
 
 <span class="sd">    The number of workers can be set by ``simulation.numParallel`` in the config. The default is</span>
 <span class="sd">    the number of CPUs minus one (at least one).</span>
+
+<span class="sd">    Subclasses can customize the workers by overriding the following internal methods:</span>
+
+<span class="sd">    - ``_create_executor``: creates the executor.</span>
+<span class="sd">    - ``_get_worker_initializer`` and ``_get_worker_initargs``: a function called once on each</span>
+<span class="sd">      worker before it runs any task, and its arguments.</span>
+<span class="sd">    - ``_split_agents_into_chunks``: splits the agents asked in parallel into the tasks of the</span>
+<span class="sd">      executor.</span>
 
 <span class="sd">    .. note::</span>
 <span class="sd">        :func:`pams.agents.Agent.submit_orders` is called on worker threads concurrently.</span>
@@ -464,19 +526,72 @@
                 <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_executor</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_pool_provider</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_executor</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Executor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a new executor (internal method).</span>
+
+<span class="sd">        This method is called by ``_setup`` and ``_get_executor``. Subclasses can override it to</span>
+<span class="sd">        customize the executor. This runner creates ``_parallel_pool_provider``, i.e.,</span>
+<span class="sd">        :class:`concurrent.futures.ThreadPoolExecutor`, with ``num_parallel`` workers and</span>
+<span class="sd">        ``_initialize_worker`` as the initializer, which calls the initializer given by</span>
+<span class="sd">        ``_get_worker_initializer`` and ``_get_worker_initargs``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Executor: new executor.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_pool_provider</span><span class="p">(</span>
+            <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">,</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">_initialize_worker</span><span class="p">,</span>
+            <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initializer</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initargs</span><span class="p">()),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Get the function called once on each worker before it runs any task (internal method).</span>
+
+<span class="sd">        Subclasses can override this method to set up each worker, e.g., to configure a library</span>
+<span class="sd">        or to load a model once per worker instead of once per task.</span>
+<span class="sd">        The function is called with the arguments returned by ``_get_worker_initargs`` on each</span>
+<span class="sd">        worker thread of :class:`pams.runners.MultiThreadAgentParallelRunner` and on each worker</span>
+<span class="sd">        process of :class:`pams.runners.MultiProcessAgentParallelRunner`, but never on the main</span>
+<span class="sd">        thread. For the latter, the function and its arguments are pickled, so the function must be</span>
+<span class="sd">        defined at the top level of a module that the worker processes can import.</span>
+<span class="sd">        If the function raises any exception on a worker, including a :class:`BaseException` such</span>
+<span class="sd">        as :class:`SystemExit`, every task on the worker raises a RuntimeError whose cause is the</span>
+<span class="sd">        exception, and the simulation fails with it. With</span>
+<span class="sd">        :class:`pams.runners.MultiProcessAgentParallelRunner`, the cause of the RuntimeError in the</span>
+<span class="sd">        main process is the traceback text from the worker process instead of the exception itself,</span>
+<span class="sd">        as for any error of a task of :class:`concurrent.futures.ProcessPoolExecutor`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,</span>
+<span class="sd">            nothing is called.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get the arguments of the worker initializer (internal method).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[Any, ...]: arguments passed to the function returned by</span>
+<span class="sd">            ``_get_worker_initializer``. The default is an empty tuple.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Executor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get the executor (internal method).</span>
 
-<span class="sd">        If the executor is not prepared, prepare it.</span>
+<span class="sd">        If the executor is not prepared, prepare it by ``_create_executor``.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Executor: executor.</span>
 
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_pool_provider</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_executor</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_shutdown_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -495,20 +610,38 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_executor</span><span class="p">()</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_agents_into_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Split the agents asked in parallel into chunks (internal method).</span>
+
+<span class="sd">        Each chunk is submitted to the executor as one task, and the agents in a chunk are asked</span>
+<span class="sd">        one by one on the same worker. This runner makes one chunk per agent so that the agents are</span>
+<span class="sd">        distributed to idle workers as soon as possible.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agents (List[Agent]): agents asked in parallel.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[List[Agent]]: chunks. Their concatenation must be ``agents`` in the same order so</span>
+<span class="sd">            that the results are the same as :class:`pams.runners.SequentialRunner`; otherwise,</span>
+<span class="sd">            a ValueError is raised.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">agent</span><span class="p">]</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">agents</span><span class="p">]</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_receive_orders_from_worker</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">future</span><span class="p">:</span> <span class="s2">"Future[Tuple[List[Union[Order, Cancel]], Any]]"</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]],</span> <span class="n">prng_state</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Receive the result of the worker and update the agent (internal method).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent (Agent): agent on the main process.</span>
-<span class="sd">            future (Future): future of :func:`_submit_orders_in_worker`.</span>
+<span class="sd">            orders (List[Union[Order, Cancel]]): orders submitted by the agent on the worker.</span>
+<span class="sd">            prng_state (Any): state of the agent's pseudo random number generator on the worker.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Union[Order, Cancel]]: orders submitted by the agent.</span>
 
 <span class="sd">        """</span>
-        <span class="n">orders</span><span class="p">,</span> <span class="n">prng_state</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
         <span class="n">agent</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">setstate</span><span class="p">(</span><span class="n">prng_state</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">orders</span>
 
@@ -522,6 +655,8 @@
 <span class="sd">        Agents are asked in batches so that the agents asked to submit orders and their order are</span>
 <span class="sd">        exactly the same as</span>
 <span class="sd">        :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.</span>
+<span class="sd">        Each batch is split into chunks by ``_split_agents_into_chunks``, and each chunk is</span>
+<span class="sd">        submitted to the executor as one task.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            session (Session): session.</span>
@@ -543,16 +678,28 @@
             <span class="n">n_remaining</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">max_normal_orders</span> <span class="o">-</span> <span class="n">n_orders</span>
             <span class="n">batch</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">agents</span><span class="p">[</span><span class="n">i_next_agent</span> <span class="p">:</span> <span class="n">i_next_agent</span> <span class="o">+</span> <span class="n">n_remaining</span><span class="p">]</span>
             <span class="n">i_next_agent</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-            <span class="n">futures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">"Future[Tuple[List[Union[Order, Cancel]], Any]]"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_submit_orders_in_worker</span><span class="p">,</span> <span class="n">agent</span><span class="p">,</span> <span class="n">markets</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">batch</span>
+            <span class="n">chunks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_agents_into_chunks</span><span class="p">(</span><span class="n">agents</span><span class="o">=</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">chunked_agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">agent</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunked_agents</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">chunked_agent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">agent</span>
+                <span class="k">for</span> <span class="n">chunked_agent</span><span class="p">,</span> <span class="n">agent</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chunked_agents</span><span class="p">,</span> <span class="n">batch</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"the concatenation of the chunks returned by _split_agents_into_chunks"</span>
+                    <span class="s2">" must be the given agents in the same order"</span>
+                <span class="p">)</span>
+            <span class="n">futures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">"Future[List[Tuple[List[Union[Order, Cancel]], Any]]]"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_submit_orders_in_worker</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">markets</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span>
             <span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">future</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">futures</span><span class="p">):</span>
-                    <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span>
-                        <span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive_orders_from_worker</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="n">future</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">chunk</span><span class="p">,</span> <span class="n">future</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">futures</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="p">(</span><span class="n">orders</span><span class="p">,</span> <span class="n">prng_state</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()):</span>
+                        <span class="n">orders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive_orders_from_worker</span><span class="p">(</span>
+                            <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span> <span class="n">prng_state</span><span class="o">=</span><span class="n">prng_state</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="k">continue</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
                         <span class="k">if</span> <span class="p">(</span>
@@ -581,9 +728,24 @@
 <span class="sd">    is parallelized in each step using :class:`concurrent.futures.ProcessPoolExecutor`.</span>
 <span class="sd">    See :class:`pams.runners.MultiThreadAgentParallelRunner` for the details of the parallelization.</span>
 
+<span class="sd">    The start method of :mod:`multiprocessing` for the worker processes can be set by</span>
+<span class="sd">    ``simulation.startMethod`` in the config, e.g., ``"spawn"``. It must be one of</span>
+<span class="sd">    :func:`multiprocessing.get_all_start_methods` on the platform. If it is not set,</span>
+<span class="sd">    :attr:`default_start_method` is used; if that is None, the default start method of the</span>
+<span class="sd">    platform is used.</span>
+
+<span class="sd">    In addition to the internal methods listed in</span>
+<span class="sd">    :class:`pams.runners.MultiThreadAgentParallelRunner`, subclasses can customize the worker</span>
+<span class="sd">    processes by overriding the following members:</span>
+
+<span class="sd">    - :attr:`default_start_method`: the start method used when ``simulation.startMethod`` is not</span>
+<span class="sd">      set. For example, ``"spawn"`` is required for libraries that are not fork-safe, such as</span>
+<span class="sd">      PyTorch with CUDA, TensorFlow, and JAX.</span>
+<span class="sd">    - ``_get_mp_context``: the multiprocessing context of the worker processes.</span>
+
 <span class="sd">    .. note::</span>
-<span class="sd">        The agent and the markets are pickled and copied to a worker process for each call of</span>
-<span class="sd">        :func:`pams.agents.Agent.submit_orders`. Therefore, only the returned orders and the state</span>
+<span class="sd">        The agents and the markets are pickled and copied to a worker process for each task.</span>
+<span class="sd">        Therefore, only the returned orders and the state</span>
 <span class="sd">        of</span>
 <span class="sd">        the agent's pseudo random number generator are reflected to the agent on the main process.</span>
 <span class="sd">        Other attributes modified in :func:`pams.agents.Agent.submit_orders` are discarded.</span>
@@ -602,17 +764,135 @@
 
 <span class="sd">    .. warning::</span>
 <span class="sd">        This class is much slower than :class:`pams.runners.MultiThreadAgentParallelRunner` because</span>
-<span class="sd">        of the</span>
-<span class="sd">        cost of pickling. If you want to use parallelization, it is recommended to use</span>
+<span class="sd">        of the cost of pickling. Agents and markets refer to the simulator, so every task pickles</span>
+<span class="sd">        and unpickles the whole simulation: all the agents, all the markets with their histories,</span>
+<span class="sd">        the events, and the logger. For example, with 1000 :class:`pams.agents.FCNAgent` agents,</span>
+<span class="sd">        the pickled data is about 4 MB, mostly the states of the agents' pseudo random number</span>
+<span class="sd">        generators, and it takes tens of milliseconds to pickle and as long to unpickle. To reduce</span>
+<span class="sd">        the cost, the agents asked in parallel are split into at most ``numParallel`` chunks of</span>
+<span class="sd">        consecutive agents, and each chunk is one task. Thus, the simulation is pickled at most</span>
+<span class="sd">        ``numParallel`` times per batch instead of once per agent.</span>
+<span class="sd">        Large objects held by agents, such as neural network models, are pickled in every task,</span>
+<span class="sd">        even in the tasks of other agents, unless they are excluded from pickling, e.g., by</span>
+<span class="sd">        ``__getstate__``. Read-only objects of this kind can be loaded once per worker process by</span>
+<span class="sd">        the worker initializer (see ``_get_worker_initializer``) instead.</span>
+<span class="sd">        If you want to use parallelization, it is recommended to use</span>
 <span class="sd">        :class:`pams.runners.MultiThreadAgentParallelRunner`.</span>
 <span class="sd">    """</span>
 
-    <span class="n">_parallel_pool_provider</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-        <span class="n">Type</span><span class="p">[</span><span class="n">ThreadPoolExecutor</span><span class="p">],</span> <span class="n">Type</span><span class="p">[</span><span class="n">ProcessPoolExecutor</span><span class="p">]</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">ProcessPoolExecutor</span>
+    <span class="n">_parallel_pool_provider</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">ProcessPoolExecutor</span><span class="p">]</span> <span class="o">=</span> <span class="n">ProcessPoolExecutor</span>
+
+    <span class="c1">#: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is</span>
+    <span class="c1">#: not set in the config. None means the default start method of the platform. Subclasses can</span>
+    <span class="c1">#: override it, e.g., with ``"spawn"`` for libraries that are not fork-safe.</span>
+    <span class="n">default_start_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">prng</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">simulator_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Simulator</span><span class="p">]</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.</span>
+<span class="sd">            prng (random.Random, Optional): pseudo random number generator for this runner.</span>
+<span class="sd">            logger (Logger, Optional): logger instance.</span>
+<span class="sd">            simulator_class (Type[Simulator]): type of simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">prng</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">simulator_class</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_start_method</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set up the simulation (internal method).</span>
+
+<span class="sd">        In addition to :func:`pams.runners.MultiThreadAgentParallelRunner._setup`,</span>
+<span class="sd">        ``simulation.startMethod`` is read before the executor is prepared.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">"simulation"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+            <span class="ow">and</span> <span class="s2">"startMethod"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">start_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">][</span><span class="s2">"startMethod"</span><span class="p">]</span>
+            <span class="n">all_start_methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_all_start_methods</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_method</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">start_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_start_methods</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"simulation.startMethod must be one of </span><span class="si">{</span><span class="n">all_start_methods</span><span class="si">}</span><span class="s2">, "</span>
+                    <span class="sa">f</span><span class="s2">"but </span><span class="si">{</span><span class="n">start_method</span><span class="si">}</span><span class="s2"> is given"</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_method</span> <span class="o">=</span> <span class="n">start_method</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_mp_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseContext</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the multiprocessing context of the worker processes (internal method).</span>
+
+<span class="sd">        Subclasses can override this method to use another context, e.g., that of a library</span>
+<span class="sd">        extending :mod:`multiprocessing`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseContext: context of ``start_method``. If ``start_method`` is None, the default</span>
+<span class="sd">            context of the platform is returned.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_method</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Executor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a new executor (internal method).</span>
+
+<span class="sd">        This runner creates ``_parallel_pool_provider``, i.e.,</span>
+<span class="sd">        :class:`concurrent.futures.ProcessPoolExecutor`, with ``num_parallel`` worker processes</span>
+<span class="sd">        started by the context given by ``_get_mp_context`` and ``_initialize_worker`` as the</span>
+<span class="sd">        initializer, which calls the initializer given by ``_get_worker_initializer`` and</span>
+<span class="sd">        ``_get_worker_initargs``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Executor: new executor.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_pool_provider</span><span class="p">(</span>
+            <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">,</span>
+            <span class="n">mp_context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_mp_context</span><span class="p">(),</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">_initialize_worker</span><span class="p">,</span>
+            <span class="n">initargs</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initializer</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initargs</span><span class="p">()),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_agents_into_chunks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Split the agents asked in parallel into chunks (internal method).</span>
+
+<span class="sd">        Each chunk is pickled together with the markets, i.e., with the whole simulation, and sent to</span>
+<span class="sd">        a worker process as one task. To pickle the simulation as few times as possible, this runner</span>
+<span class="sd">        splits the agents into at most ``num_parallel`` chunks of consecutive agents, whose sizes</span>
+<span class="sd">        differ by at most one.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agents (List[Agent]): agents asked in parallel.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[List[Agent]]: chunks. Their concatenation is ``agents``.</span>
+
+<span class="sd">        """</span>
+        <span class="n">n_chunks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">))</span>
+        <span class="n">chunks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Agent</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i_chunk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chunks</span><span class="p">):</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_chunks</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="k">if</span> <span class="n">i_chunk</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents</span><span class="p">)</span> <span class="o">%</span> <span class="n">n_chunks</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+            <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agents</span><span class="p">[</span><span class="n">i_start</span> <span class="p">:</span> <span class="n">i_start</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">])</span>
+            <span class="n">i_start</span> <span class="o">+=</span> <span class="n">chunk_size</span>
+        <span class="k">return</span> <span class="n">chunks</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_receive_orders_from_worker</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">future</span><span class="p">:</span> <span class="s2">"Future[Tuple[List[Union[Order, Cancel]], Any]]"</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]],</span> <span class="n">prng_state</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Receive the result of the worker and update the agent (internal method).</span>
 
@@ -624,13 +904,16 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            agent (Agent): agent on the main process.</span>
-<span class="sd">            future (Future): future of :func:`_submit_orders_in_worker`.</span>
+<span class="sd">            orders (List[Union[Order, Cancel]]): orders submitted by the agent on the worker.</span>
+<span class="sd">            prng_state (Any): state of the agent's pseudo random number generator on the worker.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Union[Order, Cancel]]: orders submitted by the agent.</span>
 
 <span class="sd">        """</span>
-        <span class="n">orders</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_receive_orders_from_worker</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">future</span><span class="o">=</span><span class="n">future</span><span class="p">)</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_receive_orders_from_worker</span><span class="p">(</span>
+            <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">,</span> <span class="n">prng_state</span><span class="o">=</span><span class="n">prng_state</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
                 <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>

@@ -329,10 +329,24 @@
 agents
 is parallelized in each step using <code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ProcessPoolExecutor</span></code>.
 See <a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> for the details of the parallelization.</p>
+<p>The start method of <code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code> for the worker processes can be set by
+<code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> in the config, e.g., <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code>. It must be one of
+<code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.get_all_start_methods()</span></code> on the platform. If it is not set,
+<a class="reference internal" href="#pams.runners.MultiProcessAgentParallelRunner.default_start_method" title="pams.runners.MultiProcessAgentParallelRunner.default_start_method"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_start_method</span></code></a> is used; if that is None, the default start method of the
+platform is used.</p>
+<p>In addition to the internal methods listed in
+<a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a>, subclasses can customize the worker
+processes by overriding the following members:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pams.runners.MultiProcessAgentParallelRunner.default_start_method" title="pams.runners.MultiProcessAgentParallelRunner.default_start_method"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_start_method</span></code></a>: the start method used when <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is not
+set. For example, <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> is required for libraries that are not fork-safe, such as
+PyTorch with CUDA, TensorFlow, and JAX.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_mp_context</span></code>: the multiprocessing context of the worker processes.</p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The agent and the markets are pickled and copied to a worker process for each call of
-<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a>. Therefore, only the returned orders and the state
+<p>The agents and the markets are pickled and copied to a worker process for each task.
+Therefore, only the returned orders and the state
 of
 the agent’s pseudo random number generator are reflected to the agent on the main process.
 Other attributes modified in <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> are discarded.
@@ -353,10 +367,34 @@ saved to a module file rather than defined in <code class="docutils literal notr
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This class is much slower than <a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> because
-of the
-cost of pickling. If you want to use parallelization, it is recommended to use
+of the cost of pickling. Agents and markets refer to the simulator, so every task pickles
+and unpickles the whole simulation: all the agents, all the markets with their histories,
+the events, and the logger. For example, with 1000 <a class="reference internal" href="../agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.agents.FCNAgent</span></code></a> agents,
+the pickled data is about 4 MB, mostly the states of the agents’ pseudo random number
+generators, and it takes tens of milliseconds to pickle and as long to unpickle. To reduce
+the cost, the agents asked in parallel are split into at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> chunks of
+consecutive agents, and each chunk is one task. Thus, the simulation is pickled at most
+<code class="docutils literal notranslate"><span class="pre">numParallel</span></code> times per batch instead of once per agent.
+Large objects held by agents, such as neural network models, are pickled in every task,
+even in the tasks of other agents, unless they are excluded from pickling, e.g., by
+<code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>. Read-only objects of this kind can be loaded once per worker process by
+the worker initializer (see <code class="docutils literal notranslate"><span class="pre">_get_worker_initializer</span></code>) instead.
+If you want to use parallelization, it is recommended to use
 <a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a>.</p>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pams.runners.MultiProcessAgentParallelRunner.default_start_method">
+<span class="sig-name descname"><span class="pre">default_start_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#pams.runners.MultiProcessAgentParallelRunner.default_start_method" title="Link to this definition">¶</a></dt>
+<dd><p>start method of the worker processes used when <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is
+not set in the config. None means the default start method of the platform. Subclasses can
+override it, e.g., with <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> for libraries that are not fork-safe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -417,7 +455,10 @@ cost of pickling. If you want to use parallelization, it is recommended to use
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">MultiProcessAgentParallelRunner</a><ul>
-<li><a class="reference internal" href="#pams.runners.MultiProcessAgentParallelRunner"><code class="docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a></li>
+<li><a class="reference internal" href="#pams.runners.MultiProcessAgentParallelRunner"><code class="docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner</span></code></a><ul>
+<li><a class="reference internal" href="#pams.runners.MultiProcessAgentParallelRunner.default_start_method"><code class="docutils literal notranslate"><span class="pre">MultiProcessAgentParallelRunner.default_start_method</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

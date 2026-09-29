@@ -342,6 +342,14 @@ This means that the number of agents that can be parallelized is limited by <cod
 of the session.</p>
 <p>The number of workers can be set by <code class="docutils literal notranslate"><span class="pre">simulation.numParallel</span></code> in the config. The default is
 the number of CPUs minus one (at least one).</p>
+<p>Subclasses can customize the workers by overriding the following internal methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_create_executor</span></code>: creates the executor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_worker_initializer</span></code> and <code class="docutils literal notranslate"><span class="pre">_get_worker_initargs</span></code>: a function called once on each
+worker before it runs any task, and its arguments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_split_agents_into_chunks</span></code>: splits the agents asked in parallel into the tasks of the
+executor.</p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> is called on worker threads concurrently.

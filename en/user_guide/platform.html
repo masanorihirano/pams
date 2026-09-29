@@ -363,8 +363,61 @@ parallelized in each step is limited by <code class="docutils literal notranslat
 </div>
 <p>Because of the GIL of python, <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a> is beneficial only when
 the order submission of agents waits for I/O (e.g., external models or services).
-<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> copies agents and markets to worker processes for each order submission,
-so it is much slower and the user-defined classes must be picklable and importable from the worker processes.</p>
+<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> copies the whole simulation to the worker processes in every step,
+so it is much slower and the user-defined classes must be picklable and importable from the worker processes.
+How it starts the worker processes (<code class="docutils literal notranslate"><span class="pre">spawn</span></code>, <code class="docutils literal notranslate"><span class="pre">fork</span></code> or <code class="docutils literal notranslate"><span class="pre">forkserver</span></code>) can be set by <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code>
+in the config. See <a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a> for the details and the cost of the copies.</p>
+<section id="customizing-the-workers">
+<h3>Customizing the workers<a class="headerlink" href="#customizing-the-workers" title="Link to this heading">¶</a></h3>
+<p>Subclasses of the parallel runners can customize the workers by overriding the following members.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">default_start_method</span></code> (class attribute, process runner only): the start method used when
+<code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is not set. The default, <code class="docutils literal notranslate"><span class="pre">None</span></code>, means the platform’s default. The start method in use
+is stored in <code class="docutils literal notranslate"><span class="pre">start_method</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_mp_context()</span></code> (process runner only): the <code class="xref py py-mod docutils literal notranslate"><span class="pre">multiprocessing</span></code> context of the worker processes.
+The default is <code class="docutils literal notranslate"><span class="pre">multiprocessing.get_context(self.start_method)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_get_worker_initializer()</span></code> and <code class="docutils literal notranslate"><span class="pre">_get_worker_initargs()</span></code>: a function called once on each worker (thread or
+process) before it runs any task, and its arguments. By default, nothing is called. With the process runner,
+the function must be defined at the top level of a module that the worker processes can import, and the
+arguments must be picklable. If the function raises any exception on a worker, including a <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> such as
+<code class="docutils literal notranslate"><span class="pre">SystemExit</span></code>, the tasks on that worker raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> caused by the exception, and the simulation fails.
+With the process runner, the <code class="docutils literal notranslate"><span class="pre">__cause__</span></code> of the <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> is the worker’s traceback text, not the exception.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_create_executor()</span></code>: the <code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.Executor</span></code> that runs the tasks. The default creates
+<code class="docutils literal notranslate"><span class="pre">_parallel_pool_provider</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ThreadPoolExecutor</span></code> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ProcessPoolExecutor</span></code>) with the members above and <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> workers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_split_agents_into_chunks(agents)</span></code>: how the agents asked at the same time are split into tasks. The agents
+of a task are asked one by one on the same worker. The thread runner makes one task per agent, and the process
+runner makes at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> tasks of consecutive agents because each task copies the whole simulation.
+The tasks must keep all the agents in the given order, so that the results stay the same as
+<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>; otherwise, the simulation fails with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+</ul>
+<p>For example, the following runner starts its worker processes by <code class="docutils literal notranslate"><span class="pre">spawn</span></code> and loads a model once in each worker
+process. The agents use <code class="docutils literal notranslate"><span class="pre">my_runner.MODEL</span></code> in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> instead of keeping the model as their attribute,
+so that the model is not copied in every task.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_runner.py, which the worker processes can import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiProcessAgentParallelRunner</span>
+
+<span class="n">MODEL</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_model</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">MODEL</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># load the model from path</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRunner</span><span class="p">(</span><span class="n">MultiProcessAgentParallelRunner</span><span class="p">):</span>
+    <span class="n">default_start_method</span> <span class="o">=</span> <span class="s2">"spawn"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">load_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"model.bin"</span><span class="p">,)</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -425,7 +478,10 @@ so it is much slower and the user-defined classes must be picklable and importab
             <ul>
 <li><a class="reference internal" href="#">Platform</a><ul>
 <li><a class="reference internal" href="#class-architecture">Class architecture</a></li>
-<li><a class="reference internal" href="#parallel-runners">Parallel runners</a></li>
+<li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
+<li><a class="reference internal" href="#customizing-the-workers">Customizing the workers</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
