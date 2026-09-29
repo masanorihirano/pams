@@ -5,7 +5,8 @@ CI2002 model) trade in one market, and the returns of the market price show styl
 facts of real markets such as fat tails and volatility clustering.
 ``examples/fat_tail.ipynb`` analyses them. Each printed line has the same columns as
 the output of plhamJ: session, time, market ID, market name, market price and
-fundamental price.
+fundamental price. Unlike plhamJ, PAMS ignores ``withPrint``, so the lines of the
+first session are printed too; keep only session ``1`` as the R scripts of plhamJ do.
 
 ``config.json`` is shortened so that the sample finishes in a few seconds. For the
 statistics, run it at the scale of plhamJ: set ``iterationSteps`` of the second
