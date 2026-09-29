@@ -334,9 +334,23 @@ class TestMarket:
         assert isinstance(m.transaction_cost_rate, float)
 
     @pytest.mark.parametrize(
-        "rate", ["0.001", True, None, -0.001, 1.0, 1, 10.0, math.nan, math.inf]
+        "rate, match",
+        [
+            ("0.001", "must be int or float"),
+            (True, "must be int or float"),
+            (False, "must be int or float"),
+            (None, "must be int or float"),
+            (-0.001, r"must be in \[0.0, 1.0\)"),
+            (1.0, r"must be in \[0.0, 1.0\)"),
+            (1, r"must be in \[0.0, 1.0\)"),
+            (10.0, r"must be in \[0.0, 1.0\)"),
+            (math.nan, r"must be in \[0.0, 1.0\)"),
+            (math.inf, r"must be in \[0.0, 1.0\)"),
+        ],
     )
-    def test_setup_transaction_cost_rate_invalid(self, rate: object) -> None:
+    def test_setup_transaction_cost_rate_invalid(
+        self, rate: object, match: str
+    ) -> None:
         m = self.base_class(
             market_id=0,
             prng=random.Random(42),
@@ -344,7 +358,7 @@ class TestMarket:
             simulator=Simulator(prng=random.Random(42)),
             name="test",
         )
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match=match):
             m.setup(
                 settings={
                     "tickSize": 0.001,
