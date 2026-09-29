@@ -1203,7 +1203,7 @@ class TestSequentialRunner(TestRunner):
             }
         }
         event = runner._pending_setups[2][1]["_event"]
-        assert type(event) is UserDefinedEvent
+        assert isinstance(event, UserDefinedEvent)
         assert event.name == "Shock"
 
     @pytest.mark.parametrize(
