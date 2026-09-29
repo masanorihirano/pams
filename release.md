@@ -56,11 +56,16 @@ release was about 20 to 30 minutes.
 ## Before you start
 
 The commands below assume a POSIX shell (Git Bash works on Windows) with `git`,
-`gh` (logged in to GitHub), `curl`, `python` and `uv`. Set the version once:
+`gh` (logged in to GitHub), `curl`, `python` and `uv`. Set the version:
 
 ```bash
 VERSION=0.3.0
 ```
+
+Set it again in every new shell, for example when you come back to Step 6 or
+to [Troubleshooting](#troubleshooting-and-recovery) in a new terminal. An empty
+`VERSION` does not always fail: `gh release view ""` shows the latest release,
+which is the previous version.
 
 1. **`main` is green.** Check the latest CI runs on `main`:
 
@@ -125,7 +130,9 @@ VERSION=0.3.0
    avoids a failed run.
 
 6. **Draft the release notes.** They go into the release PR body. See
-   [Step 3](#step-3-open-the-release-pr) for the format.
+   [Step 3](#step-3-open-the-release-pr) for the format. Save them as
+   `release-notes.md` in the directory you run the commands from. Do not commit
+   this file.
 
 ## Step 1: Create the release branch
 
@@ -326,8 +333,12 @@ UI; the quoted names are steps.
      `pytest tests/` against the installed package.
    - If it fails: the files are on TestPyPI, nothing is on PyPI.
 5. **`release (3.11)`**
-   - "Build" builds again with the **same uv version** as `release test`, so
-     the files are byte-identical to the ones on TestPyPI.
+   - "Build" builds again with the **same uv version** as `release test`. While
+     that uv version is within the `uv_build` range in `[build-system]` of
+     `pyproject.toml` (`>=0.12.19,<0.13` for 0.3.0), uv builds with itself, and
+     the files are byte-identical to the ones on TestPyPI. A newer uv, such as
+     0.13, downloads the newest `uv_build` 0.12.x from PyPI for each build
+     instead, so the files match only if no new `uv_build` came out in between.
    - "release" runs `uv publish` to PyPI with `PYPI_TOKEN`.
    - "Generate checksum" writes `pams-X.Y.Z-checksums.txt`.
    - "Create release" runs `gh release create` with the three files.
@@ -340,6 +351,7 @@ If a job fails, find its entry in
 ## Step 6: Verify the release
 
 ```bash
+: "${VERSION:?set VERSION=X.Y.Z first}"
 git fetch origin --tags
 git cat-file -t "$VERSION"              # "tag": an annotated tag
 git rev-parse "${VERSION}^{commit}"     # must equal the next line
@@ -350,16 +362,26 @@ git ls-remote --heads origin "release/${VERSION}"   # nothing: deleted
 **GitHub release.** It should be named `X.Y.Z`, be marked Latest, and have
 three assets: `pams-X.Y.Z-py3-none-any.whl`, `pams-X.Y.Z.tar.gz` and
 `pams-X.Y.Z-checksums.txt`. Check the checksums, and compare them with the
-hashes that PyPI lists:
+hashes that PyPI and TestPyPI list:
 
 ```bash
+: "${VERSION:?set VERSION=X.Y.Z first}"
 gh release view "$VERSION"
 gh release download "$VERSION" -D "release-${VERSION}"
 (cd "release-${VERSION}" && sha256sum -c "pams-${VERSION}-checksums.txt")
 cat "release-${VERSION}/pams-${VERSION}-checksums.txt"
-curl -s https://pypi.org/simple/pams/ \
-  | grep -o "pams-${VERSION}[-.][^\"]*sha256=[0-9a-f]*"
+for index in pypi.org test.pypi.org; do
+  echo "== ${index}"
+  curl -s "https://${index}/simple/pams/" \
+    | grep -o "pams-${VERSION}[-.][^\"]*sha256=[0-9a-f]*"
+done
 ```
+
+- The checksums file must match the PyPI hashes, because both come from the
+  build in `release`.
+- The PyPI and TestPyPI hashes should also match. If they do not, PyPI has files
+  that `release test check` did not test, and the clean install below matters
+  more. For 0.2.2, built with Poetry, the sdists differed.
 
 **PyPI page.** Open `https://pypi.org/project/pams/X.Y.Z/`. Check the README,
 "Requires: Python", the license and the classifiers.
@@ -367,16 +389,24 @@ curl -s https://pypi.org/simple/pams/ \
 **Clean install.** Install on the oldest and the newest supported Python. For
 0.3.0 these are 3.10 and 3.14; expect numpy 1.x on 3.10 and numpy 2.x on 3.14.
 
+Run it outside the repository checkout. `python -c` puts the current directory
+first on `sys.path`, so in the clone root `import pams` would load the local
+`pams/` instead of the installed package. The command below runs in a new
+temporary directory and prints where `pams` was loaded from, which must be a
+`site-packages` directory.
+
 ```bash
-for py in 3.10 3.14; do
+: "${VERSION:?set VERSION=X.Y.Z first}"
+(cd "$(mktemp -d)" && for py in 3.10 3.14; do
   uv run --no-project --isolated --refresh-package pams --python "$py" \
     --with "pams==${VERSION}" \
-    python -c "import pams, numpy; print(pams.__version__, numpy.__version__)"
-done
+    python -c "import pams, numpy; print(pams.__version__, numpy.__version__, pams.__file__)"
+done)
 ```
 
-Without uv, create a fresh venv with that Python and run
-`python -m pip install --no-cache-dir pams==X.Y.Z`.
+Without uv, create a fresh venv with that Python, run
+`python -m pip install --no-cache-dir pams==X.Y.Z`, and import `pams` from a
+directory outside the checkout.
 
 **Documentation.**
 
@@ -404,9 +434,7 @@ Without uv, create a fresh venv with that Python and run
   `gh run rerun <run-id> --failed`. It re-runs the failed jobs and the jobs that
   depend on them, including matrix legs that fail-fast cancelled. Successful
   jobs are not run again, and their outputs (the tag and the uv version) are
-  reused. To re-run one job, get its ID with
-  `gh run view <run-id> --json jobs --jq '.jobs[] | {name, databaseId}'` and run
-  `gh run rerun --job <databaseId>`.
+  reused.
 - **Avoid "Re-run all jobs".** `release test` installs the newest uv.
   - If uv had a new release since the first run, the rebuilt wheel differs (its
     `WHEEL` file names the uv version). TestPyPI then rejects it with
@@ -414,6 +442,11 @@ Without uv, create a fresh venv with that Python and run
   - If the GitHub release already exists, `gh release create` fails with
     `a release with the same tag name already exists`.
   - It is only safe while nothing has been uploaded to TestPyPI.
+- **Do not re-run a single job** (`gh run rerun --job <id>`, or the re-run
+  button of one job). GitHub also re-runs every job that depends on it. Doing
+  this on a `release test` that succeeded rebuilds and uploads with the newest
+  uv, with the same risks as "Re-run all jobs".
+- The commands below use `$VERSION`. Set it first in a new shell.
 - **A re-run cannot pick up a fix.** It uses the original event: the same merge
   commit, PR body and branch name. To change code or the version, you need a new
   release PR.
@@ -517,7 +550,8 @@ first.`
 
 - **Authentication error (403):** replace `PYPI_TOKEN`, then
   `gh run rerun <run-id> --failed`. uv is pinned to the version `release test`
-  used, so the rebuilt files are identical.
+  used, so the rebuilt files are identical, with the `uv_build` caveat in
+  [Step 5](#step-5-watch-the-release-workflow).
 - **Network error or partial upload:** `gh run rerun <run-id> --failed`.
   Identical files are skipped and missing ones are uploaded. Do it within 14
   days of the first PyPI upload.
@@ -578,8 +612,8 @@ example with the "Delete branch" button.
 
 ## Notes for 0.3.0 (the first release with uv)
 
-- **First end-to-end run.** The workflows were rewritten for uv in #131 and
-  #140, and 0.3.0 is the first release that runs them.
+- **First end-to-end run.** The workflows were reworked in #131 and switched to
+  uv in #140, and 0.3.0 is the first release that runs them.
   - The last release, 0.2.2 (October 2024), used the old Poetry-based workflow.
   - The logs of those runs are no longer available.
   - Watch every job, especially `release test`, which is the first upload.
@@ -604,5 +638,6 @@ example with the "Delete branch" button.
     `build.os`.
   - The current `.readthedocs.yml` builds, so the 0.3.0 tag should update
     `stable`. Check it after the release.
-- **Open PRs.** The open PRs are based on a commit before the switch to uv.
-  Merge `main` into them and let CI pass before merging them into the release.
+- **Open PRs.** Some open PRs are based on a commit before the switch to uv
+  (#140). Merge `main` into such a PR and let CI pass before merging it for the
+  release.
