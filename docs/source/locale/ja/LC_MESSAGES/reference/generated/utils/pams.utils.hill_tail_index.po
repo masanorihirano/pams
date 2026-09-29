@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 13:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.hill_tail_index.rst:7
+msgid "hill_tail_index"
+msgstr "hill_tail_index"
+
+#: of pams.utils.stylized_facts.hill_tail_index:1
+msgid "Estimate the tail index of a distribution with the Hill estimator."
+msgstr "Hill推定量により分布の裾指数を推定します。"
+
+#: of pams.utils.stylized_facts.hill_tail_index:3
+msgid ""
+"The absolute values are sorted in descending order, :math:`x_{(1)} \\ge "
+"x_{(2)} \\ge \\dots \\ge x_{(n)}`, and the largest :math:`k = \\lfloor q "
+"n \\rfloor` of them are used, where :math:`q` is ``tail_fraction``: "
+":math:`\\hat{\\alpha} = k / \\sum_{i=1}^{k} \\log (x_{(i)} / x_{(k+1)})` "
+"(Hill, 1975). Both tails are pooled because the absolute values are used."
+msgstr ""
+"絶対値を降順に並べ :math:`x_{(1)} \\ge x_{(2)} \\ge \\dots \\ge x_{(n)}`、そのうち最大の "
+":math:`k = \\lfloor q n \\rfloor` 個を用いて :math:`\\hat{\\alpha} = k / "
+"\\sum_{i=1}^{k} \\log (x_{(i)} / x_{(k+1)})` を求めます（Hill, 1975）。ここで "
+":math:`q` は ``tail_fraction`` です。絶対値を用いるため、両側の裾をまとめて扱います。"
+
+#: of pams.utils.stylized_facts.hill_tail_index:10
+msgid ""
+"A smaller value means a heavier tail. For a power-law tail :math:`P(|X| >"
+" x) \\propto x^{-\\alpha}`, the estimate approaches :math:`\\alpha`. For "
+"a thin tail, the estimate is finite but large: for 8,000 Gaussian samples"
+" and ``tail_fraction=0.05``, it is about 6."
+msgstr ""
+"値が小さいほど裾が重いことを意味します。べき乗則に従う裾 :math:`P(|X| > x) \\propto x^{-\\alpha}` "
+"では、推定値は :math:`\\alpha` に近づきます。裾が軽い場合、推定値は有限ですが大きくなります。8,000個の正規分布の標本と "
+"``tail_fraction=0.05`` では約6です。"
+
+#: of pams.utils.stylized_facts.hill_tail_index
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.stylized_facts.hill_tail_index:16
+msgid "samples, e.g. log returns."
+msgstr "標本。例えば対数リターン。"
+
+#: of pams.utils.stylized_facts.hill_tail_index:19
+msgid ""
+"fraction :math:`q` of the samples used as the tail. It must be in (0, 1)."
+" Defaults to 0.05."
+msgstr "裾として用いる標本の割合 :math:`q`。(0, 1) の範囲である必要があります。デフォルトは0.05です。"
+
+#: of pams.utils.stylized_facts.hill_tail_index
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.stylized_facts.hill_tail_index:23
+msgid "estimated tail index."
+msgstr "推定した裾指数。"
+
+#: of pams.utils.stylized_facts.hill_tail_index
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.utils.stylized_facts.hill_tail_index:27
+msgid "Examples"
+msgstr "例"
+

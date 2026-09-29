@@ -1,0 +1,66 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 13:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.excess_kurtosis.rst:7
+msgid "excess_kurtosis"
+msgstr "excess_kurtosis"
+
+#: of pams.utils.stylized_facts.excess_kurtosis:1
+msgid "Compute the sample excess kurtosis of a series."
+msgstr "系列の標本超過尖度を計算します。"
+
+#: of pams.utils.stylized_facts.excess_kurtosis:3
+msgid ""
+"The excess kurtosis is :math:`m_4 / m_2^2 - 3`, where :math:`m_j = "
+"\\frac{1}{n} \\sum_{t=1}^{n} (x_t - \\bar{x})^j` is the :math:`j`-th "
+"sample central moment. It is 0 for a Gaussian distribution and positive "
+"for a distribution with heavier tails. This is the same estimator as the "
+"default of :func:`scipy.stats.kurtosis`."
+msgstr ""
+"超過尖度は :math:`m_4 / m_2^2 - 3` です。ここで :math:`m_j = \\frac{1}{n} "
+"\\sum_{t=1}^{n} (x_t - \\bar{x})^j` は :math:`j` "
+"次の標本中心モーメントです。正規分布では0、より裾の重い分布では正の値になります。これは :func:`scipy.stats.kurtosis`"
+" のデフォルトと同じ推定量です。"
+
+#: of pams.utils.stylized_facts.excess_kurtosis
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.stylized_facts.excess_kurtosis:10
+msgid "series, e.g. log returns."
+msgstr "系列。例えば対数リターン。"
+
+#: of pams.utils.stylized_facts.excess_kurtosis
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.stylized_facts.excess_kurtosis:13
+msgid "excess kurtosis."
+msgstr "超過尖度。"
+
+#: of pams.utils.stylized_facts.excess_kurtosis
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.utils.stylized_facts.excess_kurtosis:17
+msgid "Examples"
+msgstr "例"
+

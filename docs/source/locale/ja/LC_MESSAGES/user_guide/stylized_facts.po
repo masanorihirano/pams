@@ -1,0 +1,459 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 13:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/stylized_facts.rst:4
+msgid "Stylized facts"
+msgstr "スタイライズド・ファクト"
+
+#: ../../source/user_guide/stylized_facts.rst:6
+msgid ""
+"Stylized facts are statistical properties that the returns of many assets"
+" share across markets and periods (Cont, 2001). An artificial market is "
+"expected to reproduce at least some of them. PAMS checks a few of them "
+"automatically: the tests in ``tests/validation`` run seeded simulations "
+"of a market with FCN agents and assert each fact with a fixed threshold, "
+"so that a change that breaks a fact makes the test suite fail."
+msgstr ""
+"スタイライズド・ファクトとは、多くの資産のリターンが市場や期間によらず共通して示す統計的性質です（Cont, "
+"2001）。人工市場には、少なくともその一部を再現することが期待されます。PAMSはそのいくつかを自動的に検査します。``tests/validation``"
+" "
+"のテストは、FCNエージェントからなる市場のシードを固定したシミュレーションを実行し、各事実を固定の閾値で検証します。そのため、ある事実を損なう変更を加えると、テストスイートが失敗します。"
+
+#: ../../source/user_guide/stylized_facts.rst:12
+msgid ""
+"This page describes which facts are checked, how they are measured, on "
+"which simulation, why the thresholds are set as they are, how to run the "
+"checks, and what is not checked."
+msgstr "このページでは、どの事実を検査するか、それらをどのように測るか、どのシミュレーションを用いるか、閾値をなぜそのように設定したか、検査の実行方法、そして検査しない事項を説明します。"
+
+#: ../../source/user_guide/stylized_facts.rst:18
+msgid "Simulation"
+msgstr "シミュレーション"
+
+#: ../../source/user_guide/stylized_facts.rst:20
+msgid ""
+"The checks use one market with 100 FCN agents "
+"(:class:`pams.agents.FCNAgent`), the setup of Chiarella and Iori (2002) "
+"that ``samples/CI2002`` also follows. The config is the one in "
+"``samples/CI2002/config.json`` except for the keys below."
+msgstr ""
+"検査では、100体のFCNエージェント（:class:`pams.agents.FCNAgent`）が取引する1つの市場を用います。これは "
+"``samples/CI2002`` と同じく、Chiarella and Iori (2002) の設定に基づきます。設定は、以下のキーを除いて"
+" ``samples/CI2002/config.json`` と同じです。"
+
+#: ../../source/user_guide/stylized_facts.rst:27
+msgid "Key"
+msgstr "キー"
+
+#: ../../source/user_guide/stylized_facts.rst:28
+msgid "``samples/CI2002``"
+msgstr "``samples/CI2002``"
+
+#: ../../source/user_guide/stylized_facts.rst:29
+msgid "Validation"
+msgstr "検証用"
+
+#: ../../source/user_guide/stylized_facts.rst:30
+msgid "``FCNAgents.timeWindowSize``"
+msgstr "``FCNAgents.timeWindowSize``"
+
+#: ../../source/user_guide/stylized_facts.rst:31
+msgid "``[100, 200]``"
+msgstr "``[100, 200]``"
+
+#: ../../source/user_guide/stylized_facts.rst:32
+msgid "``[10, 50]``"
+msgstr "``[10, 50]``"
+
+#: ../../source/user_guide/stylized_facts.rst:33
+msgid "``FCNAgents.orderMargin``"
+msgstr "``FCNAgents.orderMargin``"
+
+#: ../../source/user_guide/stylized_facts.rst:34
+msgid "``[0.0, 0.1]``"
+msgstr "``[0.0, 0.1]``"
+
+#: ../../source/user_guide/stylized_facts.rst:35
+msgid "``[0.0, 0.01]``"
+msgstr "``[0.0, 0.01]``"
+
+#: ../../source/user_guide/stylized_facts.rst:36
+msgid "``FCNAgents.meanReversionTime``"
+msgstr "``FCNAgents.meanReversionTime``"
+
+#: ../../source/user_guide/stylized_facts.rst:37
+msgid "``{\"uniform\": [50, 100]}``"
+msgstr "``{\"uniform\": [50, 100]}``"
+
+#: ../../source/user_guide/stylized_facts.rst:38
+msgid "``{\"uniform\": [400, 800]}``"
+msgstr "``{\"uniform\": [400, 800]}``"
+
+#: ../../source/user_guide/stylized_facts.rst:39
+msgid "Steps of session 0 (without order execution)"
+msgstr "セッション0のステップ数（注文の約定なし）"
+
+#: ../../source/user_guide/stylized_facts.rst:40
+msgid "100"
+msgstr "100"
+
+#: ../../source/user_guide/stylized_facts.rst:41
+msgid "1,000"
+msgstr "1,000"
+
+#: ../../source/user_guide/stylized_facts.rst:42
+msgid "Steps of session 1 (with order execution)"
+msgstr "セッション1のステップ数（注文の約定あり）"
+
+#: ../../source/user_guide/stylized_facts.rst:43
+msgid "500"
+msgstr "500"
+
+#: ../../source/user_guide/stylized_facts.rst:44
+msgid "20,000"
+msgstr "20,000"
+
+#: ../../source/user_guide/stylized_facts.rst:46
+msgid ""
+"With the parameters of the sample, the order margins of up to 10% and the"
+" noise of the expected price, which grows with the time window, spread "
+"the orders over a wide range of prices. The price then mostly jumps "
+"between the two sides of a wide spread: successive price changes have a "
+"lag-1 autocorrelation of about -0.44 (bid-ask bounce), and the absolute "
+"returns are hardly autocorrelated. Neither the absence of linear "
+"autocorrelation nor volatility clustering holds. The shorter time windows"
+" and the narrower margins keep the orders close to the current price, and"
+" the slower mean reversion weakens the pull towards the constant "
+"fundamental price, which otherwise shows up as a negative autocorrelation"
+" of returns. Chart following stays off as in the sample: with a "
+"``chartWeight`` of ``{\"expon\": [0.3]}`` or more, the price often runs "
+"away and the simulation fails."
+msgstr ""
+"サンプルのパラメータでは、最大10%の注文マージンと、時間窓とともに大きくなる期待価格のノイズによって、注文が広い価格帯に散らばります。そのため価格は主に広いスプレッドの両側の間を行き来し、連続する価格変化のラグ1の自己相関は約-0.44（ビッド・アスク・バウンス）となり、リターンの絶対値にはほとんど自己相関がありません。線形自己相関の欠如とボラティリティ・クラスタリングのいずれも成り立ちません。時間窓を短くしマージンを狭くすると、注文は現在の価格の近くに集まります。また平均回帰を遅くすると、一定のファンダメンタル価格へ引き戻す力が弱まります。この力が強いと、リターンの負の自己相関として現れます。チャート追従はサンプルと同じく無効のままです。``chartWeight``"
+" を ``{\"expon\": [0.3]}`` 以上にすると、価格がしばしば発散し、シミュレーションが失敗します。"
+
+#: ../../source/user_guide/stylized_facts.rst:60
+msgid "Returns"
+msgstr "戻り値"
+
+#: ../../source/user_guide/stylized_facts.rst:62
+msgid ""
+"The checks use the log returns of the market price "
+"(:meth:`pams.Market.get_market_prices`) in session 1, in event (tick) "
+"time: the steps in which the price does not change are skipped, so each "
+"return is the change between two successive different prices. In this "
+"setup, the price does not change in about 60% of the steps, and in "
+"calendar time the zero returns would dominate the statistics. A run gives"
+" 7,500 to 8,500 returns. They are computed by "
+":func:`pams.utils.log_returns` with ``drop_unchanged=True``."
+msgstr ""
+"検査では、セッション1における市場価格（:meth:`pams.Market.get_market_prices`）の対数リターンを、イベント（ティック）時間で用います。つまり、価格が変化しないステップは飛ばし、各リターンは連続する異なる2つの価格の間の変化です。この設定では約60%のステップで価格が変化せず、暦時間ではゼロのリターンが統計量を支配してしまいます。1回の実行で7,500から8,500個のリターンが得られます。リターンは"
+" :func:`pams.utils.log_returns` に ``drop_unchanged=True`` を指定して計算します。"
+
+#: ../../source/user_guide/stylized_facts.rst:72
+msgid "Checked facts"
+msgstr "検査する事実"
+
+#: ../../source/user_guide/stylized_facts.rst:74
+msgid ""
+"In the table, :math:`r` is the series of returns, :math:`n` is its "
+"length, and :math:`\\mathrm{ACF}(x, k)` is the sample autocorrelation of "
+"a series :math:`x` at lag :math:`k`. The calibration column gives the "
+"range over the 240 runs described in :ref:`stylized-facts-thresholds`. "
+"The reference column gives the values for 8,000 independent Gaussian "
+"returns (200 samples) or for the returns of each run in a random order, "
+"which keeps their distribution but removes any dependence in time."
+msgstr ""
+"表において、:math:`r` はリターンの系列、:math:`n` はその長さ、:math:`\\mathrm{ACF}(x, k)` は系列 "
+":math:`x` のラグ :math:`k` における標本自己相関です。「較正」の列は、:ref:`stylized-facts-"
+"thresholds` "
+"で説明する240回の実行における範囲を示します。「参照値」の列は、8,000個の独立な正規分布のリターン（200標本）の値、または各実行のリターンをランダムな順序に並べ替えたものの値を示します。並べ替えは分布を保ったまま、時間方向の依存性をすべて取り除きます。"
+
+#: ../../source/user_guide/stylized_facts.rst:84
+msgid "Fact"
+msgstr "事実"
+
+#: ../../source/user_guide/stylized_facts.rst:85
+msgid "Statistic"
+msgstr "統計量"
+
+#: ../../source/user_guide/stylized_facts.rst:86
+msgid "Threshold"
+msgstr "閾値"
+
+#: ../../source/user_guide/stylized_facts.rst:87
+msgid "Calibration"
+msgstr "較正"
+
+#: ../../source/user_guide/stylized_facts.rst:88
+msgid "Reference"
+msgstr "参照値"
+
+#: ../../source/user_guide/stylized_facts.rst:89
+msgid "Heavy tails"
+msgstr "裾の重さ"
+
+#: ../../source/user_guide/stylized_facts.rst:90
+msgid "Excess kurtosis of :math:`r` (:func:`pams.utils.excess_kurtosis`)"
+msgstr ":math:`r` の超過尖度（:func:`pams.utils.excess_kurtosis`）"
+
+#: ../../source/user_guide/stylized_facts.rst:91
+msgid "Above 3"
+msgstr "3より大きい"
+
+#: ../../source/user_guide/stylized_facts.rst:92
+msgid "5.8 to 30.3 (median 12.5)"
+msgstr "5.8から30.3（中央値12.5）"
+
+#: ../../source/user_guide/stylized_facts.rst:93
+msgid "-0.13 to 0.20 for Gaussian returns"
+msgstr "正規分布のリターンでは-0.13から0.20"
+
+#: ../../source/user_guide/stylized_facts.rst:94
+msgid "Tail exponent"
+msgstr "裾指数"
+
+#: ../../source/user_guide/stylized_facts.rst:95
+msgid ""
+"Hill estimate of the tail index from the largest 5% of :math:`|r|` "
+"(:func:`pams.utils.hill_tail_index`)"
+msgstr ":math:`|r|` の上位5%から求めた裾指数のHill推定値（:func:`pams.utils.hill_tail_index`）"
+
+#: ../../source/user_guide/stylized_facts.rst:97
+msgid "Between 1.5 and 4.5"
+msgstr "1.5より大きく4.5より小さい"
+
+#: ../../source/user_guide/stylized_facts.rst:98
+msgid "1.72 to 3.25 (median 2.51)"
+msgstr "1.72から3.25（中央値2.51）"
+
+#: ../../source/user_guide/stylized_facts.rst:99
+msgid "5.4 to 6.8 for Gaussian returns; 2 to 5 in real markets (Cont, 2001)"
+msgstr "正規分布のリターンでは5.4から6.8、実際の市場では2から5（Cont, 2001）"
+
+#: ../../source/user_guide/stylized_facts.rst:100
+msgid "Absence of linear autocorrelation"
+msgstr "線形自己相関の欠如"
+
+#: ../../source/user_guide/stylized_facts.rst:101
+msgid ""
+"Largest :math:`|\\mathrm{ACF}(r, k)|` over :math:`k = 1, \\dots, 20` "
+"(:func:`pams.utils.autocorrelation`)"
+msgstr ""
+":math:`k = 1, \\dots, 20` における :math:`|\\mathrm{ACF}(r, k)|` "
+"の最大値（:func:`pams.utils.autocorrelation`）"
+
+#: ../../source/user_guide/stylized_facts.rst:103
+msgid "Below 0.1"
+msgstr "0.1より小さい"
+
+#: ../../source/user_guide/stylized_facts.rst:104
+msgid "0.024 to 0.067"
+msgstr "0.024から0.067"
+
+#: ../../source/user_guide/stylized_facts.rst:105
+msgid ""
+":math:`1.96 / \\sqrt{n} \\approx 0.022` bounds 95% of the values for "
+"white noise"
+msgstr "ホワイトノイズでは、値の95%が :math:`1.96 / \\sqrt{n} \\approx 0.022` 以内に収まる"
+
+#: ../../source/user_guide/stylized_facts.rst:106
+#: ../../source/user_guide/stylized_facts.rst:111
+msgid "Volatility clustering"
+msgstr "ボラティリティ・クラスタリング"
+
+#: ../../source/user_guide/stylized_facts.rst:107
+msgid ":math:`\\mathrm{ACF}(|r|, 1)`"
+msgstr ":math:`\\mathrm{ACF}(|r|, 1)`"
+
+#: ../../source/user_guide/stylized_facts.rst:108
+msgid "Above 0.1"
+msgstr "0.1より大きい"
+
+#: ../../source/user_guide/stylized_facts.rst:109
+msgid "0.144 to 0.240 (median 0.185)"
+msgstr "0.144から0.240（中央値0.185）"
+
+#: ../../source/user_guide/stylized_facts.rst:110
+msgid "-0.028 to 0.034 for shuffled returns"
+msgstr "並べ替えたリターンでは-0.028から0.034"
+
+#: ../../source/user_guide/stylized_facts.rst:112
+msgid "Mean of :math:`\\mathrm{ACF}(|r|, k)` over :math:`k = 1, \\dots, 10`"
+msgstr ":math:`k = 1, \\dots, 10` における :math:`\\mathrm{ACF}(|r|, k)` の平均"
+
+#: ../../source/user_guide/stylized_facts.rst:113
+msgid "Above 0.02"
+msgstr "0.02より大きい"
+
+#: ../../source/user_guide/stylized_facts.rst:114
+msgid "0.034 to 0.077 (median 0.053)"
+msgstr "0.034から0.077（中央値0.053）"
+
+#: ../../source/user_guide/stylized_facts.rst:115
+msgid "-0.009 to 0.010 for shuffled returns"
+msgstr "並べ替えたリターンでは-0.009から0.010"
+
+#: ../../source/user_guide/stylized_facts.rst:117
+msgid ""
+"The tests also require more than 5,000 returns, so that a run in which "
+"the price hardly moves fails instead of giving meaningless statistics."
+msgstr "テストでは、リターンが5,000個より多いことも要求します。これにより、価格がほとんど動かない実行では、意味のない統計量を返すのではなくテストが失敗します。"
+
+#: ../../source/user_guide/stylized_facts.rst:123
+msgid "Thresholds"
+msgstr "閾値"
+
+#: ../../source/user_guide/stylized_facts.rst:125
+msgid ""
+"The tests run seeds 0 and 1. A seed fixes the run, so the tests are "
+"deterministic, but the thresholds are not tuned to these two runs. The "
+"results of the floating-point math library can differ in the last digit "
+"between platforms, and such a tiny difference can change which orders "
+"match and then the whole path of the price. The thresholds must therefore"
+" hold for any typical run, not only for the two seeds. They were "
+"calibrated on 240 runs with seeds 0 to 239:"
+msgstr "テストはシード0と1で実行します。シードによって実行が決まるため、テストは決定的ですが、閾値はこの2回の実行に合わせて調整したものではありません。浮動小数点数の数学ライブラリの結果はプラットフォームによって最後の桁が異なることがあり、そのようなわずかな違いで約定する注文が変わり、その後の価格の経路全体が変わることがあります。そのため、閾値は2つのシードだけでなく、典型的などの実行でも成り立つ必要があります。閾値は、シード0から239の240回の実行で較正しました："
+
+#: ../../source/user_guide/stylized_facts.rst:131
+msgid ""
+"every threshold holds in all 240 runs, with a clear margin (see the table"
+" above);"
+msgstr "すべての閾値が、240回すべての実行で十分な余裕をもって成り立ちます（上の表を参照）。"
+
+#: ../../source/user_guide/stylized_facts.rst:132
+msgid ""
+"every threshold lies far from the values of returns without the fact, "
+"i.e. of Gaussian returns for the tails and of shuffled returns for "
+"volatility clustering, so the tests fail if a fact disappears."
+msgstr "すべての閾値が、その事実を持たないリターンの値、つまり裾については正規分布のリターン、ボラティリティ・クラスタリングについては並べ替えたリターンの値から大きく離れています。そのため、事実が失われるとテストは失敗します。"
+
+#: ../../source/user_guide/stylized_facts.rst:136
+msgid ""
+"The bounds are loose on purpose: they check that the facts are present, "
+"not their exact size. For example, the tail index is not compared with a "
+"value estimated from real data. It only has to be in the range of heavy "
+"tails rather than that of thin tails. The lower bound of 1.5 catches runs"
+" that a few extreme jumps dominate."
+msgstr "境界は意図的に緩く設定しています。これらは事実が存在することを検査するものであり、その正確な大きさを検査するものではありません。例えば、裾指数は実データから推定した値とは比較しません。裾が軽い範囲ではなく、裾が重い範囲にあればよいとしています。下限の1.5は、少数の極端なジャンプが支配する実行を検出します。"
+
+#: ../../source/user_guide/stylized_facts.rst:141
+msgid ""
+"If a change to PAMS makes a check fail, first decide whether the change "
+"is meant to alter the market dynamics. If it is, calibrate again on many "
+"seeds, and update both the thresholds in "
+"``tests/validation/test_stylized_facts.py`` and this page."
+msgstr ""
+"PAMSへの変更によって検査が失敗した場合は、まずその変更が市場のダイナミクスを変えることを意図したものかどうかを判断してください。意図したものであれば、多数のシードで較正し直し、``tests/validation/test_stylized_facts.py``"
+" の閾値とこのページの両方を更新してください。"
+
+#: ../../source/user_guide/stylized_facts.rst:148
+msgid "Running the checks"
+msgstr "検査の実行"
+
+#: ../../source/user_guide/stylized_facts.rst:150
+msgid ""
+"The checks are part of the test suite, so they run in CI on every "
+"supported operating system and Python version. To run only them:"
+msgstr "検査はテストスイートの一部であるため、サポートしているすべてのOSとPythonのバージョンでCIにより実行されます。検査だけを実行するには、次のようにします："
+
+#: ../../source/user_guide/stylized_facts.rst:157
+msgid ""
+"The two runs take a few seconds in total. The statistics are public "
+"functions of :mod:`pams.utils`, so they also work on the prices of your "
+"own simulations:"
+msgstr "2回の実行には合計で数秒かかります。統計量は :mod:`pams.utils` の公開関数なので、独自のシミュレーションの価格にも使えます："
+
+#: ../../source/user_guide/stylized_facts.rst:179
+msgid "Out of scope"
+msgstr "対象外"
+
+#: ../../source/user_guide/stylized_facts.rst:181
+msgid ""
+"**Aggregational Gaussianity.** The excess kurtosis of the returns over "
+"100 steps is below that of the returns over 10 steps in all 240 runs "
+"(median ratio 0.09), but the ratio reaches 0.95 in the worst run: a run "
+"has only 200 returns over 100 steps, and a few large moves dominate their"
+" kurtosis. This fact is therefore not asserted."
+msgstr ""
+"**集計による正規性（aggregational Gaussianity）。** "
+"100ステップごとのリターンの超過尖度は、240回すべての実行で10ステップごとのリターンの超過尖度より小さくなります（比の中央値は0.09）。しかし、最も悪い実行ではこの比が0.95に達します。1回の実行には100ステップごとのリターンが200個しかなく、その尖度は少数の大きな値動きに支配されるためです。そのため、この事実は検証しません。"
+
+#: ../../source/user_guide/stylized_facts.rst:185
+msgid ""
+"**Long memory of volatility.** The autocorrelation of absolute returns "
+"decays quickly and falls below :math:`1.96 / \\sqrt{n}` after 4 to 14 "
+"lags (median 7). It does not decay slowly like a power law, as it does in"
+" real markets."
+msgstr ""
+"**ボラティリティの長期記憶。** リターンの絶対値の自己相関は速く減衰し、4から14ラグ（中央値7）で :math:`1.96 / "
+"\\sqrt{n}` を下回ります。実際の市場のように、べき乗則に従ってゆっくり減衰することはありません。"
+
+#: ../../source/user_guide/stylized_facts.rst:188
+msgid ""
+"**Other facts** listed by Cont (2001), such as the leverage effect, the "
+"gain/loss asymmetry and the correlation between volume and volatility, "
+"are not checked."
+msgstr "レバレッジ効果、利益と損失の非対称性、出来高とボラティリティの相関など、Cont (2001) が挙げる **その他の事実** は検査しません。"
+
+#: ../../source/user_guide/stylized_facts.rst:190
+msgid ""
+"**Other setups.** Only the market above is checked. The samples and the "
+"other agent classes are not validated, and no parameter is calibrated to "
+"real data."
+msgstr ""
+"**その他の設定。** "
+"検査するのは上記の市場だけです。サンプルやその他のエージェントクラスは検証しておらず、どのパラメータも実データに合わせて較正していません。"
+
+#: ../../source/user_guide/stylized_facts.rst:196
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/stylized_facts.rst:198
+msgid ""
+"Chiarella, C., & Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. Quantitative Finance, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+msgstr ""
+"Chiarella, C., & Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. Quantitative Finance, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+
+#: ../../source/user_guide/stylized_facts.rst:200
+msgid ""
+"Cont, R. (2001). Empirical properties of asset returns: stylized facts "
+"and statistical issues. Quantitative Finance, 1(2), 223–236. "
+"https://doi.org/10.1080/713665670"
+msgstr ""
+"Cont, R. (2001). Empirical properties of asset returns: stylized facts "
+"and statistical issues. Quantitative Finance, 1(2), 223–236. "
+"https://doi.org/10.1080/713665670"
+
+#: ../../source/user_guide/stylized_facts.rst:202
+msgid ""
+"Hill, B. M. (1975). A simple general approach to inference about the tail"
+" of a distribution. The Annals of Statistics, 3(5), 1163–1174. "
+"https://doi.org/10.1214/aos/1176343247"
+msgstr ""
+"Hill, B. M. (1975). A simple general approach to inference about the tail"
+" of a distribution. The Annals of Statistics, 3(5), 1163–1174. "
+"https://doi.org/10.1214/aos/1176343247"
+
