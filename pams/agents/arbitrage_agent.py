@@ -71,7 +71,9 @@ class ArbitrageAgent(HighFrequencyAgent):
 
         Note:
             This warns if some component markets of an accessible index market are not accessible,
-            or if no accessible market is an index market. Markets not registered to the simulator yet are ignored.
+            or if no accessible market is an index market.
+            The latter check is skipped if some accessible markets are not registered to the simulator yet,
+            because they may be index markets.
 
         """
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
