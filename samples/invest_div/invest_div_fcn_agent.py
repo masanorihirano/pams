@@ -28,7 +28,8 @@ class InvestDivFCNAgent(FCNAgent):
       no orders.
     - Otherwise, it makes the orders of :class:`pams.agents.FCNAgent`. The order for a market is kept as it is if
       the absolute asset value in the market is at most ``diversity_ratio`` times the net asset value. If not,
-      it is replaced by a market order of one unit that reduces the position in the market.
+      it is replaced by a market order of one unit that reduces the position in the market. The market order is
+      submitted only if it can be executed at once (see :meth:`is_market_order_executable`).
 
     References:
         - Nozaki, Mizuta, Yagi (2016) Investigation of the rule for investment diversification at the time of
@@ -113,6 +114,27 @@ class InvestDivFCNAgent(FCNAgent):
             market_id=market.market_id
         )
 
+    def is_market_order_executable(self, market: Market, is_buy: bool) -> bool:
+        """Check whether a market order can be executed at once in the market.
+
+        In plhamJ, a market order that cannot be executed at once stays in the order book with a NaN price, which
+        no limit order matches, until it expires. In PAMS, it would be executed later against the next order on
+        the other side at the price of that order. Therefore, this agent submits the market order of the
+        regulation only if this method returns True.
+
+        Args:
+            market (Market): market.
+            is_buy (bool): whether the market order is a buy order.
+
+        Returns:
+            bool: whether the market is running (i.e., orders are executed) and the order book on the other side
+            has orders.
+
+        """
+        if not market.is_running:
+            return False
+        return len(market.sell_order_book if is_buy else market.buy_order_book) > 0
+
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """Submit orders based on FCN-based calculation under the regulation for investment diversification.
 
@@ -146,7 +168,9 @@ class InvestDivFCNAgent(FCNAgent):
                 continue
             # replace the order with a market order reducing the position by one unit (no optimization).
             asset_volume: int = self.get_asset_volume(market_id=market.market_id)
-            if asset_volume != 0:
+            if asset_volume != 0 and self.is_market_order_executable(
+                market=market, is_buy=asset_volume < 0
+            ):
                 orders.append(
                     Order(
                         agent_id=self.agent_id,
@@ -154,7 +178,7 @@ class InvestDivFCNAgent(FCNAgent):
                         is_buy=asset_volume < 0,
                         kind=MARKET_ORDER,
                         volume=1,
-                        ttl=10,  # no effect if the order is executed immediately
+                        ttl=10,  # the same as plhamJ (no effect if the order is executed at once)
                     )
                 )
         return orders

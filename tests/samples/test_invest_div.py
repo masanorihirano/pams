@@ -16,6 +16,7 @@ import pytest
 from pams import Market
 from pams import Order
 from pams import Simulator
+from pams.logs import ExecutionLog
 from pams.logs import Logger
 from pams.logs import OrderLog
 from pams.logs.market_step_loggers import MarketStepSaver
@@ -232,6 +233,8 @@ class TestInvestDivFCNAgent:
             },
             accessible_markets_ids=[0, 1],
         )
+        for market in sim.markets:
+            add_limit_order(market=market, is_buy=True, price=300.0)
         # net asset value: 16000, asset value in a market: 3000 = 0.1875 * 16000
         orders = cast(List[Order], agent.submit_orders(markets=sim.markets))
         assert len(orders) == 2
@@ -274,11 +277,51 @@ class TestInvestDivFCNAgent:
             agent.set_asset_volume(market_id=0, volume=-30)
         if has_counter_order:
             add_limit_order(market=sim.markets[0], is_buy=is_long, price=300.0)
-        # the market order is submitted whether it can be executed immediately or not.
+        # the market order is submitted only if it can be executed at once.
         orders = cast(List[Order], agent.submit_orders(markets=sim.markets))
-        assert len(orders) == 2
-        assert_position_reducing_order(order=orders[0], market_id=0, is_buy=not is_long)
-        assert_fcn_limit_order(order=orders[1], market_id=1)
+        if has_counter_order:
+            assert len(orders) == 2
+            assert_position_reducing_order(
+                order=orders[0], market_id=0, is_buy=not is_long
+            )
+            assert_fcn_limit_order(order=orders[1], market_id=1)
+        else:
+            assert len(orders) == 1
+            assert_fcn_limit_order(order=orders[0], market_id=1)
+
+    def test_submit_orders_over_diversity_ratio_without_execution(self) -> None:
+        sim = create_simulator_and_markets()
+        agent = create_agent(
+            sim=sim, settings=BASE_SETTINGS, accessible_markets_ids=[0, 1]
+        )
+        # net asset value: 10000 + 15000 = 25000, asset value in market 0: 15000 > 10000
+        agent.set_asset_volume(market_id=0, volume=50)
+        add_limit_order(market=sim.markets[0], is_buy=True, price=300.0)
+        sim.markets[0]._is_running = False
+        # no market order is submitted to the market without the order execution.
+        orders = cast(List[Order], agent.submit_orders(markets=sim.markets))
+        assert len(orders) == 1
+        assert_fcn_limit_order(order=orders[0], market_id=1)
+
+    def test_is_market_order_executable(self) -> None:
+        sim = create_simulator_and_markets()
+        agent = create_agent(
+            sim=sim, settings=BASE_SETTINGS, accessible_markets_ids=[0, 1]
+        )
+        market = sim.markets[0]
+        assert not agent.is_market_order_executable(market=market, is_buy=True)
+        assert not agent.is_market_order_executable(market=market, is_buy=False)
+        # a buy market order needs a sell order and vice versa.
+        add_limit_order(market=market, is_buy=False, price=310.0)
+        assert agent.is_market_order_executable(market=market, is_buy=True)
+        assert not agent.is_market_order_executable(market=market, is_buy=False)
+        add_limit_order(market=market, is_buy=True, price=290.0)
+        assert agent.is_market_order_executable(market=market, is_buy=True)
+        assert agent.is_market_order_executable(market=market, is_buy=False)
+        # no market order is executed in the market without the order execution.
+        market._is_running = False
+        assert not agent.is_market_order_executable(market=market, is_buy=True)
+        assert not agent.is_market_order_executable(market=market, is_buy=False)
 
     def test_submit_orders_without_position(self) -> None:
         sim = create_simulator_and_markets()
@@ -321,9 +364,13 @@ class OrderLogSaver(Logger):
     def __init__(self) -> None:
         super().__init__()
         self.order_logs: List[OrderLog] = []
+        self.execution_logs: List[ExecutionLog] = []
 
     def process_order_log(self, log: OrderLog) -> None:
         self.order_logs.append(log)
+
+    def process_execution_log(self, log: ExecutionLog) -> None:
+        self.execution_logs.append(log)
 
 
 def run_sample(config: Dict[str, Any], seed: int, logger: Logger) -> SequentialRunner:
@@ -372,6 +419,14 @@ def test_market_orders_in_simulation() -> None:
     for log in market_order_logs:
         assert log.agent_id in invest_div_agent_ids
         assert log.volume == 1
+
+    # all the market orders are executed at the time when they are placed.
+    execution_times: Dict[Tuple[int, int], int] = {}
+    for execution_log in logger.execution_logs:
+        for order_id in [execution_log.buy_order_id, execution_log.sell_order_id]:
+            execution_times[(execution_log.market_id, order_id)] = execution_log.time
+    for log in market_order_logs:
+        assert execution_times[(log.market_id, log.order_id)] == log.time
 
 
 def test_invest_div_fcn_agent_without_binding_regulation() -> None:
