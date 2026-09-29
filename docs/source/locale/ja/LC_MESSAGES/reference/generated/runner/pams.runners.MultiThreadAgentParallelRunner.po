@@ -68,6 +68,30 @@ msgstr ""
 "ワーカー数は設定ファイルの ``simulation.numParallel`` "
 "で設定できます。デフォルトはCPU数から1を引いた値（ただし最小1）です。"
 
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:23
+msgid ""
+"Subclasses can customize the workers by overriding the following internal "
+"methods:"
+msgstr "サブクラスは、以下の内部メソッドをオーバーライドすることでワーカーをカスタマイズできます："
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:25
+msgid "``_create_executor``: creates the executor."
+msgstr "``_create_executor``：エグゼキューターを作成します。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:26
+msgid ""
+"``_get_worker_initializer`` and ``_get_worker_initargs``: a function called "
+"once on each worker before it runs any task, and its arguments."
+msgstr ""
+"``_get_worker_initializer`` と "
+"``_get_worker_initargs``：各ワーカーがタスクを実行する前に一度だけ呼び出される関数と、その引数です。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:28
+msgid ""
+"``_split_agents_into_chunks``: splits the agents asked in parallel into the "
+"tasks of the executor."
+msgstr "``_split_agents_into_chunks``：並列に問い合わせるエージェントを、エグゼキューターのタスクに分割します。"
+
 #: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:24
 msgid ""
 ":func:`pams.agents.Agent.submit_orders` is called on worker threads "
