@@ -483,6 +483,7 @@ class TestOrderMistakeShock(TestEventABC):
         self, price_change_rate: float, is_buy: bool
     ) -> None:
         # as OrderMistakeShock of plhamJ, a non-positive rate places a sell order
+        # and the price is based on the market price, not on the fundamental price
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
         session = Session(
@@ -517,7 +518,9 @@ class TestOrderMistakeShock(TestEventABC):
         sim.fundamentals.add_market(
             market_id=0, initial=300.0, drift=0.0, volatility=0.0, start_at=0
         )
-        market._update_time(next_fundamental_price=300.0)
+        market._update_time(next_fundamental_price=310.0)
+        assert market.get_market_price() == 300.0
+        assert market.get_fundamental_price() == 310.0
         event = OrderMistakeShock(
             event_id=1,
             prng=random.Random(42),
@@ -742,7 +745,7 @@ class TestOrderMistakeShock(TestEventABC):
 
     @pytest.mark.parametrize(
         "price_change_rate, is_buy, round_to_tick",
-        [(-0.0505, False, math.ceil), (0.0505, True, math.floor)],
+        [(-0.0485, False, math.ceil), (0.0485, True, math.floor)],
     )
     def test_mistaken_order_in_runner(
         self,
@@ -751,9 +754,9 @@ class TestOrderMistakeShock(TestEventABC):
         round_to_tick: Callable[[float], int],
     ) -> None:
         # as OrderMistakeShock of plhamJ, the mistaken order is placed at the trigger time
-        # counted from the session start, its price is rounded to the tick size (up for
-        # sell and down for buy), it is executed against the order book immediately, and
-        # it expires after orderTimeLength steps
+        # counted from the session start, its price is based on the market price and
+        # rounded to the tick size (up for sell and down for buy), it is executed against
+        # the order book immediately, and it expires after orderTimeLength steps
         tick_size = 1.0
         order_time_length = 3
         config = {
@@ -781,7 +784,7 @@ class TestOrderMistakeShock(TestEventABC):
             "OrderMistakeShock": {
                 "class": "OrderMistakeShock",
                 "target": "Market",
-                "triggerTime": 0,
+                "triggerTime": 5,
                 "priceChangeRate": price_change_rate,
                 "orderVolume": 10000,
                 "orderTimeLength": order_time_length,
@@ -811,7 +814,7 @@ class TestOrderMistakeShock(TestEventABC):
             settings=config, prng=random.Random(42), logger=logger
         )
         runner.main()
-        trigger_time = 30
+        trigger_time = 30 + 5
         shock_logs = [log for log in logger.order_logs if log.volume == 10000]
         assert len(shock_logs) == 1
         shock_log = shock_logs[0]
@@ -819,21 +822,32 @@ class TestOrderMistakeShock(TestEventABC):
         assert shock_log.kind == LIMIT_ORDER
         assert shock_log.is_buy == is_buy
         assert shock_log.ttl == order_time_length
+        # no order is added: the order submitted by the agent at the trigger time is
+        # overridden (with maxNormalOrders 1, one FCNAgent submits one order per step)
+        order_logs_at_trigger = [
+            log for log in logger.order_logs if log.time == trigger_time
+        ]
+        assert order_logs_at_trigger == [shock_log]
         base_price = logger.step_begin_prices[trigger_time]
-        expected_price = (
-            round_to_tick(base_price * (1 + price_change_rate) / tick_size) * tick_size
+        raw_price = base_price * (1 + price_change_rate) / tick_size
+        # the directional rounding differs from the rounding to the nearest tick
+        assert round_to_tick(raw_price) != round(raw_price)
+        assert shock_log.price == round_to_tick(raw_price) * tick_size
+        # the price is not based on the fundamental price
+        fundamental_price = runner.simulator.markets[0].get_fundamental_price(
+            time=trigger_time
         )
-        assert shock_log.price == expected_price
+        raw_fundamental_based_price = (
+            fundamental_price * (1 + price_change_rate) / tick_size
+        )
+        assert shock_log.price != round_to_tick(raw_fundamental_based_price) * tick_size
         shock_executions = [
             log
             for log in logger.execution_logs
-            if shock_log.order_id in (log.buy_order_id, log.sell_order_id)
+            if (log.buy_order_id if is_buy else log.sell_order_id) == shock_log.order_id
         ]
         assert len(shock_executions) > 0
         assert shock_executions[0].time == trigger_time
-        for log in shock_executions:
-            owner = log.buy_agent_id if is_buy else log.sell_agent_id
-            assert owner == shock_log.agent_id
         assert sum(log.volume for log in shock_executions) < 10000
         for t in range(trigger_time, trigger_time + order_time_length + 1):
             assert shock_log.order_id in logger.step_end_order_ids[t]
