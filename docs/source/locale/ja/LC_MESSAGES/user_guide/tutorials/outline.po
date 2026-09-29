@@ -56,7 +56,41 @@ msgstr ""
 "**公開されているパラメータやメソッドであっても、アクセスしてよいとは限りません。** "
 "利便性のため、一部のパラメータやメソッドは、名前を「_」で始めずに公開しています。しかし、それらにアクセスすべきかどうかは、常に何をしたいかによって異なります。したがって、アクセス可能なパラメータやメソッドの中には、実際の市場との対応という観点からは使用が適切でないものもあります。"
 
-#: ../../source/user_guide/tutorials/outline.rst:19
-msgid "TBD..."
-msgstr "準備中..."
+#: ../../source/user_guide/tutorials/outline.rst:20
+msgid "The tutorials"
+msgstr "チュートリアルの内容"
+
+#: ../../source/user_guide/tutorials/outline.rst:21
+msgid ""
+"The tutorials start from the same small simulation, one market and 100 "
+"FCN agents:"
+msgstr "各チュートリアルは、1つの市場と100体のFCNエージェントからなる同じ小さなシミュレーションから始まります："
+
+#: ../../source/user_guide/tutorials/outline.rst:23
+msgid ""
+":doc:`first_simulation`: run a simulation from Python, save and read its "
+"results, and plot the prices."
+msgstr ":doc:`first_simulation`：Pythonからシミュレーションを実行し、その結果を保存して読み出し、価格をプロットします。"
+
+#: ../../source/user_guide/tutorials/outline.rst:24
+msgid ":doc:`custom_agent`: write your own agent, and change a built-in one."
+msgstr ":doc:`custom_agent`：独自のエージェントを作成し、組み込みのエージェントを変更します。"
+
+#: ../../source/user_guide/tutorials/outline.rst:25
+msgid ""
+":doc:`custom_event`: write an event that changes the simulation while it "
+"runs, and extend a market."
+msgstr ":doc:`custom_event`：実行中のシミュレーションを変化させるイベントを作成し、市場を拡張します。"
+
+#: ../../source/user_guide/tutorials/outline.rst:26
+msgid ""
+":doc:`custom_logger`: write a logger that records the results in your own"
+" format."
+msgstr ":doc:`custom_logger`：結果を独自の形式で記録するロガーを作成します。"
+
+#: ../../source/user_guide/tutorials/outline.rst:28
+msgid ""
+"Each tutorial comes with a complete script that you can download and run."
+" Every key of the configuration is explained in :ref:`config`."
+msgstr "各チュートリアルには、ダウンロードして実行できる完全なスクリプトが付いています。設定の各キーの説明は :ref:`config` にあります。"
 
