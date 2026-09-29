@@ -165,7 +165,7 @@ msgstr ""
 
 #: ../../source/user_guide/stylized_facts.rst:67
 msgid "Returns"
-msgstr "戻り値"
+msgstr "リターン"
 
 #: ../../source/user_guide/stylized_facts.rst:69
 msgid ""
