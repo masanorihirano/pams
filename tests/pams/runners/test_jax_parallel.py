@@ -176,9 +176,9 @@ def test_same_result_as_sequential(num_parallel: int, max_normal_orders: int) ->
 def test_same_result_as_sequential_with_shared_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # restore the globals of the main process after the test
-    monkeypatch.setattr(jax_dummy, "SHARED_PARAMS", None)
-    monkeypatch.setattr(jax_dummy, "PREALLOCATE_AT_LOAD", None)
+    # restore the state of the main process after the test
+    monkeypatch.setattr(jax_dummy.PROCESS_STATE, "shared_params", None)
+    monkeypatch.setattr(jax_dummy.PROCESS_STATE, "preallocate_at_load", None)
     setting = copy.deepcopy(DEFAULT_SETTING)
     setting["FlaxAgents"]["class"] = "SharedFlaxModelAgent"
     sequential_runner, parallel_runner = _make_runners(

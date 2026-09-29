@@ -6,6 +6,7 @@ worker processes.
 """
 import math
 import os
+import random
 from typing import Any
 from typing import Dict
 from typing import List
@@ -18,17 +19,28 @@ import jax
 import jax.numpy as jnp
 
 from pams import LIMIT_ORDER
+from pams import Simulator
 from pams.agents import Agent
+from pams.logs import Logger
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
 
-# number of times that predict_price_change is traced, i.e., compiled, on this process
-TRACE_COUNT = 0
-# parameters of the model loaded by load_shared_model on this process
-SHARED_PARAMS: Optional[Any] = None
-# XLA_PYTHON_CLIENT_PREALLOCATE when load_shared_model was called on this process
-PREALLOCATE_AT_LOAD: Optional[str] = None
+
+class ProcessState:
+    """State of the current process, updated by the functions below."""
+
+    def __init__(self) -> None:
+        """Initialize the state of a process that has not run any function below."""
+        # number of times that predict_price_change is traced, i.e., compiled
+        self.trace_count: int = 0
+        # parameters of the model loaded by load_shared_model
+        self.shared_params: Optional[Any] = None
+        # XLA_PYTHON_CLIENT_PREALLOCATE when load_shared_model was called
+        self.preallocate_at_load: Optional[str] = None
+
+
+PROCESS_STATE = ProcessState()
 
 
 class PriceModel(nn.Module):
@@ -53,9 +65,8 @@ def init_params(model: PriceModel, seed: int) -> Any:
 def _predict_price_change(
     model: PriceModel, params: Any, features: jax.Array
 ) -> jax.Array:
-    global TRACE_COUNT
     # this line runs only when the function is traced
-    TRACE_COUNT += 1
+    PROCESS_STATE.trace_count += 1
     return model.apply(params, features)
 
 
@@ -64,15 +75,14 @@ predict_price_change = jax.jit(_predict_price_change, static_argnums=0)
 
 
 def get_trace_count() -> int:
-    """Get TRACE_COUNT of the current process."""
-    return TRACE_COUNT
+    """Get the number of times that predict_price_change is traced on the current process."""
+    return PROCESS_STATE.trace_count
 
 
 def load_shared_model(seed: int) -> None:
     """Load the parameters of the shared model on the current process, as a worker initializer."""
-    global SHARED_PARAMS, PREALLOCATE_AT_LOAD
-    PREALLOCATE_AT_LOAD = os.environ.get("XLA_PYTHON_CLIENT_PREALLOCATE")
-    SHARED_PARAMS = init_params(model=PriceModel(), seed=seed)
+    PROCESS_STATE.preallocate_at_load = os.environ.get("XLA_PYTHON_CLIENT_PREALLOCATE")
+    PROCESS_STATE.shared_params = init_params(model=PriceModel(), seed=seed)
 
 
 def get_jax_worker_config() -> Dict[str, Optional[str]]:
@@ -87,7 +97,7 @@ def get_jax_worker_config() -> Dict[str, Optional[str]]:
         "XLA_CLIENT_MEM_FRACTION": os.environ.get("XLA_CLIENT_MEM_FRACTION"),
         "jax_platforms": jax.config.jax_platforms,
         "default_backend": jax.default_backend(),
-        "preallocate_at_load": PREALLOCATE_AT_LOAD,
+        "preallocate_at_load": PROCESS_STATE.preallocate_at_load,
     }
 
 
@@ -150,6 +160,19 @@ class FlaxPriceAgent(PriceModelAgent):
     ``self.prng``.
     """
 
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent without the parameters, which are initialized by setup."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.model = PriceModel()
+        self.params: Any = None
+
     def setup(
         self,
         settings: Dict[str, Any],
@@ -158,10 +181,7 @@ class FlaxPriceAgent(PriceModelAgent):
         **kwargs: Any,
     ) -> None:
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
-        self.model = PriceModel()
-        self.params: Any = init_params(
-            model=self.model, seed=self.prng.randrange(2**31)
-        )
+        self.params = init_params(model=self.model, seed=self.prng.randrange(2**31))
 
     def _get_model_and_params(self) -> Tuple[PriceModel, Any]:
         return self.model, self.params
@@ -174,6 +194,6 @@ class SharedFlaxModelAgent(PriceModelAgent):
     """
 
     def _get_model_and_params(self) -> Tuple[PriceModel, Any]:
-        if SHARED_PARAMS is None:
+        if PROCESS_STATE.shared_params is None:
             raise RuntimeError("the shared model is not loaded on this process")
-        return PriceModel(), SHARED_PARAMS
+        return PriceModel(), PROCESS_STATE.shared_params
