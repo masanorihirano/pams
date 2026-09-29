@@ -19,12 +19,18 @@ class DarkPoolMarket(Market):
 
     This class inherits from the :class:`pams.market.Market` class.
 
-    A dark pool does not show its order book. This market accepts only market orders
-    and matches the buy and sell orders in time priority at the current mid price of
-    its lit market, which is set by the parameter "markets". If one side of the order
-    book of the lit market is empty, the market price of the lit market is used
-    instead. The price is rounded to the tick size in favor of the earlier order: up
-    when the buy order comes later and down when the sell order comes later.
+    In a dark pool, the order book is not disclosed to traders. This class still
+    exposes its order book in the same way as :class:`pams.market.Market`, so agents
+    are expected to decide their orders from the lit market without reading the order
+    book of this market, as
+    :class:`samples.dark_pool.dark_pool_fcn_agent.DarkPoolFCNAgent` does.
+
+    This market accepts only market orders and matches the buy and sell orders in time
+    priority at the current mid price of its lit market, which is set by the parameter
+    "markets". If one side of the order book of the lit market is empty, the market
+    price of the lit market is used instead. The price is rounded to the tick size in
+    favor of the earlier order: up when the buy order comes later and down when the
+    sell order comes later.
 
     Orders are accepted only while this market is running. An order placed in a session
     without order execution is canceled as soon as it is placed.
