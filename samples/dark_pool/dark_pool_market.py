@@ -41,7 +41,7 @@ class DarkPoolMarket(Market):
     lit_market: Market
 
     def setup(self, settings: Dict[str, Any], *args: Any, **kwargs: Any) -> None:
-        """Setup market configuration from setting format.
+        """Set up the market configuration from the setting format.
 
         Args:
             settings (Dict[str, Any]): market configuration. Usually, automatically set

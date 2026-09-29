@@ -41,6 +41,7 @@ from samples.dark_pool.dark_pool_print_logger import DarkPoolPrintLogger
 
 
 def main() -> None:
+    """Run the dark pool sample with the config and the seed in the arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--config", "-c", type=str, required=True, help="config.json file"
