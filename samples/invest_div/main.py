@@ -1,4 +1,15 @@
-"""Run the invest_div sample simulation."""
+"""Run the invest_div sample simulation.
+
+This sample is a port of the ``InvestDiv`` sample of plhamJ. After a fundamental price shock in Market-1, the
+:class:`samples.invest_div.invest_div_fcn_agent.InvestDivFCNAgent` agents reduce their positions under the
+regulation for investment diversification.
+
+``InvestDivFCNAgent`` is imported from the ``samples.invest_div`` package, so run this sample as a module from the
+root of the repository (or add the root to ``PYTHONPATH``)::
+
+    python -m samples.invest_div.main --config samples/invest_div/config.json --seed 1
+
+"""
 
 import argparse
 import random
