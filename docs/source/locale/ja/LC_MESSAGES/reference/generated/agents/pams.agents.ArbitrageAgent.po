@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/agents/pams.agents.ArbitrageAgent.rst:7
+msgid "ArbitrageAgent"
+msgstr ""
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent:1
+msgid "Arbitrage Agent class."
+msgstr "裁定エージェントクラス。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent:3
+msgid ""
+"This class inherits from the HighFrequencyAgent class. Arbitrage agent "
+"mainly aimed to take arbitrage chance between spot markets and its index "
+"market."
+msgstr "このクラスはHighFrequencyAgentクラスを継承しています。裁定エージェントは主に、現物市場とそのインデックス市場の間の裁定機会を捉えることを目的としています。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent:6
+msgid ""
+"Currently, index markets must have the same weight for each constitutional "
+"stock."
+msgstr "現在のところ、インデックス市場では各構成銘柄のウェイトが同一である必要があります。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:1
+msgid "agent setup. Usually be called from simulator/runner automatically."
+msgstr "エージェントのセットアップ。通常はシミュレーター/ランナーから自動的に呼び出されます。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:4
+msgid ""
+"agent configuration. Usually, automatically set from json config of "
+"simulator. This must include the parameters \"orderVolume\", "
+"\"orderThresholdPrice\". This can include the parameter \"orderTimeLength\"."
+msgstr "エージェントの設定。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ「orderVolume」、「orderThresholdPrice」を含める必要があります。パラメータ「orderTimeLength」を含めることもできます。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:9
+msgid "list of market IDs."
+msgstr "市場IDのリスト。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:11
+#: pams.agents.arbitrage_agent.ArbitrageAgent.setup:12
+msgid "not used."
+msgstr "未使用。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
+#: pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:14
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:15
+msgid "None"
+msgstr ""
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:1
+msgid "submit orders to take arbitrage chance."
+msgstr "裁定機会を捉えるために注文を発注します。"
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:4
+msgid ":func:`pams.agents.Agent.submit_orders`"
+msgstr ""
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:7
+msgid ""
+":py:class:`~typing.List`\\[:py:data:`~typing.Union`\\[:py:class:`~pams.order.Order`,"
+" :py:class:`~pams.order.Cancel`]]"
+msgstr ""
+

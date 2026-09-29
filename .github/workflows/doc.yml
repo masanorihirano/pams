@@ -6,8 +6,14 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   doc:
+    # The Deploy step pushes to the gh-pages branch.
+    permissions:
+      contents: write
     runs-on: ${{ matrix.platform }}
     strategy:
       max-parallel: 5
@@ -15,9 +21,9 @@ jobs:
         platform: [ubuntu-latest]
         python-version: [3.11]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -27,7 +33,7 @@ jobs:
           poetry install
       - run: poetry run make doc
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

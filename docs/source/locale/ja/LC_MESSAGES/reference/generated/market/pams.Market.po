@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/market/pams.Market.rst:7
+msgid "Market"
+msgstr ""
+
+#: of pams.market.Market:1
+msgid "Market class."
+msgstr "市場クラス。"
+
+#: of pams.market.Market:4
+msgid ":class:`pams.index_market.IndexMarket`: IndexMarket"
+msgstr ""
+
+#: of pams.market.Market.change_fundamental_price:1
+msgid "change fundamental price."
+msgstr "ファンダメンタル価格を変更します。"
+
+#: of pams.market.Market.change_fundamental_price
+#: pams.market.Market.convert_to_price pams.market.Market.convert_to_tick_level
+#: pams.market.Market.convert_to_tick_level_rounded_lower
+#: pams.market.Market.convert_to_tick_level_rounded_upper
+#: pams.market.Market.get_executed_total_price
+#: pams.market.Market.get_executed_total_prices
+#: pams.market.Market.get_executed_volume pams.market.Market.get_executed_volumes
+#: pams.market.Market.get_fundamental_price
+#: pams.market.Market.get_fundamental_prices
+#: pams.market.Market.get_last_executed_price
+#: pams.market.Market.get_last_executed_prices pams.market.Market.get_market_price
+#: pams.market.Market.get_market_prices pams.market.Market.get_mid_price
+#: pams.market.Market.get_mid_prices pams.market.Market.get_n_buy_order
+#: pams.market.Market.get_n_buy_orders pams.market.Market.get_n_sell_order
+#: pams.market.Market.get_n_sell_orders pams.market.Market.get_vwap
+#: pams.market.Market.setup
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.market.Market.change_fundamental_price:4
+msgid "scale."
+msgstr "倍率。"
+
+#: of pams.Market.is_running pams.market.Market.change_fundamental_price
+#: pams.market.Market.convert_to_price pams.market.Market.convert_to_tick_level
+#: pams.market.Market.convert_to_tick_level_rounded_lower
+#: pams.market.Market.convert_to_tick_level_rounded_upper
+#: pams.market.Market.get_best_buy_price pams.market.Market.get_best_sell_price
+#: pams.market.Market.get_buy_order_book
+#: pams.market.Market.get_executed_total_price
+#: pams.market.Market.get_executed_total_prices
+#: pams.market.Market.get_executed_volume pams.market.Market.get_executed_volumes
+#: pams.market.Market.get_fundamental_price
+#: pams.market.Market.get_fundamental_prices
+#: pams.market.Market.get_last_executed_price
+#: pams.market.Market.get_last_executed_prices pams.market.Market.get_market_price
+#: pams.market.Market.get_market_prices pams.market.Market.get_mid_price
+#: pams.market.Market.get_mid_prices pams.market.Market.get_n_buy_order
+#: pams.market.Market.get_n_buy_orders pams.market.Market.get_n_sell_order
+#: pams.market.Market.get_n_sell_orders pams.market.Market.get_sell_order_book
+#: pams.market.Market.get_time pams.market.Market.get_vwap
+#: pams.market.Market.remain_executable_orders pams.market.Market.setup
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.market.Market.change_fundamental_price:7 pams.market.Market.setup:12
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.Market.is_running pams.market.Market.change_fundamental_price
+#: pams.market.Market.convert_to_price pams.market.Market.convert_to_tick_level
+#: pams.market.Market.convert_to_tick_level_rounded_lower
+#: pams.market.Market.convert_to_tick_level_rounded_upper
+#: pams.market.Market.get_best_buy_price pams.market.Market.get_best_sell_price
+#: pams.market.Market.get_buy_order_book
+#: pams.market.Market.get_executed_total_price
+#: pams.market.Market.get_executed_total_prices
+#: pams.market.Market.get_executed_volume pams.market.Market.get_executed_volumes
+#: pams.market.Market.get_fundamental_price
+#: pams.market.Market.get_fundamental_prices
+#: pams.market.Market.get_last_executed_price
+#: pams.market.Market.get_last_executed_prices pams.market.Market.get_market_price
+#: pams.market.Market.get_market_prices pams.market.Market.get_mid_price
+#: pams.market.Market.get_mid_prices pams.market.Market.get_n_buy_order
+#: pams.market.Market.get_n_buy_orders pams.market.Market.get_n_sell_order
+#: pams.market.Market.get_n_sell_orders pams.market.Market.get_sell_order_book
+#: pams.market.Market.get_vwap pams.market.Market.remain_executable_orders
+#: pams.market.Market.setup
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.market.Market.change_fundamental_price:8 pams.market.Market.setup:13
+msgid "None"
+msgstr ""
+
+#: of pams.market.Market.convert_to_price:1
+msgid "convert tick to price."
+msgstr "ティック水準を価格に変換します。"
+
+#: of pams.market.Market.convert_to_price:4
+msgid "tick level."
+msgstr "ティック水準。"
+
+#: of pams.market.Market.convert_to_price:7
+#: pams.market.Market.convert_to_tick_level:6
+#: pams.market.Market.convert_to_tick_level_rounded_lower:4
+#: pams.market.Market.convert_to_tick_level_rounded_upper:4
+#: pams.market.Market.get_last_executed_price:7
+msgid "price."
+msgstr "価格。"
+
+#: of pams.market.Market.convert_to_tick_level:1
+msgid "convert price to tick level."
+msgstr "価格をティック水準に変換します。"
+
+#: of pams.market.Market.convert_to_tick_level:3
+msgid ""
+"If it is buy order price, it is rounded lower. If it is sell order price, it"
+" is rounded upper."
+msgstr "買い注文の価格であれば切り下げ、売り注文の価格であれば切り上げます。"
+
+#: of pams.market.Market.convert_to_tick_level:9
+msgid "buy order or not."
+msgstr "買い注文かどうか。"
+
+#: of pams.market.Market.convert_to_tick_level:12
+msgid "price for tick level."
+msgstr "価格に対応するティック水準。"
+
+#: of pams.market.Market.convert_to_tick_level_rounded_lower:1
+msgid "convert price to tick level rounded lower."
+msgstr "価格を切り下げてティック水準に変換します。"
+
+#: of pams.market.Market.convert_to_tick_level_rounded_lower:7
+msgid "price for tick level rounded lower."
+msgstr "価格に対応するティック水準（切り下げ）。"
+
+#: of pams.market.Market.convert_to_tick_level_rounded_upper:1
+msgid "convert price to tick level rounded upper."
+msgstr "価格を切り上げてティック水準に変換します。"
+
+#: of pams.market.Market.convert_to_tick_level_rounded_upper:7
+msgid "price for tick level rounded upper."
+msgstr "価格に対応するティック水準（切り上げ）。"
+
+#: of pams.market.Market.get_best_buy_price:1
+msgid "get the best buy price."
+msgstr "最良買い価格を取得します。"
+
+#: of pams.market.Market.get_best_buy_price:3
+msgid "the best buy price."
+msgstr "最良買い価格。"
+
+#: of pams.market.Market.get_best_sell_price:1
+msgid "get the best sell price."
+msgstr "最良売り価格を取得します。"
+
+#: of pams.market.Market.get_best_sell_price:3
+msgid "the best sell price."
+msgstr "最良売り価格。"
+
+#: of pams.market.Market.get_buy_order_book:1
+msgid "get buy order book."
+msgstr "買い板を取得します。"
+
+#: of pams.market.Market.get_buy_order_book:3
+msgid "buy order book."
+msgstr "買い板。"
+
+#: of pams.market.Market.get_executed_total_price:1
+msgid "get executed total price."
+msgstr "約定総額を取得します。"
+
+#: of pams.market.Market.get_executed_total_price:4
+#: pams.market.Market.get_executed_volume:4
+#: pams.market.Market.get_fundamental_price:4
+#: pams.market.Market.get_last_executed_price:4
+#: pams.market.Market.get_market_price:4 pams.market.Market.get_mid_price:4
+#: pams.market.Market.get_n_buy_order:4 pams.market.Market.get_n_sell_order:4
+#: pams.market.Market.get_vwap:4
+msgid "time step."
+msgstr "ステップ。"
+
+#: of pams.market.Market.get_executed_total_price:7
+msgid "total price."
+msgstr "総額。"
+
+#: of pams.market.Market.get_executed_total_prices:1
+msgid "get executed total prices."
+msgstr "約定総額のリストを取得します。"
+
+#: of pams.market.Market.get_executed_total_prices:4
+#: pams.market.Market.get_executed_volumes:4
+#: pams.market.Market.get_fundamental_prices:4
+#: pams.market.Market.get_last_executed_prices:4
+#: pams.market.Market.get_mid_prices:4 pams.market.Market.get_n_buy_orders:4
+#: pams.market.Market.get_n_sell_orders:4
+msgid "time steps."
+msgstr "複数のステップ。"
+
+#: of pams.market.Market.get_executed_total_prices:7
+msgid "total prices."
+msgstr "総額のリスト。"
+
+#: of pams.market.Market.get_executed_volume:1
+msgid "get executed volume."
+msgstr "約定数量を取得します。"
+
+#: of pams.market.Market.get_executed_volume:7
+msgid "volume."
+msgstr "数量。"
+
+#: of pams.market.Market.get_executed_volumes:1
+msgid "get executed volumes."
+msgstr "約定数量のリストを取得します。"
+
+#: of pams.market.Market.get_executed_volumes:7
+msgid "volumes."
+msgstr "数量のリスト。"
+
+#: of pams.market.Market.get_fundamental_price:1
+msgid "get fundamental price."
+msgstr "ファンダメンタル価格を取得します。"
+
+#: of pams.market.Market.get_fundamental_price:7
+msgid "fundamental price."
+msgstr "ファンダメンタル価格。"
+
+#: of pams.market.Market.get_fundamental_prices:1
+msgid "get fundamental prices."
+msgstr "ファンダメンタル価格のリストを取得します。"
+
+#: of pams.market.Market.get_fundamental_prices:7
+msgid "fundamental prices."
+msgstr "ファンダメンタル価格のリスト。"
+
+#: of pams.market.Market.get_last_executed_price:1
+msgid "get price executed last step."
+msgstr "最終約定価格を取得します。"
+
+#: of pams.market.Market.get_last_executed_prices:1
+msgid "get prices executed last steps."
+msgstr "最終約定価格のリストを取得します。"
+
+#: of pams.market.Market.get_last_executed_prices:7
+msgid "prices."
+msgstr "価格のリスト。"
+
+#: of pams.market.Market.get_market_price:1
+msgid "get market price."
+msgstr "市場価格を取得します。"
+
+#: of pams.market.Market.get_market_price:7
+msgid "extracted data."
+msgstr "抽出したデータ。"
+
+#: of pams.market.Market.get_market_prices:1
+msgid "get market prices."
+msgstr "市場価格のリストを取得します。"
+
+#: of pams.market.Market.get_market_prices:4
+msgid "range of time steps."
+msgstr "ステップの範囲。"
+
+#: of pams.market.Market.get_market_prices:7
+msgid "extracted sequential data."
+msgstr "抽出した系列データ。"
+
+#: of pams.market.Market.get_mid_price:1
+msgid "get middle price."
+msgstr "仲値を取得します。"
+
+#: of pams.market.Market.get_mid_price:7
+msgid "middle price."
+msgstr "仲値。"
+
+#: of pams.market.Market.get_mid_prices:1
+msgid "get middle prices."
+msgstr "仲値のリストを取得します。"
+
+#: of pams.market.Market.get_mid_prices:7
+msgid "middle prices."
+msgstr "仲値のリスト。"
+
+#: of pams.market.Market.get_n_buy_order:1
+msgid "get the number of buy order."
+msgstr "買い注文数を取得します。"
+
+#: of pams.market.Market.get_n_buy_order:7
+msgid "number of buy order."
+msgstr "買い注文数。"
+
+#: of pams.market.Market.get_n_buy_orders:1
+msgid "get the number of buy orders."
+msgstr "買い注文数のリストを取得します。"
+
+#: of pams.market.Market.get_n_buy_orders:7
+msgid "number of buy orders."
+msgstr "買い注文数のリスト。"
+
+#: of pams.market.Market.get_n_sell_order:1
+msgid "get the number of sell order."
+msgstr "売り注文数を取得します。"
+
+#: of pams.market.Market.get_n_sell_order:7
+msgid "number of sell order."
+msgstr "売り注文数。"
+
+#: of pams.market.Market.get_n_sell_orders:1
+msgid "get the number of sell orders."
+msgstr "売り注文数のリストを取得します。"
+
+#: of pams.market.Market.get_n_sell_orders:7
+msgid "number of sell orders."
+msgstr "売り注文数のリスト。"
+
+#: of pams.market.Market.get_sell_order_book:1
+msgid "get sell order book."
+msgstr "売り板を取得します。"
+
+#: of pams.market.Market.get_sell_order_book:3
+msgid "sell order book."
+msgstr "売り板。"
+
+#: of pams.market.Market.get_time:1
+msgid "get time step."
+msgstr "現在のステップを取得します。"
+
+#: of pams.market.Market.get_time:4
+msgid ":py:class:`int`"
+msgstr ""
+
+#: of pams.market.Market.get_vwap:1
+msgid "get VWAP."
+msgstr "VWAPを取得します。"
+
+#: of pams.market.Market.get_vwap:7
+msgid "VWAP."
+msgstr "VWAP。"
+
+#: of pams.Market.is_running:1
+msgid "get whether this market is running or not."
+msgstr "この市場が稼働中かどうかを取得します。"
+
+#: of pams.Market.is_running:3
+msgid "whether this market is running or not."
+msgstr "この市場が稼働中かどうか。"
+
+#: of pams.market.Market.remain_executable_orders:1
+msgid "check if there are remain executable orders in this market."
+msgstr "この市場に約定可能な注文が残っているかどうかを確認します。"
+
+#: of pams.market.Market.remain_executable_orders:3
+msgid ""
+"When both sides have market orders and their total volumes differ, the "
+"excess market orders have to be absorbed by the limit orders of the other "
+"side. Otherwise, the execution price cannot be determined and nothing is "
+"executed (special quote), even if some orders could be matched."
+msgstr "売りと買いの双方に成行注文があり、それぞれの合計数量が異なる場合、超過分の成行注文は反対側の指値注文で吸収されなければなりません。そうでない場合、約定価格を決定できないため、一部の注文がマッチング可能であっても何も約定しません（特別気配）。"
+
+#: of pams.market.Market.remain_executable_orders:8
+msgid "whether some orders is executable or not."
+msgstr "約定可能な注文が存在するかどうか。"
+
+#: of pams.market.Market.setup:1
+msgid "setup market configuration from setting format."
+msgstr "設定形式から市場の設定を行います。"
+
+#: of pams.market.Market.setup:4
+msgid ""
+"market configuration. Usually, automatically set from json config of "
+"simulator. This must include the parameters \"tickSize\" and either "
+"\"marketPrice\" or \"fundamentalPrice\". This can include the parameter "
+"\"outstandingShares\" and \"tradeVolume\"."
+msgstr ""
+"市場の設定。通常は、シミュレーターのJSON設定から自動的に設定されます。パラメータ \"tickSize\" と、\"marketPrice\" "
+"または \"fundamentalPrice\" のいずれかを含む必要があります。パラメータ \"outstandingShares\" および "
+"\"tradeVolume\" を含めることもできます。"
+
+#: of pams.market.Market.setup:9 pams.market.Market.setup:10
+msgid "not used."
+msgstr "未使用。"
+

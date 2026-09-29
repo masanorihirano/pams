@@ -33,6 +33,7 @@ class TradingHaltRule(EventABC):
         Sharing a market among multiple TradingHaltRule events is not supported.
         Like other events, this rule is hooked from the beginning of the simulation,
         even if it is configured only in a later session.
+
     """
 
     def __init__(
@@ -43,6 +44,7 @@ class TradingHaltRule(EventABC):
         simulator: Simulator,
         name: str,
     ) -> None:
+        """Initialize the trading halt rule (see :class:`pams.events.EventABC` for the arguments)."""
         super().__init__(
             event_id=event_id,
             prng=prng,
@@ -60,7 +62,7 @@ class TradingHaltRule(EventABC):
         self.trigger_change_rate: float = 0.0
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """event setup. Usually be called from simulator/runner automatically.
+        """Event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -70,6 +72,7 @@ class TradingHaltRule(EventABC):
 
         Returns:
             None
+
         """
         if "referenceMarket" in settings:
             warnings.warn("referenceMarket is obsolete", stacklevel=2)
@@ -118,7 +121,7 @@ class TradingHaltRule(EventABC):
     def hooked_after_execution(
         self, simulator: Simulator, execution_log: ExecutionLog
     ) -> None:
-        """event to stop the trading."""
+        """Event to stop the trading."""
         market: Market = simulator.id2market[execution_log.market_id]
         if market not in self.target_markets.values():
             return
@@ -140,7 +143,7 @@ class TradingHaltRule(EventABC):
     def hooked_before_step_for_market(
         self, simulator: Simulator, market: Market
     ) -> None:
-        """event to start the trading."""
+        """Event to start the trading."""
         if not self.is_halting:
             return
         if market.get_time() > self.halting_time_started + self.halting_time_length:

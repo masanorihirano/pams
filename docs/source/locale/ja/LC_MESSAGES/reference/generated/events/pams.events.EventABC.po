@@ -1,0 +1,214 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/events/pams.events.EventABC.rst:7
+msgid "EventABC"
+msgstr ""
+
+#: of pams.events.base.EventABC:1
+msgid "event base class (ABC class)."
+msgstr "イベントの基底クラス（ABCクラス）。"
+
+#: of pams.events.base.EventABC:3
+msgid "It defines what the event is. All events should inherit this class."
+msgstr "イベントが何であるかを定義します。すべてのイベントはこのクラスを継承する必要があります。"
+
+#: of pams.events.base.EventABC:7
+msgid ":class:`pams.events.FundamentalPriceShock`"
+msgstr ""
+
+#: of pams.events.base.EventABC.hook_registration:1
+msgid "Define when this event should be hooked by simulator."
+msgstr "このイベントをシミュレーターがいつフックすべきかを定義します。"
+
+#: of pams.events.base.EventABC.hook_registration:3
+msgid ""
+"This method is automatically hooked by simulator at the beginning of "
+"simulation. You must implement this."
+msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
+
+#: of pams.events.base.EventABC.hook_registration pams.events.base.EventABC.setup
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.events.base.EventABC.hook_registration:6
+msgid "The list of event hook ( :class:`EventHook` )"
+msgstr "イベントフック（:class:`EventHook`）のリスト"
+
+#: of pams.events.base.EventABC.hook_registration
+#: pams.events.base.EventABC.hooked_after_cancel
+#: pams.events.base.EventABC.hooked_after_execution
+#: pams.events.base.EventABC.hooked_after_order
+#: pams.events.base.EventABC.hooked_after_session
+#: pams.events.base.EventABC.hooked_after_step_for_market
+#: pams.events.base.EventABC.hooked_before_cancel
+#: pams.events.base.EventABC.hooked_before_order
+#: pams.events.base.EventABC.hooked_before_session
+#: pams.events.base.EventABC.hooked_before_step_for_market
+#: pams.events.base.EventABC.setup
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.events.base.EventABC.hooked_after_cancel:1
+msgid "This method is hooked after order cancellations if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは注文の取消後に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_after_cancel
+#: pams.events.base.EventABC.hooked_after_execution
+#: pams.events.base.EventABC.hooked_after_order
+#: pams.events.base.EventABC.hooked_after_session
+#: pams.events.base.EventABC.hooked_after_step_for_market
+#: pams.events.base.EventABC.hooked_before_cancel
+#: pams.events.base.EventABC.hooked_before_order
+#: pams.events.base.EventABC.hooked_before_session
+#: pams.events.base.EventABC.hooked_before_step_for_market
+#: pams.events.base.EventABC.setup
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.events.base.EventABC.hooked_after_cancel:7
+#: pams.events.base.EventABC.hooked_after_execution:7
+#: pams.events.base.EventABC.hooked_after_order:9
+#: pams.events.base.EventABC.hooked_after_session:7
+#: pams.events.base.EventABC.hooked_after_step_for_market:7
+#: pams.events.base.EventABC.hooked_before_cancel:9
+#: pams.events.base.EventABC.hooked_before_order:10
+#: pams.events.base.EventABC.hooked_before_session:7
+#: pams.events.base.EventABC.hooked_before_step_for_market:7
+msgid "simulator for reference."
+msgstr "参照用のシミュレーター。"
+
+#: of pams.events.base.EventABC.hooked_after_cancel:10
+#: pams.events.base.EventABC.hooked_before_cancel:12
+msgid "cancel order submitted."
+msgstr "出された取消注文。"
+
+#: of pams.events.base.EventABC.hooked_after_cancel:14
+#: pams.events.base.EventABC.hooked_after_execution:14
+#: pams.events.base.EventABC.hooked_after_order:16
+#: pams.events.base.EventABC.hooked_after_session:14
+#: pams.events.base.EventABC.hooked_after_step_for_market:14
+#: pams.events.base.EventABC.hooked_before_cancel:16
+#: pams.events.base.EventABC.hooked_before_order:17
+#: pams.events.base.EventABC.hooked_before_session:14
+#: pams.events.base.EventABC.hooked_before_step_for_market:14
+#: pams.events.base.EventABC.setup:9
+msgid ":py:obj:`None`"
+msgstr ""
+
+#: of pams.events.base.EventABC.hooked_after_execution:1
+msgid "This method is hooked after order executions if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは注文の約定後に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_after_execution:10
+msgid "execution log."
+msgstr "約定ログ。"
+
+#: of pams.events.base.EventABC.hooked_after_order:1
+msgid "This method is hooked after order placements if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは発注後に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_after_order:3
+msgid ""
+"Please be careful that the order haven't yet been executed if it could be "
+"executed immediately."
+msgstr "即時に約定可能な注文であっても、この時点ではまだ約定していないことに注意してください。"
+
+#: of pams.events.base.EventABC.hooked_after_order:12
+msgid "order accepted."
+msgstr "受け付けられた注文。"
+
+#: of pams.events.base.EventABC.hooked_after_session:1
+msgid "This method is hooked after session ends if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドはセッション終了後に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_after_session:10
+msgid "session to be ended."
+msgstr "終了するセッション。"
+
+#: of pams.events.base.EventABC.hooked_after_step_for_market:1
+msgid ""
+"This method is hooked at each step after market processing if you set the "
+"event hook."
+msgstr "イベントフックを設定した場合、このメソッドは各ステップで市場の処理後に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_after_step_for_market:10
+msgid "market processed."
+msgstr "処理された市場。"
+
+#: of pams.events.base.EventABC.hooked_before_cancel:1
+msgid "This method is hooked before order cancellations if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは注文の取消前に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_before_cancel:3
+msgid "Please be careful that the cancel order haven't yet been executed."
+msgstr "取消注文はまだ実行されていないことに注意してください。"
+
+#: of pams.events.base.EventABC.hooked_before_order:1
+msgid "This method is hooked before order placements if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドは発注の前に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_before_order:3
+msgid ""
+"Please be careful that the order haven't yet been accepted by markets and it"
+" could be leakage of order information."
+msgstr "この時点では注文はまだ市場に受け付けられておらず、注文情報の漏洩につながる可能性があることに注意してください。"
+
+#: of pams.events.base.EventABC.hooked_before_order:13
+msgid "order accepting now."
+msgstr "現在受け付け中の注文。"
+
+#: of pams.events.base.EventABC.hooked_before_session:1
+msgid "This method is hooked before session beginnings if you set the event hook."
+msgstr "イベントフックを設定した場合、このメソッドはセッション開始前に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_before_session:10
+msgid "session to be started."
+msgstr "開始するセッション。"
+
+#: of pams.events.base.EventABC.hooked_before_step_for_market:1
+msgid ""
+"This method is hooked at each step before market processing if you set the "
+"event hook."
+msgstr "イベントフックを設定した場合、このメソッドは各ステップで市場の処理前に呼び出されます。"
+
+#: of pams.events.base.EventABC.hooked_before_step_for_market:10
+msgid "market to be processed."
+msgstr "処理される市場。"
+
+#: of pams.events.base.EventABC.setup:1
+msgid "event setup. Usually be called from simulator/runner automatically."
+msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
+
+#: of pams.events.base.EventABC.setup:4
+msgid ""
+"agent configuration. Usually, automatically set from json config of "
+"simulator."
+msgstr "イベントの設定。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。"
+
+#: of pams.events.base.EventABC.setup:6 pams.events.base.EventABC.setup:7
+msgid "not used."
+msgstr "未使用。"
+
+#: of pams.events.base.EventABC.setup:10
+msgid "None"
+msgstr ""
+

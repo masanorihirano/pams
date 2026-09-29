@@ -60,6 +60,7 @@ class EventHook:
 
         Returns:
             None
+
         """
         if hook_type not in ["order", "cancel", "execution", "session", "market"]:
             raise ValueError(
@@ -87,6 +88,7 @@ class EventHook:
         self.specific_instance: Optional[object] = specific_instance
 
     def __repr__(self) -> str:
+        """Return the string representation of the event hook."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | hook_type={self.hook_type}, "
             f"is_before={self.is_before}, time={self.time}, specific_class={self.specific_class}, "
@@ -112,7 +114,7 @@ class EventABC(ABC):
         simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
     ) -> None:
-        """event initialization. Usually be called from simulator/runner automatically.
+        """Event initialization. Usually be called from simulator/runner automatically.
 
         Args:
             event_id (int): event ID.
@@ -123,6 +125,7 @@ class EventABC(ABC):
 
         Returns:
             None
+
         """
         self.event_id: int = event_id
         self.prng: random.Random = prng
@@ -131,13 +134,14 @@ class EventABC(ABC):
         self.session = session
 
     def __repr__(self) -> str:
+        """Return the string representation of the event."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.event_id}, name={self.name}, "
             f"session={self.session}>"
         )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # noqa: B027
-        """event setup. Usually be called from simulator/runner automatically.
+        """Event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -146,6 +150,7 @@ class EventABC(ABC):
 
         Returns:
             None
+
         """
 
     @abstractmethod
@@ -157,10 +162,11 @@ class EventABC(ABC):
 
         Returns:
             List[EventHook]: The list of event hook ( :class:`EventHook` )
+
         """
 
     def hooked_before_order(self, simulator: "Simulator", order: "Order") -> None:  # type: ignore  # NOQA
-        """This method is hooked before order placements if you set the event hook.
+        """Hook called before order placements if you set the event hook.
 
         Please be careful that the order haven't yet been accepted by markets and it could be leakage of
         order information.
@@ -171,11 +177,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             order (Order): order accepting now.
+
         """
         pass
 
     def hooked_after_order(self, simulator: "Simulator", order_log: "OrderLog") -> None:  # type: ignore  # NOQA
-        """This method is hooked after order placements if you set the event hook.
+        """Hook called after order placements if you set the event hook.
 
         Please be careful that the order haven't yet been executed if it could be executed immediately.
 
@@ -185,11 +192,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             order_log (OrderLog): order accepted.
+
         """
         pass
 
     def hooked_before_cancel(self, simulator: "Simulator", cancel: "Cancel") -> None:  # type: ignore  # NOQA
-        """This method is hooked before order cancellations if you set the event hook.
+        """Hook called before order cancellations if you set the event hook.
 
         Please be careful that the cancel order haven't yet been executed.
 
@@ -199,11 +207,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             cancel (Cancel): cancel order submitted.
+
         """
         pass
 
     def hooked_after_cancel(self, simulator: "Simulator", cancel_log: "CancelLog") -> None:  # type: ignore  # NOQA
-        """This method is hooked after order cancellations if you set the event hook.
+        """Hook called after order cancellations if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -211,13 +220,14 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             cancel_log (CancelLog): cancel order submitted.
+
         """
         pass
 
     def hooked_after_execution(  # type: ignore  # noqa: B027
         self, simulator: "Simulator", execution_log: "ExecutionLog"
     ) -> None:
-        """This method is hooked after order executions if you set the event hook.
+        """Hook called after order executions if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -225,11 +235,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             execution_log (ExecutionLog): execution log.
+
         """
         pass
 
     def hooked_before_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore  # NOQA
-        """This method is hooked before session beginnings if you set the event hook.
+        """Hook called before session beginnings if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -237,11 +248,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             session (Session): session to be started.
+
         """
         pass
 
     def hooked_after_session(self, simulator: "Simulator", session: "Session") -> None:  # type: ignore  # NOQA
-        """This method is hooked after session ends if you set the event hook.
+        """Hook called after session ends if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -249,11 +261,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             session (Session): session to be ended.
+
         """
         pass
 
     def hooked_before_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
-        """This method is hooked at each step before market processing if you set the event hook.
+        """Hook called at each step before market processing if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -261,11 +274,12 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             market (Market): market to be processed.
+
         """
         pass
 
     def hooked_after_step_for_market(self, simulator: "Simulator", market: "Market") -> None:  # type: ignore  # NOQA
-        """This method is hooked at each step after market processing if you set the event hook.
+        """Hook called at each step after market processing if you set the event hook.
 
         .. seealso:
             - ToDo: simulation flow
@@ -273,5 +287,6 @@ class EventABC(ABC):
         Args:
             simulator (Simulator): simulator for reference.
             market (Market): market processed.
+
         """
         pass

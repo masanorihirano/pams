@@ -11,7 +11,7 @@ from .base import EventHook
 
 
 class OrderMistakeShock(EventABC):
-    """This suddenly changes the market price.
+    """Event that suddenly changes the market price.
 
     It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
     at an extremely cheap or expensive price.
@@ -42,6 +42,7 @@ class OrderMistakeShock(EventABC):
         simulator: "Simulator",  # type: ignore  # NOQA
         name: str,
     ) -> None:
+        """Initialize the order mistake shock (see :class:`pams.events.EventABC` for the arguments)."""
         super().__init__(
             event_id=event_id,
             prng=prng,
@@ -54,7 +55,7 @@ class OrderMistakeShock(EventABC):
         self.triggerd: bool = False
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """event setup. Usually be called from simulator/runner automatically.
+        """Event setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -63,6 +64,7 @@ class OrderMistakeShock(EventABC):
 
         Returns:
             None
+
         """
         if "agent" in settings:
             warnings.warn("agent in OrderMistakeShock is obsoleted.", stacklevel=2)
