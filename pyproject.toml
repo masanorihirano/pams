@@ -110,12 +110,6 @@ skip-magic-trailing-comma = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 
-# JAX and Flax (optional, for JaxAgentParallelRunner) crash mypy 0.982 if they are
-# installed, so they are not analyzed, as if they were not installed.
-[[tool.mypy.overrides]]
-module = ["jax", "jax.*", "jaxlib", "jaxlib.*", "flax", "flax.*"]
-follow_imports = "skip"
-
 [tool.flake8]
 ignore = "E203,E231,E501,W503"
 max-line-length = 88

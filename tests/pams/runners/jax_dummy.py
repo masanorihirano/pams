@@ -14,6 +14,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from typing import cast
 
 import flax.linen as nn
 import jax
@@ -68,7 +69,8 @@ def _predict_price_change(
 ) -> jax.Array:
     # this line runs only when the function is traced
     PROCESS_STATE.trace_count += 1
-    return model.apply(params, features)
+    # apply returns only the output because no variable collection is mutable
+    return cast(jax.Array, model.apply(params, features))
 
 
 # the model is a static argument, so the copies of the model pickled in the tasks hit the cache
@@ -96,7 +98,7 @@ def get_jax_worker_config() -> Dict[str, Optional[str]]:
             "XLA_PYTHON_CLIENT_MEM_FRACTION"
         ),
         "XLA_CLIENT_MEM_FRACTION": os.environ.get("XLA_CLIENT_MEM_FRACTION"),
-        "jax_platforms": jax.config.jax_platforms,
+        "jax_platforms": jax.config.values["jax_platforms"],
         "default_backend": jax.default_backend(),
         "preallocate_at_load": PROCESS_STATE.preallocate_at_load,
     }
