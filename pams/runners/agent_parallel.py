@@ -55,7 +55,8 @@ def _initialize_worker(
     if initializer is not None:
         try:
             initializer(*initargs)
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            # any error of the user-defined initializer is raised by the tasks on this worker
             _worker_state.initializer_error = e
 
 
@@ -371,20 +372,19 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                         orders = self._receive_orders_from_worker(
                             agent=agent, orders=orders, prng_state=prng_state
                         )
-                        if len(orders) > 0:
-                            if not session.with_order_placement:
-                                raise AssertionError("currently order is not accepted")
-                            if (
-                                sum(
-                                    order.agent_id != agent.agent_id for order in orders
-                                )
-                                > 0
-                            ):
-                                raise ValueError(
-                                    "spoofing order is not allowed. please check agent_id in order"
-                                )
-                            all_orders.append(orders)
-                            n_orders += 1
+                        if len(orders) == 0:
+                            continue
+                        if not session.with_order_placement:
+                            raise AssertionError("currently order is not accepted")
+                        if (
+                            sum(order.agent_id != agent.agent_id for order in orders)
+                            > 0
+                        ):
+                            raise ValueError(
+                                "spoofing order is not allowed. please check agent_id in order"
+                            )
+                        all_orders.append(orders)
+                        n_orders += 1
             finally:
                 for future in futures:
                     future.cancel()
