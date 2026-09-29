@@ -24,7 +24,8 @@ WARM_UP_STEPS: int = 1000
 SIMULATION_STEPS: int = 20000
 
 # samples/CI2002/config.json with shorter time windows, narrower order margins and
-# slower mean reversion, and with longer sessions
+# slower mean reversion, and with longer sessions; withPrint is not used by PAMS, and
+# the deprecated hifreqSubmitRate is left out because its default is the sample value
 CONFIG: Dict[str, Any] = {
     "simulation": {
         "markets": ["Market"],

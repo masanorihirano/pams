@@ -19,7 +19,9 @@ Simulation
 
 The checks use one market with 100 FCN agents (:class:`pams.agents.FCNAgent`), the setup of
 Chiarella and Iori (2002) that ``samples/CI2002`` also follows. The config is the one in
-``samples/CI2002/config.json`` except for the keys below.
+``samples/CI2002/config.json`` except for the keys below. Apart from them, the tests only set
+``withPrint`` to ``false`` and leave out the deprecated ``hifreqSubmitRate``, and neither changes
+the simulation.
 
 .. list-table::
    :header-rows: 1
@@ -46,13 +48,18 @@ Chiarella and Iori (2002) that ``samples/CI2002`` also follows. The config is th
 With the parameters of the sample, the order margins of up to 10% and the noise of the expected
 price, which grows with the time window, spread the orders over a wide range of prices. The price
 then mostly jumps between the two sides of a wide spread: successive price changes have a lag-1
-autocorrelation of about -0.44 (bid-ask bounce), and the absolute returns are hardly
-autocorrelated. Neither the absence of linear autocorrelation nor volatility clustering holds.
-The shorter time windows and the narrower margins keep the orders close to the current price, and
-the slower mean reversion weakens the pull towards the constant fundamental price, which otherwise
-shows up as a negative autocorrelation of returns. Chart following stays off as in the sample:
-with a ``chartWeight`` of ``{"expon": [0.3]}`` or more, the price often runs away and the
-simulation fails.
+autocorrelation of about -0.44 (bid-ask bounce). The returns are also close to Gaussian, with an
+excess kurtosis of about 0.2 to 1.7 and a Hill estimate of about 5 to 7 (40 runs with seeds 0 to
+39). So neither the absence of linear autocorrelation nor heavy tails holds, although the absolute
+returns are about as autocorrelated as in the validation setup. The shorter time windows and the
+narrower margins keep the orders close to the current price, and the slower mean reversion
+weakens the pull towards the constant fundamental price, which otherwise shows up as a negative
+autocorrelation of returns.
+
+Chart following stays off as in the sample. Even with a ``chartWeight`` of ``{"expon": [0.1]}``,
+the returns follow trends, with a lag-1 autocorrelation of up to about 0.4, and in some runs the
+price drifts by orders of magnitude. With ``{"expon": [0.3]}`` or more, the price often runs away
+and the simulation fails.
 
 .. _stylized-facts-returns:
 
