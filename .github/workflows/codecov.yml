@@ -16,6 +16,13 @@ on:
 permissions:
   contents: read
 
+# uv uses the Python from actions/setup-python (setup-uv sets UV_PYTHON to the
+# same version) and never downloads one. Only `uv sync` resolves and installs;
+# `uv run` uses that environment as it is.
+env:
+  UV_PYTHON_DOWNLOADS: never
+  UV_NO_SYNC: "1"
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -33,14 +40,17 @@ jobs:
         uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: false
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install poetry
-          poetry install
+          uv sync
       - name: make cov report
         run: |
-          poetry run pytest --cov=./ --cov-report=xml
+          uv run pytest --cov=./ --cov-report=xml
       - uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4

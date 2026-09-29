@@ -1,0 +1,48 @@
+{
+	"simulation": {
+		"markets": ["Market"],
+		"agents": ["CancelFCNAgents"],
+		"sessions": [
+			{	"sessionName": 0,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": true
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 500,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true
+			}
+		]
+	},
+
+	"Market": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+
+	"CancelFCNAgents": {
+		"class": "CancelFCNAgent",
+		"numAgents": 100,
+
+		"MEMO": "Agent class",
+		"markets": ["Market"],
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [1.0]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1],
+
+		"MEMO": "CancelFCNAgent class",
+		"cancelRate": 0.3
+	}
+}
