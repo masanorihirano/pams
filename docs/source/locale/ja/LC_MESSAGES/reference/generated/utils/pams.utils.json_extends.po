@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.json_extends.rst:7
+msgid "json_extends"
+msgstr ""
+
+#: of pams.utils.json_extends.json_extends:1
+#, fuzzy
+msgid "Extend target json."
+msgstr "対象のJSONを拡張します。"
+
+#: of pams.utils.json_extends.json_extends:3
+msgid ""
+"If \"extends\" keys are included in target_json, this try to extend the "
+"json dict recursively. For the extension, the value for \"extends\" field"
+"  is found in whole_json and target_json is extended using the dict under"
+" the found part of whole_json. This process is recursively repeated. "
+"\"parent_name\" is only used for avoiding circle extension of target_json"
+" and it should be parent key of target_json."
+msgstr ""
+"target_json に \"extends\" "
+"キーが含まれている場合、JSONのdictを再帰的に拡張しようとします。拡張では、\"extends\" フィールドの値を whole_json "
+"から探し、whole_json の該当箇所にあるdictを用いて target_json "
+"を拡張します。この処理は再帰的に繰り返されます。\"parent_name\" は target_json "
+"の循環的な拡張を避けるためだけに使用され、target_json の親キーである必要があります。"
+
+#: of pams.utils.json_extends.json_extends
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.json_extends.json_extends:10
+msgid "whole of json."
+msgstr "JSON全体。"
+
+#: of pams.utils.json_extends.json_extends:13
+msgid "parent name of target_json."
+msgstr "target_json の親の名前。"
+
+#: of pams.utils.json_extends.json_extends:16
+msgid "target json."
+msgstr "対象のJSON。"
+
+#: of pams.utils.json_extends.json_extends:19
+msgid "exclude list from json field."
+msgstr "除外するJSONフィールドのリスト。"
+
+#: of pams.utils.json_extends.json_extends
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.json_extends.json_extends:22
+msgid "json output."
+msgstr "出力のJSON。"
+
+#: of pams.utils.json_extends.json_extends
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.utils.json_extends.json_extends:26
+msgid "Examples"
+msgstr "例"
+

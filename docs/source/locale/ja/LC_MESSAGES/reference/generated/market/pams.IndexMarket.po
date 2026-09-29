@@ -1,0 +1,177 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/market/pams.IndexMarket.rst:7
+msgid "IndexMarket"
+msgstr ""
+
+#: of pams.index_market.IndexMarket:1
+msgid "Index of market."
+msgstr "インデックス市場。"
+
+#: of pams.index_market.IndexMarket:3
+msgid "This class inherits from the :class:`pams.market.Market` class."
+msgstr "このクラスは :class:`pams.market.Market` クラスを継承しています。"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:1
+#, fuzzy
+msgid "Compute fundamental index."
+msgstr "ファンダメンタルインデックスを計算します。"
+
+#: ../../source/reference/generated/market/pams.IndexMarket.rst
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:4
+#: pams.index_market.IndexMarket.compute_market_index:4
+#: pams.index_market.IndexMarket.get_fundamental_index:4
+#: pams.index_market.IndexMarket.get_index:4
+#: pams.index_market.IndexMarket.get_market_index:4
+msgid "time step."
+msgstr "ステップ。"
+
+#: ../../source/reference/generated/market/pams.IndexMarket.rst
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:7
+#: pams.index_market.IndexMarket.get_fundamental_index:7
+msgid "fundamental index."
+msgstr "ファンダメンタルインデックス。"
+
+#: ../../source/reference/generated/market/pams.IndexMarket.rst
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:11
+#: pams.index_market.IndexMarket.get_fundamental_index:11
+msgid "In an index market, there are two types of fundamental values:"
+msgstr "インデックス市場には、2種類のファンダメンタル値があります："
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:12
+#: pams.index_market.IndexMarket.get_fundamental_index:12
+msgid ""
+"fundamental value set from outside such as runner "
+"(:func:`pams.index_market.IndexMarket.compute_fundamental_index`)"
+msgstr "ランナーなど外部から設定されるファンダメンタル値（:func:`pams.index_market.IndexMarket.compute_fundamental_index`）"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:14
+#: pams.index_market.IndexMarket.get_fundamental_index:14
+msgid ""
+"fundamental value calculated from components' fundamental value "
+"(:func:`pams.index_market.IndexMarket.get_fundamental_index`,"
+msgstr "構成市場のファンダメンタル値から計算されるファンダメンタル値（:func:`pams.index_market.IndexMarket.get_fundamental_index`、"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:16
+#: pams.index_market.IndexMarket.get_fundamental_index:16
+msgid ":func:`pams.index_market.IndexMarket.get_fundamental_price`)"
+msgstr ":func:`pams.index_market.IndexMarket.get_fundamental_price`）"
+
+#: of pams.index_market.IndexMarket.compute_fundamental_index:17
+msgid ""
+"In usual usage, those become the same. But, in some special usage, it "
+"could be differ. This method return 1st one."
+msgstr "通常の用途では、両者は一致します。ただし、特殊な用途では異なる場合があります。このメソッドは1つ目の値を返します。"
+
+#: of pams.index_market.IndexMarket.compute_market_index:1
+#, fuzzy
+msgid "Compute market index."
+msgstr "市場インデックスを計算します。"
+
+#: of pams.index_market.IndexMarket.compute_market_index:7
+#: pams.index_market.IndexMarket.get_index:7
+#: pams.index_market.IndexMarket.get_market_index:7
+msgid "market index."
+msgstr "市場インデックス。"
+
+#: of pams.index_market.IndexMarket.get_components:1
+#, fuzzy
+msgid "Get components."
+msgstr "構成市場を取得します。"
+
+#: of pams.index_market.IndexMarket.get_components:3
+msgid "list of components."
+msgstr "構成市場のリスト。"
+
+#: of pams.index_market.IndexMarket.get_components:4
+msgid "List[:class:`pams.market.Market`]"
+msgstr ""
+
+#: of pams.index_market.IndexMarket.get_fundamental_index:1
+#, fuzzy
+msgid "Get fundamental index."
+msgstr "ファンダメンタルインデックスを取得します。"
+
+#: of pams.index_market.IndexMarket.get_fundamental_index:17
+msgid ""
+"In usual usage, those become the same. But, in some special usage, it "
+"could be differ. This method return 2nd one."
+msgstr "通常の用途では、両者は一致します。ただし、特殊な用途では異なる場合があります。このメソッドは2つ目の値を返します。"
+
+#: of pams.index_market.IndexMarket.get_index:1
+#, fuzzy
+msgid "Get market index."
+msgstr "市場インデックスを取得します。"
+
+#: of pams.index_market.IndexMarket.get_market_index:1
+#, fuzzy
+msgid "Get computed market index."
+msgstr "計算された市場インデックスを取得します。"
+
+#: of pams.index_market.IndexMarket.is_all_markets_running:1
+#, fuzzy
+msgid "Get whether all markets is running or not."
+msgstr "すべての市場が稼働中かどうかを取得します。"
+
+#: of pams.index_market.IndexMarket.is_all_markets_running:3
+msgid "whether all markets is running or not."
+msgstr "すべての市場が稼働中かどうか。"
+
+#: of pams.index_market.IndexMarket.setup:1
+#, fuzzy
+msgid "Setup market configuration from setting format."
+msgstr "設定形式から市場の設定を行います。"
+
+#: of pams.index_market.IndexMarket.setup:4
+msgid ""
+"market configuration. Usually, automatically set from json config of "
+"simulator. This must include the parameter \"markets\". This should "
+"include the parameter \"requires\"."
+msgstr ""
+"市場の設定。通常、シミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ \"markets\" "
+"を含める必要があります。パラメータ \"requires\" を含めるべきです。"
+
+#: of pams.index_market.IndexMarket.setup:9
+#: pams.index_market.IndexMarket.setup:11
+msgid "not used."
+msgstr "未使用。"
+
+#: of pams.index_market.IndexMarket.setup:13
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
+msgstr ""
+
+#: of pams.index_market.IndexMarket.setup:14
+msgid "None"
+msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
+
