@@ -168,6 +168,9 @@ class ArbitrageAgent(HighFrequencyAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         """Submit orders to take arbitrage chance.
 
+        Returns:
+            List[Union[Order, Cancel]]: order list.
+
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
         """

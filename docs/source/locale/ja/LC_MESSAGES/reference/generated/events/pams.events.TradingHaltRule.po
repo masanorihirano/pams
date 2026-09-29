@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -32,12 +32,13 @@ msgstr "売買停止は、一部の資産の取引を停止する市場規制で
 #: of pams.events.trading_halt_rule.TradingHaltRule:3
 msgid ""
 "When the one of targetMarkets violate halting line, all of them will be "
-"halted. If you want to halt them separately, please make event separately. "
-"The current implementation sets :func:`pams.market.Market.is_running` = "
-"false for all targetMarkets when the price changed beyond the prespecified "
-"threshold range. Markets not included in targetMarkets are not affected, and"
-" the session setting (:attr:`pams.Session.with_order_execution`) is never "
-"changed by this rule."
+"halted. If you want to halt them separately, please make event "
+"separately. The current implementation sets "
+":func:`pams.market.Market.is_running` = false for all targetMarkets when "
+"the price changed beyond the prespecified threshold range. Markets not "
+"included in targetMarkets are not affected, and the session setting "
+"(:attr:`pams.Session.with_order_execution`) is never changed by this "
+"rule."
 msgstr ""
 "targetMarketsのいずれかが売買停止ラインに抵触すると、targetMarketsのすべての市場が売買停止になります。個別に売買停止させたい場合は、イベントを個別に作成してください。現在の実装では、価格があらかじめ指定された閾値の範囲を超えて変化したとき、すべてのtargetMarketsに対して"
 " :func:`pams.market.Market.is_running` = false "
@@ -45,23 +46,23 @@ msgstr ""
 
 #: of pams.events.trading_halt_rule.TradingHaltRule:10
 msgid ""
-"After the halt starts at time t, the halted markets resume trading at time t"
-" + haltingTimeLength + 1, only if the session at that time allows order "
-"execution. If the halt continues over a session boundary, it is continued in"
-" the next session."
+"After the halt starts at time t, the halted markets resume trading at "
+"time t + haltingTimeLength + 1, only if the session at that time allows "
+"order execution. If the halt continues over a session boundary, it is "
+"continued in the next session."
 msgstr ""
 "時刻 t に売買停止が始まると、売買停止された市場は時刻 t + haltingTimeLength + 1 "
 "に取引を再開します。ただし、再開するのはその時点のセッションで注文の約定が許可されている場合に限ります。売買停止がセッションの境界をまたいで続く場合は、次のセッションでも継続されます。"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule:16
 msgid ""
-"This rule is hooked after execution, i.e., after all executions caused by "
-"one order are processed. Therefore, a halt prevents the subsequent "
+"This rule is hooked after execution, i.e., after all executions caused by"
+" one order are processed. Therefore, a halt prevents the subsequent "
 "executions, but not the executions caused by the triggering order. While "
-"halted, orders and cancels are still accepted, but the market price is not "
-"updated. Sharing a market among multiple TradingHaltRule events is not "
-"supported. Like other events, this rule is hooked from the beginning of the "
-"simulation, even if it is configured only in a later session."
+"halted, orders and cancels are still accepted, but the market price is "
+"not updated. Sharing a market among multiple TradingHaltRule events is "
+"not supported. Like other events, this rule is hooked from the beginning "
+"of the simulation, even if it is configured only in a later session."
 msgstr "このルールは約定後、すなわち1つの注文によって生じたすべての約定が処理された後にフックされます。そのため、売買停止によってそれ以降の約定は妨げられますが、売買停止のきっかけとなった注文による約定は妨げられません。売買停止中も注文および注文の取消は受け付けられますが、市場価格は更新されません。1つの市場を複数のTradingHaltRuleイベントで共有することはサポートされていません。他のイベントと同様に、このルールは後のセッションでのみ設定されている場合でも、シミュレーションの開始時からフックされます。"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule.hook_registration:1
@@ -74,8 +75,7 @@ msgid ""
 "simulation. You must implement this."
 msgstr "このメソッドは、シミュレーションの開始時にシミュレーターによって自動的に呼び出されます。このメソッドは必ず実装してください。"
 
-#: of pams.events.trading_halt_rule.TradingHaltRule.hook_registration
-#: pams.events.trading_halt_rule.TradingHaltRule.setup
+#: ../../source/reference/generated/events/pams.events.TradingHaltRule.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -83,20 +83,16 @@ msgstr "戻り値"
 msgid "The list of event hook ( :class:`EventHook` )"
 msgstr "イベントフック（:class:`EventHook`）のリスト"
 
-#: of pams.events.trading_halt_rule.TradingHaltRule.hook_registration
-#: pams.events.trading_halt_rule.TradingHaltRule.hooked_after_execution
-#: pams.events.trading_halt_rule.TradingHaltRule.hooked_before_step_for_market
-#: pams.events.trading_halt_rule.TradingHaltRule.setup
+#: ../../source/reference/generated/events/pams.events.TradingHaltRule.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule.hooked_after_execution:1
-msgid "This method is hooked after order executions if you set the event hook."
+#, fuzzy
+msgid "Hook called after order executions if you set the event hook."
 msgstr "イベントフックを設定した場合、このメソッドは注文の約定後に呼び出されます。"
 
-#: of pams.events.trading_halt_rule.TradingHaltRule.hooked_after_execution
-#: pams.events.trading_halt_rule.TradingHaltRule.hooked_before_step_for_market
-#: pams.events.trading_halt_rule.TradingHaltRule.setup
+#: ../../source/reference/generated/events/pams.events.TradingHaltRule.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -109,17 +105,18 @@ msgstr "参照用のシミュレーター。"
 msgid "execution log."
 msgstr "約定ログ。"
 
-#: of pams.events.trading_halt_rule.TradingHaltRule.hooked_after_execution:14
-#: pams.events.trading_halt_rule.TradingHaltRule.hooked_before_step_for_market:14
+#: of pams.events.trading_halt_rule.TradingHaltRule.hooked_after_execution:13
+#: pams.events.trading_halt_rule.TradingHaltRule.hooked_before_step_for_market:13
 #: pams.events.trading_halt_rule.TradingHaltRule.setup:10
-msgid ":py:obj:`None`"
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
 #: of
 #: pams.events.trading_halt_rule.TradingHaltRule.hooked_before_step_for_market:1
+#, fuzzy
 msgid ""
-"This method is hooked at each step before market processing if you set the "
-"event hook."
+"Hook called at each step before market processing if you set the event "
+"hook."
 msgstr "イベントフックを設定した場合、このメソッドは各ステップで市場の処理前に呼び出されます。"
 
 #: of
@@ -128,21 +125,26 @@ msgid "market to be processed."
 msgstr "処理される市場。"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule.setup:1
-msgid "event setup. Usually be called from simulator/runner automatically."
+#, fuzzy
+msgid "Event setup. Usually be called from simulator/runner automatically."
 msgstr "イベントのセットアップ。通常はシミュレーターまたはランナーから自動的に呼び出されます。"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule.setup:4
 msgid ""
 "agent configuration. Usually, automatically set from json config of "
 "simulator. This must include the parameters \"targetMarkets\" and "
-"\"triggerChangeRate\". This can include the parameters \"haltingTimeLength\""
-" and \"enabled\". The parameter \"referenceMarket\" is obsoleted."
+"\"triggerChangeRate\". This can include the parameters "
+"\"haltingTimeLength\" and \"enabled\". The parameter \"referenceMarket\" "
+"is obsoleted."
 msgstr ""
 "イベントの設定。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。パラメータ \"targetMarkets\" と "
-"\"triggerChangeRate\" を含める必要があります。パラメータ \"haltingTimeLength\" と \"enabled\" "
-"を含めることもできます。パラメータ \"referenceMarket\" は廃止されました。"
+"\"triggerChangeRate\" を含める必要があります。パラメータ \"haltingTimeLength\" と "
+"\"enabled\" を含めることもできます。パラメータ \"referenceMarket\" は廃止されました。"
 
 #: of pams.events.trading_halt_rule.TradingHaltRule.setup:11
 msgid "None"
 msgstr ""
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 

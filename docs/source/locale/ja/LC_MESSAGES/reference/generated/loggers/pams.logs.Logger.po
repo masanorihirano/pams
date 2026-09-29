@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -30,8 +30,8 @@ msgstr "ロガークラス。"
 #: of pams.logs.base.Logger:3
 msgid ""
 "Logger is designed to handling parallelized market simulations. In the "
-"parallelized simulation, the order that logs are pushed to this logger is "
-"not deterministic"
+"parallelized simulation, the order that logs are pushed to this logger is"
+" not deterministic"
 msgstr "Loggerは、並列化された市場シミュレーションを扱うように設計されています。並列化されたシミュレーションでは、このロガーにログが渡される順序は決定的ではありません。"
 
 #: of pams.logs.base.Logger:5
@@ -40,8 +40,8 @@ msgstr "これは計算時間がばらつくためです。"
 
 #: of pams.logs.base.Logger:6
 msgid ""
-"For example, there are 2 markets, market 1 and market 2, and those markets "
-"are run in parallel,"
+"For example, there are 2 markets, market 1 and market 2, and those "
+"markets are run in parallel,"
 msgstr "例えば、市場1と市場2の2つの市場があり、それらが並列に実行される場合、"
 
 #: of pams.logs.base.Logger:7
@@ -50,9 +50,9 @@ msgstr "各市場の1ステップあたりの計算時間は一定ではあり�
 
 #: of pams.logs.base.Logger:8
 msgid ""
-"Therefore, the logging sequence of market 1 and market 2 is not always the "
-"same. For handling this problem, logger should save the logs from those "
-"markets and the end of each step,"
+"Therefore, the logging sequence of market 1 and market 2 is not always "
+"the same. For handling this problem, logger should save the logs from "
+"those markets and the end of each step,"
 msgstr "そのため、市場1と市場2のログの記録順序は常に同じとは限りません。この問題に対処するため、ロガーはそれらの市場からのログを保存しておき、各ステップの終了時に、"
 
 #: of pams.logs.base.Logger:10
@@ -61,30 +61,19 @@ msgstr "ログを処理して書き出します。"
 
 #: of pams.logs.base.Logger:11
 msgid ""
-"However, for some implementation, non-blocking log writing should be also "
-"supported. Therefore, this logger has 2 methods to handling logs -- "
+"However, for some implementation, non-blocking log writing should be also"
+" supported. Therefore, this logger has 2 methods to handling logs -- "
 ":func:`write` and :func:`write_and_direct_process`"
 msgstr ""
 "ただし、実装によってはノンブロッキングなログ書き込みもサポートする必要があります。そのため、このロガーにはログを扱うための2つのメソッド、:func:`write`"
 " と :func:`write_and_direct_process` があります。"
 
 #: of pams.logs.base.Logger.bulk_write:1
-msgid "set some logs to pending list."
+#, fuzzy
+msgid "Set some logs to pending list."
 msgstr "複数のログを保留リストに追加します。"
 
-#: of pams.logs.base.Logger.bulk_write
-#: pams.logs.base.Logger.bulk_write_and_direct_process
-#: pams.logs.base.Logger.process pams.logs.base.Logger.process_cancel_log
-#: pams.logs.base.Logger.process_execution_log
-#: pams.logs.base.Logger.process_expiration_log
-#: pams.logs.base.Logger.process_market_step_begin_log
-#: pams.logs.base.Logger.process_market_step_end_log
-#: pams.logs.base.Logger.process_order_log
-#: pams.logs.base.Logger.process_session_begin_log
-#: pams.logs.base.Logger.process_session_end_log
-#: pams.logs.base.Logger.process_simulation_begin_log
-#: pams.logs.base.Logger.process_simulation_end_log pams.logs.base.Logger.write
-#: pams.logs.base.Logger.write_and_direct_process
+#: ../../source/reference/generated/loggers/pams.logs.Logger.rst
 msgid "Parameters"
 msgstr "パラメータ"
 
@@ -94,19 +83,7 @@ msgstr "パラメータ"
 msgid "log list."
 msgstr "ログのリスト。"
 
-#: of pams.logs.base.Logger.bulk_write
-#: pams.logs.base.Logger.bulk_write_and_direct_process
-#: pams.logs.base.Logger.process pams.logs.base.Logger.process_cancel_log
-#: pams.logs.base.Logger.process_execution_log
-#: pams.logs.base.Logger.process_expiration_log
-#: pams.logs.base.Logger.process_market_step_begin_log
-#: pams.logs.base.Logger.process_market_step_end_log
-#: pams.logs.base.Logger.process_order_log
-#: pams.logs.base.Logger.process_session_begin_log
-#: pams.logs.base.Logger.process_session_end_log
-#: pams.logs.base.Logger.process_simulation_begin_log
-#: pams.logs.base.Logger.process_simulation_end_log pams.logs.base.Logger.write
-#: pams.logs.base.Logger.write_and_direct_process
+#: ../../source/reference/generated/loggers/pams.logs.Logger.rst
 msgid "Return type"
 msgstr "戻り値の型"
 
@@ -122,23 +99,12 @@ msgstr "戻り値の型"
 #: pams.logs.base.Logger.process_session_end_log:7
 #: pams.logs.base.Logger.process_simulation_begin_log:7
 #: pams.logs.base.Logger.process_simulation_end_log:7
-#: pams.logs.base.Logger.write:7 pams.logs.base.Logger.write_and_direct_process:7
-msgid ":py:obj:`None`"
+#: pams.logs.base.Logger.write:7
+#: pams.logs.base.Logger.write_and_direct_process:7
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
 msgstr ""
 
-#: of pams.logs.base.Logger.bulk_write
-#: pams.logs.base.Logger.bulk_write_and_direct_process
-#: pams.logs.base.Logger.process pams.logs.base.Logger.process_cancel_log
-#: pams.logs.base.Logger.process_execution_log
-#: pams.logs.base.Logger.process_expiration_log
-#: pams.logs.base.Logger.process_market_step_begin_log
-#: pams.logs.base.Logger.process_market_step_end_log
-#: pams.logs.base.Logger.process_order_log
-#: pams.logs.base.Logger.process_session_begin_log
-#: pams.logs.base.Logger.process_session_end_log
-#: pams.logs.base.Logger.process_simulation_begin_log
-#: pams.logs.base.Logger.process_simulation_end_log pams.logs.base.Logger.write
-#: pams.logs.base.Logger.write_and_direct_process
+#: ../../source/reference/generated/loggers/pams.logs.Logger.rst
 msgid "Returns"
 msgstr "戻り値"
 
@@ -154,16 +120,21 @@ msgstr "戻り値"
 #: pams.logs.base.Logger.process_session_end_log:8
 #: pams.logs.base.Logger.process_simulation_begin_log:8
 #: pams.logs.base.Logger.process_simulation_end_log:8
-#: pams.logs.base.Logger.write:8 pams.logs.base.Logger.write_and_direct_process:8
+#: pams.logs.base.Logger.write:8
+#: pams.logs.base.Logger.write_and_direct_process:8
 msgid "None"
 msgstr ""
 
 #: of pams.logs.base.Logger.bulk_write_and_direct_process:1
-msgid "direct writing some logs."
+#, fuzzy
+msgid "Direct writing some logs."
 msgstr "複数のログを直接書き込みます。"
 
 #: of pams.logs.base.Logger.process:1
-msgid "logging execution. For each log type, each processing method are implemented."
+#, fuzzy
+msgid ""
+"Logging execution. For each log type, each processing method are "
+"implemented."
 msgstr "ログ記録を実行します。ログの種類ごとに、それぞれの処理メソッドが実装されています。"
 
 #: of pams.logs.base.Logger.process:3
@@ -213,7 +184,8 @@ msgid ""
 msgstr "ただし、ログの書き込み順序を制御したい場合は、この実装を変更できます。"
 
 #: of pams.logs.base.Logger.process_cancel_log:1
-msgid "process cancel log. Called from :func:`process`."
+#, fuzzy
+msgid "Process cancel log. Called from :func:`process`."
 msgstr "取消ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_cancel_log:4
@@ -221,7 +193,8 @@ msgid "cancel log"
 msgstr "取消ログ"
 
 #: of pams.logs.base.Logger.process_execution_log:1
-msgid "process execution log. Called from :func:`process`."
+#, fuzzy
+msgid "Process execution log. Called from :func:`process`."
 msgstr "約定ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_execution_log:4
@@ -229,7 +202,8 @@ msgid "execution log"
 msgstr "約定ログ"
 
 #: of pams.logs.base.Logger.process_expiration_log:1
-msgid "process expiration log. Called from :func:`process`."
+#, fuzzy
+msgid "Process expiration log. Called from :func:`process`."
 msgstr "失効ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_expiration_log:4
@@ -237,7 +211,8 @@ msgid "expiration log"
 msgstr "失効ログ"
 
 #: of pams.logs.base.Logger.process_market_step_begin_log:1
-msgid "process market step begin log. Called from :func:`process`."
+#, fuzzy
+msgid "Process market step begin log. Called from :func:`process`."
 msgstr "市場ステップ開始ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_market_step_begin_log:4
@@ -245,7 +220,8 @@ msgid "market step begin log"
 msgstr "市場ステップ開始ログ"
 
 #: of pams.logs.base.Logger.process_market_step_end_log:1
-msgid "process market step end log. Called from :func:`process`."
+#, fuzzy
+msgid "Process market step end log. Called from :func:`process`."
 msgstr "市場ステップ終了ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_market_step_end_log:4
@@ -253,7 +229,8 @@ msgid "market step end log"
 msgstr "市場ステップ終了ログ"
 
 #: of pams.logs.base.Logger.process_order_log:1
-msgid "process order log. Called from :func:`process`."
+#, fuzzy
+msgid "Process order log. Called from :func:`process`."
 msgstr "注文ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_order_log:4
@@ -261,7 +238,8 @@ msgid "order log"
 msgstr "注文ログ"
 
 #: of pams.logs.base.Logger.process_session_begin_log:1
-msgid "process session begin log. Called from :func:`process`."
+#, fuzzy
+msgid "Process session begin log. Called from :func:`process`."
 msgstr "セッション開始ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_session_begin_log:4
@@ -269,7 +247,8 @@ msgid "session begin log"
 msgstr "セッション開始ログ"
 
 #: of pams.logs.base.Logger.process_session_end_log:1
-msgid "process session end log. Called from :func:`process`."
+#, fuzzy
+msgid "Process session end log. Called from :func:`process`."
 msgstr "セッション終了ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_session_end_log:4
@@ -277,7 +256,8 @@ msgid "session end log"
 msgstr "セッション終了ログ"
 
 #: of pams.logs.base.Logger.process_simulation_begin_log:1
-msgid "process simulation begin log. Called from :func:`process`."
+#, fuzzy
+msgid "Process simulation begin log. Called from :func:`process`."
 msgstr "シミュレーション開始ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_simulation_begin_log:4
@@ -285,7 +265,8 @@ msgid "simulation begin log"
 msgstr "シミュレーション開始ログ"
 
 #: of pams.logs.base.Logger.process_simulation_end_log:1
-msgid "process simulation end log. Called from :func:`process`."
+#, fuzzy
+msgid "Process simulation end log. Called from :func:`process`."
 msgstr "シミュレーション終了ログを処理します。:func:`process` から呼び出されます。"
 
 #: of pams.logs.base.Logger.process_simulation_end_log:4
@@ -293,7 +274,8 @@ msgid "simulation end log"
 msgstr "シミュレーション終了ログ"
 
 #: of pams.logs.base.Logger.write:1
-msgid "set a log to pending list."
+#, fuzzy
+msgid "Set a log to pending list."
 msgstr "ログを保留リストに追加します。"
 
 #: of pams.logs.base.Logger.write:4
@@ -302,6 +284,10 @@ msgid "log."
 msgstr "ログ。"
 
 #: of pams.logs.base.Logger.write_and_direct_process:1
-msgid "direct writing a log."
+#, fuzzy
+msgid "Direct writing a log."
 msgstr "ログを直接書き込みます。"
+
+#~ msgid ":py:obj:`None`"
+#~ msgstr ""
 
