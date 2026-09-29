@@ -4,4 +4,5 @@ Tutorials
    :maxdepth: 1
 
    outline
+   first_simulation
 
