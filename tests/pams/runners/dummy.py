@@ -1,4 +1,5 @@
 import random
+import sys
 import threading
 import time
 from typing import Any
@@ -202,6 +203,20 @@ def get_worker_token() -> Optional[str]:
 def fail_to_initialize_worker() -> None:
     """Raise an error as a worker initializer."""
     raise RuntimeError("error in worker initializer")
+
+
+def fail_to_initialize_worker_with_system_exit() -> None:
+    """Exit as a worker initializer, i.e., raise SystemExit."""
+    sys.exit("error in worker initializer")
+
+
+class WorkerInitializerAbort(BaseException):
+    """BaseException that is not an Exception, raised by a worker initializer."""
+
+
+def fail_to_initialize_worker_with_base_exception() -> None:
+    """Raise a BaseException that is not an Exception as a worker initializer."""
+    raise WorkerInitializerAbort("error in worker initializer")
 
 
 def get_parent_marker() -> Optional[str]:

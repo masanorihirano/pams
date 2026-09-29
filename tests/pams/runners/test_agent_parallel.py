@@ -3,7 +3,9 @@ import multiprocessing
 import os
 import random
 import time
+import traceback
 import uuid
+from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
@@ -36,7 +38,10 @@ from .dummy import IdleEvenIDFCNAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
 from .dummy import WorkerInitializationCheckingAgent
+from .dummy import WorkerInitializerAbort
 from .dummy import fail_to_initialize_worker
+from .dummy import fail_to_initialize_worker_with_base_exception
+from .dummy import fail_to_initialize_worker_with_system_exit
 from .dummy import get_parent_marker
 from .dummy import get_worker_token
 from .dummy import initialize_worker
@@ -499,22 +504,44 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             runner._run()
         assert runner.executor is None
 
-    def test_worker_initializer_failure(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    @pytest.mark.parametrize(
+        "initializer, error_class",
+        [
+            (fail_to_initialize_worker, RuntimeError),
+            (fail_to_initialize_worker_with_system_exit, SystemExit),
+            (fail_to_initialize_worker_with_base_exception, WorkerInitializerAbort),
+        ],
+        ids=["Exception", "SystemExit", "BaseException"],
+    )
+    def test_worker_initializer_failure(
+        self,
+        initializer: Callable[[], None],
+        error_class: Type[BaseException],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["sessions"][0]["iterationSteps"] = 1
         _, runner = self._make_runners(setting=setting)
-        monkeypatch.setattr(
-            runner, "_get_worker_initializer", lambda: fail_to_initialize_worker
-        )
+        monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
         runner._setup()
         # the tasks raise the error instead of breaking the executor, which can hang
-        # ProcessPoolExecutor on Python 3.10 or earlier
+        # ProcessPoolExecutor on Python 3.10 or earlier. The executors break on any
+        # BaseException of the initializer, e.g., SystemExit, so check that the executor
+        # still runs a task that does not depend on the initializer.
+        executor = runner.executor
+        assert executor is not None
+        assert executor.submit(sum, [1, 2]).result() == 3
         with pytest.raises(
-            RuntimeError, match="the worker initializer failed"
+            RuntimeError, match="the worker initializer failed on this worker"
         ) as exc_info:
             runner._run()
+        assert not isinstance(exc_info.value, BrokenExecutor)
         # the cause is the error itself (thread) or its traceback (process)
-        assert "error in worker initializer" in str(exc_info.value.__cause__)
+        cause = exc_info.value.__cause__
+        assert cause is not None
+        assert f"{error_class.__name__}: error in worker initializer" in "".join(
+            traceback.format_exception_only(type(cause), cause)
+        )
         assert runner.executor is None
 
     def test_split_agents_into_chunks(self) -> None:

@@ -40,7 +40,11 @@ def _initialize_worker(
     :func:`_submit_orders_in_worker` raises an error on this worker instead of breaking the
     executor. This is because a broken :class:`concurrent.futures.ProcessPoolExecutor` can hang
     on Python 3.10 or earlier when large tasks, such as the pickled simulation, are waiting to be
-    sent to the worker processes.
+    sent to the worker processes. Any :class:`BaseException`, including :class:`SystemExit` and
+    :class:`KeyboardInterrupt`, is kept because the executors break on any
+    :class:`BaseException` of the initializer. This is consistent with the executors, which pass
+    any :class:`BaseException` of a task to its future. A :class:`KeyboardInterrupt` by Ctrl+C
+    usually interrupts the main process as well, which stops the simulation.
 
     Args:
         initializer (Callable[..., Any], Optional): worker initializer. If it is None, nothing is
@@ -55,8 +59,9 @@ def _initialize_worker(
     if initializer is not None:
         try:
             initializer(*initargs)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            # any error of the user-defined initializer is raised by the tasks on this worker
+        except BaseException as e:  # pylint: disable=broad-exception-caught
+            # any error of the user-defined initializer, even SystemExit, is raised by the
+            # tasks on this worker because the executor breaks on any BaseException
             _worker_state.initializer_error = e
 
 
@@ -69,7 +74,7 @@ def _submit_orders_in_worker(
     on a worker process of :class:`concurrent.futures.ProcessPoolExecutor`.
     The agents are asked one by one in the given order.
     If the worker initializer failed on this worker, a RuntimeError is raised with the exception
-    raised by the initializer as its cause.
+    raised by the initializer, which can be any :class:`BaseException`, as its cause.
 
     Args:
         agents (List[Agent]): agents.
@@ -82,7 +87,7 @@ def _submit_orders_in_worker(
             another process.
 
     """
-    initializer_error: Optional[Exception] = getattr(
+    initializer_error: Optional[BaseException] = getattr(
         _worker_state, "initializer_error", None
     )
     if initializer_error is not None:
@@ -235,8 +240,9 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         process of :class:`pams.runners.MultiProcessAgentParallelRunner`, but never on the main
         thread. For the latter, the function and its arguments are pickled, so the function must be
         defined at the top level of a module that the worker processes can import.
-        If the function raises an exception on a worker, every task on the worker raises a
-        RuntimeError whose cause is the exception, and the simulation fails with it.
+        If the function raises any exception on a worker, including a :class:`BaseException` such
+        as :class:`SystemExit`, every task on the worker raises a RuntimeError whose cause is the
+        exception, and the simulation fails with it.
 
         Returns:
             Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,
