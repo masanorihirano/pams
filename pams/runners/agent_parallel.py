@@ -242,7 +242,10 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         defined at the top level of a module that the worker processes can import.
         If the function raises any exception on a worker, including a :class:`BaseException` such
         as :class:`SystemExit`, every task on the worker raises a RuntimeError whose cause is the
-        exception, and the simulation fails with it.
+        exception, and the simulation fails with it. With
+        :class:`pams.runners.MultiProcessAgentParallelRunner`, the cause of the RuntimeError in the
+        main process is the traceback text from the worker process instead of the exception itself,
+        as for any error of a task of :class:`concurrent.futures.ProcessPoolExecutor`.
 
         Returns:
             Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,

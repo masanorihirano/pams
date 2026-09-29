@@ -71,6 +71,7 @@ Subclasses of the parallel runners can customize the workers by overriding the f
   the function must be defined at the top level of a module that the worker processes can import, and the
   arguments must be picklable. If the function raises any exception on a worker, including a ``BaseException`` such as
   ``SystemExit``, the tasks on that worker raise a ``RuntimeError`` caused by the exception, and the simulation fails.
+  With the process runner, the ``__cause__`` of the ``RuntimeError`` is the worker's traceback text, not the exception.
 - ``_create_executor()``: the :class:`concurrent.futures.Executor` that runs the tasks. The default creates
   ``_parallel_pool_provider`` (:class:`concurrent.futures.ThreadPoolExecutor` or
   :class:`concurrent.futures.ProcessPoolExecutor`) with the members above and ``numParallel`` workers.
