@@ -1,12 +1,16 @@
 import math
+import random
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 from typing import Union
 
 from pams import LIMIT_ORDER
+from pams import Simulator
 from pams.agents import Agent
+from pams.logs import Logger
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
@@ -26,6 +30,18 @@ class TorchPricingAgent(Agent):
     seed on any worker process.
     """
 
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent without the model, which is created by setup."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.model: Any = None
+
     def setup(
         self,
         settings: Dict[str, Any],
@@ -33,7 +49,8 @@ class TorchPricingAgent(Agent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        import torch
+        # PyTorch is optional, so it is not imported at the top level
+        import torch  # pylint: disable=import-outside-toplevel
 
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
         generator = torch.Generator().manual_seed(self.prng.randrange(2**32))
@@ -45,7 +62,8 @@ class TorchPricingAgent(Agent):
                 parameter.copy_(torch.randn(parameter.shape, generator=generator))
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        import torch
+        # PyTorch is optional, so it is not imported at the top level
+        import torch  # pylint: disable=import-outside-toplevel
 
         orders: List[Union[Order, Cancel]] = []
         for market in markets:
@@ -81,7 +99,8 @@ class TorchPricingAgent(Agent):
 
 def get_torch_settings() -> Tuple[int, str]:
     """Get the number of threads and the sharing strategy of PyTorch on the current process."""
-    import torch.multiprocessing
+    # PyTorch is optional, so it is not imported at the top level
+    import torch.multiprocessing  # pylint: disable=import-outside-toplevel
 
     return torch.get_num_threads(), torch.multiprocessing.get_sharing_strategy()
 

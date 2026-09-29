@@ -1,9 +1,9 @@
 import copy
 import multiprocessing
 import os
-import pickle
+import pickle  # nosec B403  # only measures the size of pickled data
 import random
-import subprocess
+import subprocess  # nosec B404  # runs only the Python of the tests
 import sys
 from concurrent.futures import Executor
 from multiprocessing.reduction import ForkingPickler
@@ -74,8 +74,8 @@ class SharingStrategyKeepingTorchAgentParallelRunner(TorchAgentParallelRunner):
     torch_sharing_strategy: Optional[str] = None
 
 
-@pytest.fixture
-def torch() -> Iterator[Any]:
+@pytest.fixture(name="torch")
+def fixture_torch() -> Iterator[Any]:
     """Import PyTorch, or skip the test if it is not installed.
 
     The sharing strategy of PyTorch, which the runners set on the main process, is restored after
@@ -128,7 +128,7 @@ def test_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_pams_does_not_import_torch() -> None:
     # a new process is used because PyTorch may already be imported by the other tests
     code = "import sys, pams, pams.runners; print('torch' in sys.modules)"
-    result = subprocess.run(
+    result = subprocess.run(  # nosec B603  # a fixed command without user input
         [sys.executable, "-c", code],
         cwd=os.path.dirname(os.path.dirname(os.path.abspath(pams.__file__))),
         capture_output=True,

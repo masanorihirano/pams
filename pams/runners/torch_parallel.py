@@ -24,8 +24,8 @@ def _import_torch() -> Any:
 
     """
     try:
-        # this imports torch as well
-        import torch.multiprocessing
+        # this imports torch as well. It is not at the top level because PyTorch is optional.
+        import torch.multiprocessing  # pylint: disable=import-outside-toplevel
     except ImportError as e:
         raise ImportError(
             "TorchAgentParallelRunner requires PyTorch, but it is not installed. "
