@@ -19,7 +19,7 @@ MARGIN_NORMAL = 1
 
 
 class FCNAgent(Agent):
-    r"""FCN (Fundamental, Chartist, Noise) Agent class
+    r"""FCN (Fundamental, Chartist, Noise) Agent class.
 
     This class inherits from the :class:`pams.agents.Agent` class.
 
@@ -32,6 +32,7 @@ class FCNAgent(Agent):
     References:
         - Chiarella, C., & Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.
           Quantitative Finance, 2(5), 346–353. https://doi.org/10.1088/1469-7688/2/5/303
+
     """  # NOQA
 
     fundamental_weight: float
@@ -51,17 +52,22 @@ class FCNAgent(Agent):
         name: str,
         logger: Optional[Logger] = None,
     ):
+        """Initialize the FCN agent.
+
+        See :class:`pams.agents.Agent` for the arguments.
+        """
         super().__init__(agent_id, prng, simulator, name, logger)
         self.is_chart_following = True
 
     def is_finite(self, x: float) -> bool:
-        """determine if it is a valid value.
+        """Determine if it is a valid value.
 
         Args:
             x (float): value.
 
         Return:
             bool: whether or not it is a valid (not NaN, finite) value.
+
         """
         return not math.isnan(x) and not math.isinf(x)
 
@@ -72,7 +78,7 @@ class FCNAgent(Agent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup.  Usually be called from simulator/runner automatically.
+        """Agent setup.  Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. This can include the parameters "fundamentalWeight",
@@ -84,6 +90,7 @@ class FCNAgent(Agent):
 
         Returns:
             None
+
         """
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         json_random: JsonRandom = JsonRandom(prng=self.prng)
@@ -113,7 +120,10 @@ class FCNAgent(Agent):
             self.mean_reversion_time = self.time_window_size
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders based on FCN-based calculation.
+        """Submit orders based on FCN-based calculation.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
 
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
@@ -124,13 +134,14 @@ class FCNAgent(Agent):
         return orders
 
     def submit_orders_by_market(self, market: Market) -> List[Union[Order, Cancel]]:
-        """submit orders by market (internal usage).
+        """Submit orders by market (internal usage).
 
         Args:
             market (Market): market to order.
 
         Returns:
             List[Union[Order, Cancel]]: order list.
+
         """
         orders: List[Union[Order, Cancel]] = []
         if not self.is_market_accessible(market_id=market.market_id):
@@ -242,10 +253,11 @@ class FCNAgent(Agent):
         return orders
 
     def __repr__(self) -> str:
-        """string representation of FCN agent class.
+        """String representation of FCN agent class.
 
         Returns:
             str: string representation of this class.
+
         """
         margin_type = {
             MARGIN_FIXED: "MARGIN_FIXED",

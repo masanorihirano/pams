@@ -19,7 +19,7 @@ class Session:
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
-        """initialization.
+        """Initialization.
 
         Args:
             session_id (int): session ID.
@@ -37,6 +37,7 @@ class Session:
         Note:
              `prng` should not be shared with other classes and be used only in this class.
              It is because sometimes agent process runs one of parallelized threads.
+
         """
         self.session_id: int = session_id
         self.name: str = name
@@ -54,6 +55,7 @@ class Session:
         self.session_start_time: int = session_start_time
 
     def __repr__(self) -> str:
+        """Return the string representation of the session."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.session_id}, name={self.name}, "
             f"iteration_steps={self.iteration_steps}, session_start_time={self.session_start_time}, "
@@ -64,7 +66,7 @@ class Session:
         )
 
     def setup(self, settings: Dict[str, Any], *args, **kwargs) -> None:  # type: ignore  # NOQA
-        """setup session configuration from setting format.
+        """Setup session configuration from setting format.
 
         Args:
             settings (Dict[str, Any]): session configuration. Usually, automatically set from json config of simulator.
@@ -77,6 +79,7 @@ class Session:
 
         Returns:
             None
+
         """
         if "iterationSteps" not in settings:
             raise ValueError(

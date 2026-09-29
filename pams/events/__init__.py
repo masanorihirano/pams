@@ -1,3 +1,4 @@
+"""Events such as price shocks and market regulation rules."""
 from .base import EventABC
 from .base import EventHook
 from .fundamental_price_shock import FundamentalPriceShock

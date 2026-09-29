@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/agents/pams.agents.MarketShareFCNAgent.rst:7
+msgid "MarketShareFCNAgent"
+msgstr ""
+
+#: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent:1
+#, fuzzy
+msgid "Market Share FCN Agent class."
+msgstr "市場シェアFCNエージェントクラス"
+
+#: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent:3
+msgid ""
+"This agent submits orders based on market shares. This class inherits "
+"from the :class:`pams.agents.FCNAgent` class."
+msgstr ""
+"このエージェントは市場シェアに基づいて注文を出します。このクラスは :class:`pams.agents.FCNAgent` "
+"クラスを継承しています。"
+
+#: of
+#: pams.agents.market_share_fcn_agent.MarketShareFCNAgent.get_sum_trade_volume:1
+#, fuzzy
+msgid "Get sum of trade volume."
+msgstr "出来高の合計を取得します。"
+
+#: ../../source/reference/generated/agents/pams.agents.MarketShareFCNAgent.rst
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of
+#: pams.agents.market_share_fcn_agent.MarketShareFCNAgent.get_sum_trade_volume:4
+msgid "trading market."
+msgstr "取引する市場。"
+
+#: ../../source/reference/generated/agents/pams.agents.MarketShareFCNAgent.rst
+msgid "Returns"
+msgstr "戻り値"
+
+#: of
+#: pams.agents.market_share_fcn_agent.MarketShareFCNAgent.get_sum_trade_volume:7
+msgid "total trade volume."
+msgstr "出来高の合計。"
+
+#: ../../source/reference/generated/agents/pams.agents.MarketShareFCNAgent.rst
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent.submit_orders:1
+#, fuzzy
+msgid "Submit orders based on FCN-based calculation and market shares."
+msgstr "FCNに基づく計算と市場シェアにより注文を出します。"
+
+#: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent.submit_orders:3
+msgid "order list."
+msgstr "注文のリスト。"
+
+#: of pams.agents.market_share_fcn_agent.MarketShareFCNAgent.submit_orders:7
+msgid ":func:`pams.agents.FCNAgent.submit_orders`"
+msgstr ""
+
+#~ msgid ""
+#~ ":py:class:`~typing.List`\\[:py:data:`~typing.Union`\\[:py:class:`~pams.order.Order`,"
+#~ " :py:class:`~pams.order.Cancel`]]"
+#~ msgstr ""
+

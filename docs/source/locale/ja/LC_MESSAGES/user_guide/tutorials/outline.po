@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/outline.rst:2
+msgid "Outline"
+msgstr "概要"
+
+#: ../../source/user_guide/tutorials/outline.rst:5
+msgid "Guideline"
+msgstr "ガイドライン"
+
+#: ../../source/user_guide/tutorials/outline.rst:6
+msgid "Here is what you should take care for your implementations:"
+msgstr "実装にあたって注意すべき点は以下のとおりです："
+
+#: ../../source/user_guide/tutorials/outline.rst:8
+msgid ""
+"**Be careful to change parameters in other classes.** Because of python "
+"system, all parameters can be changeable. However, it doesn't mean that you "
+"should change them. Only referring those parameters outside the class is "
+"somehow reasonable, but changing them is dangerous for some situations. The "
+"names of parameters that should not be changed outside are started from "
+"\"_\". Therefore, the parameter whose name is started from \"_\" is highly "
+"forbidden to access outside the class."
+msgstr ""
+"**他のクラスのパラメータを変更する際は注意してください。** "
+"Pythonの仕組み上、すべてのパラメータは変更可能です。しかし、それは変更してよいという意味ではありません。クラスの外部からそれらのパラメータを参照するだけであれば、ある程度妥当といえますが、変更することは状況によっては危険です。外部から変更すべきでないパラメータの名前は「_」で始まります。したがって、名前が「_」で始まるパラメータにクラスの外部からアクセスすることは固く禁じられています。"
+
+#: ../../source/user_guide/tutorials/outline.rst:14
+msgid ""
+"**Publicly accessible parameters and methods don't mean you should access "
+"them.** For some convenience, we make some parameters and methods are public"
+" starting without \"_\". However, if you should access them is always "
+"depending on what you want to do. Therefore, some accessible parameters and "
+"methods could not be appropriate to be used correspondence to the actual "
+"markets."
+msgstr ""
+"**公開されているパラメータやメソッドであっても、アクセスしてよいとは限りません。** "
+"利便性のため、一部のパラメータやメソッドは、名前を「_」で始めずに公開しています。しかし、それらにアクセスすべきかどうかは、常に何をしたいかによって異なります。したがって、アクセス可能なパラメータやメソッドの中には、実際の市場との対応という観点からは使用が適切でないものもあります。"
+
+#: ../../source/user_guide/tutorials/outline.rst:19
+msgid "TBD..."
+msgstr "準備中..."
+

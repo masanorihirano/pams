@@ -3,13 +3,16 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+# Sphinx reads the lower-case module-level names below (including ``copyright``),
+# so they cannot follow the constant naming style or avoid shadowing the builtin.
+# pylint: disable=invalid-name,redefined-builtin
+
 import os
 import sys
 
 sys.path.insert(
     0, os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 )
-import pams
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information

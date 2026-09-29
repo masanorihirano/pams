@@ -45,7 +45,7 @@ class SequentialRunner(Runner):
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.
@@ -55,72 +55,101 @@ class SequentialRunner(Runner):
 
         Returns:
             None
+
         """
         super().__init__(settings, prng, logger, simulator_class)
         self._pending_setups: List[Tuple[Callable, Dict]] = []
 
+    def _parse_group(
+        self, name: str, count_key: str
+    ) -> Tuple[Dict, range, bool, str, Type]:
+        """Parse the settings common to market and agent groups (internal method).
+
+        The settings for ``name`` are extended by :func:`pams.utils.json_extends`. Then,
+        ``count_key``, ``from``, ``to`` and ``prefix`` are read and removed from them, and
+        the class specified by ``class`` is found.
+
+        Args:
+            name (str): name of the market or agent group in the config.
+            count_key (str): key for the number of markets or agents in the group, i.e.,
+                ``numMarkets`` or ``numAgents``.
+
+        Returns:
+            Tuple[Dict, range, bool, str, Type]: the extended settings, the range of the
+            indices, whether the index is appended to the prefix in the names, the prefix
+            of the names and the class.
+
+        """
+        if name not in self.settings:
+            raise ValueError(f"{name} setting is missing in config")
+        group_settings: Dict = self.settings[name]
+        group_settings = json_extends(
+            whole_json=self.settings,
+            parent_name=name,
+            target_json=group_settings,
+            excludes_fields=["from", "to"],
+        )
+        # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
+        n_entities = 1
+        id_from = 0
+        id_to = 0
+        uses_range = False
+        if count_key in group_settings:
+            n_entities = int(group_settings[count_key])
+            id_to = n_entities - 1
+        if "from" in group_settings or "to" in group_settings:
+            if "from" not in group_settings or "to" not in group_settings:
+                raise ValueError(
+                    f"both {name}.from and {name}.to are required in json file if you use"
+                )
+            if count_key in group_settings:
+                raise ValueError(
+                    f"{name}.{count_key} and ({name}.from or {name}.to) cannot be used at the same time"
+                )
+            id_from = int(group_settings["from"])
+            id_to = int(group_settings["to"])
+            if id_to < id_from:
+                raise ValueError(
+                    f"{name}.to must be greater than or equal to {name}.from"
+                )
+            n_entities = id_to - id_from + 1
+            uses_range = True
+        for key in [count_key, "from", "to"]:
+            if key in group_settings:
+                del group_settings[key]
+        prefix: str
+        if "prefix" in group_settings:
+            prefix = group_settings["prefix"]
+            del group_settings["prefix"]
+        else:
+            prefix = name + ("-" if n_entities > 1 else "")
+        if "class" not in group_settings:
+            raise ValueError(f"class is not defined for {name}")
+        group_class: Type = find_class(
+            name=group_settings["class"], optional_class_list=self.registered_classes
+        )
+        return (
+            group_settings,
+            range(id_from, id_to + 1),
+            uses_range or n_entities != 1,
+            prefix,
+            group_class,
+        )
+
     def _generate_markets(self, market_type_names: List[str]) -> None:
-        """generate markets. (Internal method)
+        """Generate markets (internal method).
 
         Args:
             market_type_names (List[str]): name list of market type.
 
         Returns:
             None
+
         """
         i_market = 0
         for name in market_type_names:
-            if name not in self.settings:
-                raise ValueError(f"{name} setting is missing in config")
-            market_settings: Dict = self.settings[name]
-            market_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=market_settings,
-                excludes_fields=["from", "to"],
-            )
-            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
-            n_markets = 1
-            id_from = 0
-            id_to = 0
-            uses_range = False
-            if "numMarkets" in market_settings:
-                n_markets = int(market_settings["numMarkets"])
-                id_to = n_markets - 1
-            if "from" in market_settings or "to" in market_settings:
-                if "from" not in market_settings or "to" not in market_settings:
-                    raise ValueError(
-                        f"both {name}.from and {name}.to are required in json file if you use"
-                    )
-                if "numMarkets" in market_settings:
-                    raise ValueError(
-                        f"{name}.numMarkets and ({name}.from or {name}.to) cannot be used at the same time"
-                    )
-                id_from = int(market_settings["from"])
-                id_to = int(market_settings["to"])
-                if id_to < id_from:
-                    raise ValueError(
-                        f"{name}.to must be greater than or equal to {name}.from"
-                    )
-                n_markets = id_to - id_from + 1
-                uses_range = True
-            if "numMarkets" in market_settings:
-                del market_settings["numMarkets"]
-            if "from" in market_settings:
-                del market_settings["from"]
-            if "to" in market_settings:
-                del market_settings["to"]
-            prefix: str
-            if "prefix" in market_settings:
-                prefix = market_settings["prefix"]
-                del market_settings["prefix"]
-            else:
-                prefix = name + ("-" if n_markets > 1 else "")
-            if "class" not in market_settings:
-                raise ValueError(f"class is not defined for {name}")
-            market_class: Type[Market] = find_class(
-                name=market_settings["class"],
-                optional_class_list=self.registered_classes,
+            market_settings, ids, numbered, prefix, market_class = self._parse_group(
+                name=name, count_key="numMarkets"
             )
             if not issubclass(market_class, Market):
                 raise ValueError(
@@ -141,13 +170,13 @@ class SequentialRunner(Runner):
             if "fundamentalVolatility" in market_settings:
                 fundamental_volatility = float(market_settings["fundamentalVolatility"])
 
-            for i in range(id_from, id_to + 1):
+            for i in ids:
                 market = market_class(
                     market_id=i_market,
                     prng=random.Random(self._prng.randint(0, 2**31)),
                     simulator=self.simulator,
                     logger=self.logger,
-                    name=prefix + (str(i) if uses_range or n_markets != 1 else ""),
+                    name=prefix + (str(i) if numbered else ""),
                 )
                 i_market += 1
                 self.simulator._add_market(market=market, group_name=name)
@@ -163,68 +192,19 @@ class SequentialRunner(Runner):
                 )
 
     def _generate_agents(self, agent_type_names: List[str]) -> None:
-        """generate agents. (Internal method)
+        """Generate agents (internal method).
 
         Args:
             agent_type_names (List[str]): name list of agent type.
 
         Returns:
             None
+
         """
         i_agent = 0
         for name in agent_type_names:
-            if name not in self.settings:
-                raise ValueError(f"{name} setting is missing in config")
-            agent_settings: Dict = self.settings[name]
-            agent_settings = json_extends(
-                whole_json=self.settings,
-                parent_name=name,
-                target_json=agent_settings,
-                excludes_fields=["from", "to"],
-            )
-            # TODO: warn "from" and "to" is included in parent setting and not set to this setting.
-            n_agents = 1
-            id_from = 0
-            id_to = 0
-            uses_range = False
-            if "numAgents" in agent_settings:
-                n_agents = int(agent_settings["numAgents"])
-                id_to = n_agents - 1
-            if "from" in agent_settings or "to" in agent_settings:
-                if "from" not in agent_settings or "to" not in agent_settings:
-                    raise ValueError(
-                        f"both {name}.from and {name}.to are required in json file if you use"
-                    )
-                if "numAgents" in agent_settings:
-                    raise ValueError(
-                        f"{name}.numAgents and ({name}.from or {name}.to) cannot be used at the same time"
-                    )
-                id_from = int(agent_settings["from"])
-                id_to = int(agent_settings["to"])
-                if id_to < id_from:
-                    raise ValueError(
-                        f"{name}.to must be greater than or equal to {name}.from"
-                    )
-                n_agents = id_to - id_from + 1
-                uses_range = True
-            if "numAgents" in agent_settings:
-                del agent_settings["numAgents"]
-            if "from" in agent_settings:
-                del agent_settings["from"]
-            if "to" in agent_settings:
-                del agent_settings["to"]
-            prefix: str
-            if "prefix" in agent_settings:
-                prefix = agent_settings["prefix"]
-                del agent_settings["prefix"]
-            else:
-                prefix = name + ("-" if n_agents > 1 else "")
-
-            if "class" not in agent_settings:
-                raise ValueError(f"class is not defined for {name}")
-            agent_class: Type[Agent] = find_class(
-                name=agent_settings["class"],
-                optional_class_list=self.registered_classes,
+            agent_settings, ids, numbered, prefix, agent_class = self._parse_group(
+                name=name, count_key="numAgents"
             )
             if not issubclass(agent_class, Agent):
                 raise ValueError(f"agent class for {name} does not inherit Agent class")
@@ -238,13 +218,13 @@ class SequentialRunner(Runner):
                 ],
                 [],
             )
-            for i in range(id_from, id_to + 1):
+            for i in ids:
                 agent = agent_class(
                     agent_id=i_agent,
                     prng=random.Random(self._prng.randint(0, 2**31)),
                     simulator=self.simulator,
                     logger=self.logger,
-                    name=prefix + (str(i) if uses_range or n_agents != 1 else ""),
+                    name=prefix + (str(i) if numbered else ""),
                 )
                 i_agent += 1
                 self.simulator._add_agent(agent=agent, group_name=name)
@@ -259,7 +239,7 @@ class SequentialRunner(Runner):
                 )
 
     def _set_fundamental_correlation(self) -> None:
-        """set fundamental correlation. (Internal method)"""
+        """Set fundamental correlation (internal method)."""
         # pylint: disable=too-many-nested-blocks
         if "fundamentalCorrelations" in self.settings["simulation"]:
             corr_settings: Dict = self.settings["simulation"]["fundamentalCorrelations"]
@@ -272,7 +252,7 @@ class SequentialRunner(Runner):
                         raise ValueError(
                             "simulation.fundamentalCorrelations.pairwise has invalid format data"
                         )
-                    for (market1_name, market2_name, corr) in value:
+                    for market1_name, market2_name, corr in value:
                         market1 = self.simulator.name2market[market1_name]
                         market2 = self.simulator.name2market[market2_name]
                         for m in [market1, market2]:
@@ -295,7 +275,7 @@ class SequentialRunner(Runner):
                     )
 
     def _generate_sessions(self) -> None:
-        """generate sessions. (Internal method)"""
+        """Generate sessions (internal method)."""
         if "sessions" not in self.settings["simulation"]:
             raise ValueError("sessions is missing under 'simulation' config")
         session_settings: Dict = self.settings["simulation"]["sessions"]
@@ -362,7 +342,7 @@ class SequentialRunner(Runner):
                     self._pending_setups.append((event_hook_setup, {"_event": event}))
 
     def _setup(self) -> None:
-        """runner setup. (Internal method)"""
+        """Runner setup (internal method)."""
         if "simulation" not in self.settings:
             raise ValueError("simulation is required in json file")
 
@@ -450,7 +430,7 @@ class SequentialRunner(Runner):
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
-        """collect orders from normal_agents. (Internal method)
+        """Collect orders from normal_agents (internal method).
 
         orders are collected until the total number of orders reaches max_normal_orders
 
@@ -459,6 +439,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: orders lists.
+
         """
         agents = self.simulator.normal_frequency_agents
         agents = self._prng.sample(agents, len(agents))
@@ -479,7 +460,7 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _process_order(self, session: Session, order: Union[Order, Cancel]) -> None:
-        """process one order or cancel order and the executions caused by it. (Internal method)
+        """Process one order or cancel order and the executions caused by it (internal method).
 
         Args:
             session (Session): session.
@@ -487,6 +468,7 @@ class SequentialRunner(Runner):
 
         Returns:
             None
+
         """
         if not session.with_order_placement:
             raise AssertionError("currently order is not accepted")
@@ -521,7 +503,7 @@ class SequentialRunner(Runner):
     def _handle_high_frequency_orders(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
-        """collect and process the orders from high frequency agents. (Internal method)
+        """Collect and process the orders from high frequency agents (internal method).
 
         High frequency agents are asked in random order until the number of agents submitting orders
         reaches max_high_frequency_orders. The orders are processed immediately.
@@ -531,6 +513,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: order lists submitted by high frequency agents.
+
         """
         all_orders: List[List[Union[Order, Cancel]]] = []
         n_high_freq_orders = 0
@@ -558,7 +541,7 @@ class SequentialRunner(Runner):
     def _handle_orders(
         self, session: Session, local_orders: List[List[Union[Order, Cancel]]]
     ) -> List[List[Union[Order, Cancel]]]:
-        """handle orders. (Internal method)
+        """Handle orders (internal method).
 
         processing local orders and correct and process the orders from high frequency agents.
 
@@ -568,6 +551,7 @@ class SequentialRunner(Runner):
 
         Returns:
             List[List[Union[Order, Cancel]]]: order lists.
+
         """
         sequential_orders = self._prng.sample(local_orders, len(local_orders))
         all_orders: List[List[Union[Order, Cancel]]] = [*sequential_orders]
@@ -581,13 +565,14 @@ class SequentialRunner(Runner):
         return all_orders
 
     def _update_markets(self, session: Session) -> None:
-        """update markets. (Internal method)
+        """Update markets (internal method).
 
         Args:
             session (Session): session.
 
         Returns:
             None
+
         """
         local_orders: List[
             List[Union[Order, Cancel]]
@@ -595,13 +580,14 @@ class SequentialRunner(Runner):
         self._handle_orders(session=session, local_orders=local_orders)
 
     def _iterate_market_updates(self, session: Session) -> None:
-        """iterate market updates. (Internal method)
+        """Iterate market updates (internal method).
 
         Args:
             session (Session): session.
 
         Returns:
             None
+
         """
         markets: List[Market] = self.simulator.markets
         for market in markets:
@@ -627,7 +613,7 @@ class SequentialRunner(Runner):
             self.simulator._update_times_on_markets(self.simulator.markets)  # t++
 
     def _run(self) -> None:
-        """main process. (Internal method)"""
+        """Main process (internal method)."""
         if self.logger is not None:
             log: Log = SimulationBeginLog(simulator=self.simulator)  # must be blocking
             log.read_and_write(logger=self.logger)
