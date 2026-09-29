@@ -38,4 +38,11 @@ jobs:
           poetry run python -c "import torch; print(torch.__version__)"
       - name: Test
         run: |
-          poetry run pytest -rs tests/pams/runners/test_torch_parallel.py
+          poetry run pytest -rs --cov=./ --cov-report=xml tests/pams/runners/test_torch_parallel.py
+      # the tests using PyTorch are skipped in the codecov workflow
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
+          files: ./coverage.xml
+          flags: torch
+          verbose: true
