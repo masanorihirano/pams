@@ -63,3 +63,14 @@ msgstr ""
 msgid "Multi Process Agent Parallel runner class."
 msgstr "マルチプロセスのエージェント並列ランナークラス。"
 
+#: ../../source/reference/runners.rst:12:<autosummary>:1
+msgid ""
+":py:obj:`runners.JaxAgentParallelRunner "
+"<pams.runners.JaxAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+msgstr ""
+":py:obj:`runners.JaxAgentParallelRunner "
+"<pams.runners.JaxAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+
+#: ../../source/reference/runners.rst:12:<autosummary>:1
+msgid "JAX Agent Parallel runner class."
+msgstr "JAX用のエージェント並列ランナークラス。"

@@ -2503,7 +2503,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1234
 msgid "``jaxPlatforms`` |optional|"
-msgstr ""
+msgstr "``jaxPlatforms`` |optional|"
 
 #: ../../source/user_guide/config.rst:1236
 msgid ""
@@ -2517,7 +2517,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1238
 msgid "``jaxPreallocate`` |optional|"
-msgstr ""
+msgstr "``jaxPreallocate`` |optional|"
 
 #: ../../source/user_guide/config.rst:1240
 #, python-format
@@ -2536,7 +2536,7 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1243
 msgid "``jaxMemoryFraction`` |optional|"
-msgstr ""
+msgstr "``jaxMemoryFraction`` |optional|"
 
 #: ../../source/user_guide/config.rst:1244
 msgid "number in (0, 1]"
