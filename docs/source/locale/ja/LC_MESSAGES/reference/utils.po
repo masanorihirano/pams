@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pams \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"POT-Creation-Date: 2026-09-28 17:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -29,12 +29,13 @@ msgstr ""
 
 #: ../../source/reference/utils.rst:11:<autosummary>:1
 msgid ""
-":py:obj:`utils.json_extends <pams.utils.json_extends>`\\ \\(whole\\_json\\, "
-"parent\\_name\\, ...\\)"
+":py:obj:`utils.json_extends <pams.utils.json_extends>`\\ "
+"\\(whole\\_json\\, parent\\_name\\, ...\\)"
 msgstr ""
 
 #: ../../source/reference/utils.rst:11:<autosummary>:1
-msgid "extend target json."
+#, fuzzy
+msgid "Extend target json."
 msgstr "対象のJSONを拡張します。"
 
 #: ../../source/reference/utils.rst:11:<autosummary>:1

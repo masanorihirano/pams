@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -17,16 +20,18 @@ env:
   UV_NO_SYNC: "1"
 
 jobs:
-  doc:
-    # The Deploy step pushes to the gh-pages branch.
-    permissions:
-      contents: write
-    runs-on: ${{ matrix.platform }}
+  build:
+    name: build (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      # Report every Python even if one fails. deploy needs all of them to pass.
+      fail-fast: false
       matrix:
-        platform: [ubuntu-latest]
-        python-version: [3.11]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        # The site on gh-pages is built with this Python.
+        include:
+          - python-version: "3.11"
+            deploy: true
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
@@ -42,9 +47,31 @@ jobs:
         run: |
           uv sync
       - run: uv run make doc
+      - name: Upload the HTML
+        if: ${{ matrix.deploy }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: html
+          path: docs/build/html
+          # Keep en/.buildinfo and ja/.buildinfo, as the previous deployments did.
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    # Pushes to the gh-pages branch.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: html
+          path: docs/build/html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
-        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
