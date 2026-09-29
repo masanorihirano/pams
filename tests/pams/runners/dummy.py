@@ -1,6 +1,5 @@
 import time
 from typing import Any
-from typing import Dict
 from typing import List
 from typing import Union
 
@@ -184,14 +183,9 @@ class GivenOrdersAgent(Agent):
     this agent works on :class:`pams.runners.MultiProcessAgentParallelRunner` as well.
     """
 
-    def setup(
-        self,
-        settings: Dict[str, Any],
-        accessible_markets_ids: List[int],
-        *args: Any,
-        **kwargs: Any,
-    ) -> None:
-        super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the orders to submit (none by default)."""
+        super().__init__(*args, **kwargs)
         self.orders_to_submit: List[Union[Order, Cancel]] = []
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
