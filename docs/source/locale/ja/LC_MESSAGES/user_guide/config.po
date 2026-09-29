@@ -2577,7 +2577,7 @@ msgstr "ブロック ``X`` の ``class`` の種類が誤っています（例：
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``class for X must be a class name (str) or a class, but Y is given``"
-msgstr ""
+msgstr "``class for X must be a class name (str) or a class, but Y is given``"
 
 #: ../../source/user_guide/config.rst:1259
 msgid ""
