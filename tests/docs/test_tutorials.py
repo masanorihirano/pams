@@ -115,6 +115,22 @@ def assert_shown(shown: List[str], output: List[str]) -> None:
     assert position <= len(actual) - len(last)
 
 
+def test_assert_shown() -> None:
+    output: List[str] = ["a", "b", "# EXECUTION TIME 0.1", "c", "d"]
+    assert_shown(["a", "b", "# EXECUTION TIME 2.0", "c", "d"], output)
+    assert_shown(["a", "...", "# EXECUTION TIME 2.0", "...", "d"], output)
+    assert_shown(["...", "c", "d"], output)
+    with pytest.raises(AssertionError):
+        assert_shown(["a", "b", "c", "d"], output)
+    with pytest.raises(AssertionError):
+        assert_shown(["a", "...", "c"], output)
+    # the lines between two "..." must be in the output, after the lines before them
+    with pytest.raises(pytest.fail.Exception):
+        assert_shown(["a", "...", "x", "...", "d"], output)
+    with pytest.raises(pytest.fail.Exception):
+        assert_shown(["a", "...", "c", "...", "b", "...", "d"], output)
+
+
 def test_first_simulation_uses_minimal_example() -> None:
     # the tutorial says that its config is the minimal config of the Quick start
     tutorial = load_tutorial("tutorial_first_simulation")
