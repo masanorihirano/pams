@@ -8,14 +8,17 @@ from pams.order import Order
 
 
 class MarketShareFCNAgent(FCNAgent):
-    """Market Share FCN Agent class
+    """Market Share FCN Agent class.
 
     This agent submits orders based on market shares.
     This class inherits from the :class:`pams.agents.FCNAgent` class.
     """
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders based on FCN-based calculation and market shares.
+        """Submit orders based on FCN-based calculation and market shares.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
 
         .. seealso::
             - :func:`pams.agents.FCNAgent.submit_orders`
@@ -35,13 +38,14 @@ class MarketShareFCNAgent(FCNAgent):
         )
 
     def get_sum_trade_volume(self, market: Market) -> int:
-        """get sum of trade volume.
+        """Get sum of trade volume.
 
         Args:
             market (:class:`pams.Market`): trading market.
 
         Returns:
             int: total trade volume.
+
         """
         t: int = market.get_time()
         t_start: int = max(0, t - self.time_window_size)

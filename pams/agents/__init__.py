@@ -1,3 +1,4 @@
+"""Agents submitting orders to markets."""
 from .arbitrage_agent import ArbitrageAgent
 from .base import Agent
 from .fcn_agent import FCNAgent

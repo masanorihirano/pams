@@ -7,12 +7,12 @@ from typing import Union
 def find_class(
     name: Union[str, Type], optional_class_list: Optional[List[Type]] = None
 ) -> Type:
-    """find class from pams name spaces.
+    """Find class from pams name spaces.
 
     If a class is given instead of a class name, the class is returned as is without searching.
 
     .. seealso::
-        If you want to use user-defined classes, please use :func:`pams.runners.Runner.class_register`
+        If you want to use user-defined classes, please use :meth:`pams.runners.Runner.class_register`
         or set the class itself instead of its name.
 
     Args:

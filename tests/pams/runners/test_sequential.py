@@ -1828,7 +1828,6 @@ class TestSequentialRunner(TestRunner):
                 )
 
     def test_iterate_market_update(self) -> None:
-
         logger = DummyLogger()
         runner = self.test__init__(
             setting_mode="dict", logger=logger, simulator_class=None

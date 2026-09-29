@@ -19,21 +19,23 @@ class OrderKind:
     name: str
 
     def __repr__(self) -> str:
-        """string representation of this class.
+        """String representation of this class.
 
         Returns:
             str: string representation of this class.
+
         """
         return self.name
 
     def __eq__(self, other: object) -> bool:
-        """get whether an argument's class is the same as this class or not.
+        """Get whether an argument's class is the same as this class or not.
 
         Args:
             other (object): an instance for comparison.
 
         Returns:
             bool: whether the class of the instance is the same as this class or not.
+
         """
         if other.__class__ != self.__class__:
             return False
@@ -41,21 +43,23 @@ class OrderKind:
         return other.kind_id == self.kind_id
 
     def __ne__(self, other: object) -> bool:
-        """get whether an argument's class is different from this class or not.
+        """Get whether an argument's class is different from this class or not.
 
         Args:
             other (object): an instance for comparison.
 
         Returns:
             bool: whether an argument's class is different from this class or not.
+
         """
         return not self.__eq__(other)
 
     def __hash__(self) -> int:
-        """get the order kind ID.
+        """Get the order kind ID.
 
         Returns:
             int: order kind ID.
+
         """
         return self.kind_id
 
@@ -79,7 +83,7 @@ class Order:
         order_id: Optional[int] = None,
         ttl: Optional[int] = None,
     ):
-        """initialization.
+        """Initialization.
 
         Args:
             agent_id (int): agent ID.
@@ -92,6 +96,7 @@ class Order:
             price (float, Optional): order price.
             order_id (int, Optional): order ID. (Set by market. Please do not set it in agent)
             ttl (int, Optional): time to order expiration.
+
         """
         if kind == MARKET_ORDER and price is not None:
             raise ValueError("price have to be None when kind is MARKET_ORDER")
@@ -116,13 +121,14 @@ class Order:
         self.is_canceled: bool = False
 
     def check_system_acceptable(self, agent_id: int) -> None:
-        """check system acceptable. (Usually, markets automatically check it.)
+        """Check system acceptable (usually, markets automatically check it).
 
         Args:
             agent_id (int): agent ID.
 
         Returns:
             None
+
         """
         if agent_id != self.agent_id:
             raise AttributeError("agent_id is fake")
@@ -134,13 +140,14 @@ class Order:
             raise AttributeError("this order is already canceled")
 
     def is_expired(self, time: int) -> bool:
-        """get whether the order is expired or not.
+        """Get whether the order is expired or not.
 
         Args:
             time (int): time to order expiration.
 
         Returns:
             bool: whether the order is expired or not.
+
         """
         if self.placed_at is None:
             raise ValueError("this order is not yet placed to a market")
@@ -149,6 +156,7 @@ class Order:
         return self.placed_at + self.ttl < time
 
     def __repr__(self) -> str:
+        """Return the string representation of the order."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.order_id}, kind={self.kind}, "
             f"is_buy={self.is_buy}, price={self.price}, volume={self.volume}, "
@@ -168,6 +176,12 @@ class Order:
             )
 
     def __eq__(self, other: object) -> bool:
+        """Return whether this order is equal to the other order.
+
+        Two orders are equal when their order IDs, prices, placed time steps, sides
+        (buy or sell) and kinds are the same. Only orders of the same side can be
+        compared.
+        """
         self._check_comparability(other)
         other = cast(Order, other)
         return (
@@ -215,18 +229,23 @@ class Order:
         return _compare_placed_at(a=self, b=other)
 
     def __gt__(self, other: object) -> bool:
+        """Return whether this order has a lower priority than the other order."""
         return self._gt_lt(other, gt=True)
 
     def __lt__(self, other: object) -> bool:
+        """Return whether this order has a higher priority than the other order."""
         return self._gt_lt(other, gt=False)
 
     def __ne__(self, other: object) -> bool:
+        """Return whether this order is not equal to the other order."""
         return not self.__eq__(other)
 
     def __le__(self, other: object) -> bool:
+        """Return whether this order equals or has a higher priority than the other."""
         return self.__eq__(other) or self.__lt__(other)
 
     def __ge__(self, other: object) -> bool:
+        """Return whether this order equals or has a lower priority than the other."""
         return self.__eq__(other) or self.__gt__(other)
 
 
@@ -234,7 +253,7 @@ class Cancel:
     """Cancel order class."""
 
     def __init__(self, order: Order, placed_at: Optional[int] = None):
-        """initialization.
+        """Initialization.
 
         Args:
             order (:class:`pams.order.Order`): order.
@@ -242,11 +261,13 @@ class Cancel:
 
         Returns:
             None
+
         """
         self.order: Order = order
         self.placed_at: Optional[int] = placed_at
 
     def __repr__(self) -> str:
+        """Return the string representation of the cancel order."""
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | "
             f"placed_at={self.placed_at}, order={self.order}>"
@@ -254,30 +275,33 @@ class Cancel:
 
     @property
     def agent_id(self) -> int:
-        """getter for agent ID.
+        """Getter for agent ID.
 
         Returns:
             int: agent ID.
+
         """
         return self.order.agent_id
 
     @property
     def market_id(self) -> int:
-        """getter for market ID.
+        """Getter for market ID.
 
         Returns:
             int: market ID.
+
         """
         return self.order.market_id
 
     def check_system_acceptable(self, agent_id: int) -> None:
-        """check system acceptable. (Usually, markets automatically check it.)
+        """Check system acceptable (usually, markets automatically check it).
 
         Args:
             agent_id (int): agent ID.
 
         Returns:
             None
+
         """
         if agent_id != self.order.agent_id:
             raise AttributeError("canceling other's order")
