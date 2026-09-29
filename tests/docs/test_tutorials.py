@@ -229,6 +229,28 @@ def test_custom_agent() -> None:
     )
 
 
+def test_custom_agent_inaccessible_market(monkeypatch: pytest.MonkeyPatch) -> None:
+    tutorial = load_tutorial("tutorial_custom_agent")
+    config = copy.deepcopy(tutorial.CONFIG)
+    # the FCN agents also trade in a second market, which the others cannot access
+    config["simulation"]["markets"].append("OtherMarket")
+    config["OtherMarket"] = copy.deepcopy(config["Market"])
+    config["FCNAgents"]["markets"].append("OtherMarket")
+    monkeypatch.setattr(tutorial, "CONFIG", config)
+    runner = tutorial.run_simulation(seed=42)
+    simulator = runner.simulator
+    market = simulator.name2market["Market"]
+    other_market = simulator.name2market["OtherMarket"]
+    assert sum(other_market.get_executed_volumes()) > 0
+    moving_average_agents = simulator.agents_group_name2agent["MovingAverageAgents"]
+    for agent in moving_average_agents:
+        assert isinstance(agent, tutorial.MovingAverageAgent)
+        assert not agent.is_market_accessible(market_id=other_market.market_id)
+        # the agent places orders only in the market it can access
+        assert set(agent.last_orders) <= {market.market_id}
+    assert sum(len(agent.last_orders) for agent in moving_average_agents) > 0
+
+
 def test_custom_agent_main(capsys: pytest.CaptureFixture[str]) -> None:
     run_tutorial("tutorial_custom_agent")
     lines: List[str] = capsys.readouterr().out.splitlines()
