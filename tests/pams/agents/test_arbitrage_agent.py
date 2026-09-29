@@ -26,12 +26,11 @@ ARBITRAGE_SETTINGS: Dict[str, Any] = {
 }
 
 
-def make_index_simulator() -> Simulator:
-    # market1 (id 0) and market2 (id 1) compose index (id 2)
-    sim = Simulator(prng=random.Random(4))
-    for market_id, name in enumerate(["market1", "market2"]):
+def add_index_market(sim: Simulator, market_names: List[str], index_name: str) -> None:
+    # the component markets and then the index market take the next market IDs
+    for name in market_names:
         market = Market(
-            market_id=market_id, prng=random.Random(1), simulator=sim, name=name
+            market_id=sim.n_markets, prng=random.Random(1), simulator=sim, name=name
         )
         market.setup(
             settings={
@@ -42,16 +41,18 @@ def make_index_simulator() -> Simulator:
         )
         sim._add_market(market=market, group_name="market")
     index_market = IndexMarket(
-        market_id=2, prng=random.Random(1), simulator=sim, name="index"
+        market_id=sim.n_markets, prng=random.Random(1), simulator=sim, name=index_name
     )
     index_market.setup(
-        settings={
-            "markets": ["market1", "market2"],
-            "tickSize": 0.01,
-            "fundamentalPrice": 300.0,
-        }
+        settings={"markets": market_names, "tickSize": 0.01, "fundamentalPrice": 300.0}
     )
     sim._add_market(market=index_market, group_name="index")
+
+
+def make_index_simulator() -> Simulator:
+    # market1 (id 0) and market2 (id 1) compose index (id 2)
+    sim = Simulator(prng=random.Random(4))
+    add_index_market(sim=sim, market_names=["market1", "market2"], index_name="index")
     return sim
 
 
@@ -311,6 +312,47 @@ class TestArbitrageAgent(TestAgent):
             "Add the groups of these markets to markets in the settings of this agent."
         ]
 
+    @pytest.mark.parametrize(
+        "accessible_markets_ids, expected_messages",
+        [
+            ([0, 1, 2, 5], ["index2 but not its component markets market3, market4"]),
+            (
+                [5, 2, 0, 3],
+                [
+                    "index2 but not its component markets market4",
+                    "index but not its component markets market2",
+                ],
+            ),
+            ([0, 1, 2, 3, 4, 5], []),
+        ],
+    )
+    def test_setup_warns_several_index_markets(
+        self, accessible_markets_ids: List[int], expected_messages: List[str]
+    ) -> None:
+        sim = make_index_simulator()
+        # market3 (id 3) and market4 (id 4) compose index2 (id 5)
+        add_index_market(
+            sim=sim, market_names=["market3", "market4"], index_name="index2"
+        )
+        agent = ArbitrageAgent(
+            agent_id=1, prng=random.Random(42), simulator=sim, name="test_agent"
+        )
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
+            agent.setup(
+                settings=ARBITRAGE_SETTINGS,
+                accessible_markets_ids=accessible_markets_ids,
+            )
+        assert [(w.category, str(w.message)) for w in record] == [
+            (
+                UserWarning,
+                f"ArbitrageAgent test_agent can access the index market {message}, "
+                "so its orders to them will fail. "
+                "Add the groups of these markets to markets in the settings of this agent.",
+            )
+            for message in expected_messages
+        ]
+
     @pytest.mark.parametrize("accessible_markets_ids", [[], [0], [0, 1]])
     def test_setup_warns_no_index_market(
         self, accessible_markets_ids: List[int]
@@ -417,6 +459,7 @@ class TestArbitrageAgent(TestAgent):
                 "ArbitrageAgents-0",
                 "ArbitrageAgents-1",
             ]
+            assert all(expected_warning in str(w.message) for w in record)
 
     def test__repr__(self) -> None:
         sim = Simulator(prng=random.Random(4))
