@@ -5,4 +5,5 @@ Tutorials
 
    outline
    first_simulation
+   custom_agent
 
