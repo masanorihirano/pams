@@ -63,3 +63,15 @@ msgstr ""
 msgid "Multi Process Agent Parallel runner class."
 msgstr "マルチプロセスのエージェント並列ランナークラス。"
 
+#: ../../source/reference/runners.rst:13:<autosummary>:1
+msgid ""
+":py:obj:`runners.TorchAgentParallelRunner "
+"<pams.runners.TorchAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+msgstr ""
+":py:obj:`runners.TorchAgentParallelRunner "
+"<pams.runners.TorchAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+
+#: ../../source/reference/runners.rst:13:<autosummary>:1
+msgid "Multi Process Agent Parallel runner class for agents using PyTorch."
+msgstr "PyTorchを使うエージェントのためのマルチプロセスのエージェント並列ランナークラス。"
+
