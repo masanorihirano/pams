@@ -431,7 +431,8 @@ class TestTorchAgentParallelRunner:
         )
         _, runner = self._make_runners(setting=SETTING)
         runner._setup()
-        assert torch.multiprocessing.get_sharing_strategy() == "file_system"
+        # on the main process and on the workers
+        assert get_torch_settings()[1] == "file_system"
         executor = runner._get_executor()
         assert executor.submit(get_torch_settings).result()[1] == "file_system"
 
@@ -468,5 +469,5 @@ class TestTorchAgentParallelRunner:
         assert is_shared
         assert total == float(sum(range(100_000)))
         # the tensor on the main process is moved to shared memory
-        assert tensor.is_shared()
+        assert inspect_tensor(tensor) == (True, total)
         assert len(ForkingPickler.dumps(tensor)) < 1000
