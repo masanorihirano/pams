@@ -1,3 +1,4 @@
+import math
 import random
 from typing import Any
 from typing import Dict
@@ -11,15 +12,20 @@ import pytest
 from pams.agents import FCNAgent
 from pams.logs.base import CancelLog
 from pams.logs.base import Logger
+from pams.logs.base import MarketStepEndLog
 from pams.logs.base import OrderLog
 from pams.market import Market
 from pams.order import LIMIT_ORDER
 from pams.order import MARKET_ORDER
 from pams.order import Cancel
 from pams.order import Order
+from pams.session import Session
 from pams.simulator import Simulator
 from samples.dark_pool.dark_pool_fcn_agent import DarkPoolFCNAgent
 from samples.dark_pool.dark_pool_market import DarkPoolMarket
+from samples.dark_pool.dark_pool_print_logger import DarkPoolPrintLogger
+from samples.dark_pool.dark_pool_print_logger import find_market_pair
+from samples.dark_pool.dark_pool_print_logger import get_trade_price
 
 MARKET_SETTINGS: Dict[str, Any] = {
     "tickSize": 0.01,
@@ -408,3 +414,101 @@ class TestDarkPoolFCNAgent:
         agent = create_agent(simulator=simulator, dark_pool_chance=0.5)
         assert len(agent.submit_orders(markets=[lit_market, dark_pool])) == 1
         assert len(agent.submit_orders(markets=[lit_market])) == 0
+
+
+def execute_lit_orders(lit_market: Market) -> None:
+    add_lit_order(lit_market=lit_market, is_buy=True, price=299.0)
+    add_lit_order(lit_market=lit_market, is_buy=False, price=301.01)
+    add_lit_order(lit_market=lit_market, is_buy=True, price=301.0)
+    lit_market._is_running = True
+    add_lit_order(lit_market=lit_market, is_buy=False, price=300.5)
+    lit_market._execution()
+
+
+def execute_dark_orders(dark_pool: DarkPoolMarket) -> None:
+    dark_pool._is_running = True
+    add_dark_order(dark_pool=dark_pool, agent_id=1, is_buy=True, volume=2)
+    add_dark_order(dark_pool=dark_pool, agent_id=2, is_buy=False, volume=2)
+    dark_pool._execution()
+
+
+class TestDarkPoolPrintLogger:
+    def test_find_market_pair(self) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        other_market = Market(
+            market_id=2, prng=random.Random(7), simulator=simulator, name="Other"
+        )
+        markets: List[Market] = [lit_market, dark_pool, other_market]
+        assert find_market_pair(market=lit_market, markets=markets) == (
+            lit_market,
+            dark_pool,
+        )
+        assert find_market_pair(market=dark_pool, markets=markets) == (
+            lit_market,
+            dark_pool,
+        )
+        assert find_market_pair(market=other_market, markets=markets) == (
+            other_market,
+            None,
+        )
+        assert find_market_pair(market=lit_market, markets=[lit_market]) == (
+            lit_market,
+            None,
+        )
+
+    def test_get_trade_price(self) -> None:
+        _, lit_market, dark_pool = create_markets()
+        assert math.isnan(get_trade_price(lit_market=lit_market, dark_pool=dark_pool))
+        assert math.isnan(get_trade_price(lit_market=lit_market, dark_pool=None))
+        execute_lit_orders(lit_market=lit_market)
+        assert lit_market.get_executed_volume() == 1
+        assert lit_market.get_market_price() == 301.0
+        assert get_trade_price(lit_market=lit_market, dark_pool=dark_pool) == 301.0
+        assert get_trade_price(lit_market=lit_market, dark_pool=None) == 301.0
+        execute_dark_orders(dark_pool=dark_pool)
+        assert dark_pool.get_executed_volume() == 2
+        assert get_trade_price(
+            lit_market=lit_market, dark_pool=dark_pool
+        ) == pytest.approx(300.0)
+        assert get_trade_price(lit_market=lit_market, dark_pool=None) == 301.0
+
+    def test_process_market_step_end_log(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        simulator, lit_market, dark_pool = create_markets()
+        session = Session(
+            session_id=1,
+            prng=random.Random(8),
+            session_start_time=0,
+            simulator=simulator,
+            name="1",
+        )
+        logger = DarkPoolPrintLogger()
+        for market in [lit_market, dark_pool]:
+            logger.process_market_step_end_log(
+                log=MarketStepEndLog(
+                    session=session, market=market, simulator=simulator
+                )
+            )
+        execute_lit_orders(lit_market=lit_market)
+        for market in [lit_market, dark_pool]:
+            logger.process_market_step_end_log(
+                log=MarketStepEndLog(
+                    session=session, market=market, simulator=simulator
+                )
+            )
+        execute_dark_orders(dark_pool=dark_pool)
+        for market in [lit_market, dark_pool]:
+            logger.process_market_step_end_log(
+                log=MarketStepEndLog(
+                    session=session, market=market, simulator=simulator
+                )
+            )
+        assert capsys.readouterr().out.splitlines() == [
+            "1 0 0 LitMarket 300.0 300.0 nan 0",
+            "1 0 1 DarkPoolMarket 300.0 300.0 nan 0",
+            "1 0 0 LitMarket 301.0 300.0 301.0 1",
+            "1 0 1 DarkPoolMarket 300.0 300.0 301.0 0",
+            "1 0 0 LitMarket 301.0 300.0 300.0 1",
+            "1 0 1 DarkPoolMarket 300.0 300.0 300.0 2",
+        ]
