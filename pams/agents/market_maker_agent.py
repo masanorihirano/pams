@@ -13,7 +13,7 @@ from pams.utils.json_random import JsonRandom
 
 
 class MarketMakerAgent(HighFrequencyAgent):
-    r"""Market Maker Agent class
+    r"""Market Maker Agent class.
 
     This class inherits from the :class:`pams.agents.Agent` class.
 
@@ -34,7 +34,7 @@ class MarketMakerAgent(HighFrequencyAgent):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        """agent setup. Usually be called from simulator/runner automatically.
+        """Agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration.
@@ -46,6 +46,7 @@ class MarketMakerAgent(HighFrequencyAgent):
 
         Returns:
             None
+
         """
         super().setup(settings=settings, accessible_markets_ids=accessible_markets_ids)
         if "targetMarket" not in settings:
@@ -66,7 +67,10 @@ class MarketMakerAgent(HighFrequencyAgent):
         )
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders.
+        """Submit orders.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
 
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
@@ -104,13 +108,14 @@ class MarketMakerAgent(HighFrequencyAgent):
         return orders
 
     def get_base_price(self, markets: List[Market]) -> Optional[float]:
-        """get base price of markets.
+        """Get base price of markets.
 
         Args:
             markets (List[:class:`pams.Market`]): markets.
 
         Returns:
             float, Optional: average of the max and min prices.
+
         """
         max_buy: float = -float("inf")
         for market in markets:

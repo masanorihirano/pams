@@ -534,7 +534,6 @@ class TestLogger:
         assert logger.n_market_step_end_log == 1
 
     def test_process2(self) -> None:
-
         logger = Logger()
         sim = Simulator(prng=random.Random(42))
         session = Session(

@@ -1,3 +1,4 @@
+"""Log classes and loggers recording the simulation."""
 from .base import CancelLog
 from .base import ExecutionLog
 from .base import ExpirationLog

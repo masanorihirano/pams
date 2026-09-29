@@ -246,92 +246,86 @@ class TestSimulator:
             check_object=market, class_requirement=Market, instance_requirement=sim
         )
 
+    class _DummyEvent(EventABC):
+        """Dummy event counting the calls of each hook."""
+
+        def __init__(
+            self,
+            event_id: int,
+            prng: random.Random,
+            session: Session,
+            simulator: Simulator,
+            name: str,
+        ) -> None:
+            super().__init__(
+                event_id=event_id,
+                prng=prng,
+                session=session,
+                simulator=simulator,
+                name=name,
+            )
+            self.n_hooked_before_order = 0
+            self.n_hooked_after_order = 0
+            self.n_hooked_before_cancel = 0
+            self.n_hooked_after_cancel = 0
+            self.n_hooked_after_execution = 0
+            self.n_hooked_before_session = 0
+            self.n_hooked_after_session = 0
+            self.n_hooked_before_step_for_market = 0
+            self.n_hooked_after_step_for_market = 0
+
+        def hook_registration(self) -> List[EventHook]:
+            event_hooks = []
+            for hook_type in ["order", "cancel", "execution", "session", "market"]:
+                for is_before in [True, False]:
+                    if hook_type == "execution" and is_before:
+                        continue
+                    for time in [None, [0, 1, 2]]:
+                        event_hook = EventHook(
+                            event=self,
+                            hook_type=hook_type,
+                            is_before=is_before,
+                            time=time,
+                        )
+                        event_hooks.append(event_hook)
+            return event_hooks
+
+        def hooked_before_order(self, simulator: Simulator, order: Order) -> None:
+            self.n_hooked_before_order += 1
+
+        def hooked_after_order(self, simulator: Simulator, order_log: OrderLog) -> None:
+            self.n_hooked_after_order += 1
+
+        def hooked_before_cancel(self, simulator: Simulator, cancel: Cancel) -> None:
+            self.n_hooked_before_cancel += 1
+
+        def hooked_after_cancel(
+            self, simulator: Simulator, cancel_log: CancelLog
+        ) -> None:
+            self.n_hooked_after_cancel += 1
+
+        def hooked_after_execution(
+            self, simulator: Simulator, execution_log: ExecutionLog
+        ) -> None:
+            self.n_hooked_after_execution += 1
+
+        def hooked_before_session(self, simulator: Simulator, session: Session) -> None:
+            self.n_hooked_before_session += 1
+
+        def hooked_after_session(self, simulator: Simulator, session: Session) -> None:
+            self.n_hooked_after_session += 1
+
+        def hooked_before_step_for_market(
+            self, simulator: Simulator, market: Market
+        ) -> None:
+            self.n_hooked_before_step_for_market += 1
+
+        def hooked_after_step_for_market(
+            self, simulator: Simulator, market: Market
+        ) -> None:
+            self.n_hooked_after_step_for_market += 1
+
     def test_triggers(self) -> None:
-        class DummyEvent(EventABC):
-            def __init__(
-                self,
-                event_id: int,
-                prng: random.Random,
-                session: Session,
-                simulator: Simulator,
-                name: str,
-            ) -> None:
-                super().__init__(
-                    event_id=event_id,
-                    prng=prng,
-                    session=session,
-                    simulator=simulator,
-                    name=name,
-                )
-                self.n_hooked_before_order = 0
-                self.n_hooked_after_order = 0
-                self.n_hooked_before_cancel = 0
-                self.n_hooked_after_cancel = 0
-                self.n_hooked_after_execution = 0
-                self.n_hooked_before_session = 0
-                self.n_hooked_after_session = 0
-                self.n_hooked_before_step_for_market = 0
-                self.n_hooked_after_step_for_market = 0
-
-            def hook_registration(self) -> List[EventHook]:
-                event_hooks = []
-                for hook_type in ["order", "cancel", "execution", "session", "market"]:
-                    for is_before in [True, False]:
-                        if hook_type == "execution" and is_before:
-                            continue
-                        for time in [None, [0, 1, 2]]:
-                            event_hook = EventHook(
-                                event=self,
-                                hook_type=hook_type,
-                                is_before=is_before,
-                                time=time,
-                            )
-                            event_hooks.append(event_hook)
-                return event_hooks
-
-            def hooked_before_order(self, simulator: Simulator, order: Order) -> None:
-                self.n_hooked_before_order += 1
-
-            def hooked_after_order(
-                self, simulator: Simulator, order_log: OrderLog
-            ) -> None:
-                self.n_hooked_after_order += 1
-
-            def hooked_before_cancel(
-                self, simulator: Simulator, cancel: Cancel
-            ) -> None:
-                self.n_hooked_before_cancel += 1
-
-            def hooked_after_cancel(
-                self, simulator: Simulator, cancel_log: CancelLog
-            ) -> None:
-                self.n_hooked_after_cancel += 1
-
-            def hooked_after_execution(
-                self, simulator: Simulator, execution_log: ExecutionLog
-            ) -> None:
-                self.n_hooked_after_execution += 1
-
-            def hooked_before_session(
-                self, simulator: Simulator, session: Session
-            ) -> None:
-                self.n_hooked_before_session += 1
-
-            def hooked_after_session(
-                self, simulator: Simulator, session: Session
-            ) -> None:
-                self.n_hooked_after_session += 1
-
-            def hooked_before_step_for_market(
-                self, simulator: Simulator, market: Market
-            ) -> None:
-                self.n_hooked_before_step_for_market += 1
-
-            def hooked_after_step_for_market(
-                self, simulator: Simulator, market: Market
-            ) -> None:
-                self.n_hooked_after_step_for_market += 1
-
         prng = random.Random(42)
         logger = Logger()
         sim = Simulator(prng=prng, logger=logger)
@@ -348,7 +342,7 @@ class TestSimulator:
             market_id=0, prng=random.Random(42), simulator=sim, name="market"
         )
         sim._add_market(market=market, group_name="market_group")
-        event = DummyEvent(
+        event = self._DummyEvent(
             event_id=0,
             prng=random.Random(42),
             session=session,

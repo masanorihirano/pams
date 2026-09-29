@@ -33,7 +33,7 @@ class Runner(ABC):
         logger: Optional[Logger] = None,
         simulator_class: Type[Simulator] = Simulator,
     ):
-        """initialize.
+        """Initialize.
 
         Args:
             settings (Union[Dict, TextIOBase, TextIO, TextIOWrapper, os.PathLike, str]): runner configuration.
@@ -44,6 +44,7 @@ class Runner(ABC):
 
         Returns:
             None
+
         """
         self.settings: Dict
         if isinstance(settings, Dict):
@@ -65,7 +66,7 @@ class Runner(ABC):
         self.registered_classes: List[Type] = []
 
     def main(self) -> None:
-        """main process. The process is executed while measuring time."""
+        """Main process. The process is executed while measuring time."""
         setup_start_time_ns = time.time_ns()
         self._setup()
         start_time_ns = time.time_ns()
@@ -77,7 +78,7 @@ class Runner(ABC):
         print("# EXECUTION TIME " + str((end_time_ns - start_time_ns) / 1e9))
 
     def class_register(self, cls: Type) -> None:
-        """register class. This method is used for user-defined classes.
+        """Register class. This method is used for user-defined classes.
 
         Usually, user-defined classes, i.e., the classes you implemented for your original simulation,
         cannot be referred from pams package, especially from simulation runners.
@@ -88,17 +89,18 @@ class Runner(ABC):
 
         Returns:
             None
+
         """
         self.registered_classes.append(cls)
 
     @abstractmethod
     def _setup(self) -> None:
-        """internal usage class for setup. This method should be implemented in descendants."""
+        """Internal usage class for setup. This method should be implemented in descendants."""
         pass
 
     @abstractmethod
     def _run(self) -> None:
-        """internal usage class for simulation running. This method should be implemented in descendants.
+        """Internal usage class for simulation running. This method should be implemented in descendants.
 
         Usually the process in this methods should be control simulation flow and parallelization.
         """
@@ -106,12 +108,13 @@ class Runner(ABC):
 
     @staticmethod
     def judge_hft_or_not(agent: Agent) -> bool:
-        """determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
+        """Determine if the agent is type of the :class:`pams.agents.HighFrequencyAgent`.
 
         Args:
             agent (Agent): agent instance.
 
         Returns:
             bool: whether the agent class is the :class:`pams.agents.HighFrequencyAgent` or not.
+
         """
         return isinstance(agent, HighFrequencyAgent)

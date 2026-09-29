@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/platform.rst:2
+msgid "Platform"
+msgstr "プラットフォーム"
+
+#: ../../source/user_guide/platform.rst:5
+msgid "Class architecture"
+msgstr "クラス構成"
+
+#: ../../source/user_guide/platform.rst:6
+msgid "The following code is typical lines in main file:"
+msgstr "以下は、mainファイルにおける典型的なコードです："
+
+#: ../../source/user_guide/platform.rst:18
+msgid ""
+"As this code representing, the simulation is fully controlled by a runner, "
+"in this case, :class:`SequentialRunner` . :class:`Runner` usually accepts "
+"setting dictionary, a pseudo random number generator, and a logger."
+msgstr ""
+"このコードが示すように、シミュレーションはランナー（この場合は "
+":class:`SequentialRunner`）によって完全に制御されます。:class:`Runner` "
+"は通常、設定の辞書、疑似乱数生成器、ロガーを受け取ります。"
+
+#: ../../source/user_guide/platform.rst:21
+msgid "The following figure shows the class architecture."
+msgstr "以下の図はクラス構成を示しています。"
+
+#: ../../source/user_guide/platform.rst:26
+msgid ""
+"Main usually has a logger and generating runner. As a runner, Parallel "
+"Runner or Sequential Runner is available. Runner will generate simulator and"
+" some other components such as markets, agents, and events. Then, runner "
+"control all the components and simulator for it rule. On the other hand, "
+"simulator provide API interface for runners to define the procedure "
+"controlling simulation. Moreover, simulator and its components generate logs"
+" and push it to logger."
+msgstr ""
+"mainは通常、ロガーを保持し、ランナーを生成します。ランナーとしては、Parallel RunnerまたはSequential "
+"Runnerを利用できます。ランナーは、シミュレーターと、市場、エージェント、イベントなどのその他のコンポーネントを生成します。その後、ランナーはすべてのコンポーネントとシミュレーターを自身のルールに従って制御します。一方、シミュレーターは、ランナーがシミュレーションを制御する手順を定義するためのAPIインターフェースを提供します。さらに、シミュレーターとそのコンポーネントはログを生成し、ロガーに送ります。"
+
+#: ../../source/user_guide/platform.rst:33
+msgid ""
+"The key concept of this platform is that runner is replaceable to realize "
+"more complex simulator controlling."
+msgstr "このプラットフォームの重要なコンセプトは、より複雑なシミュレーター制御を実現するために、ランナーを差し替えられるようにしていることです。"
+
+#: ../../source/user_guide/platform.rst:36
+msgid "Parallel runners"
+msgstr "並列ランナー"
+
+#: ../../source/user_guide/platform.rst:37
+msgid ""
+":class:`pams.runners.MultiThreadAgentParallelRunner` and "
+":class:`pams.runners.MultiProcessAgentParallelRunner` are experimental "
+"runners that parallelize the order submissions of normal (non high-"
+"frequency) agents in each step. They are drop-in replacements of "
+":class:`pams.runners.SequentialRunner`, and the simulation results are the "
+"same as :class:`pams.runners.SequentialRunner` with the same settings and "
+"the same seed. The number of workers can be set by "
+"``simulation.numParallel`` in the config, but the number of agents that can "
+"be parallelized in each step is limited by ``maxNormalOrders`` of the "
+"session."
+msgstr ""
+":class:`pams.runners.MultiThreadAgentParallelRunner` と "
+":class:`pams.runners.MultiProcessAgentParallelRunner` "
+"は、各ステップにおける通常エージェント（高頻度エージェント以外）の注文の提出を並列化する実験的なランナーです。これらは "
+":class:`pams.runners.SequentialRunner` "
+"をそのまま置き換えて使うことができ、同じ設定と同じシードであれば、シミュレーション結果は "
+":class:`pams.runners.SequentialRunner` と同じになります。ワーカー数は設定ファイルの "
+"``simulation.numParallel`` で設定できますが、各ステップで並列化できるエージェント数はセッションの "
+"``maxNormalOrders`` によって制限されます。"
+
+#: ../../source/user_guide/platform.rst:53
+msgid ""
+"Because of the GIL of python, "
+":class:`pams.runners.MultiThreadAgentParallelRunner` is beneficial only when"
+" the order submission of agents waits for I/O (e.g., external models or "
+"services). :class:`pams.runners.MultiProcessAgentParallelRunner` copies "
+"agents and markets to worker processes for each order submission, so it is "
+"much slower and the user-defined classes must be picklable and importable "
+"from the worker processes."
+msgstr ""
+"PythonのGILのため、:class:`pams.runners.MultiThreadAgentParallelRunner` "
+"が効果を発揮するのは、エージェントの注文の提出がI/O（外部のモデルやサービスなど）を待つ場合に限られます。:class:`pams.runners.MultiProcessAgentParallelRunner`"
+" "
+"は注文の提出のたびにエージェントと市場をワーカープロセスにコピーするため、はるかに低速になります。また、ユーザー定義のクラスはpickle可能であり、かつワーカープロセスからインポート可能である必要があります。"
+
