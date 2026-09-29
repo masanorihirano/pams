@@ -1160,7 +1160,8 @@ class TestMarket:
             assert log.buy_transaction_cost == 0.0
             assert log.sell_transaction_cost == 0.0
 
-    def test_execute_orders_overridden_transaction_costs(self) -> None:
+    @pytest.mark.parametrize("buy_first", [False, True])
+    def test_execute_orders_overridden_transaction_costs(self, buy_first: bool) -> None:
         calls: List[Tuple[float, int, Order, Order]] = []
 
         class MakerTakerMarket(self.base_class):  # type: ignore
@@ -1190,16 +1191,26 @@ class TestMarket:
         sell_order = Order(
             agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=2, price=10
         )
-        market._add_order(sell_order)
         buy_order = Order(
             agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
         )
-        market._add_order(buy_order)
+        if buy_first:
+            market._add_order(buy_order)
+            market._add_order(sell_order)
+        else:
+            market._add_order(sell_order)
+            market._add_order(buy_order)
         logs = market._execution()
         assert len(logs) == 1
         assert calls == [(10.0, 2, buy_order, sell_order)]
-        assert logs[0].buy_transaction_cost == pytest.approx(0.006)
-        assert logs[0].sell_transaction_cost == pytest.approx(-0.002)
+        # The maker gets a rebate of 0.002 and the taker pays 0.006.
+        maker_cost, taker_cost = -0.002, 0.006
+        if buy_first:
+            assert logs[0].buy_transaction_cost == pytest.approx(maker_cost)
+            assert logs[0].sell_transaction_cost == pytest.approx(taker_cost)
+        else:
+            assert logs[0].buy_transaction_cost == pytest.approx(taker_cost)
+            assert logs[0].sell_transaction_cost == pytest.approx(maker_cost)
 
     def _make_running_market(self) -> Market:
         market = self.base_class(
