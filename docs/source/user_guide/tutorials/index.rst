@@ -6,4 +6,6 @@ Tutorials
    outline
    first_simulation
    custom_agent
+   custom_event
+   custom_logger
 
