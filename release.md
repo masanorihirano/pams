@@ -306,7 +306,7 @@ The workflow runs these jobs in order:
 | `release test check (3.11)` | Polls TestPyPI for up to 30 x 20 s, installs `pams==X.Y.Z` from there and the latest `pytest`, removes `pams/` and `pyproject.toml` from the checkout and runs `pytest tests/` against the installed package. | Files on TestPyPI, nothing on PyPI. |
 | `release (3.11)` | Builds again with the **same uv version** as `release test`, so the files are byte-identical. "release" runs `uv publish` to PyPI with `PYPI_TOKEN`. "Generate checksum" writes `pams-X.Y.Z-checksums.txt`. "Create release" runs `gh release create`. "remove branch" deletes `release/X.Y.Z`. | Depends on the step, see below. |
 
-If a job fails, find its row in
+If a job fails, find its entry in
 [Troubleshooting](#troubleshooting-and-recovery) before doing anything else.
 
 ## Step 6: Verify the release
@@ -531,10 +531,10 @@ example with the "Delete branch" button.
 
 - Do **not** delete files or the release. The file names could never be used
   again.
-- Yank the release instead:
-  1. Open <https://pypi.org/manage/project/pams/releases/>.
-  2. Select the version, choose "Options", then "Yank", and give a reason.
-  3. Installers then skip it unless it is pinned with `==`.
+- Yank the release instead. Open
+  <https://pypi.org/manage/project/pams/releases/>, select the version, choose
+  "Options", then "Yank", and give a reason. Installers then skip the version
+  unless it is pinned with `==`.
 - Fix forward with the next patch version, using the same procedure. Leave the
   tag in place. Optionally add a note to the GitHub release.
 
