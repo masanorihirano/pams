@@ -382,7 +382,7 @@ class SequentialRunner(Runner):
     def _check_submitted_orders(
         self, agent: Agent, orders: List[Union[Order, Cancel]]
     ) -> None:
-        """check the orders submitted by an agent. (Internal method)
+        """Check the orders submitted by an agent (internal method).
 
         Every order has to be submitted by the agent itself and be for an existing market that the agent can
         access. For a cancel order, the order to be canceled is checked. Orders created by events are not checked
@@ -394,6 +394,7 @@ class SequentialRunner(Runner):
 
         Returns:
             None
+
         """
         if sum(order.agent_id != agent.agent_id for order in orders) > 0:
             raise ValueError(
