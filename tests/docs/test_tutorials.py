@@ -7,6 +7,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Dict
 from typing import List
+from typing import Tuple
 
 import matplotlib
 import pytest
@@ -27,7 +28,11 @@ USER_GUIDE_DIR: str = os.path.join(
     "source",
     "user_guide",
 )
-CODE_DIR: str = os.path.join(USER_GUIDE_DIR, "tutorials", "code")
+TUTORIAL_DIR: str = os.path.join(USER_GUIDE_DIR, "tutorials")
+CODE_DIR: str = os.path.join(TUTORIAL_DIR, "code")
+
+# Runner.main() prints the time taken, which changes from run to run
+TIME_LABELS: Tuple[str, str] = ("# INITIALIZATION TIME ", "# EXECUTION TIME ")
 
 
 def load_tutorial(name: str) -> ModuleType:
@@ -40,6 +45,68 @@ def load_tutorial(name: str) -> ModuleType:
     return module
 
 
+def read_page(page: str) -> List[str]:
+    """Read the lines of a tutorial page."""
+    with open(os.path.join(TUTORIAL_DIR, page), encoding="utf-8") as fp:
+        return fp.read().splitlines()
+
+
+def text_blocks(page: str) -> List[List[str]]:
+    """Read the outputs shown in the text code blocks of a tutorial page."""
+    lines: List[str] = read_page(page)
+    blocks: List[List[str]] = []
+    for i, line in enumerate(lines):
+        if line == ".. code-block:: text":
+            assert lines[i + 1] == ""
+            block: List[str] = []
+            for block_line in lines[i + 2 :]:
+                if not block_line.startswith("   "):
+                    break
+                block.append(block_line[3:])
+            blocks.append(block)
+    return blocks
+
+
+def mask_time(line: str) -> str:
+    """Keep only the label of a time line."""
+    for label in TIME_LABELS:
+        if line.startswith(label):
+            return label
+    return line
+
+
+def assert_shown(shown: List[str], output: List[str]) -> None:
+    """Check that the output shown in a page is the actual output.
+
+    A line "..." in the page stands for any number of lines, and only the labels of
+    the time lines are compared.
+    """
+    expected: List[str] = [mask_time(line) for line in shown]
+    actual: List[str] = [mask_time(line) for line in output]
+    if "..." not in expected:
+        assert actual == expected
+        return
+    segments: List[List[str]] = [[]]
+    for line in expected:
+        if line == "...":
+            segments.append([])
+        else:
+            segments[-1].append(line)
+    first, *middle, last = segments
+    assert actual[: len(first)] == first
+    assert actual[len(actual) - len(last) :] == last
+    position: int = len(first)
+    for segment in middle:
+        # find the segment after the previous one
+        for start in range(position, len(actual) - len(last) - len(segment) + 1):
+            if actual[start : start + len(segment)] == segment:
+                position = start + len(segment)
+                break
+        else:
+            pytest.fail(f"not in the output: {segment}")
+    assert position <= len(actual) - len(last)
+
+
 def test_first_simulation_uses_minimal_example() -> None:
     # the tutorial says that its config is the minimal config of the Quick start
     tutorial = load_tutorial("tutorial_first_simulation")
@@ -50,11 +117,13 @@ def test_first_simulation_uses_minimal_example() -> None:
 
 def test_first_simulation_print(capsys: pytest.CaptureFixture[str]) -> None:
     tutorial = load_tutorial("tutorial_first_simulation")
-    tutorial.print_prices(seed=42)
+    with pytest.warns(UserWarning) as record:
+        tutorial.print_prices(seed=42)
     lines: List[str] = capsys.readouterr().out.splitlines()
-    assert lines[0] == "0 0 0 Market 300.0 300.0"
-    assert lines[-2].startswith("# INITIALIZATION TIME ")
-    assert lines[-1].startswith("# EXECUTION TIME ")
+    # the page shows the output of seed 42 and the warning of the tick size
+    blocks: List[List[str]] = text_blocks("first_simulation.rst")
+    assert_shown(blocks[0], lines)
+    assert blocks[1] == [f"UserWarning: {record[0].message}"]
     steps: List[List[str]] = [line.split() for line in lines[:-2]]
     assert len(steps) == 600
     assert [int(step[0]) for step in steps] == [0] * 100 + [1] * 500
@@ -83,6 +152,10 @@ def test_first_simulation_results(tmp_path: Path) -> None:
     assert len(saver.market_step_logs) == 600
     assert saver.market_step_logs[100]["session_id"] == 1
     assert saver.market_step_logs[100]["market_time"] == 100
+    # the page shows this log of seed 42
+    page: List[str] = read_page("first_simulation.rst")
+    shown: str = page[page.index("   >>> saver.market_step_logs[100]") + 1]
+    assert str(saver.market_step_logs[100]) == shown.strip()
     # after the run, the market is one step after the last one
     assert runner.simulator.name2market["Market"].get_time() == 600
 
@@ -99,7 +172,8 @@ def test_first_simulation_main(
     tutorial.main()
     assert os.path.getsize(tmp_path / "prices.png") > 0
     lines: List[str] = capsys.readouterr().out.splitlines()
-    assert lines[-1].startswith("{'last_price': ")
+    # the page shows the summary of seed 42
+    assert lines[-1:] == text_blocks("first_simulation.rst")[2]
 
 
 def test_custom_agent() -> None:
@@ -152,12 +226,8 @@ def test_custom_agent_main(capsys: pytest.CaptureFixture[str]) -> None:
     tutorial = load_tutorial("tutorial_custom_agent")
     tutorial.main()
     lines: List[str] = capsys.readouterr().out.splitlines()
-    assert len(lines) == 2 + 10
-    pattern = (
-        r"MovingAverageAgents-\d: window \d+, orders \d+, cancels \d+, trades \d+, "
-        r"shares \d+, cash \d+\.\d\d"
-    )
-    assert all(re.fullmatch(pattern, line) for line in lines[2:])
+    # the page shows the report of seed 42 after the two time lines
+    assert_shown(list(TIME_LABELS) + text_blocks("custom_agent.rst")[0], lines)
 
 
 def test_custom_event(capsys: pytest.CaptureFixture[str]) -> None:
@@ -183,10 +253,8 @@ def test_custom_event_main(capsys: pytest.CaptureFixture[str]) -> None:
     tutorial = load_tutorial("tutorial_custom_event")
     tutorial.main()
     lines: List[str] = capsys.readouterr().out.splitlines()
-    assert len(lines) == 3 + 9
-    assert [line.split(":")[0] for line in lines[3:]] == [
-        f"step {time}" for time in range(150, 600, 50)
-    ]
+    # the page shows the output of seed 42
+    assert_shown(text_blocks("custom_event.rst")[0], lines)
 
 
 def test_custom_logger(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -198,6 +266,11 @@ def test_custom_logger(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> No
     assert total_volume > 0
 
     lines: List[str] = capsys.readouterr().out.splitlines()
+    # the page shows the output of seed 42 and the head of the CSV file
+    blocks: List[List[str]] = text_blocks("custom_logger.rst")
+    assert_shown(blocks[0], lines)
+    with open(path, encoding="utf-8") as fp:
+        assert fp.read().splitlines()[:4] == blocks[1]
     # one FCN agent places one order in each step
     assert lines[0] == "warmup: 100 orders, 0 shares traded"
     assert lines[1] == f"main: 500 orders, {total_volume} shares traded"
@@ -223,5 +296,6 @@ def test_custom_logger_main(
     monkeypatch.chdir(tmp_path)
     tutorial.main()
     lines: List[str] = capsys.readouterr().out.splitlines()
-    assert lines[4] == "time,market,price,volume,buyer,seller"
-    assert len(lines) == 4 + 4
+    # the summaries and the time lines, then the head of the CSV file
+    blocks: List[List[str]] = text_blocks("custom_logger.rst")
+    assert_shown(blocks[0] + blocks[1], lines)
