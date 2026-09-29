@@ -22,6 +22,7 @@ class ArbitrageAgent(HighFrequencyAgent):
 
     Note:
         Currently, index markets must have the same weight for each constitutional stock.
+
     """
 
     def __init__(
@@ -32,6 +33,10 @@ class ArbitrageAgent(HighFrequencyAgent):
         name: str,
         logger: Optional[Logger] = None,
     ) -> None:
+        """Initialize the arbitrage agent.
+
+        See :class:`pams.agents.Agent` for the arguments.
+        """
         super().__init__(
             agent_id=agent_id, prng=prng, simulator=simulator, name=name, logger=logger
         )
@@ -47,7 +52,7 @@ class ArbitrageAgent(HighFrequencyAgent):
         *args,
         **kwargs,
     ) -> None:
-        """agent setup. Usually be called from simulator/runner automatically.
+        """Agent setup. Usually be called from simulator/runner automatically.
 
         Args:
             settings (Dict[str, Any]): agent configuration. Usually, automatically set from json config of simulator.
@@ -59,6 +64,7 @@ class ArbitrageAgent(HighFrequencyAgent):
 
         Returns:
             None
+
         """
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
         if "orderVolume" not in settings:
@@ -75,13 +81,14 @@ class ArbitrageAgent(HighFrequencyAgent):
             self.order_time_length = settings["orderTimeLength"]
 
     def _submit_orders(self, market: Market) -> List[Union[Order, Cancel]]:
-        """internal sub routine for submitting orders by market.
+        """Internal sub routine for submitting orders by market.
 
         Args:
             market (List[Market]): markets to order.
 
         Returns:
             List[Union[Order, Cancel]]: order list.
+
         """
         orders: List[Union[Order, Cancel]] = []
         if not isinstance(market, IndexMarket):
@@ -159,7 +166,10 @@ class ArbitrageAgent(HighFrequencyAgent):
         return orders
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        """submit orders to take arbitrage chance.
+        """Submit orders to take arbitrage chance.
+
+        Returns:
+            List[Union[Order, Cancel]]: order list.
 
         .. seealso::
             - :func:`pams.agents.Agent.submit_orders`
@@ -170,10 +180,11 @@ class ArbitrageAgent(HighFrequencyAgent):
         return orders
 
     def __repr__(self) -> str:
-        """string representation of FCN agent class.
+        """String representation of FCN agent class.
 
         Returns:
             str: string representation of this class.
+
         """
         return (
             f"<{self.__class__.__module__}.{self.__class__.__name__} | id={self.agent_id}, rnd={self.prng}, "

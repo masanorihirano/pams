@@ -1,27 +1,50 @@
 name: Version Bump
 
+# `create` fires for every new branch or tag and does not support branch
+# filters, so the job itself is restricted to release/* branches.
 on:
   create:
-    branches:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   makepr:
     name: make pr
     runs-on: ubuntu-latest
-    if: ${{ contains(github.ref, 'release/') }}
+    if: startsWith(github.ref, 'refs/heads/release/')
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
       - name: Install poetry
         run: pip install poetry
       - name: Bump version
-        run: git branch --show-current | sed 's|release/||' | xargs poetry version | { printf '::set-output name=PR_TITLE::'; cat; }
         id: bump
+        run: |
+          version="${BRANCH#release/}"
+          title=$(poetry version "$version")
+          # `poetry version` also accepts bump rules such as "patch"; make sure
+          # that the branch name is the (normalized) version itself.
+          if [ "$(poetry version --short)" != "$version" ]; then
+            echo "::error::${BRANCH} is not of the form release/X.Y.Z"
+            exit 1
+          fi
+          echo "PR_TITLE=${title}" >> "$GITHUB_OUTPUT"
+        env:
+          BRANCH: ${{ github.ref_name }}
       - name: Bump version 2
-        run: git branch --show-current | sed 's|release/||' | xargs -I {} echo '__version__ = "{}"' > pams/version.py
+        run: |
+          echo "__version__ = \"${BRANCH#release/}\"" > pams/version.py
+        env:
+          BRANCH: ${{ github.ref_name }}
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v8
         with:
           author: GitHub Actions <action@github.com>
           commit-message: ${{ steps.bump.outputs.PR_TITLE }}
