@@ -22,20 +22,25 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
-      - name: Install poetry
-        run: pip install poetry
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          enable-cache: false
       - name: Bump version
         id: bump
         run: |
           version="${BRANCH#release/}"
-          title=$(poetry version "$version")
-          # `poetry version` also accepts bump rules such as "patch"; make sure
-          # that the branch name is the (normalized) version itself.
-          if [ "$(poetry version --short)" != "$version" ]; then
+          old_version=$(uv version --short)
+          # --frozen only rewrites pyproject.toml: no uv.lock, no .venv.
+          uv version --frozen "$version"
+          new_version=$(uv version --short)
+          # `uv version` normalizes the version (e.g. v1.0.0 becomes 1.0.0);
+          # make sure that the branch name is the version itself.
+          if [ "$new_version" != "$version" ]; then
             echo "::error::${BRANCH} is not of the form release/X.Y.Z"
             exit 1
           fi
-          echo "PR_TITLE=${title}" >> "$GITHUB_OUTPUT"
+          echo "PR_TITLE=Bumping version from ${old_version} to ${new_version}" >> "$GITHUB_OUTPUT"
         env:
           BRANCH: ${{ github.ref_name }}
       - name: Bump version 2
