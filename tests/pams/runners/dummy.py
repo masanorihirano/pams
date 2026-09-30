@@ -394,6 +394,14 @@ class SlowLearningAgent(LearningAgent):
         return super().submit_orders(markets)
 
 
+class LockingLearningAgent(LearningAgent):
+    """LearningAgent that keeps a lock, which cannot be pickled, in ``lock`` in submit_orders."""
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        self.lock = threading.Lock()  # pylint: disable=attribute-defined-outside-init
+        return super().submit_orders(markets)
+
+
 class AgentHelper:
     """Object that keeps the state of its agent and refers back to the agent."""
 

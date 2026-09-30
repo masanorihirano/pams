@@ -5,6 +5,7 @@ import os
 import pickle
 import random
 import re
+import threading
 import time
 import traceback
 import uuid
@@ -53,6 +54,7 @@ from .dummy import GivenOrdersAgent
 from .dummy import HelperAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import LearningAgent
+from .dummy import LockingLearningAgent
 from .dummy import MarketReferencingAgent
 from .dummy import OrderTrackingAgent
 from .dummy import RaisingAgent
@@ -381,6 +383,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         LearningAgent,
         UnsyncedLearningAgent,
         SlowLearningAgent,
+        LockingLearningAgent,
         HelperAgent,
         MarketReferencingAgent,
         OrderTrackingAgent,
@@ -1592,6 +1595,77 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert isinstance(plain_results, list)
         assert plain_results[0][3] is None
         assert other_agent.n_calls == 2
+
+    def test_submit_orders_in_worker_names_agent_whose_results_cannot_be_pickled(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = self._learning_setting()
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        markets = simulator.markets
+        simulator._update_times_on_markets(markets)
+        agent, other_agent = simulator.normal_frequency_agents[:2]
+        other_agent.lock = threading.Lock()  # type: ignore[attr-defined]
+        names = tuple(LearningAgent.synced_attributes)
+        with pytest.raises(
+            RuntimeError,
+            match=re.escape(
+                f"The results of LearningAgent (agent_id={other_agent.agent_id}) cannot be"
+                " pickled on a worker process: its orders or its attributes listed in"
+                " synced_attributes, ('lock',), contain an object that cannot be pickled."
+            ),
+        ) as exc_info:
+            _submit_orders_in_worker(
+                agents=[agent, other_agent],
+                markets=markets,
+                synced_attributes=[names, ("lock",)],
+            )
+        assert isinstance(exc_info.value.__cause__, TypeError)
+        assert "lock" in str(exc_info.value.__cause__)
+        # the error is raised as it is if the results of each agent can be pickled alone
+        dump = agent_parallel._WorkerResultPickler.dump
+
+        def fail_to_dump_results_of_all_agents(pickler: Any, obj: Any) -> None:
+            if isinstance(obj, list):
+                raise pickle.PicklingError("error in pickling all the results")
+            dump(pickler, obj)
+
+        monkeypatch.setattr(
+            agent_parallel._WorkerResultPickler,
+            "dump",
+            fail_to_dump_results_of_all_agents,
+        )
+        with pytest.raises(
+            pickle.PicklingError, match="error in pickling all the results"
+        ):
+            _submit_orders_in_worker(
+                agents=[agent, other_agent],
+                markets=markets,
+                synced_attributes=[names, ()],
+            )
+
+    def test_unpicklable_synced_attribute_is_reported(self) -> None:
+        setting = self._learning_setting(synced_attributes=["n_calls", "lock"])
+        setting["FCNAgents"]["class"] = "LockingLearningAgent"
+        _, runner = self._make_runners(setting=setting)
+        if not self.receives_synced_attributes:
+            # the attributes are not pickled
+            runner.main()
+            return
+        with pytest.raises(
+            RuntimeError,
+            match=re.escape("The results of LockingLearningAgent (agent_id=")
+            + r"\d+"
+            + re.escape(
+                ") cannot be pickled on a worker process: its orders or its attributes"
+                " listed in synced_attributes, ('n_calls', 'lock'), contain an object that"
+                " cannot be pickled."
+            ),
+        ):
+            runner.main()
+        assert runner.executor is None
 
     def test_submit_orders_in_worker_finds_no_changes_of_fcn_agents(self) -> None:
         # the built-in agents do not assign or delete attributes in submit_orders

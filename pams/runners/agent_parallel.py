@@ -500,7 +500,8 @@ def _submit_orders_in_worker(
     copies of them. The other objects are pickled together, so references among them are kept,
     e.g., an order that an agent returns and also keeps in a listed attribute is one object. The
     states of the pseudo random number generators are pickled in advance by
-    :class:`_PickledState` to make the pickling faster.
+    :class:`_PickledState` to make the pickling faster. If the results of an agent cannot be
+    pickled, a RuntimeError that names the agent is raised (see :func:`_dump_worker_results`).
 
     Args:
         agents (List[Agent]): agents.
@@ -561,15 +562,56 @@ def _submit_orders_in_worker(
         results.append((orders, agent.prng.getstate(), attributes, unsynced_names))
     if all(len(names) == 0 for names in names_of_agents):
         return results
-    # the results are pickled here, not by the executor, so that the objects of the simulation
-    # are sent back as tokens instead of copies. All the agents refer to the same simulator.
-    buffer = io.BytesIO()
-    _WorkerResultPickler(buffer, simulator=agents[0].simulator).dump(
-        [
-            (orders, _PickledState(state=prng_state), attributes, unsynced_names)
-            for orders, prng_state, attributes, unsynced_names in results
-        ]
+    return _dump_worker_results(
+        results=results, agents=agents, names_of_agents=names_of_agents
     )
+
+
+def _dump_worker_results(
+    results: List[_WorkerResult],
+    agents: List[Agent],
+    names_of_agents: List[Tuple[str, ...]],
+) -> bytes:
+    """Pickle the results of :func:`_submit_orders_in_worker` (internal function).
+
+    The results are pickled here, not by the executor, so that the objects of the simulation are
+    sent back as tokens instead of copies (see :class:`_WorkerResultPickler`). If the pickling
+    fails, the results of the agents are pickled one by one to find the first agent whose results
+    cannot be pickled, and a RuntimeError that names the agent is raised with the exception
+    raised by pickling its results as its cause. If each of them can be pickled alone, the
+    original exception is raised.
+
+    Args:
+        results (List[_WorkerResult]): results of the agents.
+        agents (List[Agent]): agents, which refer to the same simulator.
+        names_of_agents (List[Tuple[str, ...]]): for each agent, the names in its
+            :attr:`pams.agents.Agent.synced_attributes`.
+
+    Returns:
+        bytes: pickled results.
+
+    """
+    items = [
+        (orders, _PickledState(state=prng_state), attributes, unsynced_names)
+        for orders, prng_state, attributes, unsynced_names in results
+    ]
+    buffer = io.BytesIO()
+    pickler = _WorkerResultPickler(buffer, simulator=agents[0].simulator)
+    try:
+        pickler.dump(items)
+    except Exception:
+        for agent, names, item in zip(agents, names_of_agents, items):
+            pickler.clear_memo()
+            try:
+                pickler.dump(item)
+            except Exception as error:  # pylint: disable=broad-exception-caught
+                raise RuntimeError(
+                    f"The results of {agent.__class__.__name__} (agent_id={agent.agent_id})"
+                    " cannot be pickled on a worker process: its orders or its attributes"
+                    f" listed in synced_attributes, {names!r}, contain an object that cannot"
+                    " be pickled."
+                ) from error
+        raise
     return buffer.getvalue()
 
 
