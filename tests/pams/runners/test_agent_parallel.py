@@ -2,7 +2,7 @@ import copy
 import io
 import multiprocessing
 import os
-import pickle
+import pickle  # nosec B403 # only objects created by the tests are pickled
 import random
 import re
 import threading

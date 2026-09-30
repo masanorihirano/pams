@@ -406,6 +406,7 @@ class AgentHelper:
     """Object that keeps the state of its agent and refers back to the agent."""
 
     def __init__(self, agent: Agent, prices: Optional[List[float]] = None) -> None:
+        """Initialize the helper of the agent with the prices it has kept."""
         self.agent: Agent = agent
         self.prices: List[float] = [] if prices is None else prices
 

@@ -2,7 +2,7 @@ import io
 import math
 import multiprocessing
 import os
-import pickle
+import pickle  # nosec B403 # unpickles only the results of this runner's workers
 import random
 import threading
 import warnings
