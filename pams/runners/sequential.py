@@ -430,7 +430,7 @@ class SequentialRunner(Runner):
 
         Every order has to be submitted by the agent itself and be for an existing market that the agent can
         access. For a cancel order, the order to be canceled is checked, and the order that it cancels in the
-        order book (see ``_get_placed_order_to_cancel``) has to be placed by the agent itself. Orders created by
+        order book has to be placed by the agent itself (see ``_check_cancel_ownership``). Orders created by
         events are not checked because they are not submitted by agents.
 
         Args:
@@ -472,28 +472,38 @@ class SequentialRunner(Runner):
                     f"please add {market_group_name} to markets of {agent_group_name} "
                     "or check market_id in order"
                 )
-            if not isinstance(order, Cancel):
-                continue
-            # the order in cancel order has the agent_id of the agent, but the order in the order
-            # book equal to it may not
-            placed_order: Optional[Order] = self._get_placed_order_to_cancel(
-                cancel=order
-            )
-            if placed_order is not None and placed_order.agent_id != agent.agent_id:
-                owner: Optional[Agent] = self.simulator.id2agent.get(
-                    placed_order.agent_id
-                )
-                owner_name: str = (
-                    owner.name
-                    if owner is not None
-                    else f"agent_id {placed_order.agent_id}"
-                )
-                raise ValueError(
-                    "cancel order for an order of another agent is not allowed. "
-                    f"{agent.name} tried to cancel order_id {placed_order.order_id} "
-                    f"in {self.simulator.id2market[order.market_id].name}, "
-                    f"which {owner_name} placed. please check order in cancel order"
-                )
+            if isinstance(order, Cancel):
+                self._check_cancel_ownership(agent=agent, cancel=order)
+
+    def _check_cancel_ownership(self, agent: Agent, cancel: Cancel) -> None:
+        """Check that a cancel order does not cancel an order of another agent (internal method).
+
+        The order in a cancel order has the agent ID of the agent, but the order in the order book equal to it
+        (see ``_get_placed_order_to_cancel``) may not. This is checked when the cancel order is submitted
+        (``_check_submitted_orders``) and again just before it is processed (``_process_order``), because the
+        order that it cancels can be placed in between, e.g., by another agent in the same step.
+
+        Args:
+            agent (Agent): agent that submitted the cancel order.
+            cancel (Cancel): cancel order.
+
+        Returns:
+            None
+
+        """
+        placed_order: Optional[Order] = self._get_placed_order_to_cancel(cancel=cancel)
+        if placed_order is None or placed_order.agent_id == agent.agent_id:
+            return
+        owner: Optional[Agent] = self.simulator.id2agent.get(placed_order.agent_id)
+        owner_name: str = (
+            owner.name if owner is not None else f"agent_id {placed_order.agent_id}"
+        )
+        raise ValueError(
+            "cancel order for an order of another agent is not allowed. "
+            f"{agent.name} tried to cancel order_id {placed_order.order_id} "
+            f"in {self.simulator.id2market[cancel.market_id].name}, "
+            f"which {owner_name} placed. please check order in cancel order"
+        )
 
     def _collect_orders_from_normal_agents(
         self, session: Session
@@ -549,9 +559,12 @@ class SequentialRunner(Runner):
             agent.submitted_order(log=log)
             self.simulator._trigger_event_after_order(order_log=log)
         elif isinstance(order, Cancel):
+            agent = self.simulator.id2agent[order.order.agent_id]
+            # the order that the cancel order cancels may have been placed after the cancel order
+            # was submitted, e.g., by another agent in the same step
+            self._check_cancel_ownership(agent=agent, cancel=order)
             self.simulator._trigger_event_before_cancel(cancel=order)
             log_: CancelLog = market._cancel_order(cancel=order)
-            agent = self.simulator.id2agent[order.order.agent_id]
             agent.canceled_order(log=log_)
             self.simulator._trigger_event_after_cancel(cancel_log=log_)
         else:

@@ -2290,6 +2290,78 @@ class TestSequentialRunner(TestRunner):
         assert len(placed_orders) == n_placed_orders
         assert all(not order.is_canceled for order in placed_orders)
 
+    def test_cancel_order_of_order_placed_later_by_another_agent_is_rejected(
+        self,
+    ) -> None:
+        runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
+        session = runner.simulator.sessions[0]
+        market = runner.simulator.markets[0]
+        agents = runner.simulator.agents
+        session.max_normal_orders = len(agents)
+        victim = agents[0]
+        assert isinstance(victim, GivenOrdersAgent)
+        victim.orders_to_submit = [
+            Order(
+                agent_id=victim.agent_id,
+                market_id=market.market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+        ]
+        for agent in agents[1:]:
+            assert isinstance(agent, GivenOrdersAgent)
+            # a forged order with the agent_id of the agent and the order_id and placed_at that
+            # the order of the victim submitted in the same step will have
+            forged_order = Order(
+                agent_id=agent.agent_id,
+                market_id=market.market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+            forged_order.order_id = market._next_order_id
+            forged_order.placed_at = market.get_time()
+            agent.orders_to_submit = [Cancel(order=forged_order)]
+        # the order of the victim is not in the order book yet, so the cancel orders are accepted
+        # when they are submitted
+        all_orders = runner._collect_orders_from_normal_agents(session=session)
+        assert len(all_orders) == len(agents)
+        assert all(len(orders) == 1 for orders in all_orders)
+        victim_order = next(
+            orders[0] for orders in all_orders if orders[0].agent_id == victim.agent_id
+        )
+        cancels = [orders[0] for orders in all_orders if orders[0] is not victim_order]
+        assert isinstance(victim_order, Order)
+        assert all(isinstance(cancel, Cancel) for cancel in cancels)
+        # a cancel order processed before the order of the victim cancels nothing
+        runner._process_order(session=session, order=cancels[0])
+        assert cancels[0].placed_at == market.get_time()
+        runner._process_order(session=session, order=victim_order)
+        assert market.buy_order_book.priority_queue == [victim_order]
+        # the cancel orders processed after the order of the victim are rejected
+        for cancel in cancels[1:]:
+            forger = runner.simulator.id2agent[cancel.agent_id]
+            with pytest.raises(
+                ValueError,
+                match="^"
+                + re.escape(
+                    "cancel order for an order of another agent is not allowed. "
+                    f"{forger.name} tried to cancel order_id {victim_order.order_id} "
+                    f"in Market, which {victim.name} placed. "
+                    "please check order in cancel order"
+                )
+                + "$",
+            ):
+                runner._process_order(session=session, order=cancel)
+            assert cancel.placed_at is None
+        placed_orders = market.buy_order_book.priority_queue
+        assert len(placed_orders) == 1
+        assert placed_orders[0] is victim_order
+        assert not victim_order.is_canceled
+
     def test_run_with_order_for_inaccessible_market(self) -> None:
         runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
         self._set_orders_to_submit(runner=runner, market_id=1, cancels=False)
