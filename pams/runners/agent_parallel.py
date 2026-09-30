@@ -1084,9 +1084,11 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         reflected to the agent on the main process. Other attributes modified in
         :func:`pams.agents.Agent.submit_orders` are discarded, although in-place changes to memory
         that a library shares between processes, e.g., PyTorch tensors on the CPU, can remain.
-        A warning is issued when an agent assigns or deletes an attribute that is not listed, at
-        most once for each agent class and attribute name per runner; changes made in place,
-        e.g., by appending to a list, are not detected.
+        A warning is issued when an agent assigns or deletes an attribute in its ``__dict__`` that
+        is not listed, at most once for each agent class and attribute name per runner. Assigning
+        a str, a number, or a tuple of them equal to the old value is not reported, and changes
+        made in place, e.g., by appending to a list, and changes to attributes in ``__slots__``
+        are not detected.
         The listed attributes are sent back after every call, even if the agent submits no
         orders, and are set on the agent before the orders are handled. The listed values and
         the orders of all the agents of a task are pickled together, so references among them
@@ -1108,7 +1110,8 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         ``"simulator"``, ``"logger"``, and ``"prng"``, which the runner manages, and
         ``"__dict__"``, which holds all the attributes of the agent, cannot be listed. The names
         are read on the main process whenever the agent is asked, and a ValueError is raised if
-        they are invalid, both then and in ``_setup``.
+        they are invalid, both then and in ``_setup``. If the listed values or the orders of an
+        agent cannot be pickled, a RuntimeError that names the agent is raised.
         See :ref:`config-synced-attributes` for an example with PyTorch and other caveats.
         User-defined agents for this runner can also keep their states through the callbacks such
         as :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`,
@@ -1135,7 +1138,10 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         Large objects held by agents, such as neural network models, are pickled in every task,
         even in the tasks of other agents, unless they are excluded from pickling, e.g., by
         ``__getstate__``. Read-only objects of this kind can be loaded once per worker process by
-        the worker initializer (see ``_get_worker_initializer``) instead. These two ways are only
+        the worker initializer (see ``_get_worker_initializer``) instead. The agents should use
+        such an object where the initializer keeps it, e.g., in a module variable, or put it back
+        on themselves in ``__setstate__``; assigning it in
+        :func:`pams.agents.Agent.submit_orders` is warned about. These two ways are only
         for objects that the agents do not change: an object that an agent changes in
         :func:`pams.agents.Agent.submit_orders`, such as a model that it trains, must be listed in
         :attr:`pams.agents.Agent.synced_attributes`. A listed attribute must be pickled with the

@@ -1238,7 +1238,11 @@ are split into at most ``numParallel`` tasks. An object held by an agent, such a
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
 ``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`). Both
 ways are only for objects that the agents do not change; an object that an agent changes in ``submit_orders``
-must be listed in :attr:`~pams.agents.Agent.synced_attributes` instead.
+must be listed in :attr:`~pams.agents.Agent.synced_attributes` instead. Use an object loaded per worker process
+where it is kept, for example in a module variable as in :doc:`platform`, or put it back on the agent in
+``__setstate__``, which runs when the agent is copied to the worker process. Do not assign it to the agent in
+``submit_orders``: the runner warns that the change is lost, and listing it to avoid the warning would send the
+object back after every call.
 
 .. _config-synced-attributes:
 
@@ -1293,7 +1297,11 @@ Keep the following in mind:
 - **Cost**: the listed values are pickled and sent back after every call of ``submit_orders``, in addition to the
   copies of the whole simulation described above. For a large model, this can take longer than the training. If an
   agent of a task lists attributes, the results of all the agents of the task are pickled in a way that finds the
-  objects of the simulation among them (see **Shared objects**), which takes about twice as long as usual pickling.
+  objects of the simulation among them (see **Shared objects**). This adds a fixed cost to each task, which grows
+  with the numbers of agents and of orders in the order books (less than 1 ms for 1000 agents, small next to the
+  copy of the simulation), and pickling lists, dicts and other objects with many elements takes about five to eight
+  times as long as usual. Arrays such as NumPy arrays take about as long as usual, because their data is pickled as
+  a whole.
 - **Parallelism**: still at most ``maxNormalOrders`` agents are asked at the same time.
 - **Random numbers**: use ``self.prng`` or generators seeded from it, such as ``generator`` above. The global
   generators of libraries (e.g., the one that ``DataLoader(shuffle=True)`` uses without ``generator``) differ between
@@ -1333,12 +1341,18 @@ Keep the following in mind:
   it is shown at most once for each agent class and attribute per runner. Its message starts with
   ``Changes to attributes not listed in synced_attributes are lost``, which does not change, so it can be filtered,
   e.g., by ``warnings.filterwarnings("ignore", message="Changes to attributes not listed in synced_attributes")``.
-  Only assignments and deletions are detected; changes made in place, such as appending to a list or training a
-  model, are not. So no warning is shown for an unlisted PyTorch model that is trained in place, even though its
-  parameters can reach the main process through shared memory while the state of its optimizer is lost (see
-  **Shared memory**). The built-in agents cause no warning.
+  Assigning a value equal to the old one is not reported if both are strings, numbers or tuples of them, such as a
+  constant assigned again or a price that did not change. Only assignments and deletions are detected; changes
+  made in place, such as appending to a list or training a model, are not. So no warning is shown for an unlisted
+  PyTorch model that is trained in place, even though its parameters can reach the main process through shared
+  memory while the state of its optimizer is lost (see **Shared memory**). Only the attributes in the agent's
+  ``__dict__`` are compared, so changes to unlisted attributes in ``__slots__`` are lost without a warning, and so
+  are changes to class attributes and module variables, which are never sent back. The listed names are read with
+  ``getattr`` and set with ``setattr``, so a property can be listed, but the runner warns about the attribute that
+  its setter assigns; list that attribute instead of the property. The built-in agents cause no warning.
 - **Pickling**: the listed attributes must be pickled with the agent; if ``__getstate__`` drops one of them, it is
-  deleted from the agent in the main process.
+  deleted from the agent in the main process. The listed values must also be picklable when they are sent back; if
+  one is not, the simulation fails with a ``RuntimeError`` that names the agent class and its ``agent_id``.
 - **Checks**: the names must be a tuple or list of strings. They must not include ``"simulator"``, ``"logger"`` or
   ``"prng"``, which the runner manages, or ``"__dict__"``, which holds all the attributes of the agent, so list the
   attributes one by one. The runner checks them when it is set up and whenever it asks the agent, and raises a
