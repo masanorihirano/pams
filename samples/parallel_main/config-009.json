@@ -1,0 +1,222 @@
+{
+    "simulation": {
+        "markets": [
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9",
+            "IndexMarket-I"
+        ],
+        "agents": [
+            "FCNAgents-1",
+            "FCNAgents-2",
+            "FCNAgents-3",
+            "FCNAgents-4",
+            "FCNAgents-5",
+            "FCNAgents-6",
+            "FCNAgents-7",
+            "FCNAgents-8",
+            "FCNAgents-9",
+            "FCNAgents-I",
+            "ArbitrageAgents"
+        ],
+        "sessions": [
+            {
+                "sessionName": 1,
+                "iterationSteps": 500,
+                "withOrderPlacement": true,
+                "withOrderExecution": true,
+                "withPrint": true,
+                "maxNormalOrders": 10000000000,
+                "maxHighFrequencyOrders": 1,
+                "events": [
+                    "FundamentalPriceShock"
+                ]
+            }
+        ]
+    },
+    "FundamentalPriceShock": {
+        "class": "FundamentalPriceShock",
+        "target": "SpotMarket-1",
+        "triggerTime": 0,
+        "priceChangeRate": -0.1,
+        "enabled": true
+    },
+    "SpotMarket": {
+        "class": "Market",
+        "tickSize": 1e-05,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000
+    },
+    "SpotMarket-1": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-2": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-3": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-4": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-5": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-6": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-7": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-8": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-9": {
+        "extends": "SpotMarket"
+    },
+    "IndexMarket-I": {
+        "class": "IndexMarket",
+        "tickSize": 1e-05,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000,
+        "markets": [
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9"
+        ]
+    },
+    "FCNAgent": {
+        "class": "WorkloadFCNAgent",
+        "numAgents": 500,
+        "markets": [
+            "Market"
+        ],
+        "assetVolume": 50,
+        "cashAmount": 10000,
+        "fundamentalWeight": {
+            "expon": [
+                1.0
+            ]
+        },
+        "chartWeight": {
+            "expon": [
+                0.0
+            ]
+        },
+        "noiseWeight": {
+            "expon": [
+                1.0
+            ]
+        },
+        "noiseScale": 0.001,
+        "timeWindowSize": [
+            100,
+            200
+        ],
+        "orderMargin": [
+            0.0,
+            0.1
+        ],
+        "orderRate": 0.1,
+        "bsWorkload": true,
+        "bsNumSamples": 10,
+        "bsNumSteps": 10
+    },
+    "FCNAgents-1": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-1"
+        ]
+    },
+    "FCNAgents-2": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-2"
+        ]
+    },
+    "FCNAgents-3": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-3"
+        ]
+    },
+    "FCNAgents-4": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-4"
+        ]
+    },
+    "FCNAgents-5": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-5"
+        ]
+    },
+    "FCNAgents-6": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-6"
+        ]
+    },
+    "FCNAgents-7": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-7"
+        ]
+    },
+    "FCNAgents-8": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-8"
+        ]
+    },
+    "FCNAgents-9": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-9"
+        ]
+    },
+    "FCNAgents-I": {
+        "extends": "FCNAgent",
+        "markets": [
+            "IndexMarket-I"
+        ],
+        "fundamentalWeight": {
+            "expon": [
+                0.5
+            ]
+        }
+    },
+    "ArbitrageAgents": {
+        "class": "ArbitrageAgent",
+        "numAgents": 100,
+        "markets": [
+            "IndexMarket-I",
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9"
+        ],
+        "assetVolume": 50,
+        "cashAmount": 150000,
+        "orderVolume": 1,
+        "orderThresholdPrice": 1.0
+    }
+}

@@ -1,0 +1,1392 @@
+{
+    "simulation": {
+        "markets": [
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9",
+            "SpotMarket-10",
+            "SpotMarket-11",
+            "SpotMarket-12",
+            "SpotMarket-13",
+            "SpotMarket-14",
+            "SpotMarket-15",
+            "SpotMarket-16",
+            "SpotMarket-17",
+            "SpotMarket-18",
+            "SpotMarket-19",
+            "SpotMarket-20",
+            "SpotMarket-21",
+            "SpotMarket-22",
+            "SpotMarket-23",
+            "SpotMarket-24",
+            "SpotMarket-25",
+            "SpotMarket-26",
+            "SpotMarket-27",
+            "SpotMarket-28",
+            "SpotMarket-29",
+            "SpotMarket-30",
+            "SpotMarket-31",
+            "SpotMarket-32",
+            "SpotMarket-33",
+            "SpotMarket-34",
+            "SpotMarket-35",
+            "SpotMarket-36",
+            "SpotMarket-37",
+            "SpotMarket-38",
+            "SpotMarket-39",
+            "SpotMarket-40",
+            "SpotMarket-41",
+            "SpotMarket-42",
+            "SpotMarket-43",
+            "SpotMarket-44",
+            "SpotMarket-45",
+            "SpotMarket-46",
+            "SpotMarket-47",
+            "SpotMarket-48",
+            "SpotMarket-49",
+            "SpotMarket-50",
+            "SpotMarket-51",
+            "SpotMarket-52",
+            "SpotMarket-53",
+            "SpotMarket-54",
+            "SpotMarket-55",
+            "SpotMarket-56",
+            "SpotMarket-57",
+            "SpotMarket-58",
+            "SpotMarket-59",
+            "SpotMarket-60",
+            "SpotMarket-61",
+            "SpotMarket-62",
+            "SpotMarket-63",
+            "SpotMarket-64",
+            "SpotMarket-65",
+            "SpotMarket-66",
+            "SpotMarket-67",
+            "SpotMarket-68",
+            "SpotMarket-69",
+            "SpotMarket-70",
+            "SpotMarket-71",
+            "SpotMarket-72",
+            "SpotMarket-73",
+            "SpotMarket-74",
+            "SpotMarket-75",
+            "SpotMarket-76",
+            "SpotMarket-77",
+            "SpotMarket-78",
+            "SpotMarket-79",
+            "SpotMarket-80",
+            "SpotMarket-81",
+            "SpotMarket-82",
+            "SpotMarket-83",
+            "SpotMarket-84",
+            "SpotMarket-85",
+            "SpotMarket-86",
+            "SpotMarket-87",
+            "SpotMarket-88",
+            "SpotMarket-89",
+            "SpotMarket-90",
+            "SpotMarket-91",
+            "SpotMarket-92",
+            "SpotMarket-93",
+            "SpotMarket-94",
+            "SpotMarket-95",
+            "SpotMarket-96",
+            "SpotMarket-97",
+            "SpotMarket-98",
+            "SpotMarket-99",
+            "IndexMarket-I"
+        ],
+        "agents": [
+            "FCNAgents-1",
+            "FCNAgents-2",
+            "FCNAgents-3",
+            "FCNAgents-4",
+            "FCNAgents-5",
+            "FCNAgents-6",
+            "FCNAgents-7",
+            "FCNAgents-8",
+            "FCNAgents-9",
+            "FCNAgents-10",
+            "FCNAgents-11",
+            "FCNAgents-12",
+            "FCNAgents-13",
+            "FCNAgents-14",
+            "FCNAgents-15",
+            "FCNAgents-16",
+            "FCNAgents-17",
+            "FCNAgents-18",
+            "FCNAgents-19",
+            "FCNAgents-20",
+            "FCNAgents-21",
+            "FCNAgents-22",
+            "FCNAgents-23",
+            "FCNAgents-24",
+            "FCNAgents-25",
+            "FCNAgents-26",
+            "FCNAgents-27",
+            "FCNAgents-28",
+            "FCNAgents-29",
+            "FCNAgents-30",
+            "FCNAgents-31",
+            "FCNAgents-32",
+            "FCNAgents-33",
+            "FCNAgents-34",
+            "FCNAgents-35",
+            "FCNAgents-36",
+            "FCNAgents-37",
+            "FCNAgents-38",
+            "FCNAgents-39",
+            "FCNAgents-40",
+            "FCNAgents-41",
+            "FCNAgents-42",
+            "FCNAgents-43",
+            "FCNAgents-44",
+            "FCNAgents-45",
+            "FCNAgents-46",
+            "FCNAgents-47",
+            "FCNAgents-48",
+            "FCNAgents-49",
+            "FCNAgents-50",
+            "FCNAgents-51",
+            "FCNAgents-52",
+            "FCNAgents-53",
+            "FCNAgents-54",
+            "FCNAgents-55",
+            "FCNAgents-56",
+            "FCNAgents-57",
+            "FCNAgents-58",
+            "FCNAgents-59",
+            "FCNAgents-60",
+            "FCNAgents-61",
+            "FCNAgents-62",
+            "FCNAgents-63",
+            "FCNAgents-64",
+            "FCNAgents-65",
+            "FCNAgents-66",
+            "FCNAgents-67",
+            "FCNAgents-68",
+            "FCNAgents-69",
+            "FCNAgents-70",
+            "FCNAgents-71",
+            "FCNAgents-72",
+            "FCNAgents-73",
+            "FCNAgents-74",
+            "FCNAgents-75",
+            "FCNAgents-76",
+            "FCNAgents-77",
+            "FCNAgents-78",
+            "FCNAgents-79",
+            "FCNAgents-80",
+            "FCNAgents-81",
+            "FCNAgents-82",
+            "FCNAgents-83",
+            "FCNAgents-84",
+            "FCNAgents-85",
+            "FCNAgents-86",
+            "FCNAgents-87",
+            "FCNAgents-88",
+            "FCNAgents-89",
+            "FCNAgents-90",
+            "FCNAgents-91",
+            "FCNAgents-92",
+            "FCNAgents-93",
+            "FCNAgents-94",
+            "FCNAgents-95",
+            "FCNAgents-96",
+            "FCNAgents-97",
+            "FCNAgents-98",
+            "FCNAgents-99",
+            "FCNAgents-I",
+            "ArbitrageAgents"
+        ],
+        "sessions": [
+            {
+                "sessionName": 1,
+                "iterationSteps": 500,
+                "withOrderPlacement": true,
+                "withOrderExecution": true,
+                "withPrint": true,
+                "maxNormalOrders": 10000000000,
+                "maxHighFrequencyOrders": 1,
+                "events": [
+                    "FundamentalPriceShock"
+                ]
+            }
+        ]
+    },
+    "FundamentalPriceShock": {
+        "class": "FundamentalPriceShock",
+        "target": "SpotMarket-1",
+        "triggerTime": 0,
+        "priceChangeRate": -0.1,
+        "enabled": true
+    },
+    "SpotMarket": {
+        "class": "Market",
+        "tickSize": 1e-05,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000
+    },
+    "SpotMarket-1": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-2": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-3": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-4": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-5": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-6": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-7": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-8": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-9": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-10": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-11": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-12": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-13": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-14": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-15": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-16": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-17": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-18": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-19": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-20": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-21": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-22": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-23": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-24": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-25": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-26": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-27": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-28": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-29": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-30": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-31": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-32": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-33": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-34": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-35": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-36": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-37": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-38": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-39": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-40": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-41": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-42": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-43": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-44": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-45": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-46": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-47": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-48": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-49": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-50": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-51": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-52": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-53": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-54": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-55": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-56": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-57": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-58": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-59": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-60": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-61": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-62": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-63": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-64": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-65": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-66": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-67": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-68": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-69": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-70": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-71": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-72": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-73": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-74": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-75": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-76": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-77": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-78": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-79": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-80": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-81": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-82": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-83": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-84": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-85": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-86": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-87": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-88": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-89": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-90": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-91": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-92": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-93": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-94": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-95": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-96": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-97": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-98": {
+        "extends": "SpotMarket"
+    },
+    "SpotMarket-99": {
+        "extends": "SpotMarket"
+    },
+    "IndexMarket-I": {
+        "class": "IndexMarket",
+        "tickSize": 1e-05,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000,
+        "markets": [
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9",
+            "SpotMarket-10",
+            "SpotMarket-11",
+            "SpotMarket-12",
+            "SpotMarket-13",
+            "SpotMarket-14",
+            "SpotMarket-15",
+            "SpotMarket-16",
+            "SpotMarket-17",
+            "SpotMarket-18",
+            "SpotMarket-19",
+            "SpotMarket-20",
+            "SpotMarket-21",
+            "SpotMarket-22",
+            "SpotMarket-23",
+            "SpotMarket-24",
+            "SpotMarket-25",
+            "SpotMarket-26",
+            "SpotMarket-27",
+            "SpotMarket-28",
+            "SpotMarket-29",
+            "SpotMarket-30",
+            "SpotMarket-31",
+            "SpotMarket-32",
+            "SpotMarket-33",
+            "SpotMarket-34",
+            "SpotMarket-35",
+            "SpotMarket-36",
+            "SpotMarket-37",
+            "SpotMarket-38",
+            "SpotMarket-39",
+            "SpotMarket-40",
+            "SpotMarket-41",
+            "SpotMarket-42",
+            "SpotMarket-43",
+            "SpotMarket-44",
+            "SpotMarket-45",
+            "SpotMarket-46",
+            "SpotMarket-47",
+            "SpotMarket-48",
+            "SpotMarket-49",
+            "SpotMarket-50",
+            "SpotMarket-51",
+            "SpotMarket-52",
+            "SpotMarket-53",
+            "SpotMarket-54",
+            "SpotMarket-55",
+            "SpotMarket-56",
+            "SpotMarket-57",
+            "SpotMarket-58",
+            "SpotMarket-59",
+            "SpotMarket-60",
+            "SpotMarket-61",
+            "SpotMarket-62",
+            "SpotMarket-63",
+            "SpotMarket-64",
+            "SpotMarket-65",
+            "SpotMarket-66",
+            "SpotMarket-67",
+            "SpotMarket-68",
+            "SpotMarket-69",
+            "SpotMarket-70",
+            "SpotMarket-71",
+            "SpotMarket-72",
+            "SpotMarket-73",
+            "SpotMarket-74",
+            "SpotMarket-75",
+            "SpotMarket-76",
+            "SpotMarket-77",
+            "SpotMarket-78",
+            "SpotMarket-79",
+            "SpotMarket-80",
+            "SpotMarket-81",
+            "SpotMarket-82",
+            "SpotMarket-83",
+            "SpotMarket-84",
+            "SpotMarket-85",
+            "SpotMarket-86",
+            "SpotMarket-87",
+            "SpotMarket-88",
+            "SpotMarket-89",
+            "SpotMarket-90",
+            "SpotMarket-91",
+            "SpotMarket-92",
+            "SpotMarket-93",
+            "SpotMarket-94",
+            "SpotMarket-95",
+            "SpotMarket-96",
+            "SpotMarket-97",
+            "SpotMarket-98",
+            "SpotMarket-99"
+        ]
+    },
+    "FCNAgent": {
+        "class": "WorkloadFCNAgent",
+        "numAgents": 500,
+        "markets": [
+            "Market"
+        ],
+        "assetVolume": 50,
+        "cashAmount": 10000,
+        "fundamentalWeight": {
+            "expon": [
+                1.0
+            ]
+        },
+        "chartWeight": {
+            "expon": [
+                0.0
+            ]
+        },
+        "noiseWeight": {
+            "expon": [
+                1.0
+            ]
+        },
+        "noiseScale": 0.001,
+        "timeWindowSize": [
+            100,
+            200
+        ],
+        "orderMargin": [
+            0.0,
+            0.1
+        ],
+        "orderRate": 0.1,
+        "bsWorkload": true,
+        "bsNumSamples": 10,
+        "bsNumSteps": 10
+    },
+    "FCNAgents-1": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-1"
+        ]
+    },
+    "FCNAgents-2": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-2"
+        ]
+    },
+    "FCNAgents-3": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-3"
+        ]
+    },
+    "FCNAgents-4": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-4"
+        ]
+    },
+    "FCNAgents-5": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-5"
+        ]
+    },
+    "FCNAgents-6": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-6"
+        ]
+    },
+    "FCNAgents-7": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-7"
+        ]
+    },
+    "FCNAgents-8": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-8"
+        ]
+    },
+    "FCNAgents-9": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-9"
+        ]
+    },
+    "FCNAgents-10": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-10"
+        ]
+    },
+    "FCNAgents-11": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-11"
+        ]
+    },
+    "FCNAgents-12": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-12"
+        ]
+    },
+    "FCNAgents-13": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-13"
+        ]
+    },
+    "FCNAgents-14": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-14"
+        ]
+    },
+    "FCNAgents-15": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-15"
+        ]
+    },
+    "FCNAgents-16": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-16"
+        ]
+    },
+    "FCNAgents-17": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-17"
+        ]
+    },
+    "FCNAgents-18": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-18"
+        ]
+    },
+    "FCNAgents-19": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-19"
+        ]
+    },
+    "FCNAgents-20": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-20"
+        ]
+    },
+    "FCNAgents-21": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-21"
+        ]
+    },
+    "FCNAgents-22": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-22"
+        ]
+    },
+    "FCNAgents-23": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-23"
+        ]
+    },
+    "FCNAgents-24": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-24"
+        ]
+    },
+    "FCNAgents-25": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-25"
+        ]
+    },
+    "FCNAgents-26": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-26"
+        ]
+    },
+    "FCNAgents-27": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-27"
+        ]
+    },
+    "FCNAgents-28": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-28"
+        ]
+    },
+    "FCNAgents-29": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-29"
+        ]
+    },
+    "FCNAgents-30": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-30"
+        ]
+    },
+    "FCNAgents-31": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-31"
+        ]
+    },
+    "FCNAgents-32": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-32"
+        ]
+    },
+    "FCNAgents-33": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-33"
+        ]
+    },
+    "FCNAgents-34": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-34"
+        ]
+    },
+    "FCNAgents-35": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-35"
+        ]
+    },
+    "FCNAgents-36": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-36"
+        ]
+    },
+    "FCNAgents-37": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-37"
+        ]
+    },
+    "FCNAgents-38": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-38"
+        ]
+    },
+    "FCNAgents-39": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-39"
+        ]
+    },
+    "FCNAgents-40": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-40"
+        ]
+    },
+    "FCNAgents-41": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-41"
+        ]
+    },
+    "FCNAgents-42": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-42"
+        ]
+    },
+    "FCNAgents-43": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-43"
+        ]
+    },
+    "FCNAgents-44": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-44"
+        ]
+    },
+    "FCNAgents-45": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-45"
+        ]
+    },
+    "FCNAgents-46": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-46"
+        ]
+    },
+    "FCNAgents-47": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-47"
+        ]
+    },
+    "FCNAgents-48": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-48"
+        ]
+    },
+    "FCNAgents-49": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-49"
+        ]
+    },
+    "FCNAgents-50": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-50"
+        ]
+    },
+    "FCNAgents-51": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-51"
+        ]
+    },
+    "FCNAgents-52": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-52"
+        ]
+    },
+    "FCNAgents-53": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-53"
+        ]
+    },
+    "FCNAgents-54": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-54"
+        ]
+    },
+    "FCNAgents-55": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-55"
+        ]
+    },
+    "FCNAgents-56": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-56"
+        ]
+    },
+    "FCNAgents-57": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-57"
+        ]
+    },
+    "FCNAgents-58": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-58"
+        ]
+    },
+    "FCNAgents-59": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-59"
+        ]
+    },
+    "FCNAgents-60": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-60"
+        ]
+    },
+    "FCNAgents-61": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-61"
+        ]
+    },
+    "FCNAgents-62": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-62"
+        ]
+    },
+    "FCNAgents-63": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-63"
+        ]
+    },
+    "FCNAgents-64": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-64"
+        ]
+    },
+    "FCNAgents-65": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-65"
+        ]
+    },
+    "FCNAgents-66": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-66"
+        ]
+    },
+    "FCNAgents-67": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-67"
+        ]
+    },
+    "FCNAgents-68": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-68"
+        ]
+    },
+    "FCNAgents-69": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-69"
+        ]
+    },
+    "FCNAgents-70": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-70"
+        ]
+    },
+    "FCNAgents-71": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-71"
+        ]
+    },
+    "FCNAgents-72": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-72"
+        ]
+    },
+    "FCNAgents-73": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-73"
+        ]
+    },
+    "FCNAgents-74": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-74"
+        ]
+    },
+    "FCNAgents-75": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-75"
+        ]
+    },
+    "FCNAgents-76": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-76"
+        ]
+    },
+    "FCNAgents-77": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-77"
+        ]
+    },
+    "FCNAgents-78": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-78"
+        ]
+    },
+    "FCNAgents-79": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-79"
+        ]
+    },
+    "FCNAgents-80": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-80"
+        ]
+    },
+    "FCNAgents-81": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-81"
+        ]
+    },
+    "FCNAgents-82": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-82"
+        ]
+    },
+    "FCNAgents-83": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-83"
+        ]
+    },
+    "FCNAgents-84": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-84"
+        ]
+    },
+    "FCNAgents-85": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-85"
+        ]
+    },
+    "FCNAgents-86": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-86"
+        ]
+    },
+    "FCNAgents-87": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-87"
+        ]
+    },
+    "FCNAgents-88": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-88"
+        ]
+    },
+    "FCNAgents-89": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-89"
+        ]
+    },
+    "FCNAgents-90": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-90"
+        ]
+    },
+    "FCNAgents-91": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-91"
+        ]
+    },
+    "FCNAgents-92": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-92"
+        ]
+    },
+    "FCNAgents-93": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-93"
+        ]
+    },
+    "FCNAgents-94": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-94"
+        ]
+    },
+    "FCNAgents-95": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-95"
+        ]
+    },
+    "FCNAgents-96": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-96"
+        ]
+    },
+    "FCNAgents-97": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-97"
+        ]
+    },
+    "FCNAgents-98": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-98"
+        ]
+    },
+    "FCNAgents-99": {
+        "extends": "FCNAgent",
+        "markets": [
+            "SpotMarket-99"
+        ]
+    },
+    "FCNAgents-I": {
+        "extends": "FCNAgent",
+        "markets": [
+            "IndexMarket-I"
+        ],
+        "fundamentalWeight": {
+            "expon": [
+                0.5
+            ]
+        }
+    },
+    "ArbitrageAgents": {
+        "class": "ArbitrageAgent",
+        "numAgents": 100,
+        "markets": [
+            "IndexMarket-I",
+            "SpotMarket-1",
+            "SpotMarket-2",
+            "SpotMarket-3",
+            "SpotMarket-4",
+            "SpotMarket-5",
+            "SpotMarket-6",
+            "SpotMarket-7",
+            "SpotMarket-8",
+            "SpotMarket-9",
+            "SpotMarket-10",
+            "SpotMarket-11",
+            "SpotMarket-12",
+            "SpotMarket-13",
+            "SpotMarket-14",
+            "SpotMarket-15",
+            "SpotMarket-16",
+            "SpotMarket-17",
+            "SpotMarket-18",
+            "SpotMarket-19",
+            "SpotMarket-20",
+            "SpotMarket-21",
+            "SpotMarket-22",
+            "SpotMarket-23",
+            "SpotMarket-24",
+            "SpotMarket-25",
+            "SpotMarket-26",
+            "SpotMarket-27",
+            "SpotMarket-28",
+            "SpotMarket-29",
+            "SpotMarket-30",
+            "SpotMarket-31",
+            "SpotMarket-32",
+            "SpotMarket-33",
+            "SpotMarket-34",
+            "SpotMarket-35",
+            "SpotMarket-36",
+            "SpotMarket-37",
+            "SpotMarket-38",
+            "SpotMarket-39",
+            "SpotMarket-40",
+            "SpotMarket-41",
+            "SpotMarket-42",
+            "SpotMarket-43",
+            "SpotMarket-44",
+            "SpotMarket-45",
+            "SpotMarket-46",
+            "SpotMarket-47",
+            "SpotMarket-48",
+            "SpotMarket-49",
+            "SpotMarket-50",
+            "SpotMarket-51",
+            "SpotMarket-52",
+            "SpotMarket-53",
+            "SpotMarket-54",
+            "SpotMarket-55",
+            "SpotMarket-56",
+            "SpotMarket-57",
+            "SpotMarket-58",
+            "SpotMarket-59",
+            "SpotMarket-60",
+            "SpotMarket-61",
+            "SpotMarket-62",
+            "SpotMarket-63",
+            "SpotMarket-64",
+            "SpotMarket-65",
+            "SpotMarket-66",
+            "SpotMarket-67",
+            "SpotMarket-68",
+            "SpotMarket-69",
+            "SpotMarket-70",
+            "SpotMarket-71",
+            "SpotMarket-72",
+            "SpotMarket-73",
+            "SpotMarket-74",
+            "SpotMarket-75",
+            "SpotMarket-76",
+            "SpotMarket-77",
+            "SpotMarket-78",
+            "SpotMarket-79",
+            "SpotMarket-80",
+            "SpotMarket-81",
+            "SpotMarket-82",
+            "SpotMarket-83",
+            "SpotMarket-84",
+            "SpotMarket-85",
+            "SpotMarket-86",
+            "SpotMarket-87",
+            "SpotMarket-88",
+            "SpotMarket-89",
+            "SpotMarket-90",
+            "SpotMarket-91",
+            "SpotMarket-92",
+            "SpotMarket-93",
+            "SpotMarket-94",
+            "SpotMarket-95",
+            "SpotMarket-96",
+            "SpotMarket-97",
+            "SpotMarket-98",
+            "SpotMarket-99"
+        ],
+        "assetVolume": 50,
+        "cashAmount": 150000,
+        "orderVolume": 1,
+        "orderThresholdPrice": 1.0
+    }
+}
