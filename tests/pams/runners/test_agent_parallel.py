@@ -2,11 +2,13 @@ import copy
 import multiprocessing
 import os
 import random
+import re
 import time
 import traceback
 import uuid
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
+from concurrent.futures import Future
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
@@ -26,6 +28,8 @@ from pams.order import Cancel
 from pams.order import Order
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import MultiThreadAgentParallelRunner
+from pams.runners.agent_parallel import _check_synced_attributes
+from pams.runners.agent_parallel import _submit_orders_in_worker
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
@@ -35,8 +39,11 @@ from .dummy import CancelingAgent
 from .dummy import DummyLogger2
 from .dummy import FCNDelayAgent
 from .dummy import IdleEvenIDFCNAgent
+from .dummy import LearningAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
+from .dummy import SlowLearningAgent
+from .dummy import UnsyncedLearningAgent
 from .dummy import WorkerInitializationCheckingAgent
 from .dummy import WorkerInitializerAbort
 from .dummy import fail_to_initialize_worker
@@ -114,6 +121,51 @@ def _agent_states(agents: List[Agent]) -> List[Dict[str, Any]]:
         }
         for agent in agents
     ]
+
+
+def _learning_states(agents: List[Agent]) -> List[Dict[str, Any]]:
+    return [
+        {
+            name: getattr(agent, name, "missing")
+            for name in LearningAgent.synced_attributes
+        }
+        for agent in agents
+    ]
+
+
+def _track_received_results(
+    runner: MultiThreadAgentParallelRunner, monkeypatch: pytest.MonkeyPatch
+) -> List[Tuple[str, int]]:
+    """Record the results of the workers received by the runner.
+
+    Each event is ("attributes", agent_id) for _receive_synced_attributes_from_worker, or
+    ("orders", agent_id) or ("no orders", agent_id) for _receive_orders_from_worker.
+    """
+    received: List[Tuple[str, int]] = []
+    receive_synced_attributes = runner._receive_synced_attributes_from_worker
+    receive_orders = runner._receive_orders_from_worker
+
+    def receive_synced_attributes_from_worker(
+        agent: Agent, attributes: Dict[str, Any]
+    ) -> None:
+        received.append(("attributes", agent.agent_id))
+        receive_synced_attributes(agent=agent, attributes=attributes)
+
+    def receive_orders_from_worker(
+        agent: Agent, orders: List[Union[Order, Cancel]], prng_state: Any
+    ) -> List[Union[Order, Cancel]]:
+        received.append(("orders" if orders else "no orders", agent.agent_id))
+        return receive_orders(agent=agent, orders=orders, prng_state=prng_state)
+
+    monkeypatch.setattr(
+        runner,
+        "_receive_synced_attributes_from_worker",
+        receive_synced_attributes_from_worker,
+    )
+    monkeypatch.setattr(
+        runner, "_receive_orders_from_worker", receive_orders_from_worker
+    )
+    return received
 
 
 def _assert_same_results(
@@ -209,8 +261,13 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         CancelingAgent,
         RaisingAgent,
         WorkerInitializationCheckingAgent,
+        LearningAgent,
+        UnsyncedLearningAgent,
+        SlowLearningAgent,
     ]
     custom_pool_provider: Type[Executor] = CustomThreadPoolExecutor
+    # whether the runner receives the attributes listed in synced_attributes from the workers
+    receives_synced_attributes: bool = False
 
     def _make_runner(
         self, runner_class: Type[SequentialRunner], setting: Dict, seed: int = 42
@@ -609,10 +666,390 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             runner._run()
         assert runner.executor is None
 
+    def _learning_setting(
+        self,
+        num_parallel: int = 2,
+        max_normal_orders: int = 3,
+        synced_attributes: Optional[Any] = None,
+    ) -> Dict:
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "LearningAgent"
+        if synced_attributes is not None:
+            setting["FCNAgents"]["syncedAttributes"] = synced_attributes
+        setting["simulation"]["numParallel"] = num_parallel
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 20
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = max_normal_orders
+        return setting
+
+    @pytest.mark.parametrize("num_parallel", [2, 3])
+    @pytest.mark.parametrize("max_normal_orders", [2, 5])
+    def test_synced_attributes_same_result_as_sequential(
+        self, num_parallel: int, max_normal_orders: int, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = self._learning_setting(
+            num_parallel=num_parallel, max_normal_orders=max_normal_orders
+        )
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        received = _track_received_results(
+            runner=parallel_runner, monkeypatch=monkeypatch
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="LearningAgent",
+        )
+        agents = parallel_runner.simulator.agents
+        assert _learning_states(sequential_runner.simulator.agents) == _learning_states(
+            agents
+        )
+        n_calls: List[int] = []
+        for agent in agents:
+            assert isinstance(agent, LearningAgent)
+            # the two attributes still refer to the same list
+            assert agent.same_weights is agent.weights
+            n_calls.append(agent.n_calls)
+        # some agents deleted bias (every fourth call) and were asked again, and some agents
+        # reset last_price to None (every fifth call)
+        assert max(n_calls) >= 5
+        results = [event for event in received if event[0] != "attributes"]
+        assert any(kind == "no orders" for kind, _ in results)
+        if self.receives_synced_attributes:
+            # the attributes are received before the orders, even if there are no orders
+            assert received == [
+                event
+                for kind, agent_id in results
+                for event in [("attributes", agent_id), (kind, agent_id)]
+            ]
+        else:
+            assert received == results
+
+    def test_synced_attributes_not_listed(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # this runner calls the agents themselves, so their changes are kept anyway
+        setting = self._learning_setting(synced_attributes=[])
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        received = _track_received_results(
+            runner=parallel_runner, monkeypatch=monkeypatch
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="LearningAgent",
+        )
+        assert _learning_states(sequential_runner.simulator.agents) == _learning_states(
+            parallel_runner.simulator.agents
+        )
+        assert len(received) > 0
+        assert all(kind != "attributes" for kind, _ in received)
+
+    @pytest.mark.parametrize(
+        "synced_attributes, message",
+        [
+            (["simulator"], "must not include 'simulator'"),
+            (["n_calls", "logger"], "must not include 'logger'"),
+            (("prng",), "must not include 'prng'"),
+            (["n_calls", 1], "must be a tuple or list of str"),
+            ("n_calls", "must be a tuple or list of str"),
+        ],
+        ids=["simulator", "logger", "prng", "non-str", "str"],
+    )
+    def test_synced_attributes_invalid(
+        self, synced_attributes: Any, message: str
+    ) -> None:
+        # this runner does not use synced_attributes, so it does not check them
+        setting = self._learning_setting(synced_attributes=synced_attributes)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 2
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        agent = runner.simulator.normal_frequency_agents[0]
+        with pytest.raises(
+            ValueError, match=re.escape(f"LearningAgent.synced_attributes {message}")
+        ):
+            _check_synced_attributes(agent=agent)
+        runner._run()
+        assert runner.executor is None
+
+    def test_synced_attributes_changed_after_setup(self) -> None:
+        setting = self._learning_setting()
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 2
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        for agent in runner.simulator.normal_frequency_agents:
+            agent.synced_attributes = ("n_calls", "simulator")
+        if self.receives_synced_attributes:
+            # the names are checked again whenever the agents are asked
+            with pytest.raises(
+                ValueError,
+                match=re.escape(
+                    "LearningAgent.synced_attributes must not include 'simulator'"
+                ),
+            ):
+                runner._run()
+        else:
+            runner._run()
+        assert runner.executor is None
+        assert all(
+            agent.simulator is runner.simulator for agent in runner.simulator.agents
+        )
+
+    def test_synced_attributes_set_on_class_at_runtime(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # the names are sent from the main process, so the worker processes started by spawn,
+        # which import the class without the change, send back the attributes too
+        monkeypatch.setattr(
+            UnsyncedLearningAgent, "synced_attributes", LearningAgent.synced_attributes
+        )
+        setting = self._learning_setting()
+        setting["FCNAgents"]["class"] = "UnsyncedLearningAgent"
+        setting["simulation"]["startMethod"] = "spawn"
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="UnsyncedLearningAgent",
+        )
+        assert _learning_states(sequential_runner.simulator.agents) == _learning_states(
+            parallel_runner.simulator.agents
+        )
+
+    def test_submit_orders_in_worker_synced_attributes(self) -> None:
+        setting = self._learning_setting()
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        markets = runner.simulator.markets
+        runner.simulator._update_times_on_markets(markets)
+        agent, other_agent = runner.simulator.normal_frequency_agents[:2]
+        assert isinstance(agent, LearningAgent)
+        assert isinstance(other_agent, LearningAgent)
+        names = tuple(LearningAgent.synced_attributes)
+        # the third call submits no orders, and the fourth call deletes bias
+        agent.n_calls = 2
+        results = _submit_orders_in_worker(
+            agents=[agent, other_agent], markets=markets, synced_attributes=[names, ()]
+        )
+        assert len(results) == 2
+        orders, prng_state, attributes = results[0]
+        assert orders == []
+        assert prng_state == agent.prng.getstate()
+        assert attributes == {name: getattr(agent, name) for name in names}
+        assert attributes is not None
+        assert attributes["weights"] is attributes["same_weights"]
+        # an agent without names sends back nothing, even if its class lists attributes
+        assert len(results[1][0]) == 1
+        assert results[1][2] is None
+        # a listed attribute that the agent does not have is left out
+        results = _submit_orders_in_worker(
+            agents=[agent], markets=markets, synced_attributes=[names]
+        )
+        assert len(results) == 1
+        orders, _, attributes = results[0]
+        assert len(orders) == 1
+        assert not hasattr(agent, "bias")
+        assert attributes is not None
+        assert "bias" not in attributes
+        assert attributes["n_calls"] == 4
+        # the given names are used instead of those of the agent
+        results = _submit_orders_in_worker(
+            agents=[agent], markets=markets, synced_attributes=[("n_calls",)]
+        )
+        assert len(results) == 1
+        assert results[0][2] == {"n_calls": 5}
+        # nothing is sent back without synced_attributes, which is the default
+        results = _submit_orders_in_worker(agents=[agent], markets=markets)
+        assert len(results) == 1
+        assert results[0][2] is None
+        assert agent.n_calls == 6
+
+    def test_receive_synced_attributes_from_worker(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = self._learning_setting()
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        agent = runner.simulator.normal_frequency_agents[0]
+        assert isinstance(agent, LearningAgent)
+        agent.bias = 0.5
+        cash_amount = agent.cash_amount
+        weights = [2.0]
+        runner._receive_synced_attributes_from_worker(
+            agent=agent,
+            attributes={
+                "n_calls": 3,
+                "prices": [1.0],
+                "weights": weights,
+                "same_weights": weights,
+                "cash_amount": cash_amount + 1.0,
+            },
+        )
+        assert agent.n_calls == 3
+        assert agent.prices == [1.0]
+        assert agent.weights is weights
+        assert agent.same_weights is weights
+        # listed attributes missing on the worker are deleted; unlisted ones are kept
+        assert not hasattr(agent, "bias")
+        assert not hasattr(agent, "last_price")
+        assert agent.cash_amount == cash_amount
+        # falsy values are set as they are
+        runner._receive_synced_attributes_from_worker(
+            agent=agent,
+            attributes={"n_calls": 0, "prices": [], "last_price": None, "bias": 0.0},
+        )
+        assert agent.n_calls == 0
+        assert agent.prices == []
+        assert agent.last_price is None
+        assert agent.bias == 0.0
+        # deleting an attribute that the agent does not have is not an error
+        runner._receive_synced_attributes_from_worker(agent=agent, attributes={})
+        assert all(not hasattr(agent, name) for name in LearningAgent.synced_attributes)
+        assert agent.cash_amount == cash_amount
+        # an attribute that only the class has is kept, e.g., a class attribute set at runtime
+        # that a worker started by spawn does not have
+        monkeypatch.setattr(LearningAgent, "bias", 1.0, raising=False)
+        agent.bias = 0.5
+        runner._receive_synced_attributes_from_worker(agent=agent, attributes={})
+        assert "bias" not in vars(agent)
+        assert agent.bias == 1.0
+        runner._receive_synced_attributes_from_worker(agent=agent, attributes={})
+        assert agent.bias == 1.0
+
+    def _record_batches(
+        self, runner: MultiThreadAgentParallelRunner, monkeypatch: pytest.MonkeyPatch
+    ) -> List[bool]:
+        """Record whether all the tasks of the batch are finished when a result is received.
+
+        The executor must be created before this method is called.
+        """
+        executor = runner.executor
+        assert executor is not None
+        batch_futures: List[Future] = []
+        all_finished: List[bool] = []
+        split_agents_into_chunks = runner._split_agents_into_chunks
+        submit = executor.submit
+        receive_synced_attributes = runner._receive_synced_attributes_from_worker
+        receive_orders = runner._receive_orders_from_worker
+
+        def split_agents_into_chunks_of_new_batch(
+            agents: List[Agent],
+        ) -> List[List[Agent]]:
+            # called once for each batch before its tasks are submitted
+            batch_futures.clear()
+            return split_agents_into_chunks(agents=agents)
+
+        def submit_and_record(
+            fn: Callable[..., Any], *args: Any, **kwargs: Any
+        ) -> Future:
+            future = submit(fn, *args, **kwargs)
+            batch_futures.append(future)
+            return future
+
+        def receive_synced_attributes_from_worker(
+            agent: Agent, attributes: Dict[str, Any]
+        ) -> None:
+            all_finished.append(all(future.done() for future in batch_futures))
+            receive_synced_attributes(agent=agent, attributes=attributes)
+
+        def receive_orders_from_worker(
+            agent: Agent, orders: List[Union[Order, Cancel]], prng_state: Any
+        ) -> List[Union[Order, Cancel]]:
+            all_finished.append(all(future.done() for future in batch_futures))
+            return receive_orders(agent=agent, orders=orders, prng_state=prng_state)
+
+        monkeypatch.setattr(
+            runner, "_split_agents_into_chunks", split_agents_into_chunks_of_new_batch
+        )
+        monkeypatch.setattr(executor, "submit", submit_and_record)
+        monkeypatch.setattr(
+            runner,
+            "_receive_synced_attributes_from_worker",
+            receive_synced_attributes_from_worker,
+        )
+        monkeypatch.setattr(
+            runner, "_receive_orders_from_worker", receive_orders_from_worker
+        )
+        return all_finished
+
+    def test_results_are_received_after_all_tasks_are_finished(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # the process executor pickles the tasks, which contain all the agents, on a background
+        # thread, so no agent must be updated while a task of the batch is not finished
+        setting = self._learning_setting(num_parallel=2, max_normal_orders=5)
+        setting["FCNAgents"]["class"] = "SlowLearningAgent"
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 2
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        all_finished = self._record_batches(
+            runner=parallel_runner, monkeypatch=monkeypatch
+        )
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="SlowLearningAgent",
+        )
+        assert _learning_states(sequential_runner.simulator.agents) == _learning_states(
+            parallel_runner.simulator.agents
+        )
+        # 5 agents are asked in each of the 2 steps
+        assert len(all_finished) == (20 if self.receives_synced_attributes else 10)
+        assert all(all_finished)
+
+    def test_no_agent_is_updated_if_a_task_fails(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = self._learning_setting(num_parallel=2, max_normal_orders=5)
+        setting["FCNAgents"]["class"] = "SlowLearningAgent"
+        setting["FCNAgents"]["numAgents"] = 4
+        setting["RaisingAgents"] = {
+            "class": "RaisingAgent",
+            "numAgents": 1,
+            "markets": ["Market"],
+            "assetVolume": 50,
+            "cashAmount": 10000,
+        }
+        setting["simulation"]["agents"] = ["FCNAgents", "RaisingAgents"]
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        all_finished = self._record_batches(runner=runner, monkeypatch=monkeypatch)
+        agents = runner.simulator.normal_frequency_agents
+        assert all(isinstance(agent, SlowLearningAgent) for agent in agents[:4])
+        states_before = _agent_states(agents)
+        learning_states_before = _learning_states(agents[:4])
+        # all the 5 agents are in the first batch, so the error is raised before any result
+        # is received
+        with pytest.raises(RuntimeError, match="error in submit_orders"):
+            runner._run()
+        assert runner.executor is None
+        assert not all_finished
+        if self.receives_synced_attributes:
+            # the agents on the main process are not updated
+            assert _agent_states(agents) == states_before
+            assert _learning_states(agents[:4]) == learning_states_before
+
 
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
     custom_pool_provider: Type[Executor] = CustomProcessPoolExecutor
+    receives_synced_attributes: bool = True
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
     # because of the cost of pickling, the time per step is not guaranteed
     # to be less than the threshold.
@@ -648,6 +1085,55 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         )
         assert n_advanced == 3
         runner._shutdown_executor()
+
+    def test_synced_attributes_not_listed(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # without synced_attributes, the changes made on the worker processes are discarded
+        setting = self._learning_setting(synced_attributes=[])
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        received = _track_received_results(
+            runner=parallel_runner, monkeypatch=monkeypatch
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        initial_states = _learning_states(parallel_runner.simulator.agents)
+        assert initial_states == _learning_states(sequential_runner.simulator.agents)
+        sequential_runner._run()
+        parallel_runner._run()
+        assert _learning_states(parallel_runner.simulator.agents) == initial_states
+        assert _learning_states(sequential_runner.simulator.agents) != initial_states
+        assert len(received) > 0
+        assert all(kind != "attributes" for kind, _ in received)
+        # the agents decide differently from SequentialRunner, where the changes are kept
+        sequential_market = sequential_runner.simulator.markets[0]
+        parallel_market = parallel_runner.simulator.markets[0]
+        times = range(sequential_market.get_time() + 1)
+        assert sequential_market.get_market_prices(
+            times
+        ) != parallel_market.get_market_prices(times)
+
+    @pytest.mark.parametrize(
+        "synced_attributes, message",
+        [
+            (["simulator"], "must not include 'simulator'"),
+            (["n_calls", "logger"], "must not include 'logger'"),
+            (("prng",), "must not include 'prng'"),
+            (["n_calls", 1], "must be a tuple or list of str"),
+            ("n_calls", "must be a tuple or list of str"),
+        ],
+        ids=["simulator", "logger", "prng", "non-str", "str"],
+    )
+    def test_synced_attributes_invalid(
+        self, synced_attributes: Any, message: str
+    ) -> None:
+        setting = self._learning_setting(synced_attributes=synced_attributes)
+        _, runner = self._make_runners(setting=setting)
+        with pytest.raises(
+            ValueError, match=re.escape(f"LearningAgent.synced_attributes {message}")
+        ):
+            runner._setup()
+        assert runner.executor is None
 
     def test_start_method(self) -> None:
         # the tests above must pass regardless of the start method of multiprocessing

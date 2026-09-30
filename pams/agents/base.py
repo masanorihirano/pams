@@ -5,6 +5,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 from ..logs.base import CancelLog
@@ -30,6 +31,25 @@ class Agent(ABC):
     .. seealso::
         - :class:`pams.agents.FCNAgent`: FCNAgent
     """
+
+    #: Union[Tuple[str, ...], List[str]]: names of the attributes that must survive
+    #: :func:`submit_orders` on a worker process of
+    #: :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., ``("net", "optimizer")`` for a
+    #: neural network that the agent trains in :func:`submit_orders` and its optimizer. That runner
+    #: calls :func:`submit_orders` on a copy of this agent. After the call, it sets each listed
+    #: attribute of the copy on this agent, or deletes it from this agent if the copy does not
+    #: have it. The values of one agent are pickled together, so references among them are kept
+    #: as far as pickling keeps them (e.g., not between a Keras model and its optimizer, because
+    #: Keras models are saved and reloaded). An attribute that is not listed but refers to a
+    #: listed object keeps referring to the old object, so list such attributes together, e.g.,
+    #: a model, its optimizer, and the optimizer's scheduler. The values are copies, so do not
+    #: list objects that are shared with other agents, the markets, or the simulator, or that
+    #: refer to this agent or any of them. ``"simulator"``, ``"logger"``, and ``"prng"`` cannot be
+    #: listed. Subclasses can override it, and an instance can set it, e.g., in :func:`setup`. The
+    #: runner checks it when it is set up and whenever it asks this agent to submit orders. Other
+    #: runners and high-frequency agents do not use it. The default is an empty tuple. See
+    #: :ref:`config-synced-attributes` for an example and other caveats.
+    synced_attributes: Union[Tuple[str, ...], List[str]] = ()
 
     def __init__(
         self,

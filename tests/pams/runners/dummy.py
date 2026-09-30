@@ -6,6 +6,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 from pams import LIMIT_ORDER
@@ -258,4 +259,112 @@ class WorkerInitializationCheckingAgent(FCNAgent):
             raise RuntimeError(
                 f"worker is initialized with {worker_token}, not {self.worker_token}"
             )
+        return super().submit_orders(markets)
+
+
+class LearningAgent(Agent):
+    """Agent whose orders depend on the attributes it changes in submit_orders.
+
+    The attributes are listed in ``synced_attributes`` so that
+    :class:`pams.runners.MultiProcessAgentParallelRunner` gives the same results as
+    :class:`pams.runners.SequentialRunner`. ``n_calls`` is a counter, ``prices`` is a list that
+    the agent appends to, ``last_price`` is reassigned and reset to None every fifth call,
+    ``bias`` is created lazily and deleted every fourth call, and ``weights`` and
+    ``same_weights`` refer to the same list. Every third call submits no orders.
+    ``syncedAttributes`` in the settings, if given, replaces ``synced_attributes`` of the
+    instance.
+    """
+
+    synced_attributes: Union[Tuple[str, ...], List[str]] = (
+        "n_calls",
+        "prices",
+        "last_price",
+        "bias",
+        "weights",
+        "same_weights",
+    )
+
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent with the attributes that it changes in submit_orders."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.n_calls: int = 0
+        self.prices: List[float] = []
+        self.last_price: Optional[float] = None
+        self.weights: List[float] = [1.0]
+        self.same_weights: List[float] = self.weights
+
+    def setup(
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        super().setup(settings, accessible_markets_ids, *args, **kwargs)
+        if "syncedAttributes" in settings:
+            self.synced_attributes = settings["syncedAttributes"]
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        self.n_calls += 1
+        market = next(
+            market for market in markets if self.is_market_accessible(market.market_id)
+        )
+        price = market.get_market_price()
+        self.prices.append(price)
+        previous_price = price if self.last_price is None else self.last_price
+        # a falsy value must be sent back as it is
+        self.last_price = None if self.n_calls % 5 == 0 else price
+        if not hasattr(self, "bias"):
+            # created lazily so that a listed attribute is missing on some calls
+            self.bias: float = 0.0  # pylint: disable=attribute-defined-outside-init
+        self.bias += 0.01 * (self.prng.random() - 0.5)
+        bias = self.bias
+        if self.n_calls % 4 == 0:
+            del self.bias
+        # appended through one name and read through the other
+        self.same_weights.append(self.prng.random())
+        if self.n_calls % 3 == 0:
+            return []
+        mean_weight = sum(self.weights) / len(self.weights)
+        mean_price = sum(self.prices) / len(self.prices)
+        is_buy = price < previous_price or (
+            price == previous_price and self.prng.random() < 0.5
+        )
+        margin = 0.01 * self.prng.random()
+        order_price = (
+            mean_price
+            * (1.0 + bias + 0.01 * (mean_weight - 0.5))
+            * (1.0 + margin if is_buy else 1.0 - margin)
+        )
+        return [
+            Order(
+                agent_id=self.agent_id,
+                market_id=market.market_id,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=order_price,
+                ttl=None,
+            )
+        ]
+
+
+class UnsyncedLearningAgent(LearningAgent):
+    """LearningAgent whose class lists no attributes. Tests set them on the class at runtime."""
+
+    synced_attributes = ()
+
+
+class SlowLearningAgent(LearningAgent):
+    """LearningAgent that takes ``WAIT_TIME`` seconds in submit_orders."""
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        time.sleep(WAIT_TIME)
         return super().submit_orders(markets)

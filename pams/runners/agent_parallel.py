@@ -3,10 +3,12 @@ import os
 import random
 import threading
 import warnings
+from concurrent.futures import FIRST_EXCEPTION
 from concurrent.futures import Executor
 from concurrent.futures import Future
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import wait
 from io import TextIOWrapper
 from multiprocessing.context import BaseContext
 from typing import Any
@@ -29,6 +31,70 @@ from .sequential import SequentialRunner
 
 # state of the current worker thread or process, set by _initialize_worker
 _worker_state = threading.local()
+
+# attributes that agents cannot list in synced_attributes because the runner manages them
+_UNSYNCABLE_ATTRIBUTES: Tuple[str, ...] = ("simulator", "logger", "prng")
+
+# marks a listed attribute that the agent on the worker does not have
+_MISSING = object()
+
+# result of _submit_orders_in_worker for each agent: orders, prng state, and synced attributes
+_WorkerResult = Tuple[List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]]]
+
+
+def _check_synced_attributes(agent: Agent) -> None:
+    """Check :attr:`pams.agents.Agent.synced_attributes` of an agent (internal function).
+
+    Args:
+        agent (Agent): agent.
+
+    Returns:
+        None
+
+    """
+    synced_attributes: Any = agent.synced_attributes
+    if not isinstance(synced_attributes, (tuple, list)) or not all(
+        isinstance(name, str) for name in synced_attributes
+    ):
+        raise ValueError(
+            f"{agent.__class__.__name__}.synced_attributes must be a tuple or list of str, "
+            f"but {synced_attributes!r} is given"
+        )
+    for name in synced_attributes:
+        if name in _UNSYNCABLE_ATTRIBUTES:
+            raise ValueError(
+                f"{agent.__class__.__name__}.synced_attributes must not include {name!r}"
+                f" because the runner manages it"
+            )
+
+
+def _get_synced_attributes(agents: List[Agent]) -> Optional[List[Tuple[str, ...]]]:
+    """Get :attr:`pams.agents.Agent.synced_attributes` of agents (internal function).
+
+    The names are read on the main process and sent to the worker with the task, so that the
+    worker uses the names checked here even if its copy of the agent class differs, e.g., when a
+    class attribute is changed at runtime and the worker process is started by ``spawn``.
+    The names are checked again because an agent can change them after the runner is set up.
+
+    Args:
+        agents (List[Agent]): agents.
+
+    Returns:
+        List[Tuple[str, ...]], Optional: the names listed by each agent. None if no agent lists
+        any name.
+
+    """
+    names_of_agents: List[Tuple[str, ...]] = []
+    for agent in agents:
+        synced_attributes: Any = agent.synced_attributes
+        if isinstance(synced_attributes, tuple) and len(synced_attributes) == 0:
+            names_of_agents.append(())
+            continue
+        _check_synced_attributes(agent=agent)
+        names_of_agents.append(tuple(synced_attributes))
+    if all(len(names) == 0 for names in names_of_agents):
+        return None
+    return names_of_agents
 
 
 def _initialize_worker(
@@ -66,8 +132,10 @@ def _initialize_worker(
 
 
 def _submit_orders_in_worker(
-    agents: List[Agent], markets: List[Market]
-) -> List[Tuple[List[Union[Order, Cancel]], Any]]:
+    agents: List[Agent],
+    markets: List[Market],
+    synced_attributes: Optional[List[Tuple[str, ...]]] = None,
+) -> List[_WorkerResult]:
     """Call :func:`pams.agents.Agent.submit_orders` of agents on a worker (internal function).
 
     This function is a module-level function so that it can be pickled and executed
@@ -79,12 +147,17 @@ def _submit_orders_in_worker(
     Args:
         agents (List[Agent]): agents.
         markets (List[Market]): markets.
+        synced_attributes (List[Tuple[str, ...]], Optional): for each agent, the names of the
+            attributes to return, i.e., its :attr:`pams.agents.Agent.synced_attributes` read on
+            the main process. None (the default) means that no attributes are returned.
 
     Returns:
-        List[Tuple[List[Union[Order, Cancel]], Any]]: for each agent, orders submitted by the agent
-            and the state of the agent's pseudo random number generator after the submission. The
-            state is required to update the agent on the main process when this function runs on
-            another process.
+        List[Tuple[List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]]]]: for each agent,
+            orders submitted by the agent, the state of the agent's pseudo random number generator
+            after the submission, and the named attributes that the agent has after the
+            submission. The last one is None if the agent has no names in ``synced_attributes``.
+            The state and the attributes are required to update the agent on the main process
+            when this function runs on another process.
 
     """
     initializer_error: Optional[BaseException] = getattr(
@@ -94,10 +167,21 @@ def _submit_orders_in_worker(
         raise RuntimeError(
             "the worker initializer failed on this worker"
         ) from initializer_error
-    results: List[Tuple[List[Union[Order, Cancel]], Any]] = []
-    for agent in agents:
+    names_of_agents: List[Tuple[str, ...]] = (
+        synced_attributes if synced_attributes is not None else [()] * len(agents)
+    )
+    results: List[_WorkerResult] = []
+    for agent, names in zip(agents, names_of_agents):
         orders: List[Union[Order, Cancel]] = agent.submit_orders(markets=markets)
-        results.append((orders, agent.prng.getstate()))
+        attributes: Optional[Dict[str, Any]] = None
+        if len(names) > 0:
+            # all the values of the agent are in one dict so that references among them are kept
+            attributes = {}
+            for name in names:
+                value = getattr(agent, name, _MISSING)
+                if value is not _MISSING:
+                    attributes[name] = value
+        results.append((orders, agent.prng.getstate(), attributes))
     return results
 
 
@@ -138,6 +222,9 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         which is thread-safe in this runner because the main thread waits for all the workers before
         handling orders. User-defined agents must not modify shared objects such as markets,
         the simulator, the logger, or other agents in :func:`pams.agents.Agent.submit_orders`.
+        :func:`pams.agents.Agent.submit_orders` is called on the agents themselves, not on copies,
+        so their changes to their own attributes are kept, and
+        :attr:`pams.agents.Agent.synced_attributes` is not used.
 
     .. note::
         Because of the GIL of python, this runner does not speed up CPU-bound agents such as the
@@ -149,6 +236,10 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
     _parallel_pool_provider: Union[
         Type[ThreadPoolExecutor], Type[ProcessPoolExecutor]
     ] = ThreadPoolExecutor
+
+    # whether the workers send back the attributes listed in Agent.synced_attributes. It is False
+    # for this runner because the worker threads change the agents themselves.
+    _sync_attributes_from_workers: bool = False
 
     def __init__(
         self,
@@ -328,6 +419,42 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         agent.prng.setstate(prng_state)
         return orders
 
+    def _receive_synced_attributes_from_worker(
+        self, agent: Agent, attributes: Dict[str, Any]
+    ) -> None:
+        """Update the agent with the attributes sent back by the worker (internal method).
+
+        This method is called only if ``_sync_attributes_from_workers`` is True, i.e., by
+        :class:`pams.runners.MultiProcessAgentParallelRunner`, and only for agents that list
+        attributes in :attr:`pams.agents.Agent.synced_attributes`. It is called for every agent
+        asked to submit orders, even if the agent submits no orders, before
+        ``_receive_orders_from_worker``. Subclasses can override it, e.g., to move the values to
+        another device.
+
+        The default sets the values on the agent and deletes the listed attributes that are not in
+        ``attributes`` from the agent. A listed attribute that the agent cannot delete, e.g., one
+        that only its class has, is left as it is.
+
+        Args:
+            agent (Agent): agent on the main process.
+            attributes (Dict[str, Any]): the listed attributes that the agent on the worker has
+                after :func:`pams.agents.Agent.submit_orders`.
+
+        Returns:
+            None
+
+        """
+        for name in agent.synced_attributes:
+            if name in attributes:
+                setattr(agent, name, attributes[name])
+                continue
+            try:
+                delattr(agent, name)
+            except AttributeError:
+                # the agent does not have it, or only its class has it, e.g., a class
+                # attribute set at runtime that a worker started by spawn does not have
+                pass
+
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
@@ -339,7 +466,11 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         exactly the same as
         :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.
         Each batch is split into chunks by ``_split_agents_into_chunks``, and each chunk is
-        submitted to the executor as one task.
+        submitted to the executor as one task. After all the tasks of the batch are finished, the
+        result of each agent is passed to ``_receive_synced_attributes_from_worker`` (only if the
+        worker sends back attributes) and to ``_receive_orders_from_worker``, even if the agent
+        submits no orders. If a task fails, its error is raised as soon as it is found, and no
+        agent of the batch is updated.
 
         Args:
             session (Session): session.
@@ -371,13 +502,35 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                     "the concatenation of the chunks returned by _split_agents_into_chunks"
                     " must be the given agents in the same order"
                 )
-            futures: List["Future[List[Tuple[List[Union[Order, Cancel]], Any]]]"] = [
-                executor.submit(_submit_orders_in_worker, chunk, markets)
+            # the names are read and checked before any task is submitted
+            synced_attributes: List[Optional[List[Tuple[str, ...]]]] = [
+                (
+                    _get_synced_attributes(agents=chunk)
+                    if self._sync_attributes_from_workers
+                    else None
+                )
                 for chunk in chunks
             ]
+            futures: List["Future[List[_WorkerResult]]"] = [
+                executor.submit(_submit_orders_in_worker, chunk, markets, names)
+                for chunk, names in zip(chunks, synced_attributes)
+            ]
             try:
+                # every task contains all the agents, and ProcessPoolExecutor pickles the tasks
+                # on a background thread, possibly after other tasks are finished. Therefore, no
+                # agent is updated until all the tasks of the batch are finished and so pickled.
+                done, _ = wait(futures, return_when=FIRST_EXCEPTION)
+                for future in futures:
+                    if future in done and future.exception() is not None:
+                        future.result()  # raises the error of the task
                 for chunk, future in zip(chunks, futures):
-                    for agent, (orders, prng_state) in zip(chunk, future.result()):
+                    for agent, (orders, prng_state, attributes) in zip(
+                        chunk, future.result()
+                    ):
+                        if attributes is not None:
+                            self._receive_synced_attributes_from_worker(
+                                agent=agent, attributes=attributes
+                            )
                         orders = self._receive_orders_from_worker(
                             agent=agent, orders=orders, prng_state=prng_state
                         )
@@ -422,17 +575,32 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
       set. For example, ``"spawn"`` is required for libraries that are not fork-safe, such as
       PyTorch with CUDA, TensorFlow, and JAX.
     - ``_get_mp_context``: the multiprocessing context of the worker processes.
+    - ``_receive_synced_attributes_from_worker``: sets the attributes listed in
+      :attr:`pams.agents.Agent.synced_attributes` on the agent on the main process.
 
     .. note::
         The agents and the markets are pickled and copied to a worker process for each task.
-        Therefore, only the returned orders and the state
-        of
-        the agent's pseudo random number generator are reflected to the agent on the main process.
-        Other attributes modified in :func:`pams.agents.Agent.submit_orders` are discarded.
-        User-defined agents for this runner should keep their states through the callbacks such as
-        :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`,
-        which are
-        called on the main process, or derive their states from markets.
+        Therefore, only the returned orders, the state of the agent's pseudo random number
+        generator, and the attributes listed in :attr:`pams.agents.Agent.synced_attributes` are
+        reflected to the agent on the main process. Other attributes modified in
+        :func:`pams.agents.Agent.submit_orders` are discarded, although in-place changes to memory
+        that a library shares between processes, e.g., PyTorch tensors on the CPU, can remain.
+        The listed attributes are sent back after every call, even if the agent submits no
+        orders, and are set on the agent before the orders are handled. All the values of one
+        agent are pickled together, so references among them are kept as far as pickling keeps
+        them. The values are copies, however. An unlisted attribute that refers to a listed
+        object keeps referring to the old object, so such attributes must be listed too. Objects
+        shared with other agents, the markets, or the simulator are copied, and which agents
+        share a copy afterwards depends on how the agents are split into tasks. Values that refer
+        to the agent itself, other agents, the markets, or the simulator even copy the whole
+        simulation. Therefore, such objects must not be listed.
+        ``"simulator"``, ``"logger"``, and ``"prng"`` cannot be listed. The names are read on the
+        main process whenever the agent is asked, and a ValueError is raised if they are invalid,
+        both then and in ``_setup``.
+        See :ref:`config-synced-attributes` for an example with PyTorch and other caveats.
+        User-defined agents for this runner can also keep their states through the callbacks such
+        as :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`,
+        which are called on the main process, or derive their states from markets.
 
     .. note::
         User-defined classes (agents, markets, loggers, etc.) must be picklable. Especially when the
@@ -455,12 +623,21 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         Large objects held by agents, such as neural network models, are pickled in every task,
         even in the tasks of other agents, unless they are excluded from pickling, e.g., by
         ``__getstate__``. Read-only objects of this kind can be loaded once per worker process by
-        the worker initializer (see ``_get_worker_initializer``) instead.
+        the worker initializer (see ``_get_worker_initializer``) instead. These two ways are only
+        for objects that the agents do not change: an object that an agent changes in
+        :func:`pams.agents.Agent.submit_orders`, such as a model that it trains, must be listed in
+        :attr:`pams.agents.Agent.synced_attributes`. A listed attribute must be pickled with the
+        agent; if ``__getstate__`` drops it, it is deleted from the agent on the main process.
+        The listed attributes are also pickled back after every call of the agent's
+        :func:`pams.agents.Agent.submit_orders`.
         If you want to use parallelization, it is recommended to use
         :class:`pams.runners.MultiThreadAgentParallelRunner`.
     """
 
     _parallel_pool_provider: Type[ProcessPoolExecutor] = ProcessPoolExecutor
+
+    # the worker processes change copies of the agents, so the listed attributes are sent back
+    _sync_attributes_from_workers: bool = True
 
     #: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is
     #: not set in the config. None means the default start method of the platform. Subclasses can
@@ -493,7 +670,9 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         """Set up the simulation (internal method).
 
         In addition to :func:`pams.runners.MultiThreadAgentParallelRunner._setup`,
-        ``simulation.startMethod`` is read before the executor is prepared.
+        ``simulation.startMethod`` is read before the executor is prepared, and
+        :attr:`pams.agents.Agent.synced_attributes` of the normal agents is checked after they
+        are set up. If the check fails, a ValueError is raised and the executor is shut down.
         """
         if (
             "simulation" in self.settings
@@ -511,6 +690,13 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
                 )
             self.start_method = start_method
         super()._setup()
+        if self._sync_attributes_from_workers:
+            try:
+                for agent in self.simulator.normal_frequency_agents:
+                    _check_synced_attributes(agent=agent)
+            except ValueError:
+                self._shutdown_executor()
+                raise
 
     def _get_mp_context(self) -> BaseContext:
         """Get the multiprocessing context of the worker processes (internal method).
