@@ -1284,7 +1284,9 @@ not use this attribute. For example, with PyTorch:
 Keep the following in mind:
 
 - **Cost**: the listed values are pickled and sent back after every call of ``submit_orders``, in addition to the
-  copies of the whole simulation described above. For a large model, this can take longer than the training.
+  copies of the whole simulation described above. For a large model, this can take longer than the training. If an
+  agent of a task lists attributes, the results of all the agents of the task are pickled in a way that finds the
+  objects of the simulation among them (see **Shared objects**), which takes about twice as long as usual pickling.
 - **Parallelism**: still at most ``maxNormalOrders`` agents are asked at the same time.
 - **Random numbers**: use ``self.prng`` or generators seeded from it, such as ``generator`` above. The global
   generators of libraries (e.g., the one that ``DataLoader(shuffle=True)`` uses without ``generator``) differ between
@@ -1293,16 +1295,26 @@ Keep the following in mind:
 - **Devices**: keep the listed tensors, including the state of the optimizer, on the CPU when ``submit_orders``
   returns, because CUDA tensors cannot be sent between processes on Windows. If you train on a GPU, move the model
   and the state of the optimizer back to the CPU before every return, e.g., in a ``finally`` block.
-- **References**: the values of one agent are pickled together, so references among them are kept as far as
-  pickling keeps them. An attribute that is not listed but refers to a listed object, such as a learning rate
+- **References**: the listed values and the orders of all the agents of a task are pickled together, so references
+  among them are kept as far as pickling keeps them; for example, an order that an agent returns and also keeps in a
+  listed list is one object. An attribute that is not listed but refers to a listed object, such as a learning rate
   scheduler that refers to the optimizer, keeps referring to the old object, so list such attributes together.
   Keras models are saved and reloaded when they are pickled, so other values do not keep referring to them. For
   example, an attribute that refers to the model's optimizer comes back as a separate optimizer without its state,
   even if it is listed. List only the model and use its optimizer through ``model.optimizer``.
-- **Shared objects**: the values are copies. Do not list objects that are shared with other agents, the markets or
-  the simulator, or that refer to the agent or any of them. They would no longer be shared, which agents share a
-  copy would depend on how the agents are split into tasks, and a value that refers to the simulator would copy the
-  whole simulation. ``"simulator"``, ``"logger"`` and ``"prng"`` cannot be listed.
+- **Shared objects**: the objects of the simulation in the values are sent back as references to the objects in the
+  main process, not as copies. They are the simulator, the logger, the fundamentals, the markets, their order books
+  and the orders in the books, the agents (including the agent itself), the sessions, the events, the event hooks,
+  the random number generators of the simulator, the markets, the agents, the sessions and the events, and the
+  lists, dicts and sets that these objects except the agents hold as attributes. So a value can refer to the agent,
+  use markets as the keys of a dict, or keep the current session. An order is a reference only while it is in an
+  order book: an order that is waiting in a book is the object in the book, so the agent can look it up there by
+  ``is``. An order that is in no book when the agent is asked, for example because it has been fully executed,
+  canceled or has expired, comes back as a new copy after every call. The copy has the same values, but other agents
+  and unlisted attributes keep referring to the old object, so identify such orders by their ``market_id`` and
+  ``order_id``, not by ``is``. Other objects are copies too: an object shared with other agents, such as a model or
+  a dict that several agents use, is no longer shared, and which agents share a copy depends on how the agents are
+  split into tasks. ``"simulator"``, ``"logger"`` and ``"prng"`` cannot be listed.
 - **Shared memory**: some libraries share memory between processes instead of copying it. For example, PyTorch
   sends tensors on the CPU through shared memory, so the parameters of an unlisted model that are updated in place,
   e.g., by training, can reach the agent in the main process, while other changes, such as the state of its

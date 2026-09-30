@@ -1,5 +1,7 @@
+import io
 import multiprocessing
 import os
+import pickle
 import random
 import threading
 import warnings
@@ -11,9 +13,11 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import wait
 from io import TextIOWrapper
 from multiprocessing.context import BaseContext
+from multiprocessing.reduction import ForkingPickler
 from typing import Any
 from typing import Callable
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -40,6 +44,249 @@ _MISSING = object()
 
 # result of _submit_orders_in_worker for each agent: orders, prng state, and synced attributes
 _WorkerResult = Tuple[List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]]]
+
+# token of an object of the simulation, which identifies the object in every copy of the
+# simulation, e.g., ("market", 0) for the market whose ID is 0
+_Token = Tuple[Any, ...]
+
+
+def _iter_simulation_objects(simulator: Simulator) -> Iterator[Tuple[Any, _Token]]:
+    """Yield the objects of the simulation with their tokens (internal function).
+
+    The objects are the simulator, its pseudo random number generator, the logger, the
+    fundamentals, the markets, their order books and the orders in the books, the agents, the
+    sessions, the events, the event hooks, and the pseudo random number generators of the
+    markets, the agents, the sessions, and the events. The lists, dicts, and sets that these
+    objects except the agents hold as attributes, e.g., ``simulator.markets``, are yielded too.
+    The attributes of the agents are not yielded because the agents can change them in
+    :func:`pams.agents.Agent.submit_orders`. An object can be yielded more than once with
+    different tokens. Two copies of the simulation yield their objects in the same order with
+    the same tokens as long as neither is changed.
+
+    Args:
+        simulator (Simulator): simulator.
+
+    Returns:
+        Iterator[Tuple[Any, Tuple[Any, ...]]]: pairs of an object and its token.
+
+    """
+    # pylint: disable=protected-access
+
+    def with_containers(obj: Any, token: _Token) -> Iterator[Tuple[Any, _Token]]:
+        yield obj, token
+        for name, value in getattr(obj, "__dict__", {}).items():
+            if isinstance(value, (list, dict, set)):
+                yield value, token + ("attribute", name)
+
+    yield from with_containers(simulator, ("simulator",))
+    yield simulator._prng, ("simulator", "prng")
+    if simulator.logger is not None:
+        yield from with_containers(simulator.logger, ("logger",))
+    yield from with_containers(simulator.fundamentals, ("fundamentals",))
+    for market in simulator.markets:
+        market_id = market.market_id
+        yield from with_containers(market, ("market", market_id))
+        yield market._prng, ("market", market_id, "prng")
+        for order_book in [market.buy_order_book, market.sell_order_book]:
+            is_buy = order_book.is_buy
+            yield from with_containers(order_book, ("order book", market_id, is_buy))
+            for order in order_book.priority_queue:
+                yield order, ("order", market_id, is_buy, order.order_id)
+    for agent in simulator.agents:
+        yield agent, ("agent", agent.agent_id)
+        yield agent.prng, ("agent", agent.agent_id, "prng")
+    for session in simulator.sessions:
+        yield from with_containers(session, ("session", session.session_id))
+        yield session.prng, ("session", session.session_id, "prng")
+    for event in simulator.events:
+        yield from with_containers(event, ("event", event.event_id))
+        yield event.prng, ("event", event.event_id, "prng")
+    for i_event_hook, event_hook in enumerate(simulator.event_hooks):
+        yield from with_containers(event_hook, ("event hook", i_event_hook))
+
+
+class _WorkerResultPickler(ForkingPickler):
+    """Pickler of the results of a task on a worker process (internal class).
+
+    The objects of the simulation (see :func:`_iter_simulation_objects`) are pickled as their
+    tokens, so that :class:`_WorkerResultUnpickler` replaces them with the objects on the main
+    process. Other objects are pickled as usual. This class inherits
+    :class:`multiprocessing.reduction.ForkingPickler`, which
+    :class:`concurrent.futures.ProcessPoolExecutor` uses to pickle the results of the tasks, so
+    that the reducers registered to it, e.g., those of PyTorch for tensors in shared memory, are
+    used as well.
+    """
+
+    def __init__(self, file: io.BytesIO, simulator: Simulator) -> None:
+        """Initialize.
+
+        Args:
+            file (io.BytesIO): file to write the pickled data to.
+            simulator (Simulator): simulator on the worker process.
+
+        Returns:
+            None
+
+        """
+        super().__init__(file, pickle.HIGHEST_PROTOCOL)
+        # the objects are looked up by their ids, which do not change while they are pickled
+        # because the simulator keeps them alive. The first token of an object is used.
+        self._tokens: Dict[int, _Token] = {}
+        for obj, token in _iter_simulation_objects(simulator=simulator):
+            self._tokens.setdefault(id(obj), token)
+
+    def persistent_id(self, obj: Any) -> Optional[_Token]:
+        """Get the token of an object of the simulation.
+
+        Args:
+            obj (Any): object to pickle.
+
+        Returns:
+            Tuple[Any, ...], Optional: token of the object, or None if the object is not an
+            object of the simulation, which means that the object is pickled as usual.
+
+        """
+        return self._tokens.get(id(obj))
+
+
+class _PickledState:
+    """State of a pseudo random number generator pickled in advance (internal class).
+
+    :class:`_WorkerResultPickler` calls ``persistent_id`` for every object that it pickles,
+    including each of the hundreds of ints in the state of :class:`random.Random`, which would
+    make the pickling of the results many times slower. Therefore, the state is pickled in
+    advance by the usual pickler, and this object is unpickled as the state itself.
+    """
+
+    def __init__(self, state: Any) -> None:
+        """Initialize.
+
+        Args:
+            state (Any): state of a pseudo random number generator, which contains no objects of
+                the simulation.
+
+        Returns:
+            None
+
+        """
+        self.data: bytes = pickle.dumps(state, pickle.HIGHEST_PROTOCOL)
+
+    def __reduce__(self) -> Tuple[Callable[[bytes], Any], Tuple[bytes]]:
+        """Reduce this object so that it is unpickled as the state.
+
+        Returns:
+            Tuple[Callable[[bytes], Any], Tuple[bytes]]: :func:`pickle.loads` and the pickled
+            state.
+
+        """
+        return pickle.loads, (self.data,)
+
+
+class _SimulationObjects:
+    """Objects of the simulation on the main process looked up by their tokens (internal class).
+
+    The table of the objects is built on the first lookup, so that it is built only when a
+    result refers to an object of the simulation, and at most once for all the results of a
+    batch.
+    """
+
+    def __init__(self, simulator: Simulator) -> None:
+        """Initialize.
+
+        Args:
+            simulator (Simulator): simulator on the main process.
+
+        Returns:
+            None
+
+        """
+        self.simulator: Simulator = simulator
+        self._objects: Optional[Dict[_Token, Any]] = None
+
+    def get(self, token: _Token) -> Any:
+        """Get the object of a token.
+
+        Args:
+            token (Tuple[Any, ...]): token given by a worker process.
+
+        Returns:
+            Any: object of the simulation on the main process.
+
+        """
+        if self._objects is None:
+            self._objects = {}
+            for obj, obj_token in _iter_simulation_objects(simulator=self.simulator):
+                self._objects.setdefault(obj_token, obj)
+        try:
+            return self._objects[token]
+        except KeyError:
+            # The main process has the objects of all the tokens because the worker process
+            # made its copy of the simulation from the main process when the task was pickled,
+            # and the main process does not change the objects of the simulation until all the
+            # results of the batch are decoded: orders are handled only after all the batches of
+            # a step are collected, the results of a batch are applied to the agents only after
+            # all of them are decoded, and the tokens do not depend on the attributes of the
+            # agents. Therefore, this error means that the simulation was changed on the worker
+            # process, e.g., by pams.agents.Agent.submit_orders, which is not allowed.
+            raise RuntimeError(
+                f"A worker process sent back a reference to {token!r}, an object of the"
+                " simulation that the main process does not have. This means that the"
+                " simulation was changed on the worker process, e.g., an order was added to an"
+                " order book in submit_orders, which is not allowed."
+            ) from None
+
+
+class _WorkerResultUnpickler(pickle.Unpickler):
+    """Unpickler of the results pickled by :class:`_WorkerResultPickler` (internal class)."""
+
+    def __init__(self, file: io.BytesIO, objects: _SimulationObjects) -> None:
+        """Initialize.
+
+        Args:
+            file (io.BytesIO): file to read the pickled data from.
+            objects (_SimulationObjects): objects of the simulation on the main process.
+
+        Returns:
+            None
+
+        """
+        super().__init__(file)
+        self._objects: _SimulationObjects = objects
+
+    def persistent_load(self, pid: Any) -> Any:
+        """Get the object on the main process of a token.
+
+        Args:
+            pid (Any): token.
+
+        Returns:
+            Any: object of the simulation on the main process.
+
+        """
+        return self._objects.get(token=pid)
+
+
+def _load_worker_results(
+    results: Union[List[_WorkerResult], bytes], objects: _SimulationObjects
+) -> List[_WorkerResult]:
+    """Load the results of :func:`_submit_orders_in_worker` (internal function).
+
+    Args:
+        results (Union[List[_WorkerResult], bytes]): results returned by
+            :func:`_submit_orders_in_worker`.
+        objects (_SimulationObjects): objects of the simulation on the main process.
+
+    Returns:
+        List[_WorkerResult]: results in which the objects of the simulation are those on the
+        main process.
+
+    """
+    if isinstance(results, bytes):
+        loaded: List[_WorkerResult] = _WorkerResultUnpickler(
+            io.BytesIO(results), objects=objects
+        ).load()
+        return loaded
+    return results
 
 
 def _check_synced_attributes(agent: Agent) -> None:
@@ -135,7 +382,7 @@ def _submit_orders_in_worker(
     agents: List[Agent],
     markets: List[Market],
     synced_attributes: Optional[List[Tuple[str, ...]]] = None,
-) -> List[_WorkerResult]:
+) -> Union[List[_WorkerResult], bytes]:
     """Call :func:`pams.agents.Agent.submit_orders` of agents on a worker (internal function).
 
     This function is a module-level function so that it can be pickled and executed
@@ -143,6 +390,16 @@ def _submit_orders_in_worker(
     The agents are asked one by one in the given order.
     If the worker initializer failed on this worker, a RuntimeError is raised with the exception
     raised by the initializer, which can be any :class:`BaseException`, as its cause.
+
+    If an agent has names in ``synced_attributes``, the results of all the agents are pickled
+    together by :class:`_WorkerResultPickler`, and the pickled data is returned instead of the
+    results. The objects of the simulation in the results, e.g., the agents, the markets, and
+    the orders in the order books, are pickled as their tokens, so that
+    :func:`_load_worker_results` replaces them with the objects on the main process instead of
+    copies of them. The other objects are pickled together, so references among them are kept,
+    e.g., an order that an agent returns and also keeps in a listed attribute is one object. The
+    states of the pseudo random number generators are pickled in advance by
+    :class:`_PickledState` to make the pickling faster.
 
     Args:
         agents (List[Agent]): agents.
@@ -152,12 +409,13 @@ def _submit_orders_in_worker(
             the main process. None (the default) means that no attributes are returned.
 
     Returns:
-        List[Tuple[List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]]]]: for each agent,
-            orders submitted by the agent, the state of the agent's pseudo random number generator
-            after the submission, and the named attributes that the agent has after the
-            submission. The last one is None if the agent has no names in ``synced_attributes``.
-            The state and the attributes are required to update the agent on the main process
-            when this function runs on another process.
+        Union[List[_WorkerResult], bytes]: for each agent, a tuple of orders submitted by the
+            agent, the state of the agent's pseudo random number generator after the
+            submission, and the named attributes that the agent has after the submission. The
+            attributes are None if the agent has no names in ``synced_attributes``. The state
+            and the attributes are required to update the agent on the main process when this
+            function runs on another process. The list of the tuples is pickled into bytes if
+            an agent has names in ``synced_attributes``.
 
     """
     initializer_error: Optional[BaseException] = getattr(
@@ -182,7 +440,18 @@ def _submit_orders_in_worker(
                 if value is not _MISSING:
                     attributes[name] = value
         results.append((orders, agent.prng.getstate(), attributes))
-    return results
+    if all(len(names) == 0 for names in names_of_agents):
+        return results
+    # the results are pickled here, not by the executor, so that the objects of the simulation
+    # are sent back as tokens instead of copies. All the agents refer to the same simulator.
+    buffer = io.BytesIO()
+    _WorkerResultPickler(buffer, simulator=agents[0].simulator).dump(
+        [
+            (orders, _PickledState(state=prng_state), attributes)
+            for orders, prng_state, attributes in results
+        ]
+    )
+    return buffer.getvalue()
 
 
 class MultiThreadAgentParallelRunner(SequentialRunner):
@@ -438,7 +707,9 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         Args:
             agent (Agent): agent on the main process.
             attributes (Dict[str, Any]): the listed attributes that the agent on the worker has
-                after :func:`pams.agents.Agent.submit_orders`.
+                after :func:`pams.agents.Agent.submit_orders`. The objects of the simulation in
+                the values, e.g., the agent, the markets, and the orders in the order books, are
+                already the objects on the main process.
 
         Returns:
             None
@@ -466,11 +737,11 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         exactly the same as
         :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.
         Each batch is split into chunks by ``_split_agents_into_chunks``, and each chunk is
-        submitted to the executor as one task. After all the tasks of the batch are finished, the
-        result of each agent is passed to ``_receive_synced_attributes_from_worker`` (only if the
-        worker sends back attributes) and to ``_receive_orders_from_worker``, even if the agent
-        submits no orders. If a task fails, its error is raised as soon as it is found, and no
-        agent of the batch is updated.
+        submitted to the executor as one task. After all the tasks of the batch are finished,
+        their results are loaded, and then the result of each agent is passed to
+        ``_receive_synced_attributes_from_worker`` (only if the worker sends back attributes) and
+        to ``_receive_orders_from_worker``, even if the agent submits no orders. If a task fails,
+        its error is raised as soon as it is found, and no agent of the batch is updated.
 
         Args:
             session (Session): session.
@@ -511,7 +782,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 )
                 for chunk in chunks
             ]
-            futures: List["Future[List[_WorkerResult]]"] = [
+            futures: List["Future[Union[List[_WorkerResult], bytes]]"] = [
                 executor.submit(_submit_orders_in_worker, chunk, markets, names)
                 for chunk, names in zip(chunks, synced_attributes)
             ]
@@ -523,10 +794,21 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 for future in futures:
                     if future in done and future.exception() is not None:
                         future.result()  # raises the error of the task
-                for chunk, future in zip(chunks, futures):
-                    for agent, (orders, prng_state, attributes) in zip(
-                        chunk, future.result()
-                    ):
+                # all the results are loaded before any agent is updated, so that no agent is
+                # updated if one of them fails. The objects of the simulation are looked up in
+                # the same table for all the results of the batch. The table matches the copies
+                # on the workers because nothing on the main process changes the markets, their
+                # order books, the agents, the sessions, or the events between the submission of
+                # the tasks and here: the collected orders are handled only after all the
+                # batches, and the agents of the previous batches were only given new
+                # attributes and prng states (see _SimulationObjects.get).
+                objects = _SimulationObjects(simulator=self.simulator)
+                results_of_chunks: List[List[_WorkerResult]] = [
+                    _load_worker_results(results=future.result(), objects=objects)
+                    for future in futures
+                ]
+                for chunk, results in zip(chunks, results_of_chunks):
+                    for agent, (orders, prng_state, attributes) in zip(chunk, results):
                         if attributes is not None:
                             self._receive_synced_attributes_from_worker(
                                 agent=agent, attributes=attributes
@@ -586,14 +868,23 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         :func:`pams.agents.Agent.submit_orders` are discarded, although in-place changes to memory
         that a library shares between processes, e.g., PyTorch tensors on the CPU, can remain.
         The listed attributes are sent back after every call, even if the agent submits no
-        orders, and are set on the agent before the orders are handled. All the values of one
-        agent are pickled together, so references among them are kept as far as pickling keeps
-        them. The values are copies, however. An unlisted attribute that refers to a listed
-        object keeps referring to the old object, so such attributes must be listed too. Objects
-        shared with other agents, the markets, or the simulator are copied, and which agents
-        share a copy afterwards depends on how the agents are split into tasks. Values that refer
-        to the agent itself, other agents, the markets, or the simulator even copy the whole
-        simulation. Therefore, such objects must not be listed.
+        orders, and are set on the agent before the orders are handled. The listed values and
+        the orders of all the agents of a task are pickled together, so references among them
+        are kept as far as pickling keeps them, e.g., an order that an agent returns and also
+        keeps in a listed attribute is one object on the main process. The objects of the
+        simulation among them, i.e., the simulator, the logger, the fundamentals, the markets,
+        their order books and the orders in the books, the agents, the sessions, the events, the
+        event hooks, the pseudo random number generators of the simulator, the markets, the
+        agents, the sessions, and the events, and the lists, dicts, and sets that these objects
+        except the agents hold as attributes, are sent back as references to the objects on the
+        main process, so the listed values can refer to them. Other objects are copies, including
+        orders that are in no order book when the task is sent, e.g., executed, canceled, or
+        expired orders, which are new copies after every call; such a copy is equal to the order
+        but is not the object that other agents or unlisted attributes refer to. An unlisted
+        attribute that refers to a listed object keeps referring to the old object, so such
+        attributes must be listed too.
+        Other objects shared with other agents, e.g., a model shared by agents, are copied, and
+        which agents share a copy afterwards depends on how the agents are split into tasks.
         ``"simulator"``, ``"logger"``, and ``"prng"`` cannot be listed. The names are read on the
         main process whenever the agent is asked, and a ValueError is raised if they are invalid,
         both then and in ``_setup``.
@@ -764,9 +1055,10 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
 
         In addition to
         :func:`pams.runners.MultiThreadAgentParallelRunner._receive_orders_from_worker`,
-        the orders referred by cancel orders are replaced with the orders on the main process
-        because
-        the orders returned from the worker process are copies of them.
+        the orders referred by cancel orders are replaced with the equal orders in the order books
+        on the main process because the orders returned from the worker process can be copies
+        of them. They are copies unless an agent of the task lists attributes in
+        :attr:`pams.agents.Agent.synced_attributes`.
 
         Args:
             agent (Agent): agent on the main process.

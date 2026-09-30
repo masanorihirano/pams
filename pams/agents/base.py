@@ -38,17 +38,20 @@ class Agent(ABC):
     #: neural network that the agent trains in :func:`submit_orders` and its optimizer. That runner
     #: calls :func:`submit_orders` on a copy of this agent. After the call, it sets each listed
     #: attribute of the copy on this agent, or deletes it from this agent if the copy does not
-    #: have it. The values of one agent are pickled together, so references among them are kept
-    #: as far as pickling keeps them (e.g., not between a Keras model and its optimizer, because
-    #: Keras models are saved and reloaded). An attribute that is not listed but refers to a
-    #: listed object keeps referring to the old object, so list such attributes together, e.g.,
-    #: a model, its optimizer, and the optimizer's scheduler. The values are copies, so do not
-    #: list objects that are shared with other agents, the markets, or the simulator, or that
-    #: refer to this agent or any of them. ``"simulator"``, ``"logger"``, and ``"prng"`` cannot be
-    #: listed. Subclasses can override it, and an instance can set it, e.g., in :func:`setup`. The
-    #: runner checks it when it is set up and whenever it asks this agent to submit orders. Other
-    #: runners and high-frequency agents do not use it. The default is an empty tuple. See
-    #: :ref:`config-synced-attributes` for an example and other caveats.
+    #: have it. The values and the orders of the agents in a task are pickled together, so
+    #: references among them are kept as far as pickling keeps them (e.g., not between a Keras
+    #: model and its optimizer, because Keras models are saved and reloaded), and an order that
+    #: this agent returns and also keeps in a listed attribute is one object. An attribute that is
+    #: not listed but refers to a listed object keeps referring to the old object, so list such
+    #: attributes together, e.g., a model, its optimizer, and the optimizer's scheduler. The
+    #: values can refer to this agent, other agents, the markets, the orders in the order books,
+    #: the sessions, the simulator, and the like, which are sent back as references to the objects
+    #: in the main process. Other objects are copies, including orders that are no longer in an
+    #: order book and objects shared with other agents. ``"simulator"``, ``"logger"``, and
+    #: ``"prng"`` cannot be listed. Subclasses can override it, and an instance can set it,
+    #: e.g., in :func:`setup`. The runner checks it when it is set up and whenever it asks this
+    #: agent to submit orders. Other runners and high-frequency agents do not use it. The default
+    #: is an empty tuple. See :ref:`config-synced-attributes` for an example and other caveats.
     synced_attributes: Union[Tuple[str, ...], List[str]] = ()
 
     def __init__(

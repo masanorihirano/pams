@@ -26,6 +26,7 @@ from pams.logs import SimulationEndLog
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
+from pams.session import Session
 
 WAIT_TIME = 0.2  # seconds
 
@@ -368,3 +369,184 @@ class SlowLearningAgent(LearningAgent):
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         time.sleep(WAIT_TIME)
         return super().submit_orders(markets)
+
+
+class AgentHelper:
+    """Object that keeps the state of its agent and refers back to the agent."""
+
+    def __init__(self, agent: Agent, prices: Optional[List[float]] = None) -> None:
+        self.agent: Agent = agent
+        self.prices: List[float] = [] if prices is None else prices
+
+
+class HelperAgent(Agent):
+    """Agent that keeps its state in a helper referring back to the agent.
+
+    The helper is listed in ``synced_attributes``. It is replaced with a new one every fourth
+    call.
+    """
+
+    synced_attributes = ("helper",)
+
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent with its helper."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.helper: AgentHelper = AgentHelper(agent=self)
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        if self.helper.agent is not self:
+            raise AssertionError("the helper does not refer to this agent")
+        market = next(
+            market for market in markets if self.is_market_accessible(market.market_id)
+        )
+        price = market.get_market_price()
+        prices = self.helper.prices
+        prices.append(price)
+        if len(prices) % 4 == 0:
+            self.helper = AgentHelper(agent=self, prices=prices[-2:])
+        mean_price = sum(prices) / len(prices)
+        is_buy = price < mean_price or (
+            price == mean_price and self.prng.random() < 0.5
+        )
+        margin = 0.01 * self.prng.random()
+        return [
+            Order(
+                agent_id=self.agent_id,
+                market_id=market.market_id,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=mean_price * (1.0 + margin if is_buy else 1.0 - margin),
+                ttl=None,
+            )
+        ]
+
+
+class MarketReferencingAgent(Agent):
+    """Agent that keeps the markets and the session in its listed attributes.
+
+    ``last_prices`` is a dict keyed by the markets, and ``last_market`` and ``last_session`` are
+    the market and the session of the last call.
+    """
+
+    synced_attributes = ("last_prices", "last_market", "last_session")
+
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent without markets."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.last_prices: Dict[Market, Optional[float]] = {}
+        self.last_market: Optional[Market] = None
+        self.last_session: Optional[Session] = None
+
+    def setup(
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        super().setup(settings, accessible_markets_ids, *args, **kwargs)
+        self.last_prices = {
+            self.simulator.id2market[market_id]: None
+            for market_id in accessible_markets_ids
+        }
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        market = next(
+            market for market in markets if self.is_market_accessible(market.market_id)
+        )
+        # raises a KeyError if the keys are not the markets given to this method
+        last_price = self.last_prices[market]
+        price = market.get_market_price()
+        self.last_prices[market] = price
+        self.last_market = market
+        self.last_session = self.simulator.current_session
+        is_buy = (
+            self.prng.random() < 0.5
+            if last_price is None or last_price == price
+            else price < last_price
+        )
+        margin = 0.01 * self.prng.random()
+        return [
+            Order(
+                agent_id=self.agent_id,
+                market_id=market.market_id,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price * (1.0 + margin if is_buy else 1.0 - margin),
+                ttl=None,
+            )
+        ]
+
+
+class OrderTrackingAgent(Agent):
+    """Agent that keeps the orders that it submits in a listed list.
+
+    Each call submits a limit order that expires after ``ORDER_TTL`` steps, and cancels the
+    oldest order of the agent that is still in the order books if there are two or more. The
+    orders in the order books are found by identity, so they must be the same objects as those
+    in ``my_orders``. The side of the order depends on the number of the orders that are fully
+    executed, which are no longer in the order books.
+    """
+
+    synced_attributes = ("my_orders",)
+    ORDER_TTL = 6
+
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent with no orders."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.my_orders: List[Order] = []
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        market = next(
+            market for market in markets if self.is_market_accessible(market.market_id)
+        )
+        placed_orders = (
+            market.buy_order_book.priority_queue + market.sell_order_book.priority_queue
+        )
+        live_orders = [
+            order
+            for order in self.my_orders
+            if any(order is placed_order for placed_order in placed_orders)
+        ]
+        orders: List[Union[Order, Cancel]] = []
+        if len(live_orders) >= 2:
+            orders.append(Cancel(order=live_orders[0]))
+        n_executed = sum(order.volume == 0 for order in self.my_orders)
+        is_buy = (n_executed + (self.prng.random() < 0.5)) % 2 == 0
+        margin = 0.01 * self.prng.random()
+        order = Order(
+            agent_id=self.agent_id,
+            market_id=market.market_id,
+            is_buy=is_buy,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=market.get_market_price()
+            * (1.0 + margin if is_buy else 1.0 - margin),
+            ttl=self.ORDER_TTL,
+        )
+        self.my_orders.append(order)
+        orders.append(order)
+        return orders

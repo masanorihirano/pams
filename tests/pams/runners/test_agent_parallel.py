@@ -1,6 +1,8 @@
 import copy
+import io
 import multiprocessing
 import os
+import pickle
 import random
 import re
 import time
@@ -23,13 +25,19 @@ from typing import Union
 
 import pytest
 
+from pams import LIMIT_ORDER
+from pams import Simulator
 from pams.agents import Agent
 from pams.order import Cancel
 from pams.order import Order
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import MultiThreadAgentParallelRunner
+from pams.runners import agent_parallel
 from pams.runners.agent_parallel import _check_synced_attributes
+from pams.runners.agent_parallel import _load_worker_results
+from pams.runners.agent_parallel import _SimulationObjects
 from pams.runners.agent_parallel import _submit_orders_in_worker
+from pams.runners.agent_parallel import _WorkerResultPickler
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
@@ -38,8 +46,11 @@ from .dummy import WAIT_TIME
 from .dummy import CancelingAgent
 from .dummy import DummyLogger2
 from .dummy import FCNDelayAgent
+from .dummy import HelperAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import LearningAgent
+from .dummy import MarketReferencingAgent
+from .dummy import OrderTrackingAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
 from .dummy import SlowLearningAgent
@@ -131,6 +142,81 @@ def _learning_states(agents: List[Agent]) -> List[Dict[str, Any]]:
         }
         for agent in agents
     ]
+
+
+def _load_results(results: Union[List[Any], bytes], simulator: Simulator) -> List[Any]:
+    """Load the results of _submit_orders_in_worker in the same way as the runners."""
+    return _load_worker_results(
+        results=results, objects=_SimulationObjects(simulator=simulator)
+    )
+
+
+def _placed_orders(simulator: Simulator) -> List[Order]:
+    return [
+        order
+        for market in simulator.markets
+        for order_book in [market.buy_order_book, market.sell_order_book]
+        for order in order_book.priority_queue
+    ]
+
+
+def _reference_states(agents: List[Agent]) -> List[Any]:
+    """Get the states of HelperAgent, MarketReferencingAgent, and OrderTrackingAgent."""
+    states: List[Any] = []
+    for agent in agents:
+        if isinstance(agent, HelperAgent):
+            states.append(agent.helper.prices)
+        elif isinstance(agent, MarketReferencingAgent):
+            states.append(
+                (
+                    {
+                        market.market_id: price
+                        for market, price in agent.last_prices.items()
+                    },
+                    None if agent.last_market is None else agent.last_market.market_id,
+                    (
+                        None
+                        if agent.last_session is None
+                        else agent.last_session.session_id
+                    ),
+                )
+            )
+        else:
+            assert isinstance(agent, OrderTrackingAgent)
+            states.append(
+                [
+                    (
+                        order.order_id,
+                        order.is_buy,
+                        order.price,
+                        order.volume,
+                        order.placed_at,
+                        order.is_canceled,
+                    )
+                    for order in agent.my_orders
+                ]
+            )
+    return states
+
+
+def _assert_references_to_simulation(simulator: Simulator) -> None:
+    """Check that the listed attributes refer to the objects of the simulation."""
+    placed_orders = _placed_orders(simulator=simulator)
+    for agent in simulator.normal_frequency_agents:
+        if isinstance(agent, HelperAgent):
+            assert agent.helper.agent is agent
+        elif isinstance(agent, MarketReferencingAgent):
+            assert all(
+                market is simulator.id2market[market.market_id]
+                for market in agent.last_prices
+            )
+            if agent.last_market is not None:
+                assert agent.last_market is simulator.markets[0]
+                assert agent.last_session is simulator.sessions[0]
+        elif isinstance(agent, OrderTrackingAgent):
+            for order in placed_orders:
+                if order.agent_id == agent.agent_id:
+                    assert any(order is my_order for my_order in agent.my_orders)
 
 
 def _track_received_results(
@@ -264,6 +350,9 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         LearningAgent,
         UnsyncedLearningAgent,
         SlowLearningAgent,
+        HelperAgent,
+        MarketReferencingAgent,
+        OrderTrackingAgent,
     ]
     custom_pool_provider: Type[Executor] = CustomThreadPoolExecutor
     # whether the runner receives the attributes listed in synced_attributes from the workers
@@ -832,17 +921,21 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         _, runner = self._make_runners(setting=setting)
         runner._setup()
         runner._shutdown_executor()
-        markets = runner.simulator.markets
-        runner.simulator._update_times_on_markets(markets)
-        agent, other_agent = runner.simulator.normal_frequency_agents[:2]
+        simulator = runner.simulator
+        markets = simulator.markets
+        simulator._update_times_on_markets(markets)
+        agent, other_agent = simulator.normal_frequency_agents[:2]
         assert isinstance(agent, LearningAgent)
         assert isinstance(other_agent, LearningAgent)
         names = tuple(LearningAgent.synced_attributes)
         # the third call submits no orders, and the fourth call deletes bias
         agent.n_calls = 2
-        results = _submit_orders_in_worker(
+        data = _submit_orders_in_worker(
             agents=[agent, other_agent], markets=markets, synced_attributes=[names, ()]
         )
+        # the results of all the agents are pickled together if an agent lists names
+        assert isinstance(data, bytes)
+        results = _load_results(results=data, simulator=simulator)
         assert len(results) == 2
         orders, prng_state, attributes = results[0]
         assert orders == []
@@ -854,8 +947,11 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert len(results[1][0]) == 1
         assert results[1][2] is None
         # a listed attribute that the agent does not have is left out
-        results = _submit_orders_in_worker(
-            agents=[agent], markets=markets, synced_attributes=[names]
+        results = _load_results(
+            results=_submit_orders_in_worker(
+                agents=[agent], markets=markets, synced_attributes=[names]
+            ),
+            simulator=simulator,
         )
         assert len(results) == 1
         orders, _, attributes = results[0]
@@ -865,16 +961,267 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert "bias" not in attributes
         assert attributes["n_calls"] == 4
         # the given names are used instead of those of the agent
-        results = _submit_orders_in_worker(
-            agents=[agent], markets=markets, synced_attributes=[("n_calls",)]
+        results = _load_results(
+            results=_submit_orders_in_worker(
+                agents=[agent], markets=markets, synced_attributes=[("n_calls",)]
+            ),
+            simulator=simulator,
         )
         assert len(results) == 1
         assert results[0][2] == {"n_calls": 5}
-        # nothing is sent back without synced_attributes, which is the default
-        results = _submit_orders_in_worker(agents=[agent], markets=markets)
-        assert len(results) == 1
-        assert results[0][2] is None
+        # nothing is sent back without synced_attributes, which is the default, and the
+        # results are not pickled
+        plain_results = _submit_orders_in_worker(agents=[agent], markets=markets)
+        assert isinstance(plain_results, list)
+        assert len(plain_results) == 1
+        assert plain_results[0][2] is None
         assert agent.n_calls == 6
+
+    def _reference_setting(self, agent_class: str) -> Dict:
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = agent_class
+        setting["simulation"]["numParallel"] = 2
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 20
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = 5
+        return setting
+
+    def test_submit_orders_in_worker_sends_back_agent_as_reference(self) -> None:
+        setting = self._reference_setting(agent_class="HelperAgent")
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        simulator._update_times_on_markets(simulator.markets)
+        agent = simulator.normal_frequency_agents[0]
+        assert isinstance(agent, HelperAgent)
+        data = _submit_orders_in_worker(
+            agents=[agent], markets=simulator.markets, synced_attributes=[("helper",)]
+        )
+        assert isinstance(data, bytes)
+        # the helper refers to the agent and so to the whole simulation, but the agent is sent
+        # back as a reference instead of a copy
+        assert b"HelperAgent" not in data
+        assert b"Simulator" not in data
+        assert len(data) * 5 < len(
+            pickle.dumps(agent.helper, protocol=pickle.HIGHEST_PROTOCOL)
+        )
+        results = _load_results(results=data, simulator=simulator)
+        assert len(results) == 1
+        orders, prng_state, attributes = results[0]
+        assert len(orders) == 1
+        assert prng_state == agent.prng.getstate()
+        assert attributes is not None
+        helper = attributes["helper"]
+        assert helper is not agent.helper
+        assert helper.agent is agent
+        assert helper.prices == agent.helper.prices
+
+    def test_submit_orders_in_worker_sends_back_orders_as_references(self) -> None:
+        setting = self._reference_setting(agent_class="OrderTrackingAgent")
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        markets = simulator.markets
+        market = markets[0]
+        simulator._update_times_on_markets(markets)
+        agent, other_agent = simulator.normal_frequency_agents[:2]
+        assert isinstance(agent, OrderTrackingAgent)
+        assert isinstance(other_agent, OrderTrackingAgent)
+        # two orders in the order book and a canceled one, which is in no order book
+        for price in [290.0, 291.0, 292.0]:
+            order = Order(
+                agent_id=agent.agent_id,
+                market_id=market.market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+                ttl=None,
+            )
+            market._add_order(order=order)
+            agent.my_orders.append(order)
+        market._cancel_order(cancel=Cancel(order=agent.my_orders[2]))
+        my_orders_before = list(agent.my_orders)
+        names = ("my_orders",)
+        data = _submit_orders_in_worker(
+            agents=[agent, other_agent],
+            markets=markets,
+            synced_attributes=[names, names],
+        )
+        assert isinstance(data, bytes)
+        results = _load_results(results=data, simulator=simulator)
+        assert len(results) == 2
+        orders, _, attributes = results[0]
+        assert attributes is not None
+        my_orders = attributes["my_orders"]
+        assert my_orders is not agent.my_orders
+        assert len(my_orders) == 4
+        # the orders in the order book are the objects on the main process
+        assert my_orders[0] is my_orders_before[0]
+        assert my_orders[1] is my_orders_before[1]
+        # the canceled order is a copy
+        assert my_orders[2] is not my_orders_before[2]
+        assert my_orders[2] == my_orders_before[2]
+        assert my_orders[2].is_canceled
+        # the oldest order in the order book is canceled, and the new order, which is also
+        # kept in the listed list, is one object
+        assert len(orders) == 2
+        cancel, new_order = orders
+        assert isinstance(cancel, Cancel)
+        assert cancel.order is my_orders_before[0]
+        assert new_order is my_orders[3]
+        assert new_order is not agent.my_orders[3]
+        other_orders, _, other_attributes = results[1]
+        assert other_attributes is not None
+        assert len(other_orders) == 1
+        assert other_orders[0] is other_attributes["my_orders"][0]
+
+    def test_load_worker_results(self) -> None:
+        setting = self._reference_setting(agent_class="OrderTrackingAgent")
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        market = simulator.markets[0]
+        simulator._update_times_on_markets(simulator.markets)
+        order = Order(
+            agent_id=0,
+            market_id=market.market_id,
+            is_buy=True,
+            kind=LIMIT_ORDER,
+            volume=1,
+            price=290.0,
+            ttl=None,
+        )
+        market._add_order(order=order)
+        buffer = io.BytesIO()
+        _WorkerResultPickler(buffer, simulator=simulator).dump(
+            [order, market, simulator.sessions[0], simulator.agents[1].prng]
+        )
+        data = buffer.getvalue()
+        loaded: List[Any] = _load_results(results=data, simulator=simulator)
+        assert loaded[0] is order
+        assert loaded[1] is market
+        assert loaded[2] is simulator.sessions[0]
+        assert loaded[3] is simulator.agents[1].prng
+        # the order is no longer in the order book, as if a worker had added it
+        market._cancel_order(cancel=Cancel(order=order))
+        with pytest.raises(
+            RuntimeError,
+            match=re.escape(
+                "A worker process sent back a reference to"
+                f" ('order', {market.market_id}, True, {order.order_id}), an object of the"
+                " simulation that the main process does not have."
+            ),
+        ):
+            _load_results(results=data, simulator=simulator)
+        # the objects are looked up only if the results refer to one of them
+        buffer = io.BytesIO()
+        _WorkerResultPickler(buffer, simulator=simulator).dump([order])
+        objects = _SimulationObjects(simulator=simulator)
+        loaded = _load_worker_results(results=buffer.getvalue(), objects=objects)
+        assert loaded[0] is not order
+        assert loaded[0] == order
+        assert objects._objects is None
+
+    @pytest.mark.parametrize(
+        "agent_class", ["HelperAgent", "MarketReferencingAgent", "OrderTrackingAgent"]
+    )
+    def test_synced_references_same_result_as_sequential(
+        self, agent_class: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = self._reference_setting(agent_class=agent_class)
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        receive_orders = parallel_runner._receive_orders_from_worker
+        n_checked_orders: List[int] = []
+
+        def receive_orders_from_worker(
+            agent: Agent, orders: List[Union[Order, Cancel]], prng_state: Any
+        ) -> List[Union[Order, Cancel]]:
+            if isinstance(agent, OrderTrackingAgent):
+                # the new order is the last order in the listed list, which is already set on
+                # the agent, and the canceled orders are the orders in the order books
+                placed_orders = _placed_orders(simulator=parallel_runner.simulator)
+                assert orders[-1] is agent.my_orders[-1]
+                for order in orders[:-1]:
+                    assert isinstance(order, Cancel)
+                    assert any(order.order is placed for placed in placed_orders)
+                    assert any(order.order is mine for mine in agent.my_orders)
+                n_checked_orders.append(len(orders))
+            return receive_orders(agent=agent, orders=orders, prng_state=prng_state)
+
+        monkeypatch.setattr(
+            parallel_runner, "_receive_orders_from_worker", receive_orders_from_worker
+        )
+        # count the batches and the tables of the objects of the simulation built on the main
+        # process
+        split_agents_into_chunks = parallel_runner._split_agents_into_chunks
+        n_batches: List[int] = []
+
+        def count_batches(agents: List[Agent]) -> List[List[Agent]]:
+            n_batches.append(len(agents))
+            return split_agents_into_chunks(agents=agents)
+
+        monkeypatch.setattr(parallel_runner, "_split_agents_into_chunks", count_batches)
+        iter_simulation_objects = agent_parallel._iter_simulation_objects
+        n_tables: List[int] = []
+
+        def count_tables(simulator: Simulator) -> Iterator[Tuple[Any, Tuple[Any, ...]]]:
+            n_tables.append(os.getpid())
+            return iter_simulation_objects(simulator=simulator)
+
+        monkeypatch.setattr(agent_parallel, "_iter_simulation_objects", count_tables)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class=agent_class,
+        )
+        agents = parallel_runner.simulator.normal_frequency_agents
+        assert _reference_states(
+            sequential_runner.simulator.normal_frequency_agents
+        ) == _reference_states(agents)
+        _assert_references_to_simulation(simulator=sequential_runner.simulator)
+        _assert_references_to_simulation(simulator=parallel_runner.simulator)
+        assert len(n_batches) >= 20
+        if not self.receives_synced_attributes:
+            assert len(n_tables) == 0
+        elif agent_class == "OrderTrackingAgent":
+            # no table is built for the first batch, whose results refer to no order in the
+            # order books
+            assert 0 < len(n_tables) < len(n_batches)
+        else:
+            # at most one table is built for each batch
+            assert len(n_tables) == len(n_batches)
+        if agent_class == "MarketReferencingAgent":
+            assert all(
+                isinstance(agent, MarketReferencingAgent)
+                and agent.last_market is not None
+                for agent in agents
+            )
+        if agent_class == "OrderTrackingAgent":
+            assert len(n_checked_orders) == 5 * 20
+            assert max(n_checked_orders) == 2
+            # the orders that are no longer in the order books are executed, canceled, or
+            # expired
+            placed_orders = _placed_orders(simulator=parallel_runner.simulator)
+            removed_orders = [
+                order
+                for agent in agents
+                if isinstance(agent, OrderTrackingAgent)
+                for order in agent.my_orders
+                if not any(order is placed for placed in placed_orders)
+            ]
+            assert any(order.volume == 0 for order in removed_orders)
+            assert any(order.is_canceled for order in removed_orders)
+            assert any(
+                order.volume > 0 and not order.is_canceled for order in removed_orders
+            )
 
     def test_receive_synced_attributes_from_worker(
         self, monkeypatch: pytest.MonkeyPatch
