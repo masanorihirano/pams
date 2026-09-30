@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 13:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.log_returns.rst:7
+msgid "log_returns"
+msgstr "log_returns"
+
+#: of pams.utils.stylized_facts.log_returns:1
+msgid "Compute the log returns of a price series."
+msgstr "価格系列の対数リターンを計算します。"
+
+#: of pams.utils.stylized_facts.log_returns:3
+msgid ""
+"The prices are sampled every ``interval`` steps, starting from the first "
+"price, and the log returns :math:`\\log p_{t + \\Delta} - \\log p_t` of "
+"the sampled prices are returned, where :math:`\\Delta` is ``interval``."
+msgstr ""
+"最初の価格から ``interval`` ステップごとに価格を抽出し、抽出した価格の対数リターン :math:`\\log p_{t + "
+"\\Delta} - \\log p_t` を返します。ここで :math:`\\Delta` は ``interval`` です。"
+
+#: of pams.utils.stylized_facts.log_returns:7
+msgid ""
+"If ``drop_unchanged`` is True, the returns of the periods in which the "
+"price does not change are removed. With ``interval=1``, this gives the "
+"returns in event (tick) time, i.e. the returns between successive price "
+"changes."
+msgstr ""
+"``drop_unchanged`` がTrueの場合、価格が変化しない期間のリターンを取り除きます。``interval=1`` "
+"と組み合わせると、イベント（ティック）時間でのリターン、つまり連続する価格変化の間のリターンが得られます。"
+
+#: of pams.utils.stylized_facts.log_returns
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.stylized_facts.log_returns:12
+msgid ""
+"price series, e.g. the output of :meth:`pams.Market.get_market_prices`. "
+"All prices must be positive."
+msgstr "価格系列。例えば :meth:`pams.Market.get_market_prices` の出力。すべての価格は正である必要があります。"
+
+#: of pams.utils.stylized_facts.log_returns:16
+msgid ""
+"sampling interval :math:`\\Delta` in steps. It must be positive. Defaults"
+" to 1."
+msgstr "ステップ単位の抽出間隔 :math:`\\Delta`。正の値である必要があります。デフォルトは1です。"
+
+#: of pams.utils.stylized_facts.log_returns:20
+msgid "whether to remove the zero returns. Defaults to False."
+msgstr "ゼロのリターンを取り除くかどうか。デフォルトはFalseです。"
+
+#: of pams.utils.stylized_facts.log_returns
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.stylized_facts.log_returns:23
+msgid ""
+"log returns. Without ``drop_unchanged``, the length is ``max(len(prices) "
+"- 1, 0) // interval``."
+msgstr ""
+"対数リターン。``drop_unchanged`` を指定しない場合、長さは ``max(len(prices) - 1, 0) // "
+"interval`` です。"
+
+#: of pams.utils.stylized_facts.log_returns
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.utils.stylized_facts.log_returns:28
+msgid "Examples"
+msgstr "例"
+

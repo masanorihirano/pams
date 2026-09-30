@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-29 13:08+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/utils/pams.utils.autocorrelation.rst:7
+msgid "autocorrelation"
+msgstr "autocorrelation"
+
+#: of pams.utils.stylized_facts.autocorrelation:1
+msgid "Compute the sample autocorrelation of a series at a lag."
+msgstr "系列の、あるラグにおける標本自己相関を計算します。"
+
+#: of pams.utils.stylized_facts.autocorrelation:3
+msgid ""
+"The estimator is the one used for correlograms, :math:`\\sum_{t=1}^{n-k} "
+"(x_t - \\bar{x})(x_{t+k} - \\bar{x}) / \\sum_{t=1}^{n} (x_t - "
+"\\bar{x})^2`, where :math:`n` is the length of the series and :math:`k` "
+"is the lag."
+msgstr ""
+"推定量はコレログラムで用いられるもの :math:`\\sum_{t=1}^{n-k} (x_t - \\bar{x})(x_{t+k} - "
+"\\bar{x}) / \\sum_{t=1}^{n} (x_t - \\bar{x})^2` です。ここで :math:`n` "
+"は系列の長さ、:math:`k` はラグです。"
+
+#: of pams.utils.stylized_facts.autocorrelation
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.utils.stylized_facts.autocorrelation:9
+msgid "series, e.g. log returns or absolute log returns."
+msgstr "系列。例えば対数リターンや対数リターンの絶対値。"
+
+#: of pams.utils.stylized_facts.autocorrelation:13
+msgid ""
+"lag :math:`k`. It must be positive and smaller than the length of "
+"``values``."
+msgstr "ラグ :math:`k`。正の値で、``values`` の長さより小さい必要があります。"
+
+#: of pams.utils.stylized_facts.autocorrelation
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.utils.stylized_facts.autocorrelation:17
+msgid "autocorrelation at ``lag``."
+msgstr "``lag`` における自己相関。"
+
+#: of pams.utils.stylized_facts.autocorrelation
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.utils.stylized_facts.autocorrelation:21
+msgid "Examples"
+msgstr "例"
+

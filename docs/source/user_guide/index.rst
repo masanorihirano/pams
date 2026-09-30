@@ -9,6 +9,7 @@ User Guide
    install
    platform
    config
+   stylized_facts
    tutorials/index
 
 

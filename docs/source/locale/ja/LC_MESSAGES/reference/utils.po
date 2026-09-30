@@ -46,3 +46,51 @@ msgstr ""
 msgid "random generator from json."
 msgstr "JSONの指定に基づく乱数生成器。"
 
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid ""
+":py:obj:`utils.log_returns <pams.utils.log_returns>`\\ \\(prices\\[\\, "
+"interval\\, ...\\]\\)"
+msgstr ""
+":py:obj:`utils.log_returns <pams.utils.log_returns>`\\ \\(prices\\[\\, "
+"interval\\, ...\\]\\)"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid "Compute the log returns of a price series."
+msgstr "価格系列の対数リターンを計算します。"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid ""
+":py:obj:`utils.excess_kurtosis <pams.utils.excess_kurtosis>`\\ "
+"\\(values\\)"
+msgstr ""
+":py:obj:`utils.excess_kurtosis <pams.utils.excess_kurtosis>`\\ "
+"\\(values\\)"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid "Compute the sample excess kurtosis of a series."
+msgstr "系列の標本超過尖度を計算します。"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid ""
+":py:obj:`utils.autocorrelation <pams.utils.autocorrelation>`\\ "
+"\\(values\\, lag\\)"
+msgstr ""
+":py:obj:`utils.autocorrelation <pams.utils.autocorrelation>`\\ "
+"\\(values\\, lag\\)"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid "Compute the sample autocorrelation of a series at a lag."
+msgstr "系列の、あるラグにおける標本自己相関を計算します。"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid ""
+":py:obj:`utils.hill_tail_index <pams.utils.hill_tail_index>`\\ "
+"\\(values\\[\\, tail\\_fraction\\]\\)"
+msgstr ""
+":py:obj:`utils.hill_tail_index <pams.utils.hill_tail_index>`\\ "
+"\\(values\\[\\, tail\\_fraction\\]\\)"
+
+#: ../../source/reference/utils.rst:15:<autosummary>:1
+msgid "Estimate the tail index of a distribution with the Hill estimator."
+msgstr "Hill推定量により分布の裾指数を推定します。"
+
