@@ -1331,7 +1331,7 @@ class TestMarket:
         )
         logs += market._execution()
         assert len(logs) == 3
-        assert queued_costs == []
+        assert not queued_costs
 
         assert market.get_transaction_cost_revenues() == [1.25, 0.0, -2.5]
         assert market.get_transaction_cost_revenues(times=[2, 0]) == [-2.5, 1.25]
