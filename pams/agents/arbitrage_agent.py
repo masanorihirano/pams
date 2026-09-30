@@ -1,4 +1,5 @@
 import random
+import warnings
 from typing import Any
 from typing import Dict
 from typing import List
@@ -22,6 +23,9 @@ class ArbitrageAgent(HighFrequencyAgent):
 
     Note:
         Currently, index markets must have the same weight for each constitutional stock.
+
+        Unlike plhamJ, the component markets of an index market are not made accessible automatically.
+        Therefore, the accessible markets must include all the component markets of the index markets, too.
 
     """
 
@@ -65,6 +69,12 @@ class ArbitrageAgent(HighFrequencyAgent):
         Returns:
             None
 
+        Note:
+            This warns if some component markets of an accessible index market are not accessible,
+            or if no accessible market is an index market.
+            The latter check is skipped if some accessible markets are not registered to the simulator yet,
+            because they may be index markets.
+
         """
         super().setup(settings, accessible_markets_ids, *args, **kwargs)
         if "orderVolume" not in settings:
@@ -79,6 +89,41 @@ class ArbitrageAgent(HighFrequencyAgent):
             if not isinstance(settings["orderTimeLength"], int):
                 raise ValueError("orderTimeLength have to be int")
             self.order_time_length = settings["orderTimeLength"]
+
+        # runners set up all the markets before the agents, so the components of index markets are known here
+        id2market: Dict[int, Market] = self.simulator.id2market
+        accessible_markets: List[Market] = [
+            id2market[market_id]
+            for market_id in accessible_markets_ids
+            if market_id in id2market
+        ]
+        index_markets: List[IndexMarket] = [
+            market for market in accessible_markets if isinstance(market, IndexMarket)
+        ]
+        for index in index_markets:
+            missing_markets: List[Market] = [
+                market
+                for market in index.get_components()
+                if not self.is_market_accessible(market_id=market.market_id)
+            ]
+            if len(missing_markets) > 0:
+                missing_market_names: str = ", ".join(
+                    market.name for market in missing_markets
+                )
+                warnings.warn(
+                    f"{self.__class__.__name__} {self.name} can access the index market {index.name} "
+                    f"but not its component markets {missing_market_names}, so its orders to them will fail. "
+                    "Add the groups of these markets to markets in the settings of this agent.",
+                    stacklevel=2,
+                )
+        # a market not registered to the simulator yet may be an index market
+        all_registered: bool = len(accessible_markets) == len(accessible_markets_ids)
+        if len(index_markets) == 0 and all_registered:
+            warnings.warn(
+                f"{self.__class__.__name__} {self.name} cannot access any index market, so it never submits orders. "
+                "Add an index market and its component markets to markets in the settings of this agent.",
+                stacklevel=2,
+            )
 
     def _submit_orders(self, market: Market) -> List[Union[Order, Cancel]]:
         """Internal sub routine for submitting orders by market.

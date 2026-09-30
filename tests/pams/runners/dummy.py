@@ -1,4 +1,5 @@
 import random
+import sys
 import threading
 import time
 from typing import Any
@@ -10,6 +11,7 @@ from typing import Union
 from pams import LIMIT_ORDER
 from pams import Simulator
 from pams.agents import Agent
+from pams.agents import HighFrequencyAgent
 from pams.agents.fcn_agent import FCNAgent
 from pams.logs import CancelLog
 from pams.logs import ExecutionLog
@@ -179,6 +181,28 @@ class RaisingAgent(Agent):
         raise RuntimeError("error in submit_orders")
 
 
+class GivenOrdersAgent(Agent):
+    """Agent that submits the orders set to ``orders_to_submit``.
+
+    This agent is used to check the orders that the runners reject, e.g., the orders for markets
+    that the agent cannot access and the cancel orders of the orders of other agents.
+    ``orders_to_submit`` is set on the main process and copied to worker processes, so that
+    this agent works on :class:`pams.runners.MultiProcessAgentParallelRunner` as well.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the orders to submit (none by default)."""
+        super().__init__(*args, **kwargs)
+        self.orders_to_submit: List[Union[Order, Cancel]] = []
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        return list(self.orders_to_submit)
+
+
+class HighFrequencyGivenOrdersAgent(GivenOrdersAgent, HighFrequencyAgent):
+    """High frequency version of :class:`GivenOrdersAgent`."""
+
+
 # The functions below are defined at the top level so that the agent-parallel runners can pickle
 # them and call them on worker processes.
 
@@ -202,6 +226,20 @@ def get_worker_token() -> Optional[str]:
 def fail_to_initialize_worker() -> None:
     """Raise an error as a worker initializer."""
     raise RuntimeError("error in worker initializer")
+
+
+def fail_to_initialize_worker_with_system_exit() -> None:
+    """Exit as a worker initializer, i.e., raise SystemExit."""
+    sys.exit("error in worker initializer")
+
+
+class WorkerInitializerAbort(BaseException):
+    """BaseException that is not an Exception, raised by a worker initializer."""
+
+
+def fail_to_initialize_worker_with_base_exception() -> None:
+    """Raise a BaseException that is not an Exception as a worker initializer."""
+    raise WorkerInitializerAbort("error in worker initializer")
 
 
 def get_parent_marker() -> Optional[str]:

@@ -40,7 +40,11 @@ def _initialize_worker(
     :func:`_submit_orders_in_worker` raises an error on this worker instead of breaking the
     executor. This is because a broken :class:`concurrent.futures.ProcessPoolExecutor` can hang
     on Python 3.10 or earlier when large tasks, such as the pickled simulation, are waiting to be
-    sent to the worker processes.
+    sent to the worker processes. Any :class:`BaseException`, including :class:`SystemExit` and
+    :class:`KeyboardInterrupt`, is kept because the executors break on any
+    :class:`BaseException` of the initializer. This is consistent with the executors, which pass
+    any :class:`BaseException` of a task to its future. A :class:`KeyboardInterrupt` by Ctrl+C
+    usually interrupts the main process as well, which stops the simulation.
 
     Args:
         initializer (Callable[..., Any], Optional): worker initializer. If it is None, nothing is
@@ -55,8 +59,9 @@ def _initialize_worker(
     if initializer is not None:
         try:
             initializer(*initargs)
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            # any error of the user-defined initializer is raised by the tasks on this worker
+        except BaseException as e:  # pylint: disable=broad-exception-caught
+            # any error of the user-defined initializer, even SystemExit, is raised by the
+            # tasks on this worker because the executor breaks on any BaseException
             _worker_state.initializer_error = e
 
 
@@ -69,7 +74,7 @@ def _submit_orders_in_worker(
     on a worker process of :class:`concurrent.futures.ProcessPoolExecutor`.
     The agents are asked one by one in the given order.
     If the worker initializer failed on this worker, a RuntimeError is raised with the exception
-    raised by the initializer as its cause.
+    raised by the initializer, which can be any :class:`BaseException`, as its cause.
 
     Args:
         agents (List[Agent]): agents.
@@ -82,7 +87,7 @@ def _submit_orders_in_worker(
             another process.
 
     """
-    initializer_error: Optional[Exception] = getattr(
+    initializer_error: Optional[BaseException] = getattr(
         _worker_state, "initializer_error", None
     )
     if initializer_error is not None:
@@ -235,8 +240,12 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         process of :class:`pams.runners.MultiProcessAgentParallelRunner`, but never on the main
         thread. For the latter, the function and its arguments are pickled, so the function must be
         defined at the top level of a module that the worker processes can import.
-        If the function raises an exception on a worker, every task on the worker raises a
-        RuntimeError whose cause is the exception, and the simulation fails with it.
+        If the function raises any exception on a worker, including a :class:`BaseException` such
+        as :class:`SystemExit`, every task on the worker raises a RuntimeError whose cause is the
+        exception, and the simulation fails with it. With
+        :class:`pams.runners.MultiProcessAgentParallelRunner`, the cause of the RuntimeError in the
+        main process is the traceback text from the worker process instead of the exception itself,
+        as for any error of a task of :class:`concurrent.futures.ProcessPoolExecutor`.
 
         Returns:
             Callable[..., Any], Optional: initializer of the workers. The default is None, i.e.,
@@ -376,13 +385,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                             continue
                         if not session.with_order_placement:
                             raise AssertionError("currently order is not accepted")
-                        if (
-                            sum(order.agent_id != agent.agent_id for order in orders)
-                            > 0
-                        ):
-                            raise ValueError(
-                                "spoofing order is not allowed. please check agent_id in order"
-                            )
+                        self._check_submitted_orders(agent=agent, orders=orders)
                         all_orders.append(orders)
                         n_orders += 1
             finally:
@@ -572,6 +575,10 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         the orders referred by cancel orders are replaced with the orders on the main process
         because
         the orders returned from the worker process are copies of them.
+        An order is replaced with the order in the order book found by
+        ``_get_placed_order_to_cancel`` only if their agent IDs are the same, so that
+        ``_check_submitted_orders`` checks the cancel orders in the same way as
+        :class:`pams.runners.SequentialRunner`.
 
         Args:
             agent (Agent): agent on the main process.
@@ -586,15 +593,13 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
             agent=agent, orders=orders, prng_state=prng_state
         )
         for order in orders:
-            if isinstance(order, Cancel):
-                market: Market = self.simulator.id2market[order.order.market_id]
-                order_book = (
-                    market.buy_order_book
-                    if order.order.is_buy
-                    else market.sell_order_book
-                )
-                for placed_order in order_book.priority_queue:
-                    if placed_order == order.order:
-                        order.order = placed_order
-                        break
+            if not isinstance(order, Cancel):
+                continue
+            placed_order: Optional[Order] = self._get_placed_order_to_cancel(
+                cancel=order
+            )
+            # the replacement must not change the agent_id of the cancel order. a cancel order of
+            # an order of another agent is left as it is and rejected by _check_submitted_orders.
+            if placed_order is not None and placed_order.agent_id == order.agent_id:
+                order.order = placed_order
         return orders
