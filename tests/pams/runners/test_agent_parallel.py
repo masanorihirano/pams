@@ -368,8 +368,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             )
 
         # the agents in the order that _collect_orders_from_normal_agents asks them
-        prng = random.Random()
-        prng.setstate(runner._prng.getstate())
+        prng = copy.deepcopy(runner._prng)
         agents = runner.simulator.normal_frequency_agents
         first, second, third, _, owner = prng.sample(agents, len(agents))
         if isinstance(runner, MultiProcessAgentParallelRunner):
