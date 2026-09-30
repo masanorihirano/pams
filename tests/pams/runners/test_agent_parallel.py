@@ -3,8 +3,16 @@ import multiprocessing
 import os
 import random
 import time
+import traceback
+import uuid
+from concurrent.futures import BrokenExecutor
+from concurrent.futures import Executor
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
+from typing import Callable
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -13,6 +21,7 @@ from typing import Union
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams.agents import Agent
 from pams.order import Cancel
 from pams.order import Order
@@ -21,13 +30,71 @@ from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners.sequential import SequentialRunner
 from tests.pams.runners.test_sequential import TestSequentialRunner
 
+from . import dummy
 from .dummy import WAIT_TIME
 from .dummy import CancelingAgent
 from .dummy import DummyLogger2
 from .dummy import FCNDelayAgent
+from .dummy import GivenOrdersAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
+from .dummy import WorkerInitializationCheckingAgent
+from .dummy import WorkerInitializerAbort
+from .dummy import fail_to_initialize_worker
+from .dummy import fail_to_initialize_worker_with_base_exception
+from .dummy import fail_to_initialize_worker_with_system_exit
+from .dummy import get_parent_marker
+from .dummy import get_worker_token
+from .dummy import initialize_worker
+
+
+class SpawnMultiProcessAgentParallelRunner(MultiProcessAgentParallelRunner):
+    default_start_method = "spawn"
+
+
+class CustomThreadPoolExecutor(ThreadPoolExecutor):
+    pass
+
+
+class CustomProcessPoolExecutor(ProcessPoolExecutor):
+    pass
+
+
+@pytest.fixture(autouse=True)
+def shut_down_executors(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Shut down the executors created by the runners after each test.
+
+    Some tests, e.g., the ones inherited from TestSequentialRunner, leave the executor running.
+    When such an executor is garbage-collected, its manager thread shuts it down in the
+    background. With the fork start method (the default on Linux before Python 3.14), a worker
+    process forked by another executor meanwhile can inherit a lock held by that thread and hang
+    when it exits.
+    """
+    executors: List[Executor] = []
+
+    def track(
+        create_executor: Callable[[MultiThreadAgentParallelRunner], Executor]
+    ) -> Callable[[MultiThreadAgentParallelRunner], Executor]:
+        def create_and_track_executor(
+            runner: MultiThreadAgentParallelRunner,
+        ) -> Executor:
+            executor = create_executor(runner)
+            executors.append(executor)
+            return executor
+
+        return create_and_track_executor
+
+    for runner_class in [
+        MultiThreadAgentParallelRunner,
+        MultiProcessAgentParallelRunner,
+    ]:
+        monkeypatch.setattr(
+            runner_class, "_create_executor", track(runner_class._create_executor)
+        )
+    yield
+    for executor in executors:
+        executor.shutdown(wait=True)
 
 
 def _order_keys(orders: List[Union[Order, Cancel]]) -> List[Any]:
@@ -49,6 +116,49 @@ def _agent_states(agents: List[Agent]) -> List[Dict[str, Any]]:
         }
         for agent in agents
     ]
+
+
+def _assert_same_results(
+    sequential_runner: SequentialRunner,
+    parallel_runner: SequentialRunner,
+    agent_class: str,
+) -> None:
+    sequential_market = sequential_runner.simulator.markets[0]
+    parallel_market = parallel_runner.simulator.markets[0]
+    times = range(sequential_market.get_time() + 1)
+    assert sequential_market.get_time() == parallel_market.get_time()
+    assert sequential_market.get_market_prices(
+        times
+    ) == parallel_market.get_market_prices(times)
+    assert sequential_market.get_fundamental_prices(
+        times
+    ) == parallel_market.get_fundamental_prices(times)
+    assert sequential_market.get_executed_volumes(
+        times
+    ) == parallel_market.get_executed_volumes(times)
+    assert sequential_market.get_n_buy_orders(
+        times
+    ) == parallel_market.get_n_buy_orders(times)
+    assert sequential_market.get_n_sell_orders(
+        times
+    ) == parallel_market.get_n_sell_orders(times)
+    assert _agent_states(sequential_runner.simulator.agents) == _agent_states(
+        parallel_runner.simulator.agents
+    )
+    assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
+    sequential_logger = sequential_runner.logger
+    parallel_logger = parallel_runner.logger
+    assert isinstance(sequential_logger, DummyLogger2)
+    assert isinstance(parallel_logger, DummyLogger2)
+    assert sequential_logger.n_order_log == parallel_logger.n_order_log
+    assert sequential_logger.n_cancel_log == parallel_logger.n_cancel_log
+    assert sequential_logger.n_execution_log == parallel_logger.n_execution_log
+    assert sequential_logger.n_order_log > 0
+    if agent_class == "CancelingAgent":
+        assert parallel_logger.n_cancel_log > 0
+        for market in parallel_runner.simulator.markets:
+            for order in market.buy_order_book.priority_queue:
+                assert not order.is_canceled
 
 
 class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
@@ -100,25 +210,32 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         IdleEvenIDFCNAgent,
         CancelingAgent,
         RaisingAgent,
+        WorkerInitializationCheckingAgent,
     ]
+    custom_pool_provider: Type[Executor] = CustomThreadPoolExecutor
+
+    def _make_runner(
+        self, runner_class: Type[SequentialRunner], setting: Dict, seed: int = 42
+    ) -> SequentialRunner:
+        runner = runner_class(
+            settings=copy.deepcopy(setting),
+            prng=random.Random(seed),
+            logger=DummyLogger2(),
+        )
+        for cls in self.user_classes:
+            runner.class_register(cls=cls)
+        return runner
 
     def _make_runners(
         self, setting: Dict, seed: int = 42
     ) -> Tuple[SequentialRunner, MultiThreadAgentParallelRunner]:
-        sequential_runner = SequentialRunner(
-            settings=copy.deepcopy(setting),
-            prng=random.Random(seed),
-            logger=DummyLogger2(),
+        sequential_runner = self._make_runner(
+            runner_class=SequentialRunner, setting=setting, seed=seed
         )
-        parallel_runner = self.runner_class(
-            settings=copy.deepcopy(setting),
-            prng=random.Random(seed),
-            logger=DummyLogger2(),
+        parallel_runner = self._make_runner(
+            runner_class=self.runner_class, setting=setting, seed=seed
         )
         assert isinstance(parallel_runner, MultiThreadAgentParallelRunner)
-        for cls in self.user_classes:
-            sequential_runner.class_register(cls=cls)
-            parallel_runner.class_register(cls=cls)
         return sequential_runner, parallel_runner
 
     @pytest.mark.parametrize(
@@ -140,42 +257,11 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         sequential_runner._run()
         parallel_runner._run()
 
-        sequential_market = sequential_runner.simulator.markets[0]
-        parallel_market = parallel_runner.simulator.markets[0]
-        times = range(sequential_market.get_time() + 1)
-        assert sequential_market.get_time() == parallel_market.get_time()
-        assert sequential_market.get_market_prices(
-            times
-        ) == parallel_market.get_market_prices(times)
-        assert sequential_market.get_fundamental_prices(
-            times
-        ) == parallel_market.get_fundamental_prices(times)
-        assert sequential_market.get_executed_volumes(
-            times
-        ) == parallel_market.get_executed_volumes(times)
-        assert sequential_market.get_n_buy_orders(
-            times
-        ) == parallel_market.get_n_buy_orders(times)
-        assert sequential_market.get_n_sell_orders(
-            times
-        ) == parallel_market.get_n_sell_orders(times)
-        assert _agent_states(sequential_runner.simulator.agents) == _agent_states(
-            parallel_runner.simulator.agents
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class=agent_class,
         )
-        assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
-        sequential_logger = sequential_runner.logger
-        parallel_logger = parallel_runner.logger
-        assert isinstance(sequential_logger, DummyLogger2)
-        assert isinstance(parallel_logger, DummyLogger2)
-        assert sequential_logger.n_order_log == parallel_logger.n_order_log
-        assert sequential_logger.n_cancel_log == parallel_logger.n_cancel_log
-        assert sequential_logger.n_execution_log == parallel_logger.n_execution_log
-        assert sequential_logger.n_order_log > 0
-        if agent_class == "CancelingAgent":
-            assert parallel_logger.n_cancel_log > 0
-            for market in parallel_runner.simulator.markets:
-                for order in market.buy_order_book.priority_queue:
-                    assert not order.is_canceled
 
     def test_collect_orders_from_normal_agents_asks_same_agents(self) -> None:
         setting = copy.deepcopy(self.default_setting)
@@ -250,6 +336,118 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         with pytest.raises(RuntimeError, match="error in submit_orders"):
             runner.main()
         assert runner.executor is None
+
+    def test_cancel_order_for_inaccessible_market_is_rejected(self) -> None:
+        runner = self._setup_market_access_runner(agent_class="GivenOrdersAgent")
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        # every agent cancels its order placed in OtherMarkets-1, which it cannot access
+        self._set_orders_to_submit(runner=runner, market_id=2, cancels=True)
+        with pytest.raises(
+            ValueError,
+            match=r"^cancel order for an inaccessible market is not allowed\. "
+            r"Agents-[0-4] cannot access OtherMarkets-1\. ",
+        ):
+            runner._run()
+        assert runner.executor is None
+        placed_orders = runner.simulator.markets[2].buy_order_book.priority_queue
+        assert len(placed_orders) == len(runner.simulator.agents)
+        assert all(not order.is_canceled for order in placed_orders)
+
+    @staticmethod
+    def _set_rejected_orders(runner: SequentialRunner, rejected: str) -> str:
+        # the first agent asked submits a valid order, and the second and third agents submit
+        # rejected orders. Return the error for the second agent.
+        def make_order(agent: Agent, market_id: int) -> Order:
+            return Order(
+                agent_id=agent.agent_id,
+                market_id=market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+
+        # the agents in the order that _collect_orders_from_normal_agents asks them
+        prng = copy.deepcopy(runner._prng)
+        agents = runner.simulator.normal_frequency_agents
+        first, second, third, _, owner = prng.sample(agents, len(agents))
+        if isinstance(runner, MultiProcessAgentParallelRunner):
+            # the first and second agents are asked in the same chunk
+            assert runner._split_agents_into_chunks(agents=[first, second, third]) == [
+                [first, second],
+                [third],
+            ]
+        assert isinstance(first, GivenOrdersAgent)
+        assert isinstance(second, GivenOrdersAgent)
+        assert isinstance(third, GivenOrdersAgent)
+        first.orders_to_submit = [make_order(agent=first, market_id=0)]
+        if rejected == "inaccessible":
+            second.orders_to_submit = [make_order(agent=second, market_id=2)]
+            third.orders_to_submit = [make_order(agent=third, market_id=1)]
+            return (
+                "order for an inaccessible market is not allowed. "
+                f"{second.name} cannot access OtherMarkets-1. "
+                "please add OtherMarkets to markets of Agents or check market_id in order"
+            )
+        if rejected == "nonexistent":
+            second.orders_to_submit = [make_order(agent=second, market_id=3)]
+            third.orders_to_submit = [make_order(agent=third, market_id=4)]
+            return (
+                "order for a nonexistent market is not allowed. "
+                f"{second.name} submitted it for market_id 3. "
+                "please check market_id in order"
+            )
+        market = runner.simulator.markets[0]
+        placed_orders = [make_order(agent=owner, market_id=0) for _ in range(2)]
+        for agent, placed_order in zip([second, third], placed_orders):
+            market._add_order(order=placed_order)
+            # a forged order equal to the order that the owner placed
+            forged_order = make_order(agent=agent, market_id=0)
+            forged_order.order_id = placed_order.order_id
+            forged_order.placed_at = placed_order.placed_at
+            agent.orders_to_submit = [Cancel(order=forged_order)]
+        return (
+            "cancel order for an order of another agent is not allowed. "
+            f"{second.name} tried to cancel order_id {placed_orders[0].order_id} "
+            f"in Market, which {owner.name} placed. please check order in cancel order"
+        )
+
+    @pytest.mark.parametrize("rejected", ["inaccessible", "nonexistent", "cancel"])
+    def test_check_submitted_orders_same_as_sequential(self, rejected: str) -> None:
+        # the orders have to be checked for each agent in the order of the agents, even in a chunk
+        # of several agents, so that the error is the same as SequentialRunner
+        setting = self._market_access_setting(agent_class="GivenOrdersAgent")
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        expected_errors: List[str] = []
+        errors: List[str] = []
+        order_books: List[List[List[Tuple[int, Optional[int], bool]]]] = []
+        for runner in [sequential_runner, parallel_runner]:
+            runner.class_register(cls=GivenOrdersAgent)
+            runner._setup()
+            runner.simulator._update_times_on_markets(runner.simulator.markets)
+            expected_errors.append(
+                self._set_rejected_orders(runner=runner, rejected=rejected)
+            )
+            with pytest.raises(ValueError) as exc_info:
+                runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
+            errors.append(str(exc_info.value))
+            order_books.append(
+                [
+                    [
+                        (order.agent_id, order.order_id, order.is_canceled)
+                        for order in order_book.priority_queue
+                    ]
+                    for market in runner.simulator.markets
+                    for order_book in [market.buy_order_book, market.sell_order_book]
+                ]
+            )
+        assert errors == expected_errors
+        assert errors[0] == errors[1]
+        assert order_books[0] == order_books[1]
+        assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
+        parallel_runner._shutdown_executor()
 
     def test_num_parallel_default(self) -> None:
         setting = copy.deepcopy(self.default_setting)
@@ -335,9 +533,200 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         with pytest.warns(UserWarning, match="is experimental"):
             self.runner_class(settings=copy.deepcopy(self.default_setting))
 
+    def test_parallel_pool_provider_is_used(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        monkeypatch.setattr(
+            runner, "_parallel_pool_provider", self.custom_pool_provider
+        )
+        runner._setup()
+        executor = runner.executor
+        assert isinstance(executor, self.custom_pool_provider)
+        assert executor.submit(sum, [1, 2]).result() == 3
+        runner._shutdown_executor()
+
+    def test_create_executor_is_used(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        created_executors: List[Executor] = []
+
+        def create_executor() -> Executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            created_executors.append(executor)
+            return executor
+
+        setting = copy.deepcopy(self.default_setting)
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(parallel_runner, "_create_executor", create_executor)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert created_executors == [parallel_runner.executor]
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="FCNAgent",
+        )
+        assert parallel_runner.executor is None
+        assert parallel_runner._get_executor() is created_executors[-1]
+        assert len(created_executors) == 2
+        parallel_runner._shutdown_executor()
+
+    def _run_with_worker_initializer(
+        self, setting: Dict, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        token = uuid.uuid4().hex
+        setting = copy.deepcopy(setting)
+        setting["FCNAgents"]["class"] = "WorkerInitializationCheckingAgent"
+        setting["FCNAgents"]["workerToken"] = token
+        setting["simulation"]["numParallel"] = 2
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = 6
+        _, runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(
+            runner, "_get_worker_initializer", lambda: initialize_worker
+        )
+        monkeypatch.setattr(runner, "_get_worker_initargs", lambda: (token,))
+        runner._setup()
+        runner._run()
+        logger = runner.logger
+        assert isinstance(logger, DummyLogger2)
+        assert logger.n_order_log > 0
+        assert runner.executor is None
+        # the initializer is not called on the main thread
+        assert get_worker_token() is None
+
+    def test_worker_initializer(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        self._run_with_worker_initializer(
+            setting=self.default_setting, monkeypatch=monkeypatch
+        )
+
+    def test_worker_initializer_default(self) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "WorkerInitializationCheckingAgent"
+        setting["FCNAgents"]["workerToken"] = uuid.uuid4().hex
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        _, runner = self._make_runners(setting=setting)
+        assert runner._get_worker_initializer() is None
+        assert isinstance(runner._get_worker_initargs(), tuple)
+        assert not runner._get_worker_initargs()
+        # without the initializer, WorkerInitializationCheckingAgent fails
+        runner._setup()
+        with pytest.raises(RuntimeError, match="worker is initialized with None"):
+            runner._run()
+        assert runner.executor is None
+
+    @pytest.mark.parametrize(
+        "initializer, error_class",
+        [
+            (fail_to_initialize_worker, RuntimeError),
+            (fail_to_initialize_worker_with_system_exit, SystemExit),
+            (fail_to_initialize_worker_with_base_exception, WorkerInitializerAbort),
+        ],
+        ids=["Exception", "SystemExit", "BaseException"],
+    )
+    def test_worker_initializer_failure(
+        self,
+        initializer: Callable[[], None],
+        error_class: Type[BaseException],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        _, runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
+        runner._setup()
+        # the tasks raise the error instead of breaking the executor, which can hang
+        # ProcessPoolExecutor on Python 3.10 or earlier. The executors break on any
+        # BaseException of the initializer, e.g., SystemExit, so check that the executor
+        # still runs a task that does not depend on the initializer.
+        executor = runner.executor
+        assert executor is not None
+        assert executor.submit(sum, [1, 2]).result() == 3
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed on this worker"
+        ) as exc_info:
+            runner._run()
+        assert not isinstance(exc_info.value, BrokenExecutor)
+        # the cause is the error itself (thread) or its traceback (process)
+        cause = exc_info.value.__cause__
+        assert cause is not None
+        assert f"{error_class.__name__}: error in worker initializer" in "".join(
+            traceback.format_exception_only(type(cause), cause)
+        )
+        assert runner.executor is None
+
+    def test_split_agents_into_chunks(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiThreadAgentParallelRunner)
+        runner._setup()
+        runner._shutdown_executor()
+        agents = runner.simulator.normal_frequency_agents
+        assert runner._split_agents_into_chunks(agents=agents) == [
+            [agent] for agent in agents
+        ]
+        assert runner._split_agents_into_chunks(agents=[]) == []
+
+    def test_split_agents_into_chunks_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 10
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        split_batches: List[List[Agent]] = []
+
+        def split_agents_into_chunks(agents: List[Agent]) -> List[List[Agent]]:
+            split_batches.append(agents)
+            return [agents[:1], [], agents[1:]]
+
+        monkeypatch.setattr(
+            parallel_runner, "_split_agents_into_chunks", split_agents_into_chunks
+        )
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        assert len(split_batches) >= 10
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="FCNAgent",
+        )
+
+    @pytest.mark.parametrize(
+        "split_agents_into_chunks",
+        [
+            lambda agents: [agents[1:], agents[:1]],
+            lambda agents: [agents[::2], agents[1::2]],
+            lambda agents: [agents[1:]],
+            lambda agents: [agents, agents[:1]],
+            lambda agents: [agents[:1], [copy.copy(agent) for agent in agents[1:]]],
+        ],
+        ids=["rotated", "interleaved", "missing", "duplicated", "copied"],
+    )
+    def test_split_agents_into_chunks_invalid(
+        self,
+        split_agents_into_chunks: Callable[[List[Agent]], List[List[Agent]]],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        # chunks that change the order of the agents would change the results silently
+        _, runner = self._make_runners(setting=self.default_setting)
+        monkeypatch.setattr(
+            runner, "_split_agents_into_chunks", split_agents_into_chunks
+        )
+        runner._setup()
+        with pytest.raises(ValueError, match="_split_agents_into_chunks"):
+            runner._run()
+        assert runner.executor is None
+
 
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
+    custom_pool_provider: Type[Executor] = CustomProcessPoolExecutor
     TIME_PER_STEP_THRESHOLD: Optional[float] = None
     # because of the cost of pickling, the time per step is not guaranteed
     # to be less than the threshold.
@@ -377,3 +766,123 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     def test_start_method(self) -> None:
         # the tests above must pass regardless of the start method of multiprocessing
         assert multiprocessing.get_start_method() in ["fork", "spawn", "forkserver"]
+
+    @pytest.mark.parametrize("start_method", multiprocessing.get_all_start_methods())
+    def test_start_method_config(
+        self, start_method: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(dummy, "PARENT_MARKER", "set on the main process")
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "CancelingAgent"
+        setting["simulation"]["startMethod"] = start_method
+        setting["simulation"]["numParallel"] = 2
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 10
+        sequential_runner = self._make_runner(
+            runner_class=SequentialRunner, setting=setting
+        )
+        parallel_runner = self._make_runner(
+            runner_class=MultiProcessAgentParallelRunner, setting=setting
+        )
+        assert isinstance(parallel_runner, MultiProcessAgentParallelRunner)
+        assert parallel_runner.start_method is None
+        sequential_runner._setup()
+        parallel_runner._setup()
+        assert parallel_runner.start_method == start_method
+        assert parallel_runner._get_mp_context().get_start_method() == start_method
+        # module globals modified on the main process are inherited only by forked workers
+        marker = parallel_runner._get_executor().submit(get_parent_marker).result()
+        if start_method == "fork":
+            assert marker == "set on the main process"
+        else:
+            assert marker is None
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="CancelingAgent",
+        )
+
+    @pytest.mark.parametrize("start_method", ["invalid", "", "SPAWN", 1, None])
+    def test_start_method_invalid(self, start_method: Any) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = start_method
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        with pytest.raises(ValueError, match="startMethod"):
+            runner._setup()
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        assert runner.executor is None
+
+    def test_start_method_default(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        assert runner.start_method is None
+        runner._setup()
+        assert runner.start_method is None
+        assert (
+            runner._get_mp_context().get_start_method()
+            == multiprocessing.get_context().get_start_method()
+        )
+        runner._shutdown_executor()
+
+    def test_default_start_method_of_subclass(self) -> None:
+        assert MultiProcessAgentParallelRunner.default_start_method is None
+        setting = copy.deepcopy(self.default_setting)
+        runner = SpawnMultiProcessAgentParallelRunner(settings=copy.deepcopy(setting))
+        assert runner.start_method == "spawn"
+        runner._setup()
+        assert runner.start_method == "spawn"
+        assert runner._get_mp_context().get_start_method() == "spawn"
+        assert isinstance(runner.executor, ProcessPoolExecutor)
+        runner._shutdown_executor()
+        # simulation.startMethod takes precedence over the default of the class
+        start_method = next(
+            (
+                method
+                for method in multiprocessing.get_all_start_methods()
+                if method != "spawn"
+            ),
+            "spawn",
+        )
+        setting["simulation"]["startMethod"] = start_method
+        runner = SpawnMultiProcessAgentParallelRunner(settings=copy.deepcopy(setting))
+        runner._setup()
+        assert runner.start_method == start_method
+        assert runner._get_mp_context().get_start_method() == start_method
+        runner._shutdown_executor()
+
+    def test_worker_initializer(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # the initializer and its arguments must be passed to the workers even with spawn
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = "spawn"
+        self._run_with_worker_initializer(setting=setting, monkeypatch=monkeypatch)
+
+    def test_split_agents_into_chunks(self) -> None:
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None
+        )
+        assert isinstance(runner, MultiProcessAgentParallelRunner)
+        runner._setup()
+        runner._shutdown_executor()
+        agents = runner.simulator.normal_frequency_agents
+        assert len(agents) == 10
+        for num_parallel in [1, 2, 3, 4, 10, 12]:
+            runner.num_parallel = num_parallel
+            for n_agents in [0, 1, 2, 3, 5, 10]:
+                chunks = runner._split_agents_into_chunks(agents=agents[:n_agents])
+                assert len(chunks) == min(num_parallel, n_agents)
+                assert [agent for chunk in chunks for agent in chunk] == agents[
+                    :n_agents
+                ]
+                chunk_sizes = [len(chunk) for chunk in chunks]
+                if n_agents > 0:
+                    assert min(chunk_sizes) >= 1
+                    assert max(chunk_sizes) - min(chunk_sizes) <= 1
+        runner.num_parallel = 3
+        assert [
+            len(chunk) for chunk in runner._split_agents_into_chunks(agents=agents)
+        ] == [4, 3, 3]
