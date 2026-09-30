@@ -33,6 +33,7 @@ class TradeRecorder(Logger):
     """Keep the order logs and the execution logs of a run."""
 
     def __init__(self) -> None:
+        """Initialize the lists of the logs."""
         super().__init__()
         self.orders: List[OrderLog] = []
         self.executions: List[ExecutionLog] = []
