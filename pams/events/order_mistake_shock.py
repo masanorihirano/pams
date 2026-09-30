@@ -120,6 +120,21 @@ class OrderMistakeShock(EventABC):
             market: "Market" = self.simulator.id2market[order.market_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
             order_price: float = base_price * (1 + self.price_change_rate)
+            # the market converts the price to a tick level by round(price / tick_size),
+            # which raises an error for a non-finite value, so check it before overriding
+            if not math.isfinite(order_price):
+                raise ValueError(
+                    f"price of the mistaken order of {self.name} is not finite. "
+                    f"market price {base_price} * (1 + priceChangeRate "
+                    f"{self.price_change_rate}) is {order_price}. "
+                    "please make priceChangeRate smaller"
+                )
+            if not math.isfinite(order_price / market.tick_size):
+                raise ValueError(
+                    f"price of the mistaken order of {self.name} is too large. "
+                    f"price {order_price} / tickSize {market.tick_size} of {market.name} "
+                    "is not finite. please make priceChangeRate smaller"
+                )
             time_length: int = self.order_time_length
             # override a order
             order.is_buy = self.price_change_rate > 0.0

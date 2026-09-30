@@ -1,5 +1,6 @@
 import math
 import random
+import re
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -272,6 +273,8 @@ class TestOrderMistakeShock(TestEventABC):
             (-0.05, 0, "orderVolume have to be positive"),
             (-0.05, -5, "orderVolume have to be positive"),
             (-0.99, 1, None),
+            # a huge finite rate is checked when the order is overridden
+            (1e308, 1, None),
         ],
     )
     def test_setup_range(
@@ -558,6 +561,110 @@ class TestOrderMistakeShock(TestEventABC):
         assert order.volume == 10000
         assert order.ttl == 10
 
+    @pytest.mark.parametrize(
+        "price_change_rate, tick_size, message",
+        [
+            (
+                1e308,
+                0.01,
+                "price of the mistaken order of event is not finite. market price "
+                "300.0 * (1 + priceChangeRate 1e+308) is inf. "
+                "please make priceChangeRate smaller",
+            ),
+            (
+                1e300,
+                1e-10,
+                "price of the mistaken order of event is too large. price "
+                f"{300.0 * (1 + 1e300)} / tickSize 1e-10 of market1 is not finite. "
+                "please make priceChangeRate smaller",
+            ),
+            (1e300, 0.01, None),
+        ],
+    )
+    def test_hooked_before_order_huge_price(
+        self, price_change_rate: float, tick_size: float, message: Optional[str]
+    ) -> None:
+        # the market converts the price of an order to a tick level by
+        # round(price / tick_size), which raises ValueError or OverflowError if it is not
+        # finite, so the event raises an error before overriding the order
+        sim = Simulator(prng=random.Random(4))
+        logger = Logger()
+        session = Session(
+            session_id=0,
+            prng=random.Random(42),
+            session_start_time=0,
+            simulator=sim,
+            name="session0",
+            logger=logger,
+        )
+        market = Market(
+            market_id=0,
+            prng=random.Random(42),
+            simulator=sim,
+            name="market1",
+            logger=logger,
+        )
+        market.setup(
+            settings={
+                "tickSize": tick_size,
+                "marketPrice": 300.0,
+                "outstandingShares": 2000,
+            }
+        )
+        sim._add_market(market=market)
+        sim.fundamentals.add_market(
+            market_id=0, initial=300.0, drift=0.0, volatility=0.0, start_at=0
+        )
+        market._update_time(next_fundamental_price=300.0)
+        event = OrderMistakeShock(
+            event_id=1,
+            prng=random.Random(42),
+            session=session,
+            simulator=sim,
+            name="event",
+        )
+        event.setup(
+            settings={
+                "target": "market1",
+                "triggerTime": 100,
+                "priceChangeRate": price_change_rate,
+                "orderVolume": 10000,
+                "orderTimeLength": 10,
+            }
+        )
+        order = Order(
+            agent_id=0,
+            market_id=0,
+            is_buy=False,
+            kind=MARKET_ORDER,
+            volume=1,
+            placed_at=None,
+            price=None,
+            order_id=None,
+            ttl=None,
+        )
+        if message is None:
+            event.hooked_before_order(simulator=sim, order=order)
+            assert event.triggerd
+            assert order.is_buy
+            assert order.kind == LIMIT_ORDER
+            assert order.price == 300.0 * (1 + price_change_rate)
+            assert order.volume == 10000
+            assert order.ttl == 10
+            # the market accepts the order
+            market._add_order(order=order)
+            assert order.price == pytest.approx(300.0 * (1 + price_change_rate))
+            return
+        with pytest.raises(ValueError, match=re.escape(message)):
+            event.hooked_before_order(simulator=sim, order=order)
+        # the order is not overridden
+        assert not event.triggerd
+        assert not order.is_buy
+        assert order.kind == MARKET_ORDER
+        assert order.price is None
+        assert order.volume == 1
+        assert order.ttl is None
+
     def test_hooked_before_order_other_market(self) -> None:
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
@@ -745,6 +852,66 @@ class TestOrderMistakeShock(TestEventABC):
         assert shock_logs[0].market_id == target_market.market_id
         assert shock_logs[0].time == 10 + 5
         assert shock_logs[0].kind == LIMIT_ORDER
+
+    def test_huge_price_in_runner(self) -> None:
+        # a huge rate stops the simulation with the error of the event, not with an
+        # error of the market
+        config = {
+            "simulation": {
+                "markets": ["Market"],
+                "agents": ["FCNAgents"],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 5,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": False,
+                        "events": ["OrderMistakeShock"],
+                    }
+                ],
+            },
+            "OrderMistakeShock": {
+                "class": "OrderMistakeShock",
+                "target": "Market",
+                "triggerTime": 2,
+                "priceChangeRate": 1e308,
+                "orderVolume": 10000,
+                "orderTimeLength": 3,
+            },
+            "Market": {
+                "class": "Market",
+                "tickSize": 1.0,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+            },
+            "FCNAgents": {
+                "class": "FCNAgent",
+                "numAgents": 10,
+                "markets": ["Market"],
+                "assetVolume": 50,
+                "cashAmount": 10000,
+                "fundamentalWeight": {"expon": [1.0]},
+                "chartWeight": {"expon": [0.0]},
+                "noiseWeight": {"expon": [1.0]},
+                "noiseScale": 0.001,
+                "timeWindowSize": [100, 200],
+                "orderMargin": [0.0, 0.1],
+            },
+        }
+        logger = _ShockRecordingLogger()
+        runner = SequentialRunner(
+            settings=config, prng=random.Random(42), logger=logger
+        )
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                "price of the mistaken order of OrderMistakeShock is not finite"
+            ),
+        ):
+            runner.main()
+        # no order is placed at the trigger time
+        assert [log for log in logger.order_logs if log.time >= 2] == []
 
     @pytest.mark.parametrize(
         "price_change_rate, is_buy, round_to_tick",
