@@ -318,6 +318,34 @@ class TestTorchAgentParallelRunner:
                     assert parallel_parameter.is_shared()
                     assert torch.equal(sequential_parameter, parallel_parameter)
 
+    def test_inaccessible_market(self) -> None:
+        # the PyTorch agents skip the markets that they cannot access because the runners reject
+        # orders for them
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["markets"] = ["Market", "OtherMarket"]
+        setting["OtherMarket"] = copy.deepcopy(SETTING["Market"])
+        setting["FCNAgents"]["markets"] = ["Market", "OtherMarket"]
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        sequential_runner._setup()
+        parallel_runner._setup()
+        sequential_runner._run()
+        parallel_runner._run()
+        _assert_same_results(
+            sequential_runner=sequential_runner,
+            parallel_runner=parallel_runner,
+            agent_class="TorchPricingAgent",
+        )
+        market, other_market = parallel_runner.simulator.markets
+        assert other_market.get_time() == market.get_time()
+        agent = next(
+            agent
+            for agent in parallel_runner.simulator.normal_frequency_agents
+            if isinstance(agent, TorchPricingAgent)
+        )
+        assert not agent.is_market_accessible(market_id=other_market.market_id)
+        orders = agent.submit_orders(markets=[market, other_market])
+        assert [order.market_id for order in orders] == [market.market_id]
+
     def test_seed_changes_result(self, torch: Any) -> None:
         # the equality above is meaningful only if the PyTorch agents depend on the seed
         prices: List[List[float]] = []
