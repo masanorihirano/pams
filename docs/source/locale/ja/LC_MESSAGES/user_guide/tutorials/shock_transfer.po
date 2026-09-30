@@ -135,12 +135,12 @@ msgid ""
 "When the index market price is lower by more than ``orderThresholdPrice``"
 " (1.0), it buys 2 shares of the index and sells 1 share of each stock. "
 "When it is higher by more than 1.0, it does the opposite. Its orders are "
-"limit orders at the current market prices and last one step, so some of "
+"limit orders at the current market prices and last one step, so most of "
 "them are not executed."
 msgstr ""
 "裁定エージェントは、インデックス市場の市場価格とインデックス値を比べます。インデックス市場の市場価格がインデックス値を下回り、その差が "
 "``orderThresholdPrice`` "
-"（1.0）を超えると、インデックスを2株買い、各株式を1株ずつ売ります。インデックス値を上回り、その差が1.0を超えると、その反対の売買を行います。注文は現在の市場価格での指値注文で、有効期間は1ステップなので、約定しない注文もあります。"
+"（1.0）を超えると、インデックスを2株買い、各株式を1株ずつ売ります。インデックス値を上回り、その差が1.0を超えると、その反対の売買を行います。注文は現在の市場価格での指値注文で、有効期間は1ステップなので、ほとんどの注文は約定しません。"
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:55
 msgid ""
@@ -232,24 +232,30 @@ msgstr ""
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:104
 msgid ""
-"Spot 2 falls to about 290 between steps 300 and 500, although its "
-"fundamental price stays at 300. In this run, spot 1 stays above 270 for a"
-" long time, while the index goes down to 285 and a little below. The "
-"index market price is then below the index value on average, so the "
-"arbitrage agents buy the index and sell the stocks. In total, they sell "
-"26 shares of spot 2 and buy 18 shares of the index. This is the shock "
-"transfer."
+"Between steps 300 and 499, spot 2 is about 291 on average and falls to "
+"285.24 at step 480, although its fundamental price stays at 300. In this "
+"run, spot 1 stays above its new fundamental price of 270 until step 379, "
+"while the index falls below 285 at step 228 and down to 275.94 at step "
+"418. The index market price is then below the index value on average, so "
+"the arbitrage agents more often buy the index and sell the stocks than "
+"the opposite. In total, they sell 26 shares of spot 2 and buy 18 shares "
+"of the index. This is the shock transfer. They also end the run with 18 "
+"more shares of spot 1: their sell orders for spot 1 add up to 3260 shares"
+" and their buy orders to only 2715, but more of the buy orders are "
+"executed (597 shares against 579)."
 msgstr ""
 "spot 2のファンダメンタル価格は300のままですが、spot "
-"2はステップ300から500の間に290程度まで下がります。この実行では、spot "
-"1は長い間270より上にとどまる一方、インデックスは285、さらにそれを少し下回るところまで下がります。そのためインデックス市場の市場価格は平均してインデックス値より低くなり、裁定エージェントはインデックスを買って株式を売ります。合計で、spot"
-" 2を26株売り、インデックスを18株買います。これがショック伝搬です。"
+"2はステップ300から499の間に平均で約291となり、ステップ480には285.24まで下がります。この実行では、spot "
+"1はステップ379まで新しいファンダメンタル価格である270より上にとどまる一方、インデックスはステップ228に285を下回り、ステップ418には275.94まで下がります。そのためインデックス市場の市場価格は平均してインデックス値より低くなり、裁定エージェントがインデックスを買って株式を売ることが、その反対よりも多くなります。合計で、spot"
+" 2を26株売り、インデックスを18株買います。これがショック伝搬です。また、裁定エージェントはspot "
+"1も18株多く持って実行を終えます。spot "
+"1の売り注文は合計3260株で、買い注文は2715株だけですが、約定するのは買い注文の方が多いためです（買いは597株、売りは579株）。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:111
+#: ../../source/user_guide/tutorials/shock_transfer.rst:116
 msgid "Which market reacts first"
 msgstr "どちらの市場が先に反応するか"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:113
+#: ../../source/user_guide/tutorials/shock_transfer.rst:118
 msgid ""
 "The two use cases of the Plham tutorial change how fast spot 1 and the "
 "index react to the shock. The script compares three cases:"
@@ -257,7 +263,7 @@ msgstr ""
 "Plhamのチュートリアルの2つのユースケースは、spot "
 "1とインデックスがショックにどれだけ速く反応するかを変えます。スクリプトは3つのケースを比べます："
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:121
+#: ../../source/user_guide/tutorials/shock_transfer.rst:126
 msgid ""
 "The noise weight stays 1.0, so with a fundamental weight of 0.1 the "
 "agents are mostly noise traders, and their market moves only slowly "
@@ -269,11 +275,11 @@ msgstr ""
 " は各ケースをシード42から51の10個のシードで実行し、``measure`` "
 "をそれらで平均します。実行を短くするため、2つ目のセッションは100ステップだけです："
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:130
+#: ../../source/user_guide/tutorials/shock_transfer.rst:135
 msgid "After the prices, the script prints one line per case:"
 msgstr "価格の後に、スクリプトはケースごとに1行を出力します："
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:139
+#: ../../source/user_guide/tutorials/shock_transfer.rst:144
 msgid ""
 "``premium`` is the index market price minus the index value. ``spot 2`` "
 "is the market price of spot 2 minus 300. Both are means over the second "
@@ -282,11 +288,11 @@ msgstr ""
 "``premium`` はインデックス市場の市場価格からインデックス値を引いたもの、``spot 2`` はspot "
 "2の市場価格から300を引いたものです。どちらも2つ目のセッションでの平均です。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:141
+#: ../../source/user_guide/tutorials/shock_transfer.rst:146
 msgid "``up`` is the number of seeds where spot 2 is above 300 on average."
 msgstr "``up`` は、spot 2が平均で300を上回ったシードの数です。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:142
+#: ../../source/user_guide/tutorials/shock_transfer.rst:147
 msgid ""
 "``arb spot 2`` and ``arb index`` are the numbers of shares of spot 2 and "
 "of the index that the arbitrage agents bought in total. A negative number"
@@ -295,44 +301,52 @@ msgstr ""
 "``arb spot 2`` と ``arb index`` は、裁定エージェントが合計で買ったspot "
 "2とインデックスの株数です。負の数は売ったことを表します。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:145
+#: ../../source/user_guide/tutorials/shock_transfer.rst:150
 msgid ""
 "When spot 1 reacts faster, the premium is positive: the arbitrage agents "
 "buy spot 2, and spot 2 is above 300 in 7 of the 10 seeds. When the index "
 "reacts faster, the premium is negative: the arbitrage agents buy the "
 "index and sell spot 2, and spot 2 is lower than in the other cases. This "
-"matches the Plham tutorial: spot 2 rises in the first case and falls in "
-"the second."
+"is the direction of the Plham tutorial, where spot 2 rises in the first "
+"case and falls in the second."
 msgstr ""
 "spot 1が速く反応する場合、プレミアムは正になります。裁定エージェントはspot 2を買い、10個のシードのうち7個でspot "
 "2は300を上回ります。インデックスが速く反応する場合、プレミアムは負になります。裁定エージェントはインデックスを買ってspot "
-"2を売り、spot 2は他のケースより低くなります。これはPlhamのチュートリアルと一致します。spot "
+"2を売り、spot 2は他のケースより低くなります。これはPlhamのチュートリアルと同じ方向です。Plhamでは、spot "
 "2は1つ目のケースで上がり、2つ目のケースで下がります。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:150
+#: ../../source/user_guide/tutorials/shock_transfer.rst:155
 msgid ""
-"The effect is small: less than one price unit on average, while a single "
-"run can move spot 2 by about 10 (see the plot). With other seeds, ``same "
-"speed`` and ``index reacts faster`` can swap places in the ``spot 2`` "
-"column. The signs of the premium and of the arbitrage positions show the "
+"The effect is small. In the table, spot 2 moves by less than one price "
+"unit on average, while in the run of seed 42 it is about 9 below 300 "
+"between steps 300 and 499 (see the plot). Other seeds change the details."
+" With the seeds 52 to 61, spot 2 is 0.08 below 300 on average when spot 1"
+" reacts faster, and above 300 in only 4 of the 10 seeds, but it is still "
+"higher than when the index reacts faster. With these seeds, ``same "
+"speed`` and ``index reacts faster`` also swap places in the ``spot 2`` "
+"column. What stays the same are the signs of the premium and of ``arb "
+"spot 2`` when spot 1 or the index reacts faster, and they show the "
 "mechanism more clearly. With the whole second session, ``compare(SEEDS, "
 "main_steps=500)`` gives the same order of the three cases, but takes "
 "several times longer. Not all the orders of the arbitrage agents are "
 "executed, so ``arb index`` is not exactly −2 × ``arb spot 2``."
 msgstr ""
-"効果は小さく、平均で1価格単位未満です。一方、1回の実行ではspot "
-"2が10程度動くこともあります（プロットを参照）。他のシードでは、``spot 2`` の列で ``same speed`` と ``index "
-"reacts faster`` "
-"の順位が入れ替わることがあります。仕組みは、プレミアムと裁定エージェントのポジションの符号により明確に表れます。2つ目のセッションをすべて使う "
-"``compare(SEEDS, main_steps=500)`` "
+"効果は小さいです。表では、spot 2の動きは平均で1価格単位未満ですが、シード42の実行では、spot "
+"2はステップ300から499の間に300より約9低くなります（プロットを参照）。他のシードでは細部が変わります。シード52から61では、spot "
+"1が速く反応する場合、spot "
+"2は平均で300より0.08低く、300を上回るのは10個のシードのうち4個だけですが、それでもインデックスが速く反応する場合より高くなります。これらのシードでは、``spot"
+" 2`` の列で ``same speed`` と ``index reacts faster`` "
+"の順位も入れ替わります。変わらないのは、spot 1またはインデックスが速く反応する場合のプレミアムと ``arb spot 2`` "
+"の符号で、これらの方が仕組みをより明確に示します。2番目のセッションをすべて使う ``compare(SEEDS, "
+"main_steps=500)`` "
 "でも3つのケースの順位は同じですが、実行には数倍の時間がかかります。裁定エージェントの注文はすべてが約定するわけではないため、``arb "
 "index`` は ``arb spot 2`` のちょうど−2倍にはなりません。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:159
+#: ../../source/user_guide/tutorials/shock_transfer.rst:167
 msgid "Differences from Plham"
 msgstr "Plhamとの違い"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:161
+#: ../../source/user_guide/tutorials/shock_transfer.rst:169
 msgid ""
 "In PAMS, the ``markets`` of the arbitrage agents must list the component "
 "markets as well as the index (see ArbitrageAgent in :ref:`config-"
@@ -341,24 +355,24 @@ msgstr ""
 "PAMSでは、裁定エージェントの ``markets`` に、インデックスだけでなく構成市場も記載する必要があります（:ref:`config-"
 "agents` のArbitrageAgentを参照）。サンプルはそのように設定されています。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:163
+#: ../../source/user_guide/tutorials/shock_transfer.rst:171
 msgid ""
 "PAMS and Plham use different random number generators, so the same "
 "configuration and seed give different prices."
 msgstr "PAMSとPlhamは異なる乱数生成器を使うため、同じ設定とシードでも価格は異なります。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:165
+#: ../../source/user_guide/tutorials/shock_transfer.rst:173
 msgid ""
 "The Plham tutorial asks you to run ten or more trials of each case. This "
 "tutorial runs ten seeds, with a shorter second session, and prints the "
 "means."
 msgstr "Plhamのチュートリアルでは、各ケースを10回以上試行するよう求めています。このチュートリアルでは、2つ目のセッションを短くして10個のシードで実行し、平均を出力します。"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:170
+#: ../../source/user_guide/tutorials/shock_transfer.rst:178
 msgid "References"
 msgstr "参考文献"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:172
+#: ../../source/user_guide/tutorials/shock_transfer.rst:180
 msgid ""
 "鳥居拓馬, 中川勇樹, 和泉潔 (2015). 複数資産人工市場を用いた裁定取引によるショック伝搬の分析. 人工知能学会全国大会論文集, "
 "JSAI2015, 1J4-OS-13a-2 (in Japanese). "
@@ -367,7 +381,7 @@ msgstr ""
 "鳥居拓馬、中川勇樹、和泉潔（2015）。複数資産人工市場を用いた裁定取引によるショック伝搬の分析。人工知能学会全国大会論文集、JSAI2015、1J4"
 "-OS-13a-2。https://doi.org/10.11517/pjsai.JSAI2015.0_1J4OS13a2"
 
-#: ../../source/user_guide/tutorials/shock_transfer.rst:174
+#: ../../source/user_guide/tutorials/shock_transfer.rst:182
 msgid ""
 "Torii, T., Izumi, K. and Yamada, K. (2015). Shock transfer by arbitrage "
 "trading: analysis using multi-asset artificial market. *Evolutionary and "

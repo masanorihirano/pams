@@ -50,7 +50,7 @@ How the shock can spread
 An arbitrage agent compares the index market price with the index value.
 When the index market price is lower by more than ``orderThresholdPrice`` (1.0), it buys 2 shares of the index
 and sells 1 share of each stock. When it is higher by more than 1.0, it does the opposite.
-Its orders are limit orders at the current market prices and last one step, so some of them are not executed.
+Its orders are limit orders at the current market prices and last one step, so most of them are not executed.
 
 The FCN agents of spot 2 only look at spot 2, whose fundamental price stays at 300.
 Only the arbitrage agents can move spot 2 away from 300.
@@ -101,10 +101,15 @@ It also saves ``shock_transfer_prices.png``:
    :alt: Market prices of spot 1, spot 2 and the index from step 80 to step 599, with their fundamental prices of
          270, 300 and 285 after the shock as dashed lines
 
-Spot 2 falls to about 290 between steps 300 and 500, although its fundamental price stays at 300.
-In this run, spot 1 stays above 270 for a long time, while the index goes down to 285 and a little below.
-The index market price is then below the index value on average, so the arbitrage agents buy the index and sell
-the stocks. In total, they sell 26 shares of spot 2 and buy 18 shares of the index. This is the shock transfer.
+Between steps 300 and 499, spot 2 is about 291 on average and falls to 285.24 at step 480, although its fundamental
+price stays at 300.
+In this run, spot 1 stays above its new fundamental price of 270 until step 379, while the index falls below 285
+at step 228 and down to 275.94 at step 418.
+The index market price is then below the index value on average, so the arbitrage agents more often buy the index
+and sell the stocks than the opposite. In total, they sell 26 shares of spot 2 and buy 18 shares of the index.
+This is the shock transfer.
+They also end the run with 18 more shares of spot 1: their sell orders for spot 1 add up to 3260 shares and their
+buy orders to only 2715, but more of the buy orders are executed (597 shares against 579).
 
 
 Which market reacts first
@@ -144,12 +149,15 @@ After the prices, the script prints one line per case:
 
 When spot 1 reacts faster, the premium is positive: the arbitrage agents buy spot 2, and spot 2 is above 300 in 7
 of the 10 seeds. When the index reacts faster, the premium is negative: the arbitrage agents buy the index and
-sell spot 2, and spot 2 is lower than in the other cases. This matches the Plham tutorial: spot 2 rises in the
-first case and falls in the second.
+sell spot 2, and spot 2 is lower than in the other cases. This is the direction of the Plham tutorial, where spot 2
+rises in the first case and falls in the second.
 
-The effect is small: less than one price unit on average, while a single run can move spot 2 by about 10 (see
-the plot). With other seeds, ``same speed`` and ``index reacts faster`` can swap places in the ``spot 2`` column. The
-signs of the premium and of the arbitrage positions show the mechanism more clearly.
+The effect is small. In the table, spot 2 moves by less than one price unit on average, while in the run of seed 42
+it is about 9 below 300 between steps 300 and 499 (see the plot). Other seeds change the details. With the seeds
+52 to 61, spot 2 is 0.08 below 300 on average when spot 1 reacts faster, and above 300 in only 4 of the 10 seeds,
+but it is still higher than when the index reacts faster. With these seeds, ``same speed`` and
+``index reacts faster`` also swap places in the ``spot 2`` column. What stays the same are the signs of the
+premium and of ``arb spot 2`` when spot 1 or the index reacts faster, and they show the mechanism more clearly.
 With the whole second session, ``compare(SEEDS, main_steps=500)`` gives the same order of the three cases, but
 takes several times longer.
 Not all the orders of the arbitrage agents are executed, so ``arb index`` is not exactly −2 × ``arb spot 2``.

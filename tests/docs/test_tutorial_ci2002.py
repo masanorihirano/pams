@@ -1,12 +1,18 @@
-import os
+import copy
+import random
 from pathlib import Path
+from typing import Any
 from typing import Dict
 from typing import List
 
 import matplotlib
 import pytest
 
+from pams.agents import FCNAgent
+from pams.runners import SequentialRunner
 from tests.docs.sample_config import load_sample_config
+from tests.docs.test_tutorials import assert_in_page
+from tests.docs.test_tutorials import assert_same_image
 from tests.docs.test_tutorials import assert_shown
 from tests.docs.test_tutorials import load_tutorial
 from tests.docs.test_tutorials import run_tutorial
@@ -25,6 +31,39 @@ def test_ci2002_uses_sample() -> None:
     # the page says that the config is the one of samples/CI2002
     tutorial = load_tutorial("tutorial_ci2002")
     assert tutorial.CONFIG == load_sample_config("CI2002")
+
+
+def test_ci2002_mean_reversion_time() -> None:
+    # the page says: each agent gets a mean reversion time from 50 to 99 steps, and
+    # without the key it is the agent's time window, from 100 to 199 steps
+    tutorial = load_tutorial("tutorial_ci2002")
+    config: Dict[str, Any] = copy.deepcopy(tutorial.CONFIG)
+    assert config["FCNAgents"]["meanReversionTime"] == {"uniform": [50, 100]}
+    assert config["FCNAgents"]["timeWindowSize"] == [100, 200]
+    runner = SequentialRunner(settings=config, prng=random.Random(42))
+    runner._setup()
+    agents: List[FCNAgent] = [
+        agent for agent in runner.simulator.agents if isinstance(agent, FCNAgent)
+    ]
+    assert len(agents) == 100
+    assert min(agent.mean_reversion_time for agent in agents) >= 50
+    assert max(agent.mean_reversion_time for agent in agents) <= 99
+    del config["FCNAgents"]["meanReversionTime"]
+    runner = SequentialRunner(settings=config, prng=random.Random(42))
+    runner._setup()
+    agents = [agent for agent in runner.simulator.agents if isinstance(agent, FCNAgent)]
+    assert all(agent.mean_reversion_time == agent.time_window_size for agent in agents)
+    assert min(agent.time_window_size for agent in agents) >= 100
+    assert max(agent.time_window_size for agent in agents) <= 199
+    assert_in_page(
+        "ci2002.rst",
+        "Each agent gets a value from 50 to 99 steps. Without it, :math:`\\tau_r` is the"
+        " agent's ``timeWindowSize`` (100 to 199 steps).",
+        "The configuration on the Plham tutorial page has no ``meanReversionTime``, so"
+        " its agents use their ``timeWindowSize`` (100 to 199 steps) as"
+        " :math:`\\tau_r`. The PAMS sample, like the sample of the current Plham, sets"
+        " :math:`\\tau_r` to 50 to 99 steps.",
+    )
 
 
 def test_ci2002_cases() -> None:
@@ -71,7 +110,7 @@ def test_ci2002_main(
 ) -> None:
     monkeypatch.chdir(tmp_path)
     run_tutorial("tutorial_ci2002")
-    assert os.path.getsize(tmp_path / "ci2002_weights.png") > 0
+    assert_same_image("ci2002_weights.png", tmp_path / "ci2002_weights.png")
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the two tables
     blocks: List[List[str]] = text_blocks("ci2002.rst")
@@ -89,3 +128,22 @@ def test_ci2002_main(
     assert rows["more chart"][0] < rows["baseline"][0]
     assert rows["more fundamental"][3] < rows["baseline"][3]
     assert rows["more chart"][3] < rows["baseline"][3]
+    # with seed 42 alone, more chart has a smaller std than more fundamental, but
+    # not on average
+    seed_42: Dict[str, List[float]] = {
+        line[:16].strip(): [float(value) for value in line[16:].split()]
+        for line in lines[2:5]
+    }
+    assert seed_42["more chart"][0] < seed_42["more fundamental"][0]
+    assert rows["more chart"][0] > rows["more fundamental"][0]
+    base, fundamental, chart = (
+        rows[name] for name in load_tutorial("tutorial_ci2002").CASES
+    )
+    assert_in_page(
+        "ci2002.rst",
+        f"``std`` falls from {base[0]:.2f} to {fundamental[0]:.2f} and ``max`` from"
+        f" {base[1]:.2f} to {fundamental[1]:.2f}.",
+        f"``crosses`` falls from {base[2]:.1f} to {chart[2]:.1f}:",
+        f"``std`` does not grow: it falls from {base[0]:.2f} to {chart[0]:.2f}.",
+        "``main()`` runs the three cases with the ten seeds 42 to 51.",
+    )

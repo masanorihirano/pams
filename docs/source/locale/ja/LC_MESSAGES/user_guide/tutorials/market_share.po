@@ -316,20 +316,39 @@ msgstr ""
 
 #: ../../source/user_guide/tutorials/market_share.rst:180
 msgid ""
-"The market maker use case of Plham shows one run for each spread, in "
-"which a smaller spread lets ``Market-B`` take the volume faster. PAMS "
-"finds the same order over ten seeds, with one seed (42) in which "
-"``Market-B`` does not gain."
+"The market maker use case of Plham shows the prices of one run with a "
+"spread of 0.02, and the share of ``Market-B`` in one run each with 0.01 "
+"and 0.0001, in which the smaller spread lets ``Market-B`` take the volume"
+" faster. PAMS finds the same order over ten seeds, with one seed (42) in "
+"which ``Market-B`` does not gain."
 msgstr ""
-"Plhamのマーケットメイカーのユースケースは、スプレッドごとに1回の実行を示し、スプレッドが小さいほど ``Market-B`` "
-"が速く出来高を奪います。PAMSでも10個のシードで同じ順序が見られますが、``Market-B`` "
+"Plhamのマーケットメイカーのユースケースは、スプレッドが0.02の1回の実行の価格と、0.01と0.0001でそれぞれ1回ずつ実行したときの "
+"``Market-B`` のシェアを示しており、スプレッドが小さい方が ``Market-B`` "
+"は速く出来高を奪います。PAMSでも10個のシードで同じ順序が見られますが、``Market-B`` "
 "のシェアが増えないシードが1つ（42）あります。"
 
-#: ../../source/user_guide/tutorials/market_share.rst:186
+#: ../../source/user_guide/tutorials/market_share.rst:183
+#, python-brace-format
+msgid ""
+"The agents count the volume of a market differently when they choose "
+"where to send an order. :class:`~pams.agents.MarketShareFCNAgent` sums "
+"the executed volume of the steps :math:`t - \\tau` to :math:`t`, the "
+"current step included, and adds :math:`10^{-10}` to each weight. The "
+"agent of the Plham sample sums the steps :math:`t - \\tau` to :math:`t - "
+"1` and adds nothing. Here :math:`t` is the current step and :math:`\\tau`"
+" is ``timeWindowSize``, or :math:`t` when it is smaller."
+msgstr ""
+"注文を出す市場を選ぶときの、市場の出来高の数え方が異なります。:class:`~pams.agents.MarketShareFCNAgent` "
+"は、ステップ :math:`t - \\tau` から :math:`t` まで（現在のステップを含む）に約定した出来高を合計し、各重みに "
+":math:`10^{-10}` を加えます。Plhamのサンプルのエージェントは、ステップ :math:`t - \\tau` から "
+":math:`t - 1` までを合計し、何も加えません。ここで :math:`t` は現在のステップで、:math:`\\tau` は "
+"``timeWindowSize`` と :math:`t` の小さい方です。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:191
 msgid "References"
 msgstr "参考文献"
 
-#: ../../source/user_guide/tutorials/market_share.rst:188
+#: ../../source/user_guide/tutorials/market_share.rst:193
 msgid ""
 "Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
 "microstructure of double auction markets. *Quantitative Finance*, 2(5), "
@@ -339,31 +358,37 @@ msgstr ""
 "microstructure of double auction markets. *Quantitative Finance*, 2(5), "
 "346–353. https://doi.org/10.1088/1469-7688/2/5/303"
 
-#: ../../source/user_guide/tutorials/market_share.rst:190
+#: ../../source/user_guide/tutorials/market_share.rst:195
 msgid ""
-"水田・早川・和泉・吉村 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013). "
-"人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係分析."
+"水田孝信, 早川聡, 和泉潔, 吉村忍 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013). "
+"人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係性分析. JPXワーキング・ペーパー, Vol. 2, "
+"日本取引所グループ."
 msgstr ""
-"水田・早川・和泉・吉村（Mizuta, Hayakawa, Izumi and "
-"Yoshimura）（2013）。人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係分析。"
+"水田孝信, 早川聡, 和泉潔, 吉村忍 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013). "
+"人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係性分析. JPXワーキング・ペーパー, Vol. 2, "
+"日本取引所グループ."
 
-#: ../../source/user_guide/tutorials/market_share.rst:192
+#: ../../source/user_guide/tutorials/market_share.rst:198
 msgid ""
-"草田・水田・早川・和泉・吉村 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura) (2014). "
-"人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析."
+"草田裕紀, 水田孝信, 早川聡, 和泉潔, 吉村忍 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura)"
+" (2014). 人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析. 人工知能学会全国大会論文集, JSAI2014,"
+" 3L3-OS-26a-2. https://doi.org/10.11517/pjsai.JSAI2014.0_3L3OS26a2"
 msgstr ""
-"草田・水田・早川・和泉・吉村（Kusada, Mizuta, Hayakawa, Izumi and "
-"Yoshimura）（2014）。人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析。"
+"草田裕紀, 水田孝信, 早川聡, 和泉潔, 吉村忍 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura)"
+" (2014). 人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析. 人工知能学会全国大会論文集, JSAI2014,"
+" 3L3-OS-26a-2. https://doi.org/10.11517/pjsai.JSAI2014.0_3L3OS26a2"
 
-#: ../../source/user_guide/tutorials/market_share.rst:194
+#: ../../source/user_guide/tutorials/market_share.rst:201
 msgid ""
-"草田・水田・早川・和泉 (Kusada, Mizuta, Hayakawa and Izumi) (2015). "
-"保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析."
+"草田裕紀, 水田孝信, 早川聡, 和泉潔 (Kusada, Mizuta, Hayakawa and Izumi) (2015). "
+"保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析. 人工知能学会論文誌, 30(5), "
+"675–682. https://doi.org/10.1527/tjsai.30_675"
 msgstr ""
-"草田・水田・早川・和泉（Kusada, Mizuta, Hayakawa and "
-"Izumi）（2015）。保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響：人工市場アプローチによる分析。"
+"草田裕紀, 水田孝信, 早川聡, 和泉潔 (Kusada, Mizuta, Hayakawa and Izumi) (2015). "
+"保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析. 人工知能学会論文誌, 30(5), "
+"675–682. https://doi.org/10.1527/tjsai.30_675"
 
-#: ../../source/user_guide/tutorials/market_share.rst:196
+#: ../../source/user_guide/tutorials/market_share.rst:204
 msgid ""
 "Plham: `MarketShareMain "
 "<https://plham.github.io/tutorial/MarketShareMain>`__, "

@@ -44,8 +44,9 @@ market price, with a lifetime of 10000 steps:
 ``triggerTime`` is counted from the start of the session, which is step 100, so the mistake happens at step 200.
 All the keys are described in :ref:`config-events`. Apart from the event, this is the configuration of
 :doc:`first_simulation` with other session names and an ``outstandingShares`` key, which do not change the run.
-The script also runs it without the mistake by setting ``enabled`` to ``false``: the event is then not created at
-all, and the market prices are exactly those of :doc:`first_simulation` with the same seed.
+The script also runs it without the mistake by setting ``enabled`` to ``False``: the event then registers no hooks
+and is not added to the simulator, and the market prices are exactly those of :doc:`first_simulation` with the
+same seed.
 
 
 Recording the order book
@@ -93,8 +94,9 @@ All 18 shares trade at one price, 279.963: PAMS executes all the volume matched 
 set by the last pair of orders matched, which here is the lowest of these buy orders.
 
 The other 9982 shares stay in the book as a *wall*. From then on, any buy order at or above 279.953 is executed
-against the wall at its price, so the market price can no longer rise above it; it only falls below it when a
-sell order meets a lower buy order, as at step 400. By step 599, the buyers have taken 207 of the 10000 shares.
+against the wall at the wall's price, 279.953, so the market price can no longer rise above it; it only falls
+below it when a sell order meets a lower buy order, as at step 400. By step 599, the buyers have taken 207 of the
+10000 shares.
 
 
 The price after the mistake
@@ -116,10 +118,11 @@ compares the market prices of steps 201 to 599 and the volume traded in them:
          the run with 100 shares climbs back to about 300 after step 350, and the run without the mistake
          stays around the fundamental price of 300.
 
-With 10000 shares, the price never exceeds the price of the mistaken order and ends the run 7% below the
-fundamental price. The FCN agents expect the price to return to 300 and send many buy orders, which is why more
-shares are traded than without the mistake, but one share at a time they cannot absorb the wall: at about one share
-every two steps, the 9793 shares left would last about 20000 more steps, longer than the order's lifetime.
+With 10000 shares, the price never exceeds the price of the mistaken order from step 201 on, and ends the run 7%
+below the fundamental price. The FCN agents expect the price to return to 300 and send many buy orders, which is
+why more shares are traded than without the mistake, but one share at a time they cannot absorb the wall: at about
+one share every two steps, the 9793 shares left would last about 19000 more steps, longer than the order's
+lifetime.
 With 100 shares, the wall is used up at step 347 and the price returns to the level of the run without the mistake.
 
 
@@ -144,10 +147,10 @@ price of steps 500 to 599:
      none        -          -              298.43
 
 The 10000-share order is never used up, and the mean price of steps 500 to 599 is about 6% below the fundamental
-price. An order of 100 shares is used up in every run, on average about 240 steps after the mistake, and the late
-prices are only 3.5 below those without the mistake. An order of 10 shares is used up about 6 steps after the
-mistake on average, and leaves no trace in the late prices. The size of the mistake, compared with the flow of
-buy orders that can absorb it, decides whether the market recovers within the run.
+price. An order of 100 shares is used up in every run, on average about 240 steps after the mistake, and the mean
+price of steps 500 to 599 is only 3.5 lower than without the mistake. An order of 10 shares is used up about 6
+steps after the mistake on average, and leaves no trace in the late prices. The size of the mistake, compared with
+the flow of buy orders that can absorb it, decides whether the market recovers within the run.
 
 
 The order book
@@ -157,10 +160,10 @@ The recorded books show the wall directly. Each dot is a price with at least one
 
 .. image:: images/fat_finger_book.png
    :alt: Prices of the buy and sell orders in the book from step 150 to step 350. Until step 200 the buy orders
-         lie between about 270 and 296. At step 200 the buy orders above 280 disappear, and a line of sell
+         lie between about 270 and 303. At step 200 the buy orders above 280 disappear, and a line of sell
          orders at 280 appears and stays until step 350, with all later buy orders below it.
 
-Before step 200, buy orders sit up to about 296. At step 200, those above 279.953 disappear, and the mistaken
+Before step 200, buy orders sit up to about 303. At step 200, those above 279.953 disappear, and the mistaken
 order forms a line of sell orders at 279.953 that stays for the rest of the run. The sell orders placed above it
 are never reached, and new buy orders pile up below it.
 

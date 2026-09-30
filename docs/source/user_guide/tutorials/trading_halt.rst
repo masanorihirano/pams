@@ -156,10 +156,16 @@ Last, the Plham tutorial lowers the threshold. The shock is 10%, so with a thres
 market several times while the price follows the shock. With 2% (the last row and panel), the halts come at moves
 of 2%, 4%, 6%, 8% and 10%, and the market halts five times, at steps 111, 212, 313, 414 and 528.
 
-The halts at steps 212, 313 and 414 start in the step in which the market trades again. The orders placed during
-the previous halt trade at once, and this jump alone moves the price past the next threshold. The market is halted
-at the end of 476 of the 500 steps, and the price falls in steps. The last halt lasts until the end of the run, so
-the last price is also the lowest, 268.97.
+The halts at steps 212, 313 and 414 start in the step in which the market trades again, for two reasons:
+
+- At step 212, the orders placed during the first halt trade at once. This jump moves the price from 291.28 (2.9%
+  below 300) to 281.33 (6.2% below), past the threshold of 4%.
+- At steps 313 and 414, the price is already past the next threshold when the market trades again: 281.33 is past
+  6%, and 275.48, the price from step 313, is past 8%. The trades of these steps do not bring the price back, so
+  the market halts again at once.
+
+The market is halted at the end of 476 of the 500 steps, and the price falls in steps. The last halt lasts until
+the end of the run, so the last price is also the lowest, 268.97.
 
 
 Over ten seeds
@@ -176,9 +182,10 @@ The script repeats the four cases for the seeds 42 to 51 and prints the means:
    halt 2%, 100 steps    5.0   472.0  268.90  268.90   136.1
 
 - Every seed has two halts at 5% and five at 2%.
-- On average, the halts keep the price closer to the new fundamental price of 270: the mean lowest price is
-  251.19 without halts, 258.79 with halts of 100 steps, 265.61 with halts of 200 steps and 268.90 with the 2%
-  threshold.
+- On average, the halts raise the lowest price: the mean lowest price is 251.19 without halts, 258.79 with halts
+  of 100 steps, 265.61 with halts of 200 steps and 268.90 with the 2% threshold.
+- The halts do not bring the last price closer to the new fundamental price of 270: the mean last price is 265.60
+  with halts of 100 steps, against 268.07 without halts.
 - The difference between the first two cases comes mostly from two seeds. Without halts, the lowest price is
   229.1 for seed 46 and 221.1 for seed 47. For the other eight seeds, it is between 255 and 260, close to the
   lowest prices with halts of 100 steps (255 to 262).
@@ -212,8 +219,11 @@ References
 - 清水季子, 村永淳 (Shimizu and Muranaga) (1999).
   取引停止措置が市場機能に及ぼす影響：人為的シャットダウンを備えた市場の挙動に関するシミュレーション分析.
   IMES Discussion Paper Series 99-J-1, Institute for Monetary and Economic Studies, Bank of Japan.
-- 小林, 橋本 (Kobayashi and Hashimoto) (2006).
+- 小林重人, 橋本敬 (Kobayashi and Hashimoto) (2006).
   サーキットブレーカー制度の有効性とその限界 ～人工市場シミュレーションによる検討～.
-  Cited by the Plham tutorial.
+  MPSシンポジウム2006, 情報処理学会シンポジウムシリーズ, Vol. 2006, No. 10, 29–36. Cited by the Plham tutorial.
+- Kobayashi, S. and Hashimoto, T. (2011). Benefits and limits of circuit breaker: institutional design using
+  artificial futures market. *Evolutionary and Institutional Economics Review*, 7(2), 355–372.
+  https://doi.org/10.14441/eier.7.355
 - Chiarella, C. and Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.
   *Quantitative Finance*, 2(5), 346–353. The FCN agents come from this model.

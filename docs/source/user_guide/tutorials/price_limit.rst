@@ -20,7 +20,7 @@ The market has 100 :class:`~pams.agents.FCNAgent` agents. Each agent expects a f
 three terms: the gap to the fundamental price, the recent trend (the chart term) and noise. It places a buy order
 below its expected price if this price is above the market price, and a sell order above it otherwise.
 
-:class:`~pams.events.PriceLimitRule` changes the price of every limit order before the market receives it.
+:class:`~pams.events.PriceLimitRule` checks the price of every limit order before the market receives it.
 Let :math:`P_0` be the market price at step 0 and :math:`r` the rate ``triggerChangeRate``. An order priced at
 :math:`P_0 (1 + r)` or above gets the price :math:`P_0 (1 + r)`, and an order priced at :math:`P_0 (1 - r)` or
 below gets the price :math:`P_0 (1 - r)`. Market orders are not changed. Here :math:`P_0 = 300` and
@@ -100,8 +100,8 @@ in 34 steps, and the rule changed the prices of 296 orders.
 
 The limit does not make extreme prices rarer: the price is at a limit in 133 steps, against 152 steps at or
 beyond one without the rule. It only cuts off the extreme values. In this run the price does not stay at one limit
-for long either. It reaches a limit 30 separate times (21 times at 315 and 11 times at 285), and its longest stay
-is 20 steps.
+for long either. It arrives at a limit 32 times (21 times at 315 and 11 times at 285), and its longest stay is
+20 steps.
 
 The upper panel of the figure shows these two runs. Their prices are the same until step 147, when the price first
 reaches a limit:
@@ -117,8 +117,9 @@ Stronger trend followers
 
 The third case raises the mean chart weight from 0 to 1.0. An agent divides its expected return by the sum of its
 three weights, so a larger chart weight also makes the noise count less. In the lower panel of the figure, the
-price moves more slowly. It stays near 315 from step 352 to step 376, then falls to 285 near step 500. The last 54
-steps are all at 285: the run ends while the price is still at the limit.
+price moves more slowly. It reaches 315 at step 352 and stays there until step 361, then comes back to 315 twice,
+the last time at step 376. It reaches 285 at step 502, and the last 54 steps are all at 285: the run ends while
+the price is still at the limit.
 
 One run is not enough to compare the cases, so the script repeats the runs with the rule on for the seeds 42 to 51
 and the mean chart weights 0, 0.5 and 1.0. It prints the means over the 10 seeds, then the longest stay of each

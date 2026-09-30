@@ -177,9 +177,14 @@ Differences from Plham
   which ``Market-B`` takes all the volume around step 1000, and a slower rise with a tick size of 2. The PAMS
   sample uses 10. Over ten seeds, PAMS finds the same direction, but ``Market-B`` wins only in 1 of 10 runs with a
   tick size of 5.
-- The market maker use case of Plham shows one run for each spread, in which a smaller spread lets ``Market-B``
-  take the volume faster. PAMS finds the same order over ten seeds, with one seed (42) in which ``Market-B`` does
-  not gain.
+- The market maker use case of Plham shows the prices of one run with a spread of 0.02, and the share of
+  ``Market-B`` in one run each with 0.01 and 0.0001, in which the smaller spread lets ``Market-B`` take the volume
+  faster. PAMS finds the same order over ten seeds, with one seed (42) in which ``Market-B`` does not gain.
+- The agents count the volume of a market differently when they choose where to send an order.
+  :class:`~pams.agents.MarketShareFCNAgent` sums the executed volume of the steps :math:`t - \tau` to :math:`t`,
+  the current step included, and adds :math:`10^{-10}` to each weight. The agent of the Plham sample sums the
+  steps :math:`t - \tau` to :math:`t - 1` and adds nothing. Here :math:`t` is the current step and :math:`\tau` is
+  ``timeWindowSize``, or :math:`t` when it is smaller.
 
 
 References
@@ -187,12 +192,15 @@ References
 
 - Chiarella, C. and Iori, G. (2002). A simulation analysis of the microstructure of double auction markets.
   *Quantitative Finance*, 2(5), 346–353. https://doi.org/10.1088/1469-7688/2/5/303
-- 水田・早川・和泉・吉村 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013).
-  人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係分析.
-- 草田・水田・早川・和泉・吉村 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura) (2014).
+- 水田孝信, 早川聡, 和泉潔, 吉村忍 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013).
+  人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係性分析.
+  JPXワーキング・ペーパー, Vol. 2, 日本取引所グループ.
+- 草田裕紀, 水田孝信, 早川聡, 和泉潔, 吉村忍 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura) (2014).
   人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析.
-- 草田・水田・早川・和泉 (Kusada, Mizuta, Hayakawa and Izumi) (2015).
+  人工知能学会全国大会論文集, JSAI2014, 3L3-OS-26a-2. https://doi.org/10.11517/pjsai.JSAI2014.0_3L3OS26a2
+- 草田裕紀, 水田孝信, 早川聡, 和泉潔 (Kusada, Mizuta, Hayakawa and Izumi) (2015).
   保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析.
+  人工知能学会論文誌, 30(5), 675–682. https://doi.org/10.1527/tjsai.30_675
 - Plham: `MarketShareMain <https://plham.github.io/tutorial/MarketShareMain>`__,
   `MarketShareMain_UseCases01 <https://plham.github.io/tutorial/MarketShareMain_UseCases01>`__ and
   `MarketShareMain_UseCases02 <https://plham.github.io/tutorial/MarketShareMain_UseCases02>`__.

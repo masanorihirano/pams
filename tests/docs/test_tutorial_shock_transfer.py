@@ -1,4 +1,5 @@
-import os
+import functools
+import statistics
 from pathlib import Path
 from typing import Dict
 from typing import List
@@ -6,9 +7,16 @@ from typing import List
 import matplotlib
 import pytest
 
+from pams.logs import ExecutionLog
+from pams.logs import Logger
+from pams.logs import OrderLog
+from pams.runners import SequentialRunner
 from tests.docs.sample_config import load_sample_config
+from tests.docs.test_tutorials import assert_in_page
+from tests.docs.test_tutorials import assert_same_image
 from tests.docs.test_tutorials import assert_shown
 from tests.docs.test_tutorials import load_tutorial
+from tests.docs.test_tutorials import record_runners
 from tests.docs.test_tutorials import run_tutorial
 from tests.docs.test_tutorials import text_blocks
 
@@ -19,6 +27,21 @@ matplotlib.use("Agg")
 pytestmark = pytest.mark.filterwarnings(
     "ignore:order price does not accord to the tick size:UserWarning"
 )
+
+
+class TradeRecorder(Logger):
+    """Keep the order logs and the execution logs of a run."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.orders: List[OrderLog] = []
+        self.executions: List[ExecutionLog] = []
+
+    def process_order_log(self, log: OrderLog) -> None:
+        self.orders.append(log)
+
+    def process_execution_log(self, log: ExecutionLog) -> None:
+        self.executions.append(log)
 
 
 def test_shock_transfer_uses_sample() -> None:
@@ -54,8 +77,14 @@ def test_shock_transfer_short_run(capsys: pytest.CaptureFixture[str]) -> None:
     assert lines[1] == text_blocks("shock_transfer.rst")[0][1]
 
 
-def test_shock_transfer_seed_42(tmp_path: Path) -> None:
+def test_shock_transfer_seed_42(monkeypatch: pytest.MonkeyPatch) -> None:
     tutorial = load_tutorial("tutorial_shock_transfer")
+    recorder = TradeRecorder()
+    monkeypatch.setattr(
+        tutorial,
+        "SequentialRunner",
+        functools.partial(SequentialRunner, logger=recorder),
+    )
     runner = tutorial.run_simulation(42)
     measures: Dict[str, float] = tutorial.measure(runner)
     # the page says: the arbitrage agents sell 26 shares of spot 2 and buy 18 shares
@@ -65,11 +94,77 @@ def test_shock_transfer_seed_42(tmp_path: Path) -> None:
     assert measures["arb index"] == 18
     assert measures["premium"] < 0
     assert measures["spot 2"] < 0
-    spot2 = runner.simulator.name2market["SpotMarket-2"]
-    assert min(spot2.get_market_prices(times=range(300, 500))) < 290
-    path = str(tmp_path / "prices.png")
-    tutorial.plot_prices(runner, path=path)
-    assert os.path.getsize(path) > 0
+
+    simulator = runner.simulator
+    spot1 = simulator.name2market["SpotMarket-1"]
+    spot2 = simulator.name2market["SpotMarket-2"]
+    index = simulator.name2market["IndexMarket-I"]
+    arbitrage: List[int] = [
+        agent.agent_id for agent in simulator.agents_group_name2agent["ArbitrageAgents"]
+    ]
+
+    def ordered(market_id: int, is_buy: bool) -> int:
+        return sum(
+            log.volume
+            for log in recorder.orders
+            if log.agent_id in arbitrage
+            and log.market_id == market_id
+            and log.is_buy == is_buy
+        )
+
+    def executed(market_id: int, is_buy: bool) -> int:
+        return sum(
+            log.volume
+            for log in recorder.executions
+            if log.market_id == market_id
+            and (log.buy_agent_id if is_buy else log.sell_agent_id) in arbitrage
+        )
+
+    # most of the orders of the arbitrage agents are not executed
+    for market in [spot1, spot2, index]:
+        for is_buy in [True, False]:
+            assert (
+                executed(market.market_id, is_buy)
+                < ordered(market.market_id, is_buy) / 2
+            )
+    # they send an order to buy 2 shares of the index with each order to sell one
+    # share of each stock, and the other way round, more often in the first way
+    assert ordered(index.market_id, True) == 2 * ordered(spot1.market_id, False)
+    assert ordered(index.market_id, False) == 2 * ordered(spot1.market_id, True)
+    assert ordered(spot1.market_id, False) > ordered(spot1.market_id, True)
+    spot1_net: int = executed(spot1.market_id, True) - executed(spot1.market_id, False)
+    assert spot1_net == sum(
+        agent.get_asset_volume(market_id=spot1.market_id) - 50
+        for agent in simulator.agents_group_name2agent["ArbitrageAgents"]
+    )
+
+    spot1_prices: List[float] = spot1.get_market_prices()
+    spot2_prices: List[float] = spot2.get_market_prices(times=range(300, 500))
+    index_prices: List[float] = index.get_market_prices()
+    lowest: float = min(spot2_prices)
+    lowest_index: float = min(index_prices)
+    assert_in_page(
+        "shock_transfer.rst",
+        f"Between steps 300 and 499, spot 2 is about"
+        f" {statistics.mean(spot2_prices):.0f} on average and falls to {lowest:.2f} at"
+        f" step {300 + spot2_prices.index(lowest)}, although its fundamental price stays"
+        " at 300.",
+        "In this run, spot 1 stays above its new fundamental price of 270 until step"
+        f" {next(t for t, price in enumerate(spot1_prices) if price < 270)}, while the"
+        " index falls below 285 at step"
+        f" {next(t for t, price in enumerate(index_prices) if price < 285)} and down to"
+        f" {lowest_index:.2f} at step {index_prices.index(lowest_index)}.",
+        f"In total, they sell {-measures['arb spot 2']:.0f} shares of spot 2 and buy"
+        f" {measures['arb index']:.0f} shares of the index.",
+        f"They also end the run with {spot1_net} more shares of spot 1: their sell"
+        f" orders for spot 1 add up to {ordered(spot1.market_id, False)} shares and"
+        f" their buy orders to only {ordered(spot1.market_id, True)}, but more of the"
+        f" buy orders are executed ({executed(spot1.market_id, True)} shares against"
+        f" {executed(spot1.market_id, False)}).",
+        "while in the run of seed 42 it is about"
+        f" {300 - statistics.mean(spot2_prices):.0f} below 300 between steps 300 and"
+        " 499 (see the plot).",
+    )
 
 
 def test_shock_transfer_comparison(capsys: pytest.CaptureFixture[str]) -> None:
@@ -87,12 +182,40 @@ def test_shock_transfer_comparison(capsys: pytest.CaptureFixture[str]) -> None:
     ]
 
 
+def test_shock_transfer_other_seeds() -> None:
+    # the page compares the cases with the seeds 52 to 61
+    tutorial = load_tutorial("tutorial_shock_transfer")
+    results = tutorial.compare(list(range(52, 62)))
+    same, spot, index = (results[name] for name in tutorial.CASES)
+    assert spot["spot 2"] < 0
+    assert spot["spot 2"] > index["spot 2"]
+    assert same["spot 2"] < index["spot 2"]
+    assert spot["premium"] > 0 and spot["arb spot 2"] > 0
+    assert index["premium"] < 0 and index["arb spot 2"] < 0
+    assert_in_page(
+        "shock_transfer.rst",
+        f"With the seeds 52 to 61, spot 2 is {-spot['spot 2']:.2f} below 300 on"
+        " average when spot 1 reacts faster, and above 300 in only"
+        f" {spot['spot 2 up']:.0f} of the 10 seeds, but it is still higher than when"
+        " the index reacts faster.",
+    )
+
+
 def test_shock_transfer_main(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.chdir(tmp_path)
+    runners: List[SequentialRunner] = record_runners(monkeypatch)
     run_tutorial("tutorial_shock_transfer")
-    assert os.path.getsize(tmp_path / "shock_transfer_prices.png") > 0
+    assert_same_image(
+        "shock_transfer_prices.png", tmp_path / "shock_transfer_prices.png"
+    )
+    # the run of seed 42, then the three cases with ten seeds and 100 steps each
+    assert len(runners) == 31
+    assert runners[0].simulator.sessions[1].iteration_steps == 500
+    assert {runner.simulator.sessions[1].iteration_steps for runner in runners[1:]} == {
+        100
+    }
     lines: List[str] = capsys.readouterr().out.splitlines()
     # the page shows the prices of seed 42 and then the comparison
     blocks: List[List[str]] = text_blocks("shock_transfer.rst")
@@ -114,3 +237,11 @@ def test_shock_transfer_main(
     spot2: Dict[str, float] = {name: float(row[1]) for name, row in rows.items()}
     assert min(spot2, key=spot2.__getitem__) == "index reacts faster"
     assert max(spot2, key=spot2.__getitem__) == "spot reacts faster"
+    assert all(abs(value) < 1 for value in spot2.values())
+    assert_in_page(
+        "shock_transfer.rst",
+        "the arbitrage agents buy spot 2, and spot 2 is above 300 in 7 of the 10 seeds.",
+        "In the table, spot 2 moves by less than one price unit on average,",
+        "``compare`` runs each case with the ten seeds 42 to 51",
+        "short, the second session has only 100 steps:",
+    )

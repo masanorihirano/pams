@@ -17,9 +17,9 @@ The model
 ---------
 
 Each :class:`~pams.agents.FCNAgent` mixes three ways to predict the price.
-The **fundamental** part expects the market price :math:`P_t` to move back to the fundamental price
-:math:`P^f_t`. The **chart** part expects the recent trend to go on. The **noise** part is a random guess.
-The agent weights the three parts with :math:`w_F`, :math:`w_C` and :math:`w_N` and computes an expected return
+The **fundamental** term expects the market price :math:`P_t` to move back to the fundamental price
+:math:`P^f_t`. The **chart** term expects the recent trend to go on. The **noise** term is a random guess.
+The agent weights the three terms with :math:`w_F`, :math:`w_C` and :math:`w_N` and computes an expected return
 (slightly simplified here; the exact formula is in the FCNAgent section of :ref:`config-agents`)
 
 .. math::
@@ -56,7 +56,7 @@ The script uses the configuration of ``samples/CI2002`` as a Python dict:
 It is the *Minimal* configuration of :ref:`config-quickstart`, which :doc:`first_simulation` also uses, with
 three differences:
 
-- ``meanReversionTime`` sets :math:`\tau_r`, the time scale of the fundamental part. Each agent gets a value from
+- ``meanReversionTime`` sets :math:`\tau_r`, the time scale of the fundamental term. Each agent gets a value from
   50 to 99 steps. Without it, :math:`\tau_r` is the agent's ``timeWindowSize`` (100 to 199 steps).
 - The sessions are named ``0`` and ``1``, as in Plham, instead of ``warmup`` and ``main``.
 - ``highFrequencySubmitRate`` of the first session has no effect: 1.0 is the default, and there are no
@@ -142,10 +142,10 @@ More fundamentalists
 
 More chartists
    ``crosses`` falls from 79.6 to 50.3: once the price has moved away from the fundamental price, it stays on
-   that side for longer, because the chart part expects the trend to go on. Plham also finds longer trends.
+   that side for longer, because the chart term expects the trend to go on. Plham also finds longer trends.
    In this setup, however, ``std`` does not grow: it falls from 6.46 to 5.22.
    A possible reason is in the formula: the weights are divided by their sum, so a chart weight also makes the
-   noise part smaller.
+   noise term smaller.
 
 In both cases, fewer shares are traded.
 Try other values, for example a larger ``chartWeight`` or a smaller ``noiseWeight``, and compare the tables.
@@ -156,6 +156,11 @@ Differences from Plham
 
 - PAMS and Plham use different random number generators, so the same configuration and seed give different
   prices.
+- The configuration on the Plham tutorial page has no ``meanReversionTime``, so its agents use their
+  ``timeWindowSize`` (100 to 199 steps) as :math:`\tau_r`. The PAMS sample, like the sample of the current Plham,
+  sets :math:`\tau_r` to 50 to 99 steps. For the same gap between the market price and the fundamental price, the
+  fundamental term is then about twice as large, so the pull toward the fundamental price is stronger than in the
+  Plham tutorial.
 - The Plham tutorial answers its questions with plots of the prices. This tutorial also measures how the market
   price moves around the fundamental price, and averages the numbers over ten seeds.
 
