@@ -115,6 +115,7 @@ class TransactionCostRevenueLogger(ExecutionCountLogger):
         self.revenues: List[Tuple[int, int, float, float]] = []
 
     def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+        """Record the transaction cost revenues of the market in this step."""
         market = log.market
         self.revenues.append(
             (
