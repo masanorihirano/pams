@@ -624,6 +624,84 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
         parallel_runner._shutdown_executor()
 
+    @pytest.mark.parametrize(
+        "test_name, kwargs, cancels_placed_orders",
+        [
+            (
+                "test_collect_orders_from_normal_agents_market_access",
+                {"cancels": True},
+                True,
+            ),
+            (
+                "test_spoofing_order_is_checked_first",
+                {"agent_class": "GivenOrdersAgent", "cancels": True},
+                True,
+            ),
+            (
+                "test_cancel_order_of_own_order_is_accepted",
+                {"agent_class": "GivenOrdersAgent", "order_state": "placed"},
+                True,
+            ),
+            (
+                "test_cancel_order_of_own_order_is_accepted",
+                {"agent_class": "GivenOrdersAgent", "order_state": "executed"},
+                False,
+            ),
+            (
+                "test_cancel_order_of_order_of_another_agent_is_rejected",
+                {"agent_class": "GivenOrdersAgent", "owner_is_agent": True},
+                False,
+            ),
+            (
+                "test_cancel_order_of_order_placed_later_by_another_agent_is_rejected",
+                {},
+                False,
+            ),
+            (
+                "test_check_submitted_orders_same_as_sequential",
+                {"rejected": "cancel"},
+                False,
+            ),
+        ],
+        ids=[
+            "market access",
+            "spoofing",
+            "own placed order",
+            "own executed order",
+            "order of another agent",
+            "order placed later",
+            "same as sequential",
+        ],
+    )
+    def test_submitted_orders_checked_with_synced_attributes(
+        self,
+        test_name: str,
+        kwargs: Dict[str, Any],
+        cancels_placed_orders: bool,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        # if an agent of a task lists attributes, MultiProcessAgentParallelRunner receives the
+        # orders in the order books as the orders on the main process instead of their copies.
+        # The submitted orders must be checked in the same way, so the tests of the checks pass.
+        monkeypatch.setattr(
+            GivenOrdersAgent, "synced_attributes", ("orders_to_submit",)
+        )
+        tokens: List[Tuple[Any, ...]] = []
+        get_object = _SimulationObjects.get
+
+        def record_token(objects: _SimulationObjects, token: Tuple[Any, ...]) -> Any:
+            tokens.append(token)
+            return get_object(objects, token=token)
+
+        monkeypatch.setattr(_SimulationObjects, "get", record_token)
+        getattr(self, test_name)(**kwargs)
+        order_tokens = [token for token in tokens if token[0] == "order"]
+        if self.receives_synced_attributes and cancels_placed_orders:
+            # the cancel orders refer to the orders in the order books
+            assert len(order_tokens) > 0
+        else:
+            assert order_tokens == []
+
     def test_num_parallel_default(self) -> None:
         setting = copy.deepcopy(self.default_setting)
         del setting["simulation"]["numParallel"]
