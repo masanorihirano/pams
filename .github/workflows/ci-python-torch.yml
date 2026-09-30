@@ -1,0 +1,62 @@
+# Tests of the optional PyTorch integration, which are skipped in the other workflows
+
+name: CI-torch
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "30 22 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# uv uses the Python from actions/setup-python (setup-uv sets UV_PYTHON to the
+# same version) and never downloads one. Only `uv sync` and `uv pip install`
+# install packages; `uv run` uses that environment as it is.
+env:
+  UV_PYTHON_DOWNLOADS: never
+  UV_NO_SYNC: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # a deadlock of the worker processes should not hold the runner for hours
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: "3.11"
+          enable-cache: false
+      - name: Install dependencies
+        run: |
+          uv sync
+          # PyTorch is not a dependency of pams; the CPU build is enough for the tests.
+          # `uv pip install` adds it to the environment made by `uv sync` without changing
+          # the packages there (it runs after `uv sync`, which removes the packages pams
+          # does not need). torch does not require numpy, so numpy stays at the 1.x that
+          # pams uses on Python 3.11, and PyTorch works with it.
+          uv pip install torch --default-index https://download.pytorch.org/whl/cpu
+          uv run python -c "import numpy, torch; print(torch.__version__, numpy.__version__)"
+      - name: Test
+        run: |
+          uv run pytest -rs --cov=./ --cov-report=xml tests/pams/runners/test_torch_parallel.py
+      # the tests using PyTorch are skipped in the codecov workflow
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
+          files: ./coverage.xml
+          flags: torch
+          verbose: true
