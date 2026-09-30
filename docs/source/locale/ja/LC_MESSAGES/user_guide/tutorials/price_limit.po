@@ -59,7 +59,7 @@ msgid ""
 "market price, and a sell order above it otherwise."
 msgstr ""
 "市場には100体の :class:`~pams.agents.FCNAgent` "
-"エージェントがいます。各エージェントは、ファンダメンタル価格との乖離、直近のトレンド（チャート項）、ノイズという3つの項を重み付けして組み合わせ、将来の価格を予想します。この予想価格が市場価格より高ければ予想価格より低い価格で買い注文を出し、そうでなければ予想価格より高い価格で売り注文を出します。"
+"エージェントがいます。各エージェントは、ファンダメンタル価格との乖離、直近のトレンド（チャート成分）、ノイズという3つの成分を重み付けして組み合わせ、将来の価格を予想します。この予想価格が市場価格より高ければ予想価格より低い価格で買い注文を出し、そうでなければ予想価格より高い価格で売り注文を出します。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:23
 msgid ""
@@ -98,7 +98,7 @@ msgstr "設定"
 msgid ""
 "The configuration is ``samples/price_limit/config.json`` of the "
 "repository, written as a Python dict:"
-msgstr "設定は、リポジトリの ``samples/price_limit/config.json`` をPythonの辞書として書いたものです："
+msgstr "設定は、リポジトリの ``samples/price_limit/config.json`` をPythonのdictとして書いたものです："
 
 #: ../../source/user_guide/tutorials/price_limit.rst:46
 msgid ""
@@ -119,7 +119,7 @@ msgid ""
 msgstr ""
 "``{\"expon\": [0.2]}`` は、各エージェントの重みを平均0.2の指数分布から抽出します（:ref:`config-"
 "jsonrandom` "
-"を参照）。ファンダメンタル項の重みが0.2、チャート項の重みが0、ノイズ項の重みが1.0なので、エージェントは主にノイズに従います。"
+"を参照）。ファンダメンタル成分の重みが0.2、チャート成分の重みが0、ノイズ成分の重みが1.0なので、エージェントは主にノイズに従います。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:51
 msgid ""
@@ -142,7 +142,7 @@ msgid ""
 "length of the second session:"
 msgstr ""
 "``run_simulation`` "
-"は、設定のコピーについて、ルールを有効にするかどうか、エージェントのチャート項の重みの平均、2番目のセッションの長さという3つの値を変更します："
+"は、設定のコピーについて、ルールを有効にするかどうか、エージェントのチャート成分の重みの平均、2番目のセッションの長さという3つの値を変更します："
 
 #: ../../source/user_guide/tutorials/price_limit.rst:66
 msgid ""
@@ -196,7 +196,7 @@ msgstr "価格が制限値に張り付く期間"
 msgid ""
 "The script first runs three cases with seed 42: the rule on, the rule "
 "off, and the rule on with a mean chart weight of 1.0. It prints:"
-msgstr "スクリプトはまず、シード42で3つのケースを実行します：ルールあり、ルールなし、そしてチャート項の重みの平均を1.0にしたルールありです。出力は次のとおりです："
+msgstr "スクリプトはまず、シード42で3つのケースを実行します：ルールあり、ルールなし、そしてチャート成分の重みの平均を1.0にしたルールありです。出力は次のとおりです："
 
 #: ../../source/user_guide/tutorials/price_limit.rst:97
 msgid ""
@@ -229,7 +229,7 @@ msgid ""
 "panel: with a chart weight of 1.0\n"
 "the price moves more slowly and stays at or near 285 from about step 500 "
 "to the end."
-msgstr "上段：制限がない場合、価格はステップ360付近で400に達し、ステップ530付近で245まで下がります。制限がある場合、価格は285と315の破線の間にとどまります。下段：チャート項の重みが1.0の場合、価格はよりゆっくり動き、ステップ500付近から最後まで285またはその近くにとどまります。"
+msgstr "上段：制限がない場合、価格はステップ360付近で400に達し、ステップ530付近で245まで下がります。制限がある場合、価格は285と315の破線の間にとどまります。下段：チャート成分の重みが1.0の場合、価格はよりゆっくり動き、ステップ500付近から最後まで285またはその近くにとどまります。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:116
 msgid "Stronger trend followers"
@@ -252,14 +252,14 @@ msgid ""
 "runs with the rule on for the seeds 42 to 51 and the mean chart weights "
 "0, 0.5 and 1.0. It prints the means over the 10 seeds, then the longest "
 "stay of each seed:"
-msgstr "1回の実行ではケースを比較するのに十分でないため、スクリプトはルールありの実行を、シード42から51とチャート項の重みの平均0、0.5、1.0で繰り返します。10個のシードでの平均を出力し、続いて各シードの最長の張り付き期間を出力します："
+msgstr "1回の実行ではケースを比較するのに十分でないため、スクリプトはルールありの実行を、シード42から51とチャート成分の重みの平均0、0.5、1.0で繰り返します。10個のシードでの平均を出力し、続いて各シードの最長の張り付き期間を出力します："
 
 #: ../../source/user_guide/tutorials/price_limit.rst:139
 msgid ""
 "With stronger trend followers, the longest stay is longer on average: "
 "35.2 steps with a chart weight of 1.0 against 16.4 steps without trend "
 "followers. This is the effect the Plham tutorial describes."
-msgstr "トレンド追随型のエージェントが強いほど、最長の張り付き期間は平均して長くなります：チャート項の重みが1.0では35.2ステップで、トレンド追随型のエージェントがいない場合の16.4ステップより長くなります。これはPlhamのチュートリアルが述べている効果です。"
+msgstr "トレンド追随型のエージェントが強いほど、最長の張り付き期間は平均して長くなります：チャート成分の重みが1.0では35.2ステップで、トレンド追随型のエージェントがいない場合の16.4ステップより長くなります。これはPlhamのチュートリアルが述べている効果です。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:141
 msgid ""
@@ -267,7 +267,7 @@ msgid ""
 "six of the ten seeds have a longest stay of 16 steps or fewer, which is "
 "common without trend followers too. The mean comes mostly from the seeds "
 "45 (94 steps) and 46 (80 steps)."
-msgstr "この効果はシードによって大きく異なります。チャート項の重みが1.0の場合、10個のシードのうち6個では最長の張り付き期間が16ステップ以下で、これはトレンド追随型のエージェントがいない場合にもよく見られる値です。平均を押し上げているのは主にシード45（94ステップ）とシード46（80ステップ）です。"
+msgstr "この効果はシードによって大きく異なります。チャート成分の重みが1.0の場合、10個のシードのうち6個では最長の張り付き期間が16ステップ以下で、これはトレンド追随型のエージェントがいない場合にもよく見られる値です。平均を押し上げているのは主にシード45（94ステップ）とシード46（80ステップ）です。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:144
 msgid ""
@@ -291,7 +291,7 @@ msgid ""
 "``OverflowError``, and for the seeds 43 and 44 the price falls to "
 "0.00001, the tick size."
 msgstr ""
-"スクリプトは、制限なしでチャート項の重みを1.0にしたケースは実行しません。これほど強いトレンド追随型のエージェントがいて、それを止めるものがないと、価格は発散します：シード42では実行が"
+"スクリプトは、制限なしでチャート成分の重みを1.0にしたケースは実行しません。これほど強いトレンド追随型のエージェントがいて、それを止めるものがないと、価格は発散します：シード42では実行が"
 " ``OverflowError`` で停止し、シード43と44では価格がティックサイズである0.00001まで下がります。"
 
 #: ../../source/user_guide/tutorials/price_limit.rst:156

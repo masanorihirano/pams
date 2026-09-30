@@ -111,7 +111,7 @@ msgid ""
 "(see :ref:`config-sessions`)."
 msgstr ""
 "最初のセッション（100ステップ）は板を埋めるだけで、``maxHighFrequencyOrders: 0`` "
-"により裁定エージェントは動作しません。2つ目のセッション（500ステップ）では注文が約定します。各ステップで最大3体のFCNエージェントが注文を出し、そのそれぞれの後に最大5体の裁定エージェントが動作できます（:ref"
+"により裁定エージェントは動作しません。2番目のセッション（500ステップ）では注文が約定します。各ステップで最大3体のFCNエージェントが注文を出し、そのそれぞれの後に最大5体の裁定エージェントが動作できます（:ref"
 ":`config-sessions` を参照）。"
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:42
@@ -121,7 +121,7 @@ msgid ""
 "so 0 means step 100. At that step, the fundamental price of spot 1 is "
 "multiplied by 1 − 0.1, from 300 to 270."
 msgstr ""
-"2つ目のセッションには ``FundamentalPriceShock`` イベントが記載されています（:ref:`config-events` "
+"2番目のセッションには ``FundamentalPriceShock`` イベントが記載されています（:ref:`config-events` "
 "を参照）。``triggerTime`` はセッションの開始時点から数えるので、0はステップ100を意味します。このステップで、spot "
 "1のファンダメンタル価格が1 − 0.1倍され、300から270になります。"
 
@@ -187,7 +187,7 @@ msgid ""
 "index, and the number of steps of the second session:"
 msgstr ""
 "``run_simulation`` は設定を1つのシードで実行します。spot 1とインデックスのFCNエージェントの "
-"``fundamentalWeight`` の平均と、2つ目のセッションのステップ数を変えることができます："
+"``fundamentalWeight`` の平均と、2番目のセッションのステップ数を変えることができます："
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:78
 msgid ""
@@ -273,7 +273,7 @@ msgid ""
 msgstr ""
 "ノイズ成分の重みは1.0のままなので、ファンダメンタル成分の重みが0.1のエージェントはほとんどノイズトレーダーであり、その市場は新しいファンダメンタル価格へゆっくりとしか動きません。``compare``"
 " は各ケースをシード42から51の10個のシードで実行し、``measure`` "
-"をそれらで平均します。実行を短くするため、2つ目のセッションは100ステップだけです："
+"をそれらで平均します。実行を短くするため、2番目のセッションは100ステップだけです："
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:135
 msgid "After the prices, the script prints one line per case:"
@@ -286,7 +286,7 @@ msgid ""
 "session."
 msgstr ""
 "``premium`` はインデックス市場の市場価格からインデックス値を引いたもの、``spot 2`` はspot "
-"2の市場価格から300を引いたものです。どちらも2つ目のセッションでの平均です。"
+"2の市場価格から300を引いたものです。どちらも2番目のセッションでの平均です。"
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:146
 msgid "``up`` is the number of seeds where spot 2 is above 300 on average."
@@ -366,7 +366,7 @@ msgid ""
 "The Plham tutorial asks you to run ten or more trials of each case. This "
 "tutorial runs ten seeds, with a shorter second session, and prints the "
 "means."
-msgstr "Plhamのチュートリアルでは、各ケースを10回以上試行するよう求めています。このチュートリアルでは、2つ目のセッションを短くして10個のシードで実行し、平均を出力します。"
+msgstr "Plhamのチュートリアルでは、各ケースを10回以上試行するよう求めています。このチュートリアルでは、2番目のセッションを短くして10個のシードで実行し、平均を出力します。"
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:178
 msgid "References"
@@ -378,8 +378,9 @@ msgid ""
 "JSAI2015, 1J4-OS-13a-2 (in Japanese). "
 "https://doi.org/10.11517/pjsai.JSAI2015.0_1J4OS13a2"
 msgstr ""
-"鳥居拓馬、中川勇樹、和泉潔（2015）。複数資産人工市場を用いた裁定取引によるショック伝搬の分析。人工知能学会全国大会論文集、JSAI2015、1J4"
-"-OS-13a-2。https://doi.org/10.11517/pjsai.JSAI2015.0_1J4OS13a2"
+"鳥居拓馬, 中川勇樹, 和泉潔 (2015). 複数資産人工市場を用いた裁定取引によるショック伝搬の分析. 人工知能学会全国大会論文集, "
+"JSAI2015, 1J4-OS-13a-2. "
+"https://doi.org/10.11517/pjsai.JSAI2015.0_1J4OS13a2"
 
 #: ../../source/user_guide/tutorials/shock_transfer.rst:182
 msgid ""

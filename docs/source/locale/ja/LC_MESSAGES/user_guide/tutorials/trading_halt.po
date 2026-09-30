@@ -116,7 +116,7 @@ msgid ""
 "repository without its ``MEMO`` keys, written as a Python dict:"
 msgstr ""
 "設定は、リポジトリの ``samples/trading_halt/config.json`` から ``MEMO`` "
-"キーを除き、Pythonの辞書として書いたものです："
+"キーを除き、Pythonのdictとして書いたものです："
 
 #: ../../source/user_guide/tutorials/trading_halt.rst:52
 msgid ""
@@ -139,7 +139,7 @@ msgid ""
 ":ref:`config-jsonrandom`), so the agents are pulled towards the "
 "fundamental price, and there are no trend followers."
 msgstr ""
-"ファンダメンタル項の重みの平均は1.0、チャート項の重みの平均は0なので（:ref:`config-jsonrandom` "
+"ファンダメンタル成分の重みの平均は1.0、チャート成分の重みの平均は0なので（:ref:`config-jsonrandom` "
 "を参照）、エージェントはファンダメンタル価格に引き寄せられ、トレンド追随型のエージェントはいません。"
 
 #: ../../source/user_guide/tutorials/trading_halt.rst:58
@@ -285,7 +285,7 @@ msgid ""
 "and 379, and the market is halted in 402 of the 500 steps. The lowest "
 "price is 266.82, closer to 270 than in the first two cases, but only 148 "
 "shares trade, against 215 without halts."
-msgstr "200ステップの場合（3行目とパネル）、売買停止はステップ127と379に始まり、市場は500ステップのうち402ステップで売買停止中です。最安値は266.82で、最初の2つのケースより270に近くなりますが、取引されるのは148株だけで、売買停止なしでは215株です。"
+msgstr "200ステップの場合（3行目と3番目のパネル）、売買停止はステップ127と379に始まり、市場は500ステップのうち402ステップで売買停止中です。最安値は266.82で、最初の2つのケースより270に近くなりますが、取引されるのは148株だけで、売買停止なしでは215株です。"
 
 #: ../../source/user_guide/tutorials/trading_halt.rst:153
 msgid "A lower threshold"
@@ -298,7 +298,7 @@ msgid ""
 "price follows the shock. With 2% (the last row and panel), the halts come"
 " at moves of 2%, 4%, 6%, 8% and 10%, and the market halts five times, at "
 "steps 111, 212, 313, 414 and 528."
-msgstr "最後に、Plhamのチュートリアルは閾値を下げます。ショックは10%なので、閾値が2%であれば、価格がショックに追随する間にルールは市場の売買を何度か停止できます。2%の場合（最後の行とパネル）、売買停止は2%、4%、6%、8%、10%の変動で起こり、市場はステップ111、212、313、414、528の5回売買停止します。"
+msgstr "最後に、Plhamのチュートリアルは閾値を下げます。ショックは10%なので、閾値が2%であれば、価格がショックに追随する間にルールは市場の売買を何度か停止できます。2%の場合（最後の行と最後のパネル）、売買停止は2%、4%、6%、8%、10%の変動で起こり、市場はステップ111、212、313、414、528の5回売買停止します。"
 
 #: ../../source/user_guide/tutorials/trading_halt.rst:159
 msgid ""
