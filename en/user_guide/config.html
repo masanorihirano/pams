@@ -1549,11 +1549,15 @@ Must be a JSON integer.</p></td>
 </table>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">markets</span></code> must include the index market group <strong>and</strong> the groups of all its component markets.
-Otherwise the component orders are still sent, and the simulation stops with a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> (a market ID)
-when the first one is executed.
-Unlike plham, the component markets are not added automatically; the agent warns at setup about each
-index market with missing components.</p></li>
+<li><p>The agent trades only the index markets whose groups are in <code class="docutils literal notranslate"><span class="pre">markets</span></code>. It skips any other <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>
+without an error, whether or not <code class="docutils literal notranslate"><span class="pre">markets</span></code> includes its component markets, and it warns about this only if
+<code class="docutils literal notranslate"><span class="pre">markets</span></code> includes no <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> at all (see below).</p></li>
+<li><p>For each index market that it trades, <code class="docutils literal notranslate"><span class="pre">markets</span></code> must also include the groups of all its component markets.
+Unlike plham, the component markets are not added automatically; the agent warns at setup about each such
+index market with missing components. The simulation still runs normally until the agent finds an arbitrage
+opportunity in that index market. Then it submits orders for the component markets, and the simulation stops
+with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (<code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">for</span> <span class="pre">an</span> <span class="pre">inaccessible</span> <span class="pre">market</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">allowed</span></code>). If no such opportunity comes, the
+simulation ends without the error.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">markets</span></code> includes no <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>, the agent never places an order, and it warns about this at setup.</p></li>
 <li><p>All component markets must have the same <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code>.</p></li>
 <li><p>It only trades while the index and all its components are executing orders.</p></li>
@@ -1581,7 +1585,7 @@ below). Old orders are not cancelled; they expire after <code class="docutils li
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>market instance name</p></td>
 <td><p>The market to quote in. It must also be one of the agent’s tradable markets; otherwise the simulation
-stops with a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> (a market ID) when its first order is executed.</p></td>
+stops with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when the agent first submits orders.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">netInterestSpread</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span> <span class="sd-sphinx-override sd-badge sd-bg-info sd-bg-text-info">JsonRandom</span></p></td>
 <td><p>number</p></td>
@@ -2064,10 +2068,18 @@ e.g. <code class="docutils literal notranslate"><span class="pre">None</span></c
 <code class="docutils literal notranslate"><span class="pre">OrderMistakeShock</span></code>, is not a market instance name. Use the instance name (<code class="docutils literal notranslate"><span class="pre">Market-0</span></code>), not the group
 name.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">for</span> <span class="pre">an</span> <span class="pre">inaccessible</span> <span class="pre">market</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">allowed</span></code></p></td>
+<td><p>An agent submitted an order for a market that it cannot trade: a <code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> whose
+<code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> is not in its <code class="docutils literal notranslate"><span class="pre">markets</span></code>, or an <code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code> whose <code class="docutils literal notranslate"><span class="pre">markets</span></code> lack the component
+markets. Add the market group named in the message to the agent’s <code class="docutils literal notranslate"><span class="pre">markets</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cancel</span> <span class="pre">order</span> <span class="pre">for</span> <span class="pre">an</span> <span class="pre">order</span> <span class="pre">of</span> <span class="pre">another</span> <span class="pre">agent</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">allowed</span></code></p></td>
+<td><p>A user-defined agent submitted a <code class="docutils literal notranslate"><span class="pre">Cancel</span></code> of an order that has its own <code class="docutils literal notranslate"><span class="pre">agent_id</span></code> but the same
+<code class="docutils literal notranslate"><span class="pre">order_id</span></code>, price, time step, side and kind as an order that another agent placed. Cancel only the
+orders that the agent itself placed.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">KeyError</span></code> with a number, e.g. <code class="docutils literal notranslate"><span class="pre">KeyError:</span> <span class="pre">0</span></code>, while the simulation runs</p></td>
-<td><p>A market was used that the agent cannot trade: a <code class="docutils literal notranslate"><span class="pre">MarketMakerAgent</span></code> whose <code class="docutils literal notranslate"><span class="pre">targetMarket</span></code> is not in
-its <code class="docutils literal notranslate"><span class="pre">markets</span></code>, or an <code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span></code> whose <code class="docutils literal notranslate"><span class="pre">markets</span></code> lack the component markets. A
-<code class="docutils literal notranslate"><span class="pre">FundamentalPriceShock</span></code> whose <code class="docutils literal notranslate"><span class="pre">target</span></code> is an <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> fails the same way.</p></td>
+<td><p>A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceShock</span></code> whose <code class="docutils literal notranslate"><span class="pre">target</span></code> is an <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>. Shock its component markets instead.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">market</span> <span class="pre">name</span> <span class="pre">X</span> <span class="pre">is</span> <span class="pre">duplicate</span></code> / <code class="docutils literal notranslate"><span class="pre">agent</span> <span class="pre">name</span> <span class="pre">X</span> <span class="pre">is</span> <span class="pre">duplicate</span></code></p></td>
 <td><p>Two groups produce the same instance name, e.g. a group listed twice or an inherited <code class="docutils literal notranslate"><span class="pre">prefix</span></code>.</p></td>

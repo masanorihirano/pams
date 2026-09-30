@@ -529,6 +529,10 @@ Therefore, it is not guaranteed that this method is called at all the step of si
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>You should implement this method if you inherit this agent.</p>
+<p><code class="docutils literal notranslate"><span class="pre">markets</span></code> includes all the markets of the simulation, not only the markets that this agent can
+access. Every returned order must have the <code class="docutils literal notranslate"><span class="pre">agent_id</span></code> of this agent and be for a market that this
+agent can access (see <a class="reference internal" href="#pams.agents.Agent.is_market_accessible" title="pams.agents.Agent.is_market_accessible"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.is_market_accessible()</span></code></a>), and a cancel order must cancel
+such an order, not an order that another agent placed. Otherwise, the runners raise ValueError.</p>
 </div>
 </dd></dl>
 

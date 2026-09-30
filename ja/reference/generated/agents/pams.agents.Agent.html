@@ -526,6 +526,7 @@
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
 <p>このエージェントを継承する場合は、このメソッドを実装する必要があります。</p>
+<p><code class="docutils literal notranslate"><span class="pre">markets</span></code> には、このエージェントがアクセスできる市場だけでなく、シミュレーションのすべての市場が含まれます。返す注文はすべて、このエージェントの <code class="docutils literal notranslate"><span class="pre">agent_id</span></code> を持ち、このエージェントがアクセスできる市場（<a class="reference internal" href="#pams.agents.Agent.is_market_accessible" title="pams.agents.Agent.is_market_accessible"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.is_market_accessible()</span></code></a> を参照）に対するものでなければなりません。また、取消注文はそのような注文を取り消すものでなければならず、他のエージェントが出した注文を取り消すものであってはなりません。これらに反する場合、ランナーは ValueError を送出します。</p>
 </div>
 </dd></dl>
 

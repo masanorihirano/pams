@@ -713,6 +713,115 @@
 
         <span class="n">_</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">func</span><span class="p">,</span> <span class="n">kwargs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="p">]</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_placed_order_to_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="n">Cancel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Order</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get the order placed in the order book that a cancel order refers to (internal method).</span>
+
+<span class="sd">        Order books find the order to cancel by equality, and :func:`pams.order.Order.__eq__` does not compare</span>
+<span class="sd">        agent IDs. Therefore, the returned order can be another object than ``cancel.order`` and can have</span>
+<span class="sd">        another agent ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cancel (Cancel): cancel order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Order, Optional: the order equal to ``cancel.order`` in the buy or sell order book of its market, or</span>
+<span class="sd">            None if the market does not exist or the order is not in the order book, e.g., because it has already</span>
+<span class="sd">            been executed or canceled, or has expired.</span>
+
+<span class="sd">        """</span>
+        <span class="n">market</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cancel</span><span class="o">.</span><span class="n">market_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">market</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">order_book</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">buy_order_book</span> <span class="k">if</span> <span class="n">cancel</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">is_buy</span> <span class="k">else</span> <span class="n">market</span><span class="o">.</span><span class="n">sell_order_book</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">order</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">order_book</span><span class="o">.</span><span class="n">priority_queue</span> <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="n">cancel</span><span class="o">.</span><span class="n">order</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_submitted_orders</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Check the orders submitted by an agent (internal method).</span>
+
+<span class="sd">        Every order has to be submitted by the agent itself and be for an existing market that the agent can</span>
+<span class="sd">        access. For a cancel order, the order to be canceled is checked, and the order that it cancels in the</span>
+<span class="sd">        order book has to be placed by the agent itself (see ``_check_cancel_ownership``). Orders created by</span>
+<span class="sd">        events are not checked because they are not submitted by agents.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent (Agent): agent that submitted the orders.</span>
+<span class="sd">            orders (List[Union[Order, Cancel]]): orders submitted by the agent.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
+            <span class="n">order_kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"cancel order"</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"order"</span>
+            <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">market_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">order_kind</span><span class="si">}</span><span class="s2"> for a nonexistent market is not allowed. "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> submitted it for market_id </span><span class="si">{</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="si">}</span><span class="s2">. "</span>
+                    <span class="s2">"please check market_id in order"</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">agent</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">):</span>
+                <span class="n">market</span><span class="p">:</span> <span class="n">Market</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>
+                <span class="c1"># the markets setting of agents takes the group names of markets</span>
+                <span class="n">market_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets_group_name2market</span>
+                <span class="n">market_group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">market_groups</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">group</span><span class="p">),</span>
+                    <span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">agent_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">agents_group_name2agent</span>
+                <span class="n">agent_group_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">agent_groups</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">group</span><span class="p">),</span>
+                    <span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">order_kind</span><span class="si">}</span><span class="s2"> for an inaccessible market is not allowed. "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> cannot access </span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. "</span>
+                    <span class="sa">f</span><span class="s2">"please add </span><span class="si">{</span><span class="n">market_group_name</span><span class="si">}</span><span class="s2"> to markets of </span><span class="si">{</span><span class="n">agent_group_name</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"or check market_id in order"</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_cancel_ownership</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_cancel_ownership</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">cancel</span><span class="p">:</span> <span class="n">Cancel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Check that a cancel order does not cancel an order of another agent (internal method).</span>
+
+<span class="sd">        The order in a cancel order has the agent ID of the agent, but the order in the order book equal to it</span>
+<span class="sd">        (see ``_get_placed_order_to_cancel``) may not. This is checked when the cancel order is submitted</span>
+<span class="sd">        (``_check_submitted_orders``) and again just before it is processed (``_process_order``), because the</span>
+<span class="sd">        order that it cancels can be placed in between, e.g., by another agent in the same step.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent (Agent): agent that submitted the cancel order.</span>
+<span class="sd">            cancel (Cancel): cancel order.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="n">placed_order</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_placed_order_to_cancel</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">cancel</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">placed_order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">placed_order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">==</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">placed_order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">)</span>
+        <span class="n">owner_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">owner</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"agent_id </span><span class="si">{</span><span class="n">placed_order</span><span class="o">.</span><span class="n">agent_id</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"cancel order for an order of another agent is not allowed. "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> tried to cancel order_id </span><span class="si">{</span><span class="n">placed_order</span><span class="o">.</span><span class="n">order_id</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="sa">f</span><span class="s2">"in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">cancel</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, "</span>
+            <span class="sa">f</span><span class="s2">"which </span><span class="si">{</span><span class="n">owner_name</span><span class="si">}</span><span class="s2"> placed. please check order in cancel order"</span>
+        <span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_collect_orders_from_normal_agents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]]:</span>
@@ -738,10 +847,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
-                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_submitted_orders</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">)</span>
                 <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">orders</span><span class="p">)</span>
                 <span class="c1"># TODO: currently the original impl is used</span>
                 <span class="c1"># n_orders += len(orders)</span>
@@ -770,9 +876,12 @@
             <span class="n">agent</span><span class="o">.</span><span class="n">submitted_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_order</span><span class="p">(</span><span class="n">order_log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">):</span>
+            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
+            <span class="c1"># the order that the cancel order cancels may have been placed after the cancel order</span>
+            <span class="c1"># was submitted, e.g., by another agent in the same step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_cancel_ownership</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_before_cancel</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
             <span class="n">log_</span><span class="p">:</span> <span class="n">CancelLog</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">_cancel_order</span><span class="p">(</span><span class="n">cancel</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-            <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2agent</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span><span class="p">]</span>
             <span class="n">agent</span><span class="o">.</span><span class="n">canceled_order</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">_trigger_event_after_cancel</span><span class="p">(</span><span class="n">cancel_log</span><span class="o">=</span><span class="n">log_</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -818,10 +927,7 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="o">.</span><span class="n">with_order_placement</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"currently order is not accepted"</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="n">agent</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">high_freq_orders</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">"spoofing order is not allowed. please check agent_id in order"</span>
-                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_submitted_orders</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">high_freq_orders</span><span class="p">)</span>
             <span class="n">all_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">high_freq_orders</span><span class="p">)</span>
             <span class="c1"># TODO: currently the original impl is used</span>
             <span class="n">n_high_freq_orders</span> <span class="o">+=</span> <span class="mi">1</span>
