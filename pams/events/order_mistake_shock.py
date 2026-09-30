@@ -1,3 +1,4 @@
+import math
 import random
 import warnings
 from typing import Any
@@ -13,10 +14,25 @@ from .base import EventHook
 class OrderMistakeShock(EventABC):
     """Event that suddenly changes the market price.
 
-     It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
-     at an extremely cheap or expensive price.
+    It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
+    at an extremely cheap or expensive price.
+    At the trigger time, the first order submitted to the target market is overridden by a limit order
+    at the market price multiplied by (1 + priceChangeRate), with the volume orderVolume and the ttl orderTimeLength.
+    It is a buy order if priceChangeRate is positive, otherwise a sell order.
+    Like other orders, its price is rounded to the tick size by the market (down for buy, up for sell).
+    This event is only called via :func:`hooked_before_order` at designated step.
 
-    This event is only called via :func:`hooked_before_step_for_market` at designated step.
+    Note:
+        The trigger time, price, side, volume, and ttl of the mistaken order follow OrderMistakeShock of plhamJ,
+        but the way the order enters the market differs. plhamJ submits an additional order of the first agent
+        at the beginning of the trigger step. This event creates no order: the agent whose order is overridden
+        owns the mistaken order, which is processed like the original order (logs, executions, and callbacks).
+        Therefore, nothing happens if no order is submitted to the target market at the trigger time.
+        Also, while plhamJ silently skips a mistaken order with a negative price or a non-positive volume,
+        :func:`setup` rejects a priceChangeRate of -1.0 or less and a non-positive orderVolume.
+        :func:`setup` also rejects a non-finite priceChangeRate, and :func:`hooked_before_order` raises ValueError
+        before overriding the order if the price of the mistaken order, or the price divided by the tick size
+        of the target market, is not finite.
     """
 
     target_market: "Market"  # type: ignore  # NOQA
@@ -72,11 +88,17 @@ class OrderMistakeShock(EventABC):
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
         if not isinstance(settings["priceChangeRate"], float):
             raise ValueError("priceChangeRate have to be float")
+        if not math.isfinite(settings["priceChangeRate"]):
+            raise ValueError("priceChangeRate have to be finite")
+        if settings["priceChangeRate"] <= -1.0:
+            raise ValueError("priceChangeRate have to be greater than -1.0")
         self.price_change_rate = settings["priceChangeRate"]
         if "orderVolume" not in settings:
             raise ValueError("orderVolume is required for OrderMistakeShock")
         if not isinstance(settings["orderVolume"], int):
             raise ValueError("orderVolume have to be int")
+        if settings["orderVolume"] <= 0:
+            raise ValueError("orderVolume have to be positive")
         self.order_volume = settings["orderVolume"]
         if "orderTimeLength" not in settings:
             raise ValueError("orderTimeLength is required for OrderMistakeShock")
@@ -101,6 +123,21 @@ class OrderMistakeShock(EventABC):
             market: "Market" = self.simulator.id2market[order.market_id]  # type: ignore  # NOQA
             base_price: float = market.get_market_price()
             order_price: float = base_price * (1 + self.price_change_rate)
+            # the market converts the price to a tick level by round(price / tick_size),
+            # which raises an error for a non-finite value, so check it before overriding
+            if not math.isfinite(order_price):
+                raise ValueError(
+                    f"price of the mistaken order of {self.name} is not finite. "
+                    f"market price {base_price} * (1 + priceChangeRate "
+                    f"{self.price_change_rate}) is {order_price}. "
+                    "please make priceChangeRate smaller"
+                )
+            if not math.isfinite(order_price / market.tick_size):
+                raise ValueError(
+                    f"price of the mistaken order of {self.name} is too large. "
+                    f"price {order_price} / tickSize {market.tick_size} of {market.name} "
+                    "is not finite. please make priceChangeRate smaller"
+                )
             time_length: int = self.order_time_length
             # override a order
             order.is_buy = self.price_change_rate > 0.0

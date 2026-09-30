@@ -1,0 +1,71 @@
+# Tests of JaxAgentParallelRunner, which need JAX and Flax (optional dependencies of pams)
+
+name: CI-jax
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "30 22 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# uv uses the Python from actions/setup-python (setup-uv sets UV_PYTHON to the
+# same version) and never downloads one. Only `uv sync` and `uv pip install`
+# install packages; `uv run` uses that environment as it is.
+env:
+  UV_PYTHON_DOWNLOADS: never
+  UV_NO_SYNC: "1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The JAX and Flax installed with pams depend on the Python version: pams requires
+        # numpy<2 on Python 3.12 or earlier, JAX 0.7.2+ requires numpy>=2 (Flax 0.12.1+
+        # requires JAX 0.8.1+), and JAX 0.7+ and Flax 0.11+ require Python 3.11+. Thus, they
+        # are jax 0.6.2 and flax 0.10.7 on 3.10, jax 0.7.1 and flax 0.12.0 on 3.11 and 3.12,
+        # and the latest ones, with numpy 2, on 3.13+. One Python of each case is tested.
+        python-version: ["3.10", "3.12", "3.14"]
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: false
+      - name: Install dependencies
+        run: |
+          uv sync
+          # the CPU builds of JAX and Flax, which are not dependencies of pams, into the .venv
+          # made by uv sync. They are resolved together with the dependencies of pams
+          # (-r pyproject.toml), as `pip install pams jax flax` does, so that uv chooses the
+          # versions that work with the numpy of pams instead of replacing it.
+          uv pip install -r pyproject.toml "jax[cpu]" flax
+          # fails if an installed package does not satisfy the requirements of another one
+          uv pip check
+          # the tests are skipped instead of failing if JAX or Flax cannot be imported
+          uv run python -c "import flax, jax, numpy; print(jax.__version__, flax.__version__, numpy.__version__)"
+      - name: Test
+        env:
+          JAX_PLATFORMS: cpu
+        run: |
+          uv run pytest --cov=./ --cov-report=xml tests/pams/runners/test_jax_parallel.py tests/pams/runners/test_jax_parallel_import.py
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
+          files: ./coverage.xml
+          flags: jax
+          verbose: true

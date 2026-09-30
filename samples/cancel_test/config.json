@@ -1,7 +1,7 @@
 {
 	"simulation": {
 		"markets": ["Market"],
-		"agents": ["FCNAgents"],
+		"agents": ["CancelFCNAgents"],
 		"sessions": [
 			{	"sessionName": 0,
 				"iterationSteps": 100,
@@ -13,20 +13,9 @@
 				"iterationSteps": 500,
 				"withOrderPlacement": true,
 				"withOrderExecution": true,
-				"withPrint": true,
-				"events": ["OrderMistakeShock"]
+				"withPrint": true
 			}
 		]
-	},
-
-	"OrderMistakeShock": {
-		"class": "OrderMistakeShock",
-		"target": "Market",
-		"triggerTime": 100,       "MEMO": "At the 100th step of the session 2",
-		"priceChangeRate": -0.05, "MEMO": "Sign: negative for down; positive for up; zero for a sell at the market price",
-		"orderVolume": 10000,     "MEMO": "Very much",
-		"orderTimeLength": 10000, "MEMO": "Very long",
-		"enabled": true
 	},
 
 	"Market": {
@@ -36,8 +25,8 @@
 		"outstandingShares": 25000
 	},
 
-	"FCNAgents": {
-		"class": "FCNAgent",
+	"CancelFCNAgents": {
+		"class": "CancelFCNAgent",
 		"numAgents": 100,
 
 		"MEMO": "Agent class",
@@ -51,6 +40,9 @@
 		"noiseWeight": {"expon": [1.0]},
 		"noiseScale": 0.001,
 		"timeWindowSize": [100, 200],
-		"orderMargin": [0.0, 0.1]
+		"orderMargin": [0.0, 0.1],
+
+		"MEMO": "CancelFCNAgent class",
+		"cancelRate": 0.3
 	}
 }

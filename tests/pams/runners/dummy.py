@@ -1,9 +1,17 @@
+import random
+import sys
+import threading
 import time
+from typing import Any
+from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Union
 
 from pams import LIMIT_ORDER
+from pams import Simulator
 from pams.agents import Agent
+from pams.agents import HighFrequencyAgent
 from pams.agents.fcn_agent import FCNAgent
 from pams.logs import CancelLog
 from pams.logs import ExecutionLog
@@ -171,3 +179,106 @@ class RaisingAgent(Agent):
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         raise RuntimeError("error in submit_orders")
+
+
+class GivenOrdersAgent(Agent):
+    """Agent that submits the orders set to ``orders_to_submit``.
+
+    This agent is used to check the orders that the runners reject, e.g., the orders for markets
+    that the agent cannot access and the cancel orders of the orders of other agents.
+    ``orders_to_submit`` is set on the main process and copied to worker processes, so that
+    this agent works on :class:`pams.runners.MultiProcessAgentParallelRunner` as well.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize the orders to submit (none by default)."""
+        super().__init__(*args, **kwargs)
+        self.orders_to_submit: List[Union[Order, Cancel]] = []
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        return list(self.orders_to_submit)
+
+
+class HighFrequencyGivenOrdersAgent(GivenOrdersAgent, HighFrequencyAgent):
+    """High frequency version of :class:`GivenOrdersAgent`."""
+
+
+# The functions below are defined at the top level so that the agent-parallel runners can pickle
+# them and call them on worker processes.
+
+# token given to the initializer of the current worker thread (or the main thread of a worker
+# process). Thread-local storage is used because thread ids can be reused after threads end.
+WORKER_STATE = threading.local()
+# overwritten only on the main process by the tests; worker processes see it only when forked
+PARENT_MARKER: Optional[str] = None
+
+
+def initialize_worker(token: str) -> None:
+    """Record that the current worker is initialized with the token."""
+    WORKER_STATE.token = token
+
+
+def get_worker_token() -> Optional[str]:
+    """Get the token of the current worker, or None if it is not initialized."""
+    return getattr(WORKER_STATE, "token", None)
+
+
+def fail_to_initialize_worker() -> None:
+    """Raise an error as a worker initializer."""
+    raise RuntimeError("error in worker initializer")
+
+
+def fail_to_initialize_worker_with_system_exit() -> None:
+    """Exit as a worker initializer, i.e., raise SystemExit."""
+    sys.exit("error in worker initializer")
+
+
+class WorkerInitializerAbort(BaseException):
+    """BaseException that is not an Exception, raised by a worker initializer."""
+
+
+def fail_to_initialize_worker_with_base_exception() -> None:
+    """Raise a BaseException that is not an Exception as a worker initializer."""
+    raise WorkerInitializerAbort("error in worker initializer")
+
+
+def get_parent_marker() -> Optional[str]:
+    """Get PARENT_MARKER seen by the current worker."""
+    return PARENT_MARKER
+
+
+class WorkerInitializationCheckingAgent(FCNAgent):
+    """FCNAgent that raises an error if the current worker is not initialized with its token.
+
+    The token is given by ``workerToken`` in the settings.
+    """
+
+    def __init__(
+        self,
+        agent_id: int,
+        prng: random.Random,
+        simulator: Simulator,
+        name: str,
+        logger: Optional[Logger] = None,
+    ) -> None:
+        """Initialize the agent without the token, which is set by setup."""
+        super().__init__(agent_id, prng, simulator, name, logger)
+        self.worker_token: Optional[str] = None
+
+    def setup(
+        self,
+        settings: Dict[str, Any],
+        accessible_markets_ids: List[int],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        super().setup(settings, accessible_markets_ids, *args, **kwargs)
+        self.worker_token = settings["workerToken"]
+
+    def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
+        worker_token = get_worker_token()
+        if worker_token != self.worker_token:
+            raise RuntimeError(
+                f"worker is initialized with {worker_token}, not {self.worker_token}"
+            )
+        return super().submit_orders(markets)

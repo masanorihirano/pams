@@ -4,29 +4,18 @@
 		"agents": ["FCNAgents"],
 		"sessions": [
 			{	"sessionName": 0,
-				"iterationSteps": 100,
-				"withOrderPlacement": true,
-				"withOrderExecution": false,
-				"withPrint": true
-			},
-			{	"sessionName": 1,
 				"iterationSteps": 500,
 				"withOrderPlacement": true,
+				"withOrderExecution": false,
+				"withPrint": false
+			},
+			{	"sessionName": 1,
+				"iterationSteps": 2000, "MEMO": "Short for a quick run; plhamJ runs 60000 steps (see main.py)",
+				"withOrderPlacement": true,
 				"withOrderExecution": true,
-				"withPrint": true,
-				"events": ["OrderMistakeShock"]
+				"withPrint": true
 			}
 		]
-	},
-
-	"OrderMistakeShock": {
-		"class": "OrderMistakeShock",
-		"target": "Market",
-		"triggerTime": 100,       "MEMO": "At the 100th step of the session 2",
-		"priceChangeRate": -0.05, "MEMO": "Sign: negative for down; positive for up; zero for a sell at the market price",
-		"orderVolume": 10000,     "MEMO": "Very much",
-		"orderTimeLength": 10000, "MEMO": "Very long",
-		"enabled": true
 	},
 
 	"Market": {
@@ -38,7 +27,7 @@
 
 	"FCNAgents": {
 		"class": "FCNAgent",
-		"numAgents": 100,
+		"numAgents": 1000,
 
 		"MEMO": "Agent class",
 		"markets": ["Market"],
@@ -50,7 +39,8 @@
 		"chartWeight": {"expon": [0.0]},
 		"noiseWeight": {"expon": [1.0]},
 		"noiseScale": 0.001,
-		"timeWindowSize": [100, 200],
-		"orderMargin": [0.0, 0.1]
+		"timeWindowSize": [100, 500],
+		"orderMargin": [0.0, 0.1],
+		"marginType": "fixed", "MEMO": "plhamJ uses normal, which works differently in PAMS (see main.py)"
 	}
 }
