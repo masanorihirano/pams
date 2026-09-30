@@ -442,7 +442,9 @@ class Market:
         """
         if time is None:
             time = self.time
-        return sum(self.get_transaction_cost_revenues(times=range(time + 1)), 0.0)
+        if time > self.time:
+            raise AssertionError("Cannot refer the future parameters")
+        return sum(self._transaction_cost_revenues[: max(time + 1, 0)], 0.0)
 
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
         """Get the number of buy orders.
