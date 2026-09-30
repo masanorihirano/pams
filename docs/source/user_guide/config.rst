@@ -1058,8 +1058,10 @@ the agent that submitted the original order owns the mistaken one.
        exactly this step, nothing happens.
    * - ``priceChangeRate`` |required|
      - float
-     - Rate :math:`r` relative to the current market price, greater than ``-1.0``. Must be written as a float.
-       ``0.0`` does not mean "no mistake": it places a sell at :math:`P`.
+     - Rate :math:`r` relative to the current market price, a finite number greater than ``-1.0``. Must be
+       written as a float. ``0.0`` does not mean "no mistake": it places a sell at :math:`P`. If :math:`P (1 + r)`,
+       or :math:`P (1 + r)` divided by the tick size, overflows to infinity, the simulation stops with an error
+       at the trigger step.
    * - ``orderVolume`` |required|
      - int
      - Volume of the mistaken order, greater than 0.

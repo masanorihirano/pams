@@ -30,6 +30,9 @@ class OrderMistakeShock(EventABC):
         Therefore, nothing happens if no order is submitted to the target market at the trigger time.
         Also, while plhamJ silently skips a mistaken order with a negative price or a non-positive volume,
         :func:`setup` rejects a priceChangeRate of -1.0 or less and a non-positive orderVolume.
+        :func:`setup` also rejects a non-finite priceChangeRate, and :func:`hooked_before_order` raises ValueError
+        before overriding the order if the price of the mistaken order, or the price divided by the tick size
+        of the target market, is not finite.
     """
 
     target_market: "Market"  # type: ignore  # NOQA
