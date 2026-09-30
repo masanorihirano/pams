@@ -214,6 +214,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html">TorchAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">シミュレーター</a><input aria-label="Toggle navigation of シミュレーター" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -491,6 +492,50 @@
 </pre></div>
 </div>
 </section>
+<section id="agents-using-pytorch">
+<h3>PyTorchを使うエージェント<a class="headerlink" href="#agents-using-pytorch" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html#pams.runners.TorchAgentParallelRunner" title="pams.runners.TorchAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.TorchAgentParallelRunner</span></code></a> （実験的機能）は、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> で <a class="reference external" href="https://pytorch.org/">PyTorch</a> を使うエージェントのための <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> のサブクラスです。PyTorchはpamsの依存パッケージではないため、<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">torch</span></code> などにより各自でインストールしてください（お使いのプラットフォームとアクセラレーター向けのビルドについては、PyTorchのWebサイトを参照してください）。pamsがPyTorchをインポートするのはこのランナーが作成されたときのみで、PyTorchがインストールされていない場合、ランナーは <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> を送出します。このランナーは、プロセスランナーの機能に加えて、以下を行います：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が設定されていない場合、ワーカープロセスを <code class="docutils literal notranslate"><span class="pre">spawn</span></code> で起動します。PyTorchでは <code class="docutils literal notranslate"><span class="pre">fork</span></code> は安全ではないためです。forkされたプロセスではCUDAを初期化できず、また、PyTorchがスレッドプールを実行している間にforkされたプロセスはデッドロックすることがあります。<code class="docutils literal notranslate"><span class="pre">spawn</span></code> を使うため、Linuxを含むすべてのプラットフォームで、ランナーを実行するコードは <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> の下に置く必要があり、ユーザー定義クラスはインポート可能な <code class="docutils literal notranslate"><span class="pre">.py</span></code> ファイルに記述する必要があります（<a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">並列ランナー</span></a> を参照）。</p></li>
+<li><p>ワーカー全体のスレッド数がCPUの数を超えないよう、各ワーカープロセスでのPyTorchのスレッド数を <code class="docutils literal notranslate"><span class="pre">simulation.torchNumThreads</span></code> に設定します（デフォルト：メインプロセスでのPyTorchのスレッド数を、<code class="docutils literal notranslate"><span class="pre">numParallel</span></code> とセッションの <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> の最大値のうち小さい方で割った値、ただし最小1）。小さなモデルでは、多くの場合1が最も高速です。</p></li>
+<li><p>メインプロセスとワーカープロセスで、<code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.multiprocessing</span></code> の共有戦略を <code class="docutils literal notranslate"><span class="pre">file_system</span></code> に設定します。メインプロセスでの設定はプロセス全体に影響します。サブクラスは、クラス属性 <code class="docutils literal notranslate"><span class="pre">torch_sharing_strategy</span></code> を <code class="docutils literal notranslate"><span class="pre">None</span></code> に設定することで、現在の戦略を維持できます。</p></li>
+</ul>
+<p>モデルのパラメータなど、エージェントが保持するテンソルは、共有メモリを通じてワーカープロセスに送られます。テンソルは最初のタスクで共有メモリに移され、以降のタスクではテンソルのデータの代わりに、テンソルごとに数百バイトのハンドルが送られます。以下の点に注意してください。</p>
+<ul class="simple">
+<li><p>それでも各タスクはすべてのエージェントのすべてのテンソルを参照し、それらを開くのには時間がかかるため、タスクのコストはテンソルの数とともに増加します。例えば、それぞれ6個のテンソルからなるモデルを持つ50体のエージェントでは数十ミリ秒かかります。このランナーが <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> より高速になるのは <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> にそれよりもはるかに長い時間がかかる場合に限られるため、お使いのエージェントで計測してください。</p></li>
+<li><p>Linuxでは共有メモリは <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code> にあり、すべてのエージェントのテンソルを格納できる大きさが必要です。Dockerのデフォルトは64 MBで、<code class="docutils literal notranslate"><span class="pre">--shm-size</span></code> で増やせます。</p></li>
+<li><p>ワーカープロセスはメインプロセスと同じメモリを参照するため、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> 内での（学習などによる）テンソルのインプレースの変更は、メインプロセス上のテンソルを変更します。一方、ワーカープロセス上でのエージェントのその他の変更は失われます。<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> ではテンソルを読み取り専用にしてください。</p></li>
+<li><p>ワーカープロセスから戻ってくるのは、各エージェントの <code class="docutils literal notranslate"><span class="pre">prng</span></code> の状態のみです。PyTorchの乱数は、PyTorchのグローバルな生成器ではなく、<code class="docutils literal notranslate"><span class="pre">torch.Generator().manual_seed(self.prng.randrange(2**32))</span></code> のように <code class="docutils literal notranslate"><span class="pre">prng</span></code> でシードを設定した生成器から生成してください。</p></li>
+<li><p>行列積など、PyTorchの一部の演算の結果は、スレッド数やデバイスによって丸め誤差が異なることがあり、そのような違いがシミュレーションの展開を変えることがあります。結果を比較するには、<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> を <code class="docutils literal notranslate"><span class="pre">torch.set_num_threads(n)</span></code> の後に実行し、<code class="docutils literal notranslate"><span class="pre">torchNumThreads</span></code> を <code class="docutils literal notranslate"><span class="pre">n</span></code> に設定してください。</p></li>
+</ul>
+<p>このランナーはデバイスを選択しません。ワーカープロセスはメインプロセスと同じデバイスを参照し、CUDAを使う各ワーカープロセスはそれぞれ独自のCUDAコンテキストを作成します。これはGPUメモリを数百MB消費します。CUDAのテンソルはWindowsがサポートしていないCUDA IPCで送られることになるため、エージェントが保持するテンソルはCPU上に置いてください。各タスクはエージェントの新しいコピーを受け取るため、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> 内でテンソルをデバイスに移すと、タスクごとにコピーが発生します。モデルをワーカープロセスごとに一度だけデバイスにコピーするには、以下のランナーのように、ワーカーの初期化関数でモジュールレベルの変数にモデルを読み込み、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> ではその変数を使ってください。ワーカーの初期化関数をオーバーライドするサブクラスも、このランナーの引数で <code class="docutils literal notranslate"><span class="pre">_initialize_torch_worker</span></code> を呼び出す必要があります。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_torch_runner.py, which the worker processes can import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchAgentParallelRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners.torch_parallel</span><span class="w"> </span><span class="kn">import</span> <span class="n">_initialize_torch_worker</span>
+
+<span class="n">MODEL</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_worker</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">MODEL</span>
+    <span class="n">_initialize_torch_worker</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># load the model from path and move it to device</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTorchRunner</span><span class="p">(</span><span class="n">TorchAgentParallelRunner</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">initialize_worker</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"model.pt"</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_worker_initargs</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -555,6 +600,7 @@
 <li><a class="reference internal" href="#customizing-the-workers">ワーカーのカスタマイズ</a></li>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax ランナー</a></li>
 <li><a class="reference internal" href="#tensorflow-runner">TensorFlow ランナー</a></li>
+<li><a class="reference internal" href="#agents-using-pytorch">PyTorchを使うエージェント</a></li>
 </ul>
 </li>
 </ul>

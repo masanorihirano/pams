@@ -214,6 +214,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html">TorchAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -573,6 +574,82 @@ TensorFlow, also takes seconds.</p></li>
 </pre></div>
 </div>
 </section>
+<section id="agents-using-pytorch">
+<h3>Agents using PyTorch<a class="headerlink" href="#agents-using-pytorch" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html#pams.runners.TorchAgentParallelRunner" title="pams.runners.TorchAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.TorchAgentParallelRunner</span></code></a> (experimental) is a subclass of
+<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> for agents that use <a class="reference external" href="https://pytorch.org/">PyTorch</a> in
+<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>. PyTorch is not a dependency of pams: install it yourself, e.g., by <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">torch</span></code> (see the
+PyTorch website for the builds for your platform and accelerator). pams imports PyTorch only when this runner is
+created, and the runner raises an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> if PyTorch is not installed. In addition to the process runner, it</p>
+<ul class="simple">
+<li><p>starts the worker processes by <code class="docutils literal notranslate"><span class="pre">spawn</span></code> unless <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is set, because <code class="docutils literal notranslate"><span class="pre">fork</span></code> is unsafe with
+PyTorch: CUDA cannot be initialized in a forked process, and a process forked while PyTorch runs its thread pools
+can deadlock. Because of <code class="docutils literal notranslate"><span class="pre">spawn</span></code>, the code that runs the runner must be under <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> and
+the user-defined classes must be in an importable <code class="docutils literal notranslate"><span class="pre">.py</span></code> file on every platform, including Linux (see
+<a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a>).</p></li>
+<li><p>sets the number of threads of PyTorch on each worker process to <code class="docutils literal notranslate"><span class="pre">simulation.torchNumThreads</span></code> (default: the number
+of threads of PyTorch on the main process divided by the smaller of <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> and the largest
+<code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> of the sessions, at least 1), so that the workers do not oversubscribe the CPUs. For small
+models, 1 is often the fastest.</p></li>
+<li><p>sets the sharing strategy of <code class="xref py py-mod docutils literal notranslate"><span class="pre">torch.multiprocessing</span></code> to <code class="docutils literal notranslate"><span class="pre">file_system</span></code> on the main process, which affects the
+whole process, and on the worker processes. A subclass can keep the current strategy by setting its class attribute
+<code class="docutils literal notranslate"><span class="pre">torch_sharing_strategy</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+<p>Tensors held by agents, such as the parameters of their models, are sent to the worker processes through shared
+memory: they are moved to shared memory in the first task, and later tasks send a handle of a few hundred bytes per
+tensor instead of its data. Keep the following in mind.</p>
+<ul class="simple">
+<li><p>Each task still refers to every tensor of every agent, and opening them takes time, so the cost of a task grows with
+the number of tensors, e.g., tens of milliseconds for 50 agents with a model of 6 tensors each. The runner is faster
+than <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> only when <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> takes much longer than that, so measure it
+with your agents.</p></li>
+<li><p>On Linux, the shared memory is in <code class="docutils literal notranslate"><span class="pre">/dev/shm</span></code>, which must be large enough for the tensors of all the agents. Docker
+gives 64 MB by default, which can be raised by <code class="docutils literal notranslate"><span class="pre">--shm-size</span></code>.</p></li>
+<li><p>The worker processes see the same memory as the main process, so in-place changes of the tensors in
+<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>, e.g., by training, change the tensors on the main process, while the other changes of the agents
+on the worker processes are lost. Keep the tensors read-only in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>.</p></li>
+<li><p>Only the state of the <code class="docutils literal notranslate"><span class="pre">prng</span></code> of each agent comes back from the worker processes. Draw the random numbers of
+PyTorch from a generator seeded by it, e.g., <code class="docutils literal notranslate"><span class="pre">torch.Generator().manual_seed(self.prng.randrange(2**32))</span></code>, instead
+of the global generator of PyTorch.</p></li>
+<li><p>The results of some operations of PyTorch, e.g., matrix products, can differ in rounding with the number of threads
+and with the device, and such a difference can change the course of the simulation. To compare the results with
+<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>, run it after <code class="docutils literal notranslate"><span class="pre">torch.set_num_threads(n)</span></code> and set <code class="docutils literal notranslate"><span class="pre">torchNumThreads</span></code> to
+<code class="docutils literal notranslate"><span class="pre">n</span></code>.</p></li>
+</ul>
+<p>The runner does not choose the device. The worker processes see the same devices as the main process, and each worker
+process using CUDA creates its own CUDA context, which takes hundreds of megabytes of the GPU memory. Keep the tensors
+held by agents on the CPU, because CUDA tensors would be sent by CUDA IPC, which Windows does not support. Moving them
+to the device in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> copies them in every task, because each task gets new copies of the agents. To
+copy a model to the device only once per worker process, load it in the worker initializer into a module-level
+variable and use that variable in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>, as the following runner does. A subclass overriding the worker
+initializer must still call <code class="docutils literal notranslate"><span class="pre">_initialize_torch_worker</span></code> with the arguments of this runner.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_torch_runner.py, which the worker processes can import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">TorchAgentParallelRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners.torch_parallel</span><span class="w"> </span><span class="kn">import</span> <span class="n">_initialize_torch_worker</span>
+
+<span class="n">MODEL</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_worker</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">global</span> <span class="n">MODEL</span>
+    <span class="n">_initialize_torch_worker</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># load the model from path and move it to device</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyTorchRunner</span><span class="p">(</span><span class="n">TorchAgentParallelRunner</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initializer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="k">return</span> <span class="n">initialize_worker</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_initargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s2">"model.pt"</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_worker_initargs</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -637,6 +714,7 @@ TensorFlow, also takes seconds.</p></li>
 <li><a class="reference internal" href="#customizing-the-workers">Customizing the workers</a></li>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
 <li><a class="reference internal" href="#tensorflow-runner">TensorFlow runner</a></li>
+<li><a class="reference internal" href="#agents-using-pytorch">Agents using PyTorch</a></li>
 </ul>
 </li>
 </ul>
