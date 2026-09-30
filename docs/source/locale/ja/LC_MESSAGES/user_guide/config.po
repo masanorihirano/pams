@@ -1793,16 +1793,42 @@ msgid ""
 "integer."
 msgstr "注文の有効期間（TTL）をステップ数で指定します。デフォルトは ``1`` です。JSONの整数で指定する必要があります。"
 
-#: ../../source/user_guide/config.rst:834
+#: ../../source/user_guide/config.rst:839
 msgid ""
-"``markets`` must include the index market group **and** the groups of all "
-"its component markets. Otherwise the component orders are still sent, and "
-"the simulation stops with a ``KeyError`` (a market ID) when the first one is"
-" executed."
+"The agent trades only the index markets whose groups are in ``markets``. "
+"It skips any other ``IndexMarket`` without an error, whether or not "
+"``markets`` includes its component markets, and it warns about this only "
+"if ``markets`` includes no ``IndexMarket`` at all (see below)."
 msgstr ""
-"``markets`` には、インデックス市場の市場グループ **および** "
-"そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します。"
+"エージェントが取引するのは、市場グループが ``markets`` に含まれているインデックス市場だけです。それ以外の "
+"``IndexMarket`` は、``markets`` "
+"にその構成市場が含まれているかどうかにかかわらず、エラーを出さずにスキップします。これについて警告を出すのは、``markets`` に "
+"``IndexMarket`` が1つも含まれていない場合だけです（下記参照）。"
+
+#: ../../source/user_guide/config.rst:842
+msgid ""
+"For each index market that it trades, ``markets`` must also include the "
+"groups of all its component markets. Unlike plham, the component markets "
+"are not added automatically; the agent warns at setup about each such "
+"index market with missing components. The simulation still runs normally "
+"until the agent finds an arbitrage opportunity in that index market. Then"
+" it submits orders for the component markets, and the simulation stops "
+"with a ``ValueError`` (``order for an inaccessible market is not "
+"allowed``). If no such opportunity comes, the simulation ends without the"
+" error."
+msgstr ""
+"取引するインデックス市場ごとに、``markets`` "
+"にはそのすべての構成市場の市場グループも含める必要があります。plhamとは異なり、構成市場は自動的には追加されません。構成市場が欠けているそのようなインデックス市場があると、エージェントはセットアップ時にインデックス市場ごとに警告を出します。それでも、エージェントがそのインデックス市場で裁定機会を見つけるまでは、シミュレーションは通常どおり進みます。裁定機会を見つけると、エージェントは構成市場への注文を出し、シミュレーションは"
+" ``ValueError`` （``order for an inaccessible market is not "
+"allowed``）で停止します。そのような機会が訪れなければ、シミュレーションはエラーなく終了します。"
+
+#: ../../source/user_guide/config.rst:839
+msgid ""
+"If ``markets`` includes no ``IndexMarket``, the agent never places an order,"
+" and it warns about this at setup."
+msgstr ""
+"``markets`` に ``IndexMarket`` "
+"が1つも含まれていない場合、エージェントは注文を一切出さず、セットアップ時にその旨の警告を出します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
@@ -1840,11 +1866,11 @@ msgstr "市場のインスタンス名"
 #: ../../source/user_guide/config.rst:856
 msgid ""
 "The market to quote in. It must also be one of the agent's tradable markets;"
-" otherwise the simulation stops with a ``KeyError`` (a market ID) when its "
-"first order is executed."
+" otherwise the simulation stops with a ``ValueError`` when the agent first "
+"submits orders."
 msgstr ""
-"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合は最初の注文が約定した時点でシミュレーションが "
-"``KeyError`` （市場ID）で停止します。"
+"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合はエージェントが最初に注文を出した時点でシミュレーションが "
+"``ValueError`` で停止します。"
 
 #: ../../source/user_guide/config.rst:858
 msgid "``netInterestSpread`` |required| |jsonrandom|"
@@ -2847,20 +2873,46 @@ msgstr ""
 "が、市場のインスタンス名になっていません。グループ名ではなくインスタンス名（``Market-0``）を使ってください。"
 
 #: ../../source/user_guide/config.rst:1254
-msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
-msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+msgid "``order for an inaccessible market is not allowed``"
+msgstr "``order for an inaccessible market is not allowed``"
 
 #: ../../source/user_guide/config.rst:1255
 msgid ""
-"A market was used that the agent cannot trade: a ``MarketMakerAgent`` whose "
-"``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose "
-"``markets`` lack the component markets. A ``FundamentalPriceShock`` whose "
-"``target`` is an ``IndexMarket`` fails the same way."
+"An agent submitted an order for a market that it cannot trade: a "
+"``MarketMakerAgent`` whose ``targetMarket`` is not in its ``markets``, or an "
+"``ArbitrageAgent`` whose ``markets`` lack the component markets. Add the "
+"market group named in the message to the agent's ``markets``."
 msgstr ""
-"エージェントが取引できない市場が使われています： ``targetMarket`` が自身の ``markets`` に含まれていない "
+"エージェントが取引できない市場に注文を出しました： ``targetMarket`` が自身の ``markets`` に含まれていない "
 "``MarketMakerAgent`` や、``markets`` に構成市場が含まれていない ``ArbitrageAgent`` "
-"がこれに当たります。``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
-"も同様に失敗します。"
+"がこれに当たります。メッセージに示された市場グループをエージェントの ``markets`` に追加してください。"
+
+#: ../../source/user_guide/config.rst:1305
+msgid "``cancel order for an order of another agent is not allowed``"
+msgstr "``cancel order for an order of another agent is not allowed``"
+
+#: ../../source/user_guide/config.rst:1306
+msgid ""
+"A user-defined agent submitted a ``Cancel`` of an order that has its own "
+"``agent_id`` but the same ``order_id``, price, time step, side and kind "
+"as an order that another agent placed. Cancel only the orders that the "
+"agent itself placed."
+msgstr ""
+"ユーザー定義のエージェントが、自身の ``agent_id`` "
+"を持ちながら、``order_id``、価格、注文が出されたステップ、売買の別、注文の種類が他のエージェントの出した注文と同じである注文の "
+"``Cancel`` を出しました。エージェント自身が出した注文だけを取り消してください。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
+msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its"
+" component markets instead."
+msgstr ""
+"``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
+"です。代わりにその構成市場にショックを与えてください。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``market name X is duplicate`` / ``agent name X is duplicate``"
@@ -2935,6 +2987,34 @@ msgid ""
 "An agent submitted a price that is not a multiple of ``tickSize``; it was "
 "rounded. This is normal for FCN agents."
 msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。"
+
+#: ../../source/user_guide/config.rst:1278
+msgid ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` (warning)"
+msgstr ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` （警告）"
+
+#: ../../source/user_guide/config.rst:1279
+msgid ""
+"Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise "
+"its orders to them fail while the simulation runs."
+msgstr ""
+"市場 ``Z`` の市場グループをエージェントの ``markets`` "
+"に追加してください。追加しない場合、それらの市場への注文はシミュレーション実行中に失敗します。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "``ArbitrageAgent X cannot access any index market`` (warning)"
+msgstr "``ArbitrageAgent X cannot access any index market`` （警告）"
+
+#: ../../source/user_guide/config.rst:1282
+msgid ""
+"The agent never places an order. Add an ``IndexMarket`` group and the groups"
+" of its component markets to its ``markets``."
+msgstr ""
+"このエージェントは注文を一切出しません。``IndexMarket`` "
+"の市場グループとその構成市場の市場グループを、エージェントの ``markets`` に追加してください。"
 
 #: ../../source/user_guide/config.rst:1275
 msgid "``AssertionError`` while the simulation runs"

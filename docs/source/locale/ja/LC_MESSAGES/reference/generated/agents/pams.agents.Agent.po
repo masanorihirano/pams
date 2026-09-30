@@ -214,6 +214,22 @@ msgstr "注文のリスト。"
 msgid "You should implement this method if you inherit this agent."
 msgstr "このエージェントを継承する場合は、このメソッドを実装する必要があります。"
 
+#: of pams.agents.base.Agent.submit_orders:17
+msgid ""
+"``markets`` includes all the markets of the simulation, not only the "
+"markets that this agent can access. Every returned order must have the "
+"``agent_id`` of this agent and be for a market that this agent can access"
+" (see :func:`pams.agents.Agent.is_market_accessible`), and a cancel order"
+" must cancel such an order, not an order that another agent placed. "
+"Otherwise, the runners raise ValueError."
+msgstr ""
+"``markets`` "
+"には、このエージェントがアクセスできる市場だけでなく、シミュレーションのすべての市場が含まれます。返す注文はすべて、このエージェントの "
+"``agent_id`` "
+"を持ち、このエージェントがアクセスできる市場（:func:`pams.agents.Agent.is_market_accessible` "
+"を参照）に対するものでなければなりません。また、取消注文はそのような注文を取り消すものでなければならず、他のエージェントが出した注文を取り消すものであってはなりません。これらに反する場合、ランナーは"
+" ValueError を送出します。"
+
 #: of pams.agents.base.Agent.submitted_order:1
 #, fuzzy
 msgid "Call back when an order submission is accepted by a market."

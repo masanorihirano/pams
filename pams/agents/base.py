@@ -274,6 +274,11 @@ class Agent(ABC):
         Note:
             You should implement this method if you inherit this agent.
 
+            ``markets`` includes all the markets of the simulation, not only the markets that this agent can
+            access. Every returned order must have the ``agent_id`` of this agent and be for a market that this
+            agent can access (see :func:`pams.agents.Agent.is_market_accessible`), and a cancel order must cancel
+            such an order, not an order that another agent placed. Otherwise, the runners raise ValueError.
+
         """
         pass
 
