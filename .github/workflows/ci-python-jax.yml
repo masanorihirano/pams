@@ -26,30 +26,38 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The JAX and Flax installed with pams depend on the Python version: pams requires
+        # numpy<2 on Python 3.12 or earlier, JAX 0.7.2+ requires numpy>=2 (Flax 0.12.1+
+        # requires JAX 0.8.1+), and JAX 0.7+ and Flax 0.11+ require Python 3.11+. Thus, they
+        # are jax 0.6.2 and flax 0.10.7 on 3.10, jax 0.7.1 and flax 0.12.0 on 3.11 and 3.12,
+        # and the latest ones, with numpy 2, on 3.13+. One Python of each case is tested.
+        python-version: ["3.10", "3.12", "3.14"]
 
     steps:
       - uses: actions/checkout@v7
-      - name: Set up Python 3.11
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.2.0
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           enable-cache: false
       - name: Install dependencies
         run: |
           uv sync
           # the CPU builds of JAX and Flax, which are not dependencies of pams, into the .venv
-          # made by uv sync. Recent JAX needs numpy>=2, so uv pip replaces the numpy 1.x
-          # installed by uv sync, although pams declares numpy<2 on this Python version: uv pip
-          # install does not report it (`uv pip check` would), and pams also runs with numpy 2,
-          # which it uses on Python 3.13+. UV_NO_SYNC keeps `uv run` from syncing the
-          # environment again, which would put numpy 1.x back.
-          uv pip install "jax[cpu]" flax
+          # made by uv sync. They are resolved together with the dependencies of pams
+          # (-r pyproject.toml), as `pip install pams jax flax` does, so that uv chooses the
+          # versions that work with the numpy of pams instead of replacing it.
+          uv pip install -r pyproject.toml "jax[cpu]" flax
+          # fails if an installed package does not satisfy the requirements of another one
+          uv pip check
           # the tests are skipped instead of failing if JAX or Flax cannot be imported
-          uv run python -c "import flax, jax; print(jax.__version__, flax.__version__)"
+          uv run python -c "import flax, jax, numpy; print(jax.__version__, flax.__version__, numpy.__version__)"
       - name: Test
         env:
           JAX_PLATFORMS: cpu
