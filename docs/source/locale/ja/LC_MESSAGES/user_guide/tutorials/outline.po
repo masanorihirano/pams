@@ -62,9 +62,9 @@ msgstr "チュートリアルの内容"
 
 #: ../../source/user_guide/tutorials/outline.rst:21
 msgid ""
-"The tutorials start from the same small simulation, one market and 100 "
-"FCN agents:"
-msgstr "各チュートリアルは、1つの市場と100体のFCNエージェントからなる同じ小さなシミュレーションから始まります："
+"The first four tutorials start from the same small simulation, one market"
+" and 100 FCN agents:"
+msgstr "最初の4つのチュートリアルは、1つの市場と100体のFCNエージェントからなる同じ小さなシミュレーションから始まります："
 
 #: ../../source/user_guide/tutorials/outline.rst:23
 msgid ""
@@ -89,6 +89,56 @@ msgid ""
 msgstr ":doc:`custom_logger`：結果を独自の形式で記録するロガーを作成します。"
 
 #: ../../source/user_guide/tutorials/outline.rst:28
+msgid ""
+"The next tutorials follow the tutorials of `Plham "
+"<https://plham.github.io/>`_, the artificial market simulator whose "
+"concept PAMS inherits, and run their research cases with PAMS. Each page "
+"links to the Plham tutorial it follows, cites the papers of the case, and"
+" says where the results of PAMS differ:"
+msgstr "続くチュートリアルは、PAMSがコンセプトを継承している人工市場シミュレータ `Plham <https://plham.github.io/>`_ のチュートリアルに沿って、その研究事例をPAMSで実行します。各ページには、沿っているPlhamのチュートリアルへのリンクと、その事例の論文の引用があり、PAMSの結果がどこで異なるかも説明しています："
+
+#: ../../source/user_guide/tutorials/outline.rst:32
+msgid ""
+":doc:`ci2002`: how fundamentalist, chartist and noise components shape "
+"the price."
+msgstr ":doc:`ci2002`：ファンダメンタル成分、チャート成分、ノイズ成分が価格の動きをどう決めるか。"
+
+#: ../../source/user_guide/tutorials/outline.rst:33
+msgid ":doc:`price_limit`: a price limit, and how long the price stays at it."
+msgstr ":doc:`price_limit`：値幅制限と、価格がどれだけ長くその制限値にとどまるか。"
+
+#: ../../source/user_guide/tutorials/outline.rst:34
+msgid ":doc:`trading_halt`: trading halts after a fall of the fundamental price."
+msgstr ":doc:`trading_halt`：ファンダメンタル価格が下落した後の売買停止。"
+
+#: ../../source/user_guide/tutorials/outline.rst:35
+msgid ""
+":doc:`fat_finger`: a large sell order placed by mistake, and the order "
+"book after it."
+msgstr ":doc:`fat_finger`：誤って出された大きな売り注文と、その後の板。"
+
+#: ../../source/user_guide/tutorials/outline.rst:36
+msgid ""
+":doc:`shock_transfer`: a shock that spreads from one stock to another "
+"through an index and arbitrage agents."
+msgstr ":doc:`shock_transfer`：インデックスと裁定エージェントを通じて、ある株式から別の株式へ広がるショック。"
+
+#: ../../source/user_guide/tutorials/outline.rst:37
+msgid ""
+":doc:`market_share`: two markets competing for volume, with a smaller "
+"tick size or a market maker."
+msgstr ":doc:`market_share`：出来高を奪い合う2つの市場と、小さいティックサイズまたはマーケットメイカーの効果。"
+
+#: ../../source/user_guide/tutorials/outline.rst:39
+msgid ""
+"Plham also has tutorials on a dark pool, on options and on parallel runs "
+"of many assets. PAMS has no dark pool market and no options, so these "
+"cases have no tutorial here; to run PAMS in parallel, see :ref:`config-"
+"parallel`. The Plham tutorials on setting up a project and on the JSON "
+"format correspond to the first four tutorials and to :ref:`config`."
+msgstr "Plhamには、ダークプール、オプション、多数の資産の並列実行についてのチュートリアルもあります。PAMSにはダークプール市場もオプションもないため、これらの事例のチュートリアルはここにはありません。PAMSを並列に実行する方法は :ref:`config-parallel` を参照してください。プロジェクトの準備とJSON形式についてのPlhamのチュートリアルは、最初の4つのチュートリアルと :ref:`config` に対応します。"
+
+#: ../../source/user_guide/tutorials/outline.rst:44
 msgid ""
 "Each tutorial comes with a complete script that you can download and run."
 " Every key of the configuration is explained in :ref:`config`."
