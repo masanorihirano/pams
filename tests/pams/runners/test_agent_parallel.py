@@ -1355,6 +1355,86 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert loaded[0] == order
         assert objects._objects is None
 
+    def test_load_worker_results_objects_of_simulation(self) -> None:
+        # every kind of object of the simulation is sent back as a reference
+        setting = self._reference_setting(agent_class="OrderTrackingAgent")
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        market = simulator.markets[0]
+        simulator._update_times_on_markets(simulator.markets)
+        orders: List[Order] = []
+        for is_buy, price in [(True, 290.0), (False, 310.0)]:
+            order = Order(
+                agent_id=0,
+                market_id=market.market_id,
+                is_buy=is_buy,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=price,
+                ttl=10,
+            )
+            market._add_order(order=order)
+            orders.append(order)
+        agent = simulator.agents[1]
+        assert isinstance(agent, OrderTrackingAgent)
+        session = simulator.sessions[0]
+        assert isinstance(simulator.logger, DummyLogger2)
+        assert len(simulator.events) == 1
+        assert len(simulator.event_hooks) == 1
+        event = simulator.events[0]
+        event_hook = simulator.event_hooks[0]
+        objects_of_simulation: Dict[str, Any] = {
+            "simulator": simulator,
+            "prng of simulator": simulator._prng,
+            "list of simulator": simulator.markets,
+            "dict of simulator": simulator.id2market,
+            "logger": simulator.logger,
+            "list of logger": simulator.logger.pending_logs,
+            "fundamentals": simulator.fundamentals,
+            "dict of fundamentals": simulator.fundamentals.prices,
+            "market": market,
+            "prng of market": market._prng,
+            "list of market": market._market_prices,
+            "buy order book": market.buy_order_book,
+            "sell order book": market.sell_order_book,
+            "list of order book": market.buy_order_book.priority_queue,
+            "dict of order book": market.sell_order_book.expire_time_list,
+            "buy order": orders[0],
+            "sell order": orders[1],
+            "agent": agent,
+            "prng of agent": agent.prng,
+            "session": session,
+            "prng of session": session.prng,
+            "event": event,
+            "prng of event": event.prng,
+            "event hook": event_hook,
+            "list of event hook": event_hook.time,
+        }
+        assert all(
+            isinstance(obj, (list, dict))
+            for name, obj in objects_of_simulation.items()
+            if name.startswith(("list", "dict"))
+        )
+        # the attributes of the agents are not objects of the simulation because the agents
+        # can change them
+        attributes_of_agent: Dict[str, Any] = {
+            "dict of agent": agent.asset_volumes,
+            "list of agent": agent.my_orders,
+        }
+        buffer = io.BytesIO()
+        _WorkerResultPickler(buffer, simulator=simulator).dump(
+            [objects_of_simulation, attributes_of_agent]
+        )
+        data = buffer.getvalue()
+        loaded: List[Any] = _load_results(results=data, simulator=simulator)
+        for name, obj in objects_of_simulation.items():
+            assert loaded[0][name] is obj, name
+        for name, obj in attributes_of_agent.items():
+            assert loaded[1][name] is not obj, name
+            assert loaded[1][name] == obj, name
+
     @pytest.mark.parametrize(
         "agent_class", ["HelperAgent", "MarketReferencingAgent", "OrderTrackingAgent"]
     )
