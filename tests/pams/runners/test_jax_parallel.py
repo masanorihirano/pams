@@ -2,6 +2,8 @@ import copy
 import os
 import pickle  # nosec B403 # only objects created by the tests are unpickled
 import random
+import traceback
+from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
 from typing import Any
 from typing import Callable
@@ -19,7 +21,10 @@ from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import SequentialRunner
 
 from .dummy import DummyLogger2
+from .dummy import WorkerInitializerAbort
 from .dummy import fail_to_initialize_worker
+from .dummy import fail_to_initialize_worker_with_base_exception
+from .dummy import fail_to_initialize_worker_with_system_exit
 from .test_agent_parallel import _assert_same_results
 
 # the tests below require JAX and Flax, which are optional dependencies of pams, so jax_dummy,
@@ -85,11 +90,6 @@ class XlaFlagsJaxAgentParallelRunner(JaxAgentParallelRunner):
         environment = super()._get_worker_environment()
         environment["XLA_FLAGS"] = "--xla_force_host_platform_device_count=2"
         return environment
-
-
-class FailingJaxAgentParallelRunner(JaxAgentParallelRunner):
-    def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
-        return fail_to_initialize_worker
 
 
 @pytest.fixture(autouse=True)
@@ -434,14 +434,41 @@ def test_config_invalid(key: str, value: Any) -> None:
     assert runner.executor is None
 
 
-def test_worker_initializer_failure() -> None:
+@pytest.mark.parametrize(
+    "initializer, error_class",
+    [
+        (fail_to_initialize_worker, RuntimeError),
+        (fail_to_initialize_worker_with_system_exit, SystemExit),
+        (fail_to_initialize_worker_with_base_exception, WorkerInitializerAbort),
+    ],
+    ids=["Exception", "SystemExit", "BaseException"],
+)
+def test_worker_initializer_failure(
+    initializer: Callable[[], None],
+    error_class: Type[BaseException],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     setting = copy.deepcopy(DEFAULT_SETTING)
     setting["simulation"]["sessions"][0]["iterationSteps"] = 1
-    _, runner = _make_runners(
-        setting=setting, runner_class=FailingJaxAgentParallelRunner
-    )
+    runner = _make_runner(setting=setting)
+    monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
     runner._setup()
-    with pytest.raises(RuntimeError, match="the worker initializer failed") as exc_info:
+    # _initialize_jax_worker calls the initializer inside _initialize_worker, which keeps any
+    # BaseException of it, e.g., SystemExit, so that the tasks raise the error instead of breaking
+    # the executor. Check that the executor still runs a task that does not depend on the
+    # initializer.
+    executor = runner.executor
+    assert executor is not None
+    assert executor.submit(sum, [1, 2]).result() == 3
+    with pytest.raises(
+        RuntimeError, match="the worker initializer failed on this worker"
+    ) as exc_info:
         runner._run()
-    assert "error in worker initializer" in str(exc_info.value.__cause__)
+    assert not isinstance(exc_info.value, BrokenExecutor)
+    # the cause is the traceback of the error on the worker process
+    cause = exc_info.value.__cause__
+    assert cause is not None
+    assert f"{error_class.__name__}: error in worker initializer" in "".join(
+        traceback.format_exception_only(type(cause), cause)
+    )
     assert runner.executor is None
