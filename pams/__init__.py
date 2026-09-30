@@ -16,4 +16,6 @@ from pams.runners import Runner
 from pams.runners import SequentialRunner
 from pams.session import Session
 from pams.simulator import Simulator
+from pams.transaction_costs import ProportionalTransactionCost
+from pams.transaction_costs import TransactionCost
 from pams.version import __version__
