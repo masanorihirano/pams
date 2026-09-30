@@ -71,6 +71,10 @@ class TransactionCost(ABC):
         """
         self.market: "Market" = market
 
+    def __repr__(self) -> str:
+        """Return the string representation of the transaction cost."""
+        return f"<{self.__class__.__module__}.{self.__class__.__name__} | market={self.market}>"
+
     def setup(  # type: ignore  # noqa: B027
         self, settings: Dict[str, Any], *args, **kwargs
     ) -> None:

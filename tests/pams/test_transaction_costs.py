@@ -65,6 +65,15 @@ class TestTransactionCost:
             price=10.0, volume=3, buy_order=buy_order, sell_order=sell_order
         ) == (1.0, -0.5)
 
+    def test_repr(self) -> None:
+        market = _make_market()
+        cost = ConstantTransactionCost(market=market)
+        module = ConstantTransactionCost.__module__
+        assert str(cost) == f"<{module}.ConstantTransactionCost | market={market}>"
+        assert repr(ProportionalTransactionCost(market=market)) == (
+            f"<pams.transaction_costs.ProportionalTransactionCost | market={market}>"
+        )
+
     def test_find_class(self) -> None:
         assert find_class(name="TransactionCost") is TransactionCost
         assert (
