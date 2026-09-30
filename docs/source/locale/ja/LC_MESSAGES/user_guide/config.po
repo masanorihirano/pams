@@ -1441,18 +1441,19 @@ msgid ""
 " value (price × volume), e.g. ``0.001`` for 0.1%."
 msgstr "買い手と売り手の双方が支払うコストで、約定金額（価格 × 数量）に対する割合です（例：0.1% なら ``0.001``）。"
 
-#: ../../source/user_guide/config.rst:683
+#: ../../source/user_guide/config.rst:684
 msgid ""
 "When volume :math:`V` is executed at price :math:`P`, the buyer pays "
 ":math:`(1 + c) P V` and the seller receives :math:`(1 - c) P V`, where "
-":math:`c` is ``rate``. Nobody receives the costs: they are only "
-"subtracted from the agents' cash. Each :class:`~pams.logs.ExecutionLog` "
-"records them as ``buy_transaction_cost`` and ``sell_transaction_cost`` "
-"(``0.0`` without costs)."
+":math:`c` is ``rate``. No agent receives the costs: they are subtracted "
+"from the agents' cash, and the market records them as its revenue (see "
+"below). Each :class:`~pams.logs.ExecutionLog` records them as "
+"``buy_transaction_cost`` and ``sell_transaction_cost`` (``0.0`` without "
+"costs)."
 msgstr ""
 "数量 :math:`V` が価格 :math:`P` で約定すると、買い手は :math:`(1 + c) P V` を支払い、売り手は "
 ":math:`(1 - c) P V` を受け取ります。ここで :math:`c` は ``rate`` "
-"です。コストを受け取る者はおらず、コストはエージェントの現金から差し引かれるだけです。各 "
+"です。コストを受け取るエージェントはおらず、コストはエージェントの現金から差し引かれ、市場がその収入として記録します（後述）。各 "
 ":class:`~pams.logs.ExecutionLog` はコストを ``buy_transaction_cost`` と "
 "``sell_transaction_cost`` として記録します（コストがない場合は ``0.0``）。"
 
@@ -1465,6 +1466,59 @@ msgid ""
 msgstr ""
 "取引コストは乱数を使わず、組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
 "を参照）ため、同じシードであれば、価格と約定はコストの有無にかかわらず同じになります。異なるのはエージェントの現金だけです。"
+
+#: ../../source/user_guide/config.rst:694
+msgid ""
+"Each market records the transaction costs that it collects in each step: "
+"the sum of ``buy_transaction_cost`` and ``sell_transaction_cost`` of its "
+"executions in the step. Negative costs (rebates) reduce it, so it can be "
+"negative, and it is ``0.0`` without costs. Three methods of "
+":class:`~pams.Market` read it:"
+msgstr ""
+"各市場は、各ステップで徴収した取引コスト、つまりそのステップにおける自身の約定の ``buy_transaction_cost`` と "
+"``sell_transaction_cost`` "
+"の合計を記録します。負のコスト（リベート）はこれを減らすため、負になることもあり、コストがない場合は ``0.0`` "
+"です。:class:`~pams.Market` の3つのメソッドでこれを読み取れます："
+
+#: ../../source/user_guide/config.rst:698
+msgid ""
+":meth:`~pams.Market.get_transaction_cost_revenues` returns the revenue of"
+" each step in ``times`` (by default, every step from 0 to the current "
+"step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_cost_revenues` は、``times`` "
+"の各ステップの収入を返します（デフォルトでは、0から現在のステップまでのすべてのステップ）。"
+
+#: ../../source/user_guide/config.rst:700
+msgid ""
+":meth:`~pams.Market.get_transaction_cost_revenue` returns the revenue of "
+"the step ``time`` (by default, the current step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_cost_revenue` は、ステップ ``time`` "
+"の収入を返します（デフォルトでは現在のステップ）。"
+
+#: ../../source/user_guide/config.rst:702
+msgid ""
+":meth:`~pams.Market.get_cumulative_transaction_cost_revenue` returns the "
+"balance of the market, i.e. the sum of the revenues from step 0 to the "
+"step ``time`` (by default, the current step)."
+msgstr ""
+":meth:`~pams.Market.get_cumulative_transaction_cost_revenue` "
+"は、市場の収支、つまりステップ0からステップ ``time`` までの収入の合計を返します（デフォルトでは現在のステップまで）。"
+
+#: ../../source/user_guide/config.rst:705
+msgid ""
+"The revenues of all the markets add up to the cash that the agents lose "
+"to the costs. After a run, the time of the markets is one step past the "
+"last step, and the revenue of that step is ``0.0``. The built-in loggers "
+"do not output the revenues, but a logger can read them through "
+"``log.market`` in ``process_market_step_end_log``, and an event through "
+"``market`` in ``hooked_after_step_for_market``:"
+msgstr ""
+"すべての市場の収入の合計は、エージェントがコストによって失う現金に等しくなります。実行後、市場の時刻は最後のステップの1つ後になり、そのステップの収入は"
+" ``0.0`` です。組み込みのロガーは収入を出力しませんが、ロガーは ``process_market_step_end_log`` の "
+"``log.market`` を通じて、イベントは ``hooked_after_step_for_market`` の ``market`` "
+"を通じて収入を読み取れます："
 
 #: ../../source/user_guide/config.rst
 msgid "Writing your own transaction cost"
@@ -1575,12 +1629,13 @@ msgid ""
 "still be crossed;"
 msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
 
-#: ../../source/user_guide/config.rst:765
+#: ../../source/user_guide/config.rst:807
 msgid ""
 "the earlier pairs are already executed: their volumes are subtracted from"
 " their orders, the fully executed orders are removed from the order "
-"books, and the executed prices and volumes of the market include them;"
-msgstr "前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量にもそれらが含まれています。"
+"books, and the executed prices and volumes and the transaction cost "
+"revenue of the market include them;"
+msgstr "前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引コスト収入にもそれらが含まれています。"
 
 #: ../../source/user_guide/config.rst:767
 msgid ""
