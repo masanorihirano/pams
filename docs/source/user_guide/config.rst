@@ -682,13 +682,53 @@ The built-in :class:`~pams.ProportionalTransactionCost` has one key:
        ``0.001`` for 0.1%.
 
 When volume :math:`V` is executed at price :math:`P`, the buyer pays :math:`(1 + c) P V` and the seller
-receives :math:`(1 - c) P V`, where :math:`c` is ``rate``. Nobody receives the costs: they are only subtracted
-from the agents' cash. Each :class:`~pams.logs.ExecutionLog` records them as ``buy_transaction_cost`` and
-``sell_transaction_cost`` (``0.0`` without costs).
+receives :math:`(1 - c) P V`, where :math:`c` is ``rate``. No agent receives the costs: they are subtracted
+from the agents' cash, and the market records them as its revenue (see below). Each
+:class:`~pams.logs.ExecutionLog` records them as ``buy_transaction_cost`` and ``sell_transaction_cost``
+(``0.0`` without costs).
 
 Transaction costs draw no random numbers, and the built-in agents do not look at their cash (see
 :ref:`config-agents`), so for the same seed the prices and executions are the same with and without costs.
 Only the agents' cash differs.
+
+Each market records the transaction costs that it collects in each step: the sum of ``buy_transaction_cost``
+and ``sell_transaction_cost`` of its executions in the step. Negative costs (rebates) reduce it, so it can be
+negative, and it is ``0.0`` without costs. Three methods of :class:`~pams.Market` read it:
+
+- :meth:`~pams.Market.get_transaction_cost_revenues` returns the revenue of each step in ``times`` (by default,
+  every step from 0 to the current step);
+- :meth:`~pams.Market.get_transaction_cost_revenue` returns the revenue of the step ``time`` (by default, the
+  current step);
+- :meth:`~pams.Market.get_cumulative_transaction_cost_revenue` returns the balance of the market, i.e. the sum
+  of the revenues from step 0 to the step ``time`` (by default, the current step).
+
+The revenues of all the markets add up to the cash that the agents lose to the costs. After a run, the time of
+the markets is one step past the last step, and the revenue of that step is ``0.0``. The built-in loggers do not
+output the revenues, but a logger can read them through ``log.market`` in ``process_market_step_end_log``, and
+an event through ``market`` in ``hooked_after_step_for_market``:
+
+.. code-block:: python
+
+   from pams.logs import Logger
+   from pams.logs import MarketStepEndLog
+   from pams.runners import SequentialRunner
+
+
+   class TransactionCostRevenueLogger(Logger):
+       def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+           market = log.market
+           print(
+               market.name,
+               market.get_time(),
+               market.get_transaction_cost_revenue(),  # in this step
+               market.get_cumulative_transaction_cost_revenue(),  # up to this step
+           )
+
+
+   runner = SequentialRunner(settings="config.json", logger=TransactionCostRevenueLogger())
+   runner.main()
+   for market in runner.simulator.markets:
+       print(market.name, market.get_cumulative_transaction_cost_revenue())  # balance of the whole run
 
 .. dropdown:: Writing your own transaction cost
    :icon: code
@@ -765,7 +805,8 @@ Only the agents' cash differs.
      still include this pair and the later pairs (only the earlier pairs are subtracted), so the order books can
      still be crossed;
    - the earlier pairs are already executed: their volumes are subtracted from their orders, the fully executed
-     orders are removed from the order books, and the executed prices and volumes of the market include them;
+     orders are removed from the order books, and the executed prices and volumes and the transaction cost
+     revenue of the market include them;
    - the agents' cash and asset volumes include none of the pairs yet. The simulator updates them after all the
      pairs are executed. Only then are ``executed_order`` of the agents and the events hooked after executions
      called for each execution.
