@@ -326,11 +326,26 @@
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.events.</span></span><span class="sig-name descname"><span class="pre">OrderMistakeShock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock" title="Link to this definition">¶</a></dt>
 <dd><p>Event that suddenly changes the market price.</p>
-<blockquote>
-<div><p>It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
-at an extremely cheap or expensive price.</p>
-</div></blockquote>
-<p>This event is only called via <code class="xref py py-func docutils literal notranslate"><span class="pre">hooked_before_step_for_market()</span></code> at designated step.</p>
+<p>It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders
+at an extremely cheap or expensive price.
+At the trigger time, the first order submitted to the target market is overridden by a limit order
+at the market price multiplied by (1 + priceChangeRate), with the volume orderVolume and the ttl orderTimeLength.
+It is a buy order if priceChangeRate is positive, otherwise a sell order.
+Like other orders, its price is rounded to the tick size by the market (down for buy, up for sell).
+This event is only called via <a class="reference internal" href="#pams.events.OrderMistakeShock.hooked_before_order" title="pams.events.OrderMistakeShock.hooked_before_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">hooked_before_order()</span></code></a> at designated step.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The trigger time, price, side, volume, and ttl of the mistaken order follow OrderMistakeShock of plhamJ,
+but the way the order enters the market differs. plhamJ submits an additional order of the first agent
+at the beginning of the trigger step. This event creates no order: the agent whose order is overridden
+owns the mistaken order, which is processed like the original order (logs, executions, and callbacks).
+Therefore, nothing happens if no order is submitted to the target market at the trigger time.
+Also, while plhamJ silently skips a mistaken order with a negative price or a non-positive volume,
+<a class="reference internal" href="#pams.events.OrderMistakeShock.setup" title="pams.events.OrderMistakeShock.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a> rejects a priceChangeRate of -1.0 or less and a non-positive orderVolume.
+<a class="reference internal" href="#pams.events.OrderMistakeShock.setup" title="pams.events.OrderMistakeShock.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a> also rejects a non-finite priceChangeRate, and <a class="reference internal" href="#pams.events.OrderMistakeShock.hooked_before_order" title="pams.events.OrderMistakeShock.hooked_before_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">hooked_before_order()</span></code></a> raises ValueError
+before overriding the order if the price of the mistaken order, or the price divided by the tick size
+of the target market, is not finite.</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.events.OrderMistakeShock.hook_registration">
 <span class="sig-name descname"><span class="pre">hook_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/events/order_mistake_shock.html#OrderMistakeShock.hook_registration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.events.OrderMistakeShock.hook_registration" title="Link to this definition">¶</a></dt>

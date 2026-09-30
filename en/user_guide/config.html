@@ -1821,12 +1821,14 @@ exactly this step, nothing happens.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">priceChangeRate</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>float</p></td>
-<td><p>Rate <span class="math notranslate nohighlight">\(r\)</span> relative to the current market price. Must be written as a float. <code class="docutils literal notranslate"><span class="pre">0.0</span></code> does not mean
-“no mistake”: it places a sell at <span class="math notranslate nohighlight">\(P\)</span>.</p></td>
+<td><p>Rate <span class="math notranslate nohighlight">\(r\)</span> relative to the current market price, a finite number greater than <code class="docutils literal notranslate"><span class="pre">-1.0</span></code>. Must be
+written as a float. <code class="docutils literal notranslate"><span class="pre">0.0</span></code> does not mean “no mistake”: it places a sell at <span class="math notranslate nohighlight">\(P\)</span>. If <span class="math notranslate nohighlight">\(P (1 + r)\)</span>,
+or <span class="math notranslate nohighlight">\(P (1 + r)\)</span> divided by the tick size, overflows to infinity, the simulation stops with an error
+at the trigger step.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">orderVolume</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>int</p></td>
-<td><p>Volume of the mistaken order.</p></td>
+<td><p>Volume of the mistaken order, greater than 0.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>int</p></td>

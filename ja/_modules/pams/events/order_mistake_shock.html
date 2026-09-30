@@ -314,7 +314,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>pams.events.order_mistake_shock のソースコード</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
@@ -331,10 +332,25 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">OrderMistakeShock</span><span class="p">(</span><span class="n">EventABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Event that suddenly changes the market price.</span>
 
-<span class="sd">     It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders</span>
-<span class="sd">     at an extremely cheap or expensive price.</span>
+<span class="sd">    It is as a consequence of a fat finger error, e.g., caused by a huge amount of orders</span>
+<span class="sd">    at an extremely cheap or expensive price.</span>
+<span class="sd">    At the trigger time, the first order submitted to the target market is overridden by a limit order</span>
+<span class="sd">    at the market price multiplied by (1 + priceChangeRate), with the volume orderVolume and the ttl orderTimeLength.</span>
+<span class="sd">    It is a buy order if priceChangeRate is positive, otherwise a sell order.</span>
+<span class="sd">    Like other orders, its price is rounded to the tick size by the market (down for buy, up for sell).</span>
+<span class="sd">    This event is only called via :func:`hooked_before_order` at designated step.</span>
 
-<span class="sd">    This event is only called via :func:`hooked_before_step_for_market` at designated step.</span>
+<span class="sd">    Note:</span>
+<span class="sd">        The trigger time, price, side, volume, and ttl of the mistaken order follow OrderMistakeShock of plhamJ,</span>
+<span class="sd">        but the way the order enters the market differs. plhamJ submits an additional order of the first agent</span>
+<span class="sd">        at the beginning of the trigger step. This event creates no order: the agent whose order is overridden</span>
+<span class="sd">        owns the mistaken order, which is processed like the original order (logs, executions, and callbacks).</span>
+<span class="sd">        Therefore, nothing happens if no order is submitted to the target market at the trigger time.</span>
+<span class="sd">        Also, while plhamJ silently skips a mistaken order with a negative price or a non-positive volume,</span>
+<span class="sd">        :func:`setup` rejects a priceChangeRate of -1.0 or less and a non-positive orderVolume.</span>
+<span class="sd">        :func:`setup` also rejects a non-finite priceChangeRate, and :func:`hooked_before_order` raises ValueError</span>
+<span class="sd">        before overriding the order if the price of the mistaken order, or the price divided by the tick size</span>
+<span class="sd">        of the target market, is not finite.</span>
 <span class="sd">    """</span>
 
     <span class="n">target_market</span><span class="p">:</span> <span class="s2">"Market"</span>  <span class="c1"># type: ignore  # NOQA</span>
@@ -392,11 +408,17 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"priceChangeRate is required for OrderMistakeShock"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"priceChangeRate"</span><span class="p">],</span> <span class="nb">float</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"priceChangeRate have to be float"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"priceChangeRate"</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"priceChangeRate have to be finite"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"priceChangeRate"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"priceChangeRate have to be greater than -1.0"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">price_change_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"priceChangeRate"</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">"orderVolume"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orderVolume is required for OrderMistakeShock"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"orderVolume"</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orderVolume have to be int"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"orderVolume"</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orderVolume have to be positive"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_volume</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"orderVolume"</span><span class="p">]</span>
         <span class="k">if</span> <span class="s2">"orderTimeLength"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orderTimeLength is required for OrderMistakeShock"</span><span class="p">)</span>
@@ -427,6 +449,21 @@
             <span class="n">market</span><span class="p">:</span> <span class="s2">"Market"</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span>  <span class="c1"># type: ignore  # NOQA</span>
             <span class="n">base_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">()</span>
             <span class="n">order_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">base_price</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_change_rate</span><span class="p">)</span>
+            <span class="c1"># the market converts the price to a tick level by round(price / tick_size),</span>
+            <span class="c1"># which raises an error for a non-finite value, so check it before overriding</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">order_price</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"price of the mistaken order of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not finite. "</span>
+                    <span class="sa">f</span><span class="s2">"market price </span><span class="si">{</span><span class="n">base_price</span><span class="si">}</span><span class="s2"> * (1 + priceChangeRate "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">price_change_rate</span><span class="si">}</span><span class="s2">) is </span><span class="si">{</span><span class="n">order_price</span><span class="si">}</span><span class="s2">. "</span>
+                    <span class="s2">"please make priceChangeRate smaller"</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">order_price</span> <span class="o">/</span> <span class="n">market</span><span class="o">.</span><span class="n">tick_size</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"price of the mistaken order of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is too large. "</span>
+                    <span class="sa">f</span><span class="s2">"price </span><span class="si">{</span><span class="n">order_price</span><span class="si">}</span><span class="s2"> / tickSize </span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">tick_size</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"is not finite. please make priceChangeRate smaller"</span>
+                <span class="p">)</span>
             <span class="n">time_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span>
             <span class="c1"># override a order</span>
             <span class="n">order</span><span class="o">.</span><span class="n">is_buy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">price_change_rate</span> <span class="o">&gt;</span> <span class="mf">0.0</span>

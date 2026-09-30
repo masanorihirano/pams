@@ -1615,11 +1615,11 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">priceChangeRate</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>浮動小数点数</p></td>
-<td><p>現在の市場価格に対する変化率 <span class="math notranslate nohighlight">\(r\)</span> です。浮動小数点数で記述する必要があります。<code class="docutils literal notranslate"><span class="pre">0.0</span></code> は「誤発注なし」を意味せず、<span class="math notranslate nohighlight">\(P\)</span> での売り注文になります。</p></td>
+<td><p>現在の市場価格に対する変化率 <span class="math notranslate nohighlight">\(r\)</span> で、<code class="docutils literal notranslate"><span class="pre">-1.0</span></code> より大きい有限の値です。浮動小数点数で記述する必要があります。<code class="docutils literal notranslate"><span class="pre">0.0</span></code> は「誤発注なし」を意味せず、<span class="math notranslate nohighlight">\(P\)</span> での売り注文になります。<span class="math notranslate nohighlight">\(P (1 + r)\)</span>、または <span class="math notranslate nohighlight">\(P (1 + r)\)</span> をティックサイズで割った値がオーバーフローして無限大になる場合、トリガーとなるステップでシミュレーションがエラーで停止します。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">orderVolume</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>整数</p></td>
-<td><p>誤発注された注文の数量です。</p></td>
+<td><p>誤発注された注文の数量で、0より大きい値です。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">orderTimeLength</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
 <td><p>整数</p></td>
