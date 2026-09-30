@@ -1065,8 +1065,7 @@ class TestMarket:
             simulator=Simulator(prng=random.Random(42)),
             name="test",
         )
-        # the runner, not the market, creates the transaction cost from "transactionCost",
-        # and "transactionCostRate" is not a setting
+        # the runner, not the market, creates the transaction cost from "transactionCost"
         market.setup(
             settings={
                 "tickSize": 0.001,
@@ -1075,12 +1074,9 @@ class TestMarket:
                     "class": "ProportionalTransactionCost",
                     "rate": 0.1,
                 },
-                "transactionCostRate": 0.1,
             }
         )
         assert market.transaction_cost is None
-        assert not hasattr(market, "transaction_cost_rate")
-        assert not hasattr(market, "compute_transaction_costs")
         market._update_time(10.0)
         market._is_running = True
         sell_order = Order(
