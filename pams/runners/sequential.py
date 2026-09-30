@@ -396,14 +396,42 @@ class SequentialRunner(Runner):
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
+    def _get_placed_order_to_cancel(self, cancel: Cancel) -> Optional[Order]:
+        """Get the order placed in the order book that a cancel order refers to (internal method).
+
+        Order books find the order to cancel by equality, and :func:`pams.order.Order.__eq__` does not compare
+        agent IDs. Therefore, the returned order can be another object than ``cancel.order`` and can have
+        another agent ID.
+
+        Args:
+            cancel (Cancel): cancel order.
+
+        Returns:
+            Order, Optional: the order equal to ``cancel.order`` in the buy or sell order book of its market, or
+            None if the market does not exist or the order is not in the order book, e.g., because it has already
+            been executed or canceled, or has expired.
+
+        """
+        market: Optional[Market] = self.simulator.id2market.get(cancel.market_id)
+        if market is None:
+            return None
+        order_book = (
+            market.buy_order_book if cancel.order.is_buy else market.sell_order_book
+        )
+        return next(
+            (order for order in order_book.priority_queue if order == cancel.order),
+            None,
+        )
+
     def _check_submitted_orders(
         self, agent: Agent, orders: List[Union[Order, Cancel]]
     ) -> None:
         """Check the orders submitted by an agent (internal method).
 
         Every order has to be submitted by the agent itself and be for an existing market that the agent can
-        access. For a cancel order, the order to be canceled is checked. Orders created by events are not checked
-        because they are not submitted by agents.
+        access. For a cancel order, the order to be canceled is checked, and the order that it cancels in the
+        order book (see ``_get_placed_order_to_cancel``) has to be placed by the agent itself. Orders created by
+        events are not checked because they are not submitted by agents.
 
         Args:
             agent (Agent): agent that submitted the orders.
@@ -443,6 +471,28 @@ class SequentialRunner(Runner):
                     f"{agent.name} cannot access {market.name}. "
                     f"please add {market_group_name} to markets of {agent_group_name} "
                     "or check market_id in order"
+                )
+            if not isinstance(order, Cancel):
+                continue
+            # the order in cancel order has the agent_id of the agent, but the order in the order
+            # book equal to it may not
+            placed_order: Optional[Order] = self._get_placed_order_to_cancel(
+                cancel=order
+            )
+            if placed_order is not None and placed_order.agent_id != agent.agent_id:
+                owner: Optional[Agent] = self.simulator.id2agent.get(
+                    placed_order.agent_id
+                )
+                owner_name: str = (
+                    owner.name
+                    if owner is not None
+                    else f"agent_id {placed_order.agent_id}"
+                )
+                raise ValueError(
+                    "cancel order for an order of another agent is not allowed. "
+                    f"{agent.name} tried to cancel order_id {placed_order.order_id} "
+                    f"in {self.simulator.id2market[order.market_id].name}, "
+                    f"which {owner_name} placed. please check order in cancel order"
                 )
 
     def _collect_orders_from_normal_agents(

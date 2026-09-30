@@ -1298,6 +1298,9 @@ Common errors
      - An agent submitted an order for a market that it cannot trade: a ``MarketMakerAgent`` whose
        ``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose ``markets`` lack the component
        markets. Add the market group named in the message to the agent's ``markets``.
+   * - ``cancel order for an order of another agent is not allowed``
+     - A user-defined agent submitted a ``Cancel`` of an order that another agent placed, e.g. of a copy of that
+       order with its own ``agent_id``. Cancel only the orders that the agent itself placed.
    * - ``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs
      - A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its component markets instead.
    * - ``market name X is duplicate`` / ``agent name X is duplicate``

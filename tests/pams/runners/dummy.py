@@ -184,7 +184,8 @@ class RaisingAgent(Agent):
 class GivenOrdersAgent(Agent):
     """Agent that submits the orders set to ``orders_to_submit``.
 
-    This agent is used to check the orders for markets that the agent cannot access.
+    This agent is used to check the orders that the runners reject, e.g., the orders for markets
+    that the agent cannot access and the cancel orders of the orders of other agents.
     ``orders_to_submit`` is set on the main process and copied to worker processes, so that
     this agent works on :class:`pams.runners.MultiProcessAgentParallelRunner` as well.
     """
