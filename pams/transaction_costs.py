@@ -41,19 +41,20 @@ class TransactionCost(ABC):
     were matched, and :func:`compute_costs` is called for each pair before the volume of the pair is subtracted
     from its orders. At that moment:
 
-    - the two orders of the pair and the orders of the later pairs are still in the order books with their
-      volumes before the execution, so the order books can still be crossed;
+    - the two orders of the pair and the orders of the later pairs are still in the order books, and their
+      volumes still include this pair and the later pairs (only the earlier pairs are subtracted), so the order
+      books can still be crossed;
     - the earlier pairs of the same matching are already executed: their volumes are subtracted from their
       orders, the fully executed orders are removed from the order books, and the executed prices and volumes
       of the market include them;
     - the cash and the asset volumes of the agents do not include any pair of the matching yet, because the
       simulator updates them after all the pairs are executed.
 
-    The runner and the transaction costs do not draw random numbers from the pseudo random number generators of
-    the runner or of the markets. Therefore, for the same seed, the prices and the executions are exactly the
-    same with and without transaction costs, as long as the agents do not look at their cash (the built-in
-    agents do not). If a transaction cost needs random numbers, create its own ``random.Random`` in
-    :func:`setup`.
+    Creating and setting up transaction costs does not draw random numbers from the pseudo random number
+    generators of the runner or of the markets, and the built-in transaction costs draw none. Therefore, for the
+    same seed, the prices and the executions are exactly the same with and without transaction costs, as long as
+    the agents do not look at their cash (the built-in agents do not). If a transaction cost needs random
+    numbers, create its own ``random.Random`` in :func:`setup`.
 
     .. seealso::
         - :class:`pams.transaction_costs.ProportionalTransactionCost`
@@ -110,8 +111,8 @@ class TransactionCost(ABC):
             sell_order (:class:`pams.order.Order`): sell order. Its volume still includes the executed volume.
 
         Returns:
-            Tuple[float, float]: transaction costs of the buyer and of the seller. Negative costs are rebates,
-            which are added to the cash.
+            Tuple[float, float]: transaction costs of the buyer and of the seller, which must be finite numbers.
+            Negative costs are rebates, which are added to the cash.
 
         """
 

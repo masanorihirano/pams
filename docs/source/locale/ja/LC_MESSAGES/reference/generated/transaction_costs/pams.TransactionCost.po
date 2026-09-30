@@ -99,11 +99,12 @@ msgstr ""
 #: of pams.transaction_costs.TransactionCost:29
 msgid ""
 "the two orders of the pair and the orders of the later pairs are still in"
-" the order books with their volumes before the execution, so the order "
-"books can still be crossed;"
-msgstr "その組の2つの注文と、後の組の注文は、約定前の数量のまま板に残っています。そのため、板はまだ交差していることがあります。"
+" the order books, and their volumes still include this pair and the later"
+" pairs (only the earlier pairs are subtracted), so the order books can "
+"still be crossed;"
+msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
 
-#: of pams.transaction_costs.TransactionCost:31
+#: of pams.transaction_costs.TransactionCost:32
 msgid ""
 "the earlier pairs of the same matching are already executed: their "
 "volumes are subtracted from their orders, the fully executed orders are "
@@ -111,26 +112,27 @@ msgid ""
 "market include them;"
 msgstr "同じマッチングの前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量にもそれらが含まれています。"
 
-#: of pams.transaction_costs.TransactionCost:34
+#: of pams.transaction_costs.TransactionCost:35
 msgid ""
 "the cash and the asset volumes of the agents do not include any pair of "
 "the matching yet, because the simulator updates them after all the pairs "
 "are executed."
 msgstr "エージェントの現金と保有株式数には、まだこのマッチングのどの組も反映されていません。シミュレーターはすべての組が約定した後にそれらを更新するためです。"
 
-#: of pams.transaction_costs.TransactionCost:37
+#: of pams.transaction_costs.TransactionCost:38
 msgid ""
-"The runner and the transaction costs do not draw random numbers from the "
-"pseudo random number generators of the runner or of the markets. "
-"Therefore, for the same seed, the prices and the executions are exactly "
-"the same with and without transaction costs, as long as the agents do not"
-" look at their cash (the built-in agents do not). If a transaction cost "
-"needs random numbers, create its own ``random.Random`` in :func:`setup`."
+"Creating and setting up transaction costs does not draw random numbers "
+"from the pseudo random number generators of the runner or of the markets,"
+" and the built-in transaction costs draw none. Therefore, for the same "
+"seed, the prices and the executions are exactly the same with and without"
+" transaction costs, as long as the agents do not look at their cash (the "
+"built-in agents do not). If a transaction cost needs random numbers, "
+"create its own ``random.Random`` in :func:`setup`."
 msgstr ""
-"ランナーと取引コストは、ランナーや市場の疑似乱数生成器から乱数を引きません。そのため、エージェントが自身の現金を参照しない限り（組み込みのエージェントは参照しません）、同じシードであれば、価格と約定は取引コストの有無にかかわらず完全に同じになります。取引コストで乱数が必要な場合は、:func:`setup`"
+"取引コストの作成とセットアップでは、ランナーや市場の疑似乱数生成器から乱数を引きません。組み込みの取引コストも乱数を引きません。そのため、エージェントが自身の現金を参照しない限り（組み込みのエージェントは参照しません）、同じシードであれば、価格と約定は取引コストの有無にかかわらず完全に同じになります。取引コストで乱数が必要な場合は、:func:`setup`"
 " で独自の ``random.Random`` を作成してください。"
 
-#: of pams.transaction_costs.TransactionCost:44
+#: of pams.transaction_costs.TransactionCost:45
 msgid ":class:`pams.transaction_costs.ProportionalTransactionCost`"
 msgstr ":class:`pams.transaction_costs.ProportionalTransactionCost`"
 
@@ -173,9 +175,9 @@ msgstr "戻り値"
 
 #: of pams.transaction_costs.TransactionCost.compute_costs:19
 msgid ""
-"transaction costs of the buyer and of the seller. Negative costs are "
-"rebates, which are added to the cash."
-msgstr "買い手と売り手の取引コスト。負のコストはリベートであり、現金に加算されます。"
+"transaction costs of the buyer and of the seller, which must be finite "
+"numbers. Negative costs are rebates, which are added to the cash."
+msgstr "買い手と売り手の取引コスト。いずれも有限の数値でなければなりません。負のコストはリベートであり、現金に加算されます。"
 
 #: ../../source/reference/generated/transaction_costs/pams.TransactionCost.rst
 msgid "Return type"

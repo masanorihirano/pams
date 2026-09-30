@@ -1397,13 +1397,14 @@ msgstr "取引コスト"
 
 #: ../../source/user_guide/config.rst:653
 msgid ""
-"The ``transactionCost`` key of a ``Market`` or ``IndexMarket`` block sets"
-" the transaction costs of its markets. Its value is ``null`` or an object"
-" whose ``class`` is a :class:`~pams.TransactionCost` class; the other "
-"keys of the object are the settings of that class. Without the key, or "
-"with ``null``, no costs are charged."
+"The ``transactionCost`` key of a market block (``Market``, "
+"``IndexMarket`` or your own market class) sets the transaction costs of "
+"its markets. Its value is ``null`` or an object whose ``class`` is a "
+":class:`~pams.TransactionCost` class; the other keys of the object are "
+"the settings of that class. Without the key, or with ``null``, no costs "
+"are charged."
 msgstr ""
-"``Market`` または ``IndexMarket`` のブロックの ``transactionCost`` "
+"市場のブロック（``Market``、``IndexMarket``、または独自の市場クラス）の ``transactionCost`` "
 "キーは、そのブロックの市場の取引コストを設定します。値は ``null``、または ``class`` に "
 ":class:`~pams.TransactionCost` "
 "のクラスを指定したオブジェクトで、オブジェクトのその他のキーはそのクラスの設定になります。キーがない場合や ``null`` "
@@ -1566,12 +1567,13 @@ msgstr ""
 "セッションが注文を約定させていて、市場が停止していない間、市場は注文や取消のたびに注文を約定させます。まず、最良の買い注文と売り注文を、価格が交差している限り1組ずつマッチングし、マッチングしたすべての組に1つの約定価格を決めます（上記の「市場価格の決まり方」を参照）。次に、マッチングした順に組を1つずつ約定させ、各組について、約定数量が注文から差し引かれる前に"
 " ``compute_costs`` を1回呼び出します。その時点では："
 
-#: ../../source/user_guide/config.rst:763
+#: ../../source/user_guide/config.rst:764
 msgid ""
 "the two orders of the pair and the orders of the later pairs are still in"
-" the order books with their volumes before the execution, so the order "
-"books can still be crossed;"
-msgstr "その組の2つの注文と、後の組の注文は、約定前の数量のまま板に残っています。そのため、板はまだ交差していることがあります。"
+" the order books, and their volumes still include this pair and the later"
+" pairs (only the earlier pairs are subtracted), so the order books can "
+"still be crossed;"
+msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
 
 #: ../../source/user_guide/config.rst:765
 msgid ""
@@ -2871,11 +2873,15 @@ msgstr ""
 "``market class for X does not inherit Market class`` "
 "（エージェントクラス、イベントクラス、取引コストクラスも同様）"
 
-#: ../../source/user_guide/config.rst:1257
+#: ../../source/user_guide/config.rst:1415
 msgid ""
-"The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a "
-"market block."
-msgstr "ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している）。"
+"The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in"
+" a market block, or a class that does not inherit "
+":class:`~pams.TransactionCost` in ``X.transactionCost``."
+msgstr ""
+"ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している、または "
+"``X.transactionCost`` に :class:`~pams.TransactionCost` "
+"を継承していないクラスを指定している）。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``class for X must be a class name (str) or a class, but Y is given``"

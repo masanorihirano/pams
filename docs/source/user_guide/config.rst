@@ -650,9 +650,10 @@ where :math:`S_i` is the ``outstandingShares`` of component :math:`i`. ``fundame
 Transaction costs
 ~~~~~~~~~~~~~~~~~
 
-The ``transactionCost`` key of a ``Market`` or ``IndexMarket`` block sets the transaction costs of its markets.
-Its value is ``null`` or an object whose ``class`` is a :class:`~pams.TransactionCost` class; the other keys of
-the object are the settings of that class. Without the key, or with ``null``, no costs are charged.
+The ``transactionCost`` key of a market block (``Market``, ``IndexMarket`` or your own market class) sets the
+transaction costs of its markets. Its value is ``null`` or an object whose ``class`` is a
+:class:`~pams.TransactionCost` class; the other keys of the object are the settings of that class. Without the
+key, or with ``null``, no costs are charged.
 
 .. code-block:: json
 
@@ -760,8 +761,9 @@ Only the agents' cash differs.
    the pairs one by one in the order in which they were matched, and calls ``compute_costs`` once for each pair,
    before the executed volume is subtracted from the orders. At that moment:
 
-   - the two orders of the pair and the orders of the later pairs are still in the order books with their volumes
-     before the execution, so the order books can still be crossed;
+   - the two orders of the pair and the orders of the later pairs are still in the order books, and their volumes
+     still include this pair and the later pairs (only the earlier pairs are subtracted), so the order books can
+     still be crossed;
    - the earlier pairs are already executed: their volumes are subtracted from their orders, the fully executed
      orders are removed from the order books, and the executed prices and volumes of the market include them;
    - the agents' cash and asset volumes include none of the pairs yet. The simulator updates them after all the
@@ -1410,7 +1412,8 @@ Common errors
        registered twice. Rename the class or register it once.
    * - ``market class for X does not inherit Market class`` (the same for agent, event and transaction cost
        classes)
-     - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
+     - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block, or a class that
+       does not inherit :class:`~pams.TransactionCost` in ``X.transactionCost``.
    * - ``class for X must be a class name (str) or a class, but Y is given``
      - The value ``Y`` of ``class`` in block ``X`` of a Python dict config is neither a string nor a class,
        e.g. ``None``.
