@@ -5,6 +5,8 @@ import pickle  # nosec B403  # only measures the size of pickled data
 import random
 import subprocess  # nosec B404  # runs only the Python of the tests
 import sys
+import traceback
+from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
 from multiprocessing.reduction import ForkingPickler
 from typing import Any
@@ -25,6 +27,8 @@ from pams.runners import TorchAgentParallelRunner
 from pams.runners.torch_parallel import _initialize_torch_worker
 
 from .dummy import DummyLogger2
+from .dummy import fail_to_initialize_worker_with_base_exception
+from .dummy import fail_to_initialize_worker_with_system_exit
 from .test_agent_parallel import _assert_same_results
 from .torch_dummy import FakeTorch
 from .torch_dummy import TorchPricingAgent
@@ -421,6 +425,58 @@ class TestTorchAgentParallelRunner:
         _, runner = self._make_runners(setting=setting)
         with pytest.raises(ValueError, match="torchNumThreads"):
             runner._setup()
+        assert runner.executor is None
+
+    @pytest.mark.parametrize(
+        "initializer, initargs, expected",
+        [
+            # torch.set_num_threads raises a RuntimeError for 0 threads
+            (
+                _initialize_torch_worker,
+                (0, "file_system"),
+                "in _initialize_torch_worker",
+            ),
+            (
+                fail_to_initialize_worker_with_system_exit,
+                (),
+                "SystemExit: error in worker initializer",
+            ),
+            (
+                fail_to_initialize_worker_with_base_exception,
+                (),
+                "WorkerInitializerAbort: error in worker initializer",
+            ),
+        ],
+        ids=["PyTorch", "SystemExit", "BaseException"],
+    )
+    def test_worker_initializer_failure(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        initializer: Callable[..., None],
+        initargs: Tuple[Any, ...],
+        expected: str,
+    ) -> None:
+        # any exception of the worker initializer, e.g., of a subclass loading a model, even a
+        # BaseException such as SystemExit, is raised by the tasks instead of breaking the
+        # executor of the spawned workers
+        setting = copy.deepcopy(SETTING)
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        _, runner = self._make_runners(setting=setting)
+        monkeypatch.setattr(runner, "_get_worker_initializer", lambda: initializer)
+        monkeypatch.setattr(runner, "_get_worker_initargs", lambda: initargs)
+        runner._setup()
+        executor = runner.executor
+        assert executor is not None
+        assert executor.submit(sum, [1, 2]).result() == 3
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed on this worker"
+        ) as exc_info:
+            runner._run()
+        assert not isinstance(exc_info.value, BrokenExecutor)
+        # the cause is the traceback text of the worker process
+        cause = exc_info.value.__cause__
+        assert cause is not None
+        assert expected in "".join(traceback.format_exception_only(type(cause), cause))
         assert runner.executor is None
 
     def test_sharing_strategy(self, torch: Any) -> None:
