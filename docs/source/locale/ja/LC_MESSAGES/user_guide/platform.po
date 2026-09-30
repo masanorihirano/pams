@@ -198,11 +198,11 @@ msgstr ""
 "で起動し、各ワーカープロセスでモデルを一度だけ読み込みます。モデルがタスクごとにコピーされないよう、エージェントはモデルを自身の属性として保持する代わりに、``submit_orders``"
 " 内で ``my_runner.MODEL`` を使います。"
 
-#: ../../source/user_guide/platform.rst:112
+#: ../../source/user_guide/platform.rst:113
 msgid "Agents using PyTorch"
 msgstr "PyTorchを使うエージェント"
 
-#: ../../source/user_guide/platform.rst:113
+#: ../../source/user_guide/platform.rst:114
 msgid ""
 ":class:`pams.runners.TorchAgentParallelRunner` (experimental) is a subclass "
 "of :class:`pams.runners.MultiProcessAgentParallelRunner` for agents that use"
@@ -220,7 +220,7 @@ msgstr ""
 "などにより各自でインストールしてください（お使いのプラットフォームとアクセラレーター向けのビルドについては、PyTorchのWebサイトを参照してください）。pamsがPyTorchをインポートするのはこのランナーが作成されたときのみで、PyTorchがインストールされていない場合、ランナーは"
 " ``ImportError`` を送出します。このランナーは、プロセスランナーの機能に加えて、以下を行います："
 
-#: ../../source/user_guide/platform.rst:119
+#: ../../source/user_guide/platform.rst:120
 msgid ""
 "starts the worker processes by ``spawn`` unless ``simulation.startMethod`` "
 "is set, because ``fork`` is unsafe with PyTorch: CUDA cannot be initialized "
@@ -237,7 +237,7 @@ msgstr ""
 "の下に置く必要があり、ユーザー定義クラスはインポート可能な ``.py`` ファイルに記述する必要があります（:ref:`config-"
 "parallel` を参照）。"
 
-#: ../../source/user_guide/platform.rst:124
+#: ../../source/user_guide/platform.rst:125
 msgid ""
 "sets the number of threads of PyTorch on each worker process to "
 "``simulation.torchNumThreads`` (default: the number of threads of PyTorch on"
@@ -250,7 +250,7 @@ msgstr ""
 "に設定します（デフォルト：メインプロセスでのPyTorchのスレッド数を、``numParallel`` とセッションの "
 "``maxNormalOrders`` の最大値のうち小さい方で割った値、ただし最小1）。小さなモデルでは、多くの場合1が最も高速です。"
 
-#: ../../source/user_guide/platform.rst:128
+#: ../../source/user_guide/platform.rst:129
 msgid ""
 "sets the sharing strategy of :mod:`torch.multiprocessing` to ``file_system``"
 " on the main process, which affects the whole process, and on the worker "
@@ -261,7 +261,7 @@ msgstr ""
 "に設定します。メインプロセスでの設定はプロセス全体に影響します。サブクラスは、クラス属性 ``torch_sharing_strategy`` を "
 "``None`` に設定することで、現在の戦略を維持できます。"
 
-#: ../../source/user_guide/platform.rst:132
+#: ../../source/user_guide/platform.rst:133
 msgid ""
 "Tensors held by agents, such as the parameters of their models, are sent to "
 "the worker processes through shared memory: they are moved to shared memory "
@@ -269,7 +269,7 @@ msgid ""
 "tensor instead of its data. Keep the following in mind."
 msgstr "モデルのパラメータなど、エージェントが保持するテンソルは、共有メモリを通じてワーカープロセスに送られます。テンソルは最初のタスクで共有メモリに移され、以降のタスクではテンソルのデータの代わりに、テンソルごとに数百バイトのハンドルが送られます。以下の点に注意してください。"
 
-#: ../../source/user_guide/platform.rst:136
+#: ../../source/user_guide/platform.rst:137
 msgid ""
 "Each task still refers to every tensor of every agent, and opening them "
 "takes time, so the cost of a task grows with the number of tensors, e.g., "
@@ -282,7 +282,7 @@ msgstr ""
 " :class:`pams.runners.SequentialRunner` より高速になるのは ``submit_orders`` "
 "にそれよりもはるかに長い時間がかかる場合に限られるため、お使いのエージェントで計測してください。"
 
-#: ../../source/user_guide/platform.rst:140
+#: ../../source/user_guide/platform.rst:141
 msgid ""
 "On Linux, the shared memory is in ``/dev/shm``, which must be large enough "
 "for the tensors of all the agents. Docker gives 64 MB by default, which can "
@@ -291,7 +291,7 @@ msgstr ""
 "Linuxでは共有メモリは ``/dev/shm`` にあり、すべてのエージェントのテンソルを格納できる大きさが必要です。Dockerのデフォルトは64"
 " MBで、``--shm-size`` で増やせます。"
 
-#: ../../source/user_guide/platform.rst:142
+#: ../../source/user_guide/platform.rst:143
 msgid ""
 "The worker processes see the same memory as the main process, so in-place "
 "changes of the tensors in ``submit_orders``, e.g., by training, change the "
@@ -302,7 +302,7 @@ msgstr ""
 "内での（学習などによる）テンソルのインプレースの変更は、メインプロセス上のテンソルを変更します。一方、ワーカープロセス上でのエージェントのその他の変更は失われます。``submit_orders``"
 " ではテンソルを読み取り専用にしてください。"
 
-#: ../../source/user_guide/platform.rst:145
+#: ../../source/user_guide/platform.rst:146
 msgid ""
 "Only the state of the ``prng`` of each agent comes back from the worker "
 "processes. Draw the random numbers of PyTorch from a generator seeded by it,"
@@ -313,7 +313,7 @@ msgstr ""
 "の状態のみです。PyTorchの乱数は、PyTorchのグローバルな生成器ではなく、``torch.Generator().manual_seed(self.prng.randrange(2**32))``"
 " のように ``prng`` でシードを設定した生成器から生成してください。"
 
-#: ../../source/user_guide/platform.rst:148
+#: ../../source/user_guide/platform.rst:149
 msgid ""
 "The results of some operations of PyTorch, e.g., matrix products, can differ"
 " in rounding with the number of threads and with the device, and such a "
@@ -325,7 +325,7 @@ msgstr ""
 " を ``torch.set_num_threads(n)`` の後に実行し、``torchNumThreads`` を ``n`` "
 "に設定してください。"
 
-#: ../../source/user_guide/platform.rst:153
+#: ../../source/user_guide/platform.rst:154
 msgid ""
 "The runner does not choose the device. The worker processes see the same "
 "devices as the main process, and each worker process using CUDA creates its "
