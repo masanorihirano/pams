@@ -689,7 +689,7 @@ from the agents' cash, and the market records them as its revenue (see below). E
 
 Transaction costs draw no random numbers, and the built-in agents do not look at their cash (see
 :ref:`config-agents`), so for the same seed the prices and executions are the same with and without costs.
-Only the agents' cash differs.
+Only the agents' cash, the costs in the execution logs and the revenues of the markets differ.
 
 Each market records the transaction costs that it collects in each step: the sum of ``buy_transaction_cost``
 and ``sell_transaction_cost`` of its executions in the step. Negative costs (rebates) reduce it, so it can be

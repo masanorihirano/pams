@@ -30,9 +30,10 @@ class Market:
 
     If ``transaction_cost`` is set (see :class:`pams.TransactionCost`), the market charges transaction costs to the
     buyer and the seller of each execution and records the net transaction costs that it collects in each time
-    step, which :func:`get_transaction_cost_revenues` and :func:`get_cumulative_transaction_cost_revenue` return.
-    A logger can read them through ``log.market`` in :func:`pams.logs.Logger.process_market_step_end_log`, and an
-    event can read them through ``market`` in :func:`pams.events.EventABC.hooked_after_step_for_market`, e.g.,
+    step, which :func:`get_transaction_cost_revenues` and :func:`get_transaction_cost_revenue` return, and
+    :func:`get_cumulative_transaction_cost_revenue` returns their sum up to a time step. A logger can read them
+    through ``log.market`` in :func:`pams.logs.Logger.process_market_step_end_log`, and an event can read them
+    through ``market`` in :func:`pams.events.EventABC.hooked_after_step_for_market`, e.g.,
 
     .. code-block:: python
 
