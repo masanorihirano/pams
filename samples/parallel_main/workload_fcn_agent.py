@@ -1,3 +1,9 @@
+"""WorkloadFCNAgent, an FCN agent with an artificial computational workload.
+
+This is the counterpart of WorkloadFCNAgent of the Parallel sample of Plham. The
+workload is a Monte Carlo pricing of a European call option in the Black-Scholes model.
+"""
+
 import math
 import random
 from typing import Any

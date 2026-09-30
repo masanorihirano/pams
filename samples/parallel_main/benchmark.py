@@ -8,19 +8,26 @@ model of make_config.py are run and timed. For example::
 
 Each step is split into two phases:
 
-- collect: the normal agents decide their orders. This is T_w + T_c of Plham, i.e.,
-  the time of the agents' decisions and, for the parallel runners, the overhead of
-  sending the agents and the simulation to the workers and receiving the orders.
+- collect: the normal agents decide their orders. This is T_w + T_c in the terms of
+  Torii et al. (2017), i.e., the time of the agents' decisions and, for the parallel
+  runners, the overhead of sending the agents and the simulation to the workers and
+  receiving the orders.
 - handle: the orders are executed and the high-frequency agents are asked. This is
-  T_m of Plham, which is always processed sequentially.
+  T_m of Torii et al. (2017), which is always processed sequentially.
+
+The column "step" is the time of the two phases together, i.e., of ``_update_markets``
+of the runner. It does not include the events and the updates of the markets between
+the steps.
 
 Each run is written to the CSV file as soon as it finishes. The runs must give the same
-results. If not, RuntimeError is raised. See ``--help`` for the options.
+results. If not, RuntimeError is raised. ``--plot`` requires matplotlib. See ``--help``
+for the options.
 """
 
 import argparse
 import csv
 import hashlib
+import importlib.util
 import json
 import math
 import os
@@ -50,6 +57,10 @@ from samples.parallel_main.make_config import make_config
 from samples.parallel_main.workload_fcn_agent import WorkloadFCNAgent
 
 Workload = Optional[Tuple[int, int]]
+
+DEFAULT_NUM_PARALLEL: List[int] = [1, 2, 4, 8]
+DEFAULT_RUNNERS: List[str] = ["sequential", "multi_process"]
+DEFAULT_WORKLOADS: List[str] = ["off", "10x10", "100x100"]
 
 COLUMNS: List[str] = [
     "workload",
@@ -454,58 +465,76 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     parser = argparse.ArgumentParser(
         description="Measure the time per step of the parallel runners."
     )
-    parser.add_argument("--spots", type=int, default=9, help="number of spot markets")
-    parser.add_argument("--steps", type=int, default=5, help="number of steps")
+    parser.add_argument(
+        "--spots", type=int, default=9, help="number of spot markets (default: 9)"
+    )
+    parser.add_argument(
+        "--steps", type=int, default=5, help="number of steps (default: 5)"
+    )
     parser.add_argument(
         "--warmup",
         type=int,
         default=1,
-        help="number of first steps excluded from the mean times per step",
+        help="number of first steps excluded from the mean times per step "
+        "(default: 1)",
     )
     parser.add_argument(
         "--agents-per-market",
         type=int,
         default=500,
-        help="number of FCN agents for each market",
+        help="number of FCN agents for each market (default: 500)",
     )
     parser.add_argument(
-        "--arbitrage-agents", type=int, default=100, help="number of arbitrage agents"
+        "--arbitrage-agents",
+        type=int,
+        default=100,
+        help="number of arbitrage agents (default: 100)",
     )
     parser.add_argument(
         "--order-rate",
         type=float,
         default=0.1,
-        help="probability that an FCN agent submits orders",
+        help="probability that an FCN agent submits orders (default: 0.1)",
     )
     parser.add_argument(
         "--num-parallel",
         type=int,
         nargs="+",
-        default=[1, 2, 4, 8],
-        help="numbers of parallel workers",
+        default=DEFAULT_NUM_PARALLEL,
+        help="numbers of parallel workers "
+        f"(default: {' '.join(map(str, DEFAULT_NUM_PARALLEL))})",
     )
     parser.add_argument(
         "--runners",
         nargs="+",
         choices=list(RUNNERS.keys()),
-        default=["sequential", "multi_process"],
-        help="runners",
+        default=DEFAULT_RUNNERS,
+        help=f"runners (default: {' '.join(DEFAULT_RUNNERS)})",
     )
     parser.add_argument(
         "--workloads",
-        type=parse_workload,
         nargs="+",
-        default=[None, (10, 10), (100, 100)],
+        default=DEFAULT_WORKLOADS,
         help='workloads, "off" or "<bsNumSamples>x<bsNumSteps>" '
-        "(default: off 10x10 100x100)",
+        f"(default: {' '.join(DEFAULT_WORKLOADS)})",
     )
-    parser.add_argument("--repeat", type=int, default=1, help="number of repeats")
-    parser.add_argument("--seed", type=int, default=1, help="simulation random seed")
+    parser.add_argument(
+        "--repeat", type=int, default=1, help="number of repeats (default: 1)"
+    )
+    parser.add_argument(
+        "--seed", type=int, default=1, help="simulation random seed (default: 1)"
+    )
     parser.add_argument("--output", type=str, default=None, help="output CSV file")
     parser.add_argument("--plot", type=str, default=None, help="output image file")
     args = parser.parse_args(argv)
     if args.steps <= args.warmup:
         parser.error("--steps has to be larger than --warmup")
+    try:
+        args.workloads = [parse_workload(value) for value in args.workloads]
+    except argparse.ArgumentTypeError as e:
+        parser.error(f"argument --workloads: {e}")
+    if args.plot is not None and importlib.util.find_spec("matplotlib") is None:
+        parser.error("--plot requires matplotlib")
 
     if args.output is not None:
         write_rows(path=args.output, rows=[], append=False)
@@ -513,6 +542,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         # the parallel runners warn that they are experimental whenever they are made
         warnings.filterwarnings("ignore", message=".* is experimental")
         rows: List[Dict[str, Any]] = run_all(args=args)
+    check_digests(rows=rows)
     if args.plot is not None:
         n_agents: int = (args.spots + 1) * args.agents_per_market
         plot(
@@ -524,7 +554,6 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
                 f"mean of steps {args.warmup + 1}-{args.steps}"
             ),
         )
-    check_digests(rows=rows)
 
 
 if __name__ == "__main__":

@@ -139,34 +139,43 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
     )
     parser.add_argument("spots", type=int, help="number of spot markets")
     parser.add_argument(
-        "--steps", type=int, default=500, help="number of steps of the session"
+        "--steps",
+        type=int,
+        default=500,
+        help="number of steps of the session (default: 500)",
     )
     parser.add_argument(
         "--agents-per-market",
         type=int,
         default=500,
-        help="number of FCN agents for each market",
+        help="number of FCN agents for each market (default: 500)",
     )
     parser.add_argument(
-        "--arbitrage-agents", type=int, default=100, help="number of arbitrage agents"
+        "--arbitrage-agents",
+        type=int,
+        default=100,
+        help="number of arbitrage agents (default: 100)",
     )
     parser.add_argument(
         "--order-rate",
         type=float,
         default=0.1,
-        help="probability that an FCN agent submits orders",
+        help="probability that an FCN agent submits orders (default: 0.1)",
     )
     parser.add_argument(
         "--no-workload", action="store_true", help="disable the workload"
     )
     parser.add_argument(
-        "--bs-num-samples", type=int, default=10, help="number of paths of the workload"
+        "--bs-num-samples",
+        type=int,
+        default=10,
+        help="number of paths of the workload (default: 10)",
     )
     parser.add_argument(
         "--bs-num-steps",
         type=int,
         default=10,
-        help="number of time steps of each path of the workload",
+        help="number of time steps of each path of the workload (default: 10)",
     )
     parser.add_argument(
         "--no-shock", action="store_true", help="disable the fundamental price shock"
@@ -175,10 +184,15 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         "--num-parallel",
         type=int,
         default=None,
-        help="number of parallel workers written in the config",
+        help="number of parallel workers written in the config; "
+        "not written if not given",
     )
     parser.add_argument(
-        "--output", "-o", type=str, default=None, help="output file (default: stdout)"
+        "--output",
+        "-o",
+        type=str,
+        default=None,
+        help="output file; the standard output if not given",
     )
     args = parser.parse_args(argv)
     config: Dict[str, Any] = make_config(

@@ -4,7 +4,7 @@ This is the counterpart of ParallelMain of Plham. Only the runner is chosen here
 model is given by the config. For example::
 
     python -m samples.parallel_main.main --config samples/parallel_main/config.json --seed 1
-    python -m samples.parallel_main.main -c samples/parallel_main/config-009.json -s 1 -n 4
+    python -m samples.parallel_main.main -c samples/parallel_main/config.json -s 1 -n 4
 
 For the same seed, all the runners print the same market log. Only the lines starting
 with ``#``, which report the time taken, differ.
@@ -45,7 +45,7 @@ def main() -> None:
         type=str,
         choices=list(RUNNERS.keys()),
         default="multi_process",
-        help="simulation runner",
+        help="simulation runner (default: %(default)s)",
     )
     parser.add_argument(
         "--num-parallel",
