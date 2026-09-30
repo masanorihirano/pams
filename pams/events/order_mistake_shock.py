@@ -1,3 +1,4 @@
+import math
 import random
 import warnings
 from typing import Any
@@ -84,6 +85,8 @@ class OrderMistakeShock(EventABC):
             raise ValueError("priceChangeRate is required for OrderMistakeShock")
         if not isinstance(settings["priceChangeRate"], float):
             raise ValueError("priceChangeRate have to be float")
+        if not math.isfinite(settings["priceChangeRate"]):
+            raise ValueError("priceChangeRate have to be finite")
         if settings["priceChangeRate"] <= -1.0:
             raise ValueError("priceChangeRate have to be greater than -1.0")
         self.price_change_rate = settings["priceChangeRate"]

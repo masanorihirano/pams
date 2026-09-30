@@ -266,6 +266,9 @@ class TestOrderMistakeShock(TestEventABC):
         [
             (-1.5, 10000, "priceChangeRate have to be greater than -1.0"),
             (-1.0, 10000, "priceChangeRate have to be greater than -1.0"),
+            (math.nan, 10000, "priceChangeRate have to be finite"),
+            (math.inf, 10000, "priceChangeRate have to be finite"),
+            (-math.inf, 10000, "priceChangeRate have to be finite"),
             (-0.05, 0, "orderVolume have to be positive"),
             (-0.05, -5, "orderVolume have to be positive"),
             (-0.99, 1, None),
@@ -275,7 +278,7 @@ class TestOrderMistakeShock(TestEventABC):
         self, price_change_rate: float, order_volume: int, message: Optional[str]
     ) -> None:
         # plhamJ silently skips a mistaken order with a negative price or a non-positive
-        # volume, but such settings are rejected at the setup
+        # volume, but such settings and a non-finite rate are rejected at the setup
         sim = Simulator(prng=random.Random(4))
         logger = Logger()
         session = Session(
