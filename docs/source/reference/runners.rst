@@ -12,3 +12,4 @@ Runner
     runners.MultiProcessAgentParallelRunner
     runners.JaxAgentParallelRunner
     runners.TensorFlowAgentParallelRunner
+    runners.TorchAgentParallelRunner

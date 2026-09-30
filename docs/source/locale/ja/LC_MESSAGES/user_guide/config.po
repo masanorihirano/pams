@@ -586,6 +586,23 @@ msgstr ""
 " で利用できるのは ``\"spawn\"`` のみです。その他のランナーでは無視されます。:ref:`config-parallel` "
 "を参照してください。"
 
+#: ../../source/user_guide/config.rst:300
+msgid "``torchNumThreads`` |optional|"
+msgstr "``torchNumThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:302
+msgid ""
+"Number of threads of PyTorch on each worker process of "
+":class:`~pams.runners.TorchAgentParallelRunner` (default: the number of "
+"threads of PyTorch on the main process divided by the smaller of "
+"``numParallel`` and the largest ``maxNormalOrders`` of the sessions, at "
+"least 1). Ignored by the other runners. See :doc:`platform`."
+msgstr ""
+":class:`~pams.runners.TorchAgentParallelRunner` "
+"の各ワーカープロセスでPyTorchが使うスレッド数です（デフォルト：メインプロセスでのPyTorchのスレッド数を、``numParallel`` "
+"とセッションの ``maxNormalOrders`` "
+"の最大値のうち小さい方で割った値、ただし最小1）。その他のランナーでは無視されます。:doc:`platform` を参照してください。"
+
 #: ../../source/user_guide/config.rst:301
 msgid ""
 "Other keys in ``simulation`` are ignored, except the keys that "
