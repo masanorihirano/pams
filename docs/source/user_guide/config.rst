@@ -559,10 +559,11 @@ Market
      - int
      - Number of shares. Required for markets that are part of an ``IndexMarket``, where it is the weight of
        the market in the index. Must be a JSON integer. Not set by default.
-   * - ``transactionCostRate`` |optional|
-     - number in [0, 1)
-     - Transaction cost paid by both the buyer and the seller of each execution, as a fraction of the executed
-       value (price × volume), e.g. ``0.001`` for 0.1% (see below). Default: ``0.0``, i.e. no costs.
+   * - ``transactionCost`` |optional|
+     - object or null
+     - Transaction costs charged to the buyer and the seller of each execution, e.g.
+       ``{"class": "ProportionalTransactionCost", "rate": 0.001}`` for 0.1% of the executed value (see
+       :ref:`config-transaction-costs`). Default: no costs.
 
 If only one of ``marketPrice`` and ``fundamentalPrice`` is given, both prices start at that value.
 If both are given, the market price starts at ``marketPrice`` and the fundamental price at
@@ -594,23 +595,6 @@ If both are given, the market price starts at ``marketPrice`` and the fundamenta
    An incoming order is executed at the price of the order it matches in the book (the one placed earlier);
    a market order takes the price of the limit order it matches. If an order fills against several price levels
    at once, all of these fills use the last (worst) of those prices.
-
-.. dropdown:: How transaction costs are charged
-   :icon: info
-
-   When volume :math:`V` is executed at price :math:`P`, the buyer pays :math:`(1 + c) P V` and the seller
-   receives :math:`(1 - c) P V`, where :math:`c` is ``transactionCostRate``. Nobody receives the costs: they
-   are only subtracted from the agents' cash. Each :class:`~pams.logs.ExecutionLog` records them as
-   ``buy_transaction_cost`` and ``sell_transaction_cost``, and agents can read the rate of a market as
-   ``market.transaction_cost_rate``.
-
-   The built-in agents do not look at their cash (see :ref:`config-agents`), so for the same seed the prices
-   and executions are the same with and without costs. Only the agents' cash differs.
-
-   For other fee schedules, e.g. different rates for buyers and sellers or for makers and takers, or fixed
-   fees, override :meth:`~pams.Market.compute_transaction_costs` in your own market class (see
-   :ref:`config-user-classes`). It returns the costs of the buyer and the seller of one execution. Negative
-   costs are rebates, which are added to the cash.
 
 .. _config-indexmarket:
 
@@ -644,8 +628,8 @@ trades this gap.
    * - ``outstandingShares`` |conditional|
      - int
      - Only needed when this index is itself a component of another index.
-   * - ``transactionCostRate`` |optional|
-     - number in [0, 1)
+   * - ``transactionCost`` |optional|
+     - object or null
      - As for ``Market``. Applies to executions in the index's own order book.
    * - ``requires`` |deprecated|
      - any
@@ -660,6 +644,129 @@ The fundamental price of the index at each step is
 where :math:`S_i` is the ``outstandingShares`` of component :math:`i`. ``fundamentalDrift`` and
 ``fundamentalVolatility`` of an ``IndexMarket`` are ignored. To avoid an artificial gap at the start, set its
 ``marketPrice`` to the weighted average of the component prices.
+
+.. _config-transaction-costs:
+
+Transaction costs
+~~~~~~~~~~~~~~~~~
+
+The ``transactionCost`` key of a ``Market`` or ``IndexMarket`` block sets the transaction costs of its markets.
+Its value is ``null`` or an object whose ``class`` is a :class:`~pams.TransactionCost` class; the other keys of
+the object are the settings of that class. Without the key, or with ``null``, no costs are charged.
+
+.. code-block:: json
+
+   "Market": {
+     "class": "Market", "tickSize": 0.00001, "marketPrice": 300.0,
+     "transactionCost": {"class": "ProportionalTransactionCost", "rate": 0.001}
+   }
+
+The runner creates one instance of the class for each market of the block and sets it to
+``market.transaction_cost`` (``None`` without costs). Right after the setup of the market, it calls ``setup`` of
+the instance with the object without ``class``. Like any object value, the object is inherited through
+``extends`` as a whole.
+
+The built-in :class:`~pams.ProportionalTransactionCost` has one key:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 27 13 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``rate`` |required|
+     - number in [0, 1)
+     - Cost paid by both the buyer and the seller, as a fraction of the executed value (price × volume), e.g.
+       ``0.001`` for 0.1%.
+
+When volume :math:`V` is executed at price :math:`P`, the buyer pays :math:`(1 + c) P V` and the seller
+receives :math:`(1 - c) P V`, where :math:`c` is ``rate``. Nobody receives the costs: they are only subtracted
+from the agents' cash. Each :class:`~pams.logs.ExecutionLog` records them as ``buy_transaction_cost`` and
+``sell_transaction_cost`` (``0.0`` without costs).
+
+Transaction costs draw no random numbers, and the built-in agents do not look at their cash (see
+:ref:`config-agents`), so for the same seed the prices and executions are the same with and without costs.
+Only the agents' cash differs.
+
+.. dropdown:: Writing your own transaction cost
+   :icon: code
+
+   For other fee schedules, e.g. different rates for makers and takers, fixed fees or tiered fees, subclass
+   :class:`~pams.TransactionCost` and implement ``compute_costs``. It returns the costs of the buyer and the
+   seller of one execution; negative costs are rebates, which are added to the cash. Read your keys in
+   ``setup``, which does nothing by default. This example charges ``makerRate`` to the order placed first (the
+   maker) and ``takerRate`` to the other order (the taker):
+
+   .. code-block:: python
+
+      from pams import TransactionCost
+      from pams.runners import SequentialRunner
+
+
+      class MakerTakerTransactionCost(TransactionCost):
+          def setup(self, settings, *args, **kwargs):
+              self.maker_rate = settings["makerRate"]
+              self.taker_rate = settings["takerRate"]
+
+          def compute_costs(self, price, volume, buy_order, sell_order):
+              maker_cost = self.maker_rate * price * volume
+              taker_cost = self.taker_rate * price * volume
+              buy_arrival = (buy_order.placed_at, buy_order.order_id)
+              sell_arrival = (sell_order.placed_at, sell_order.order_id)
+              if buy_arrival < sell_arrival:  # the buy order is the maker
+                  return maker_cost, taker_cost
+              return taker_cost, maker_cost
+
+
+      runner = SequentialRunner(settings="config.json")
+      runner.class_register(cls=MakerTakerTransactionCost)
+      runner.main()
+
+   .. code-block:: json
+
+      "transactionCost": {"class": "MakerTakerTransactionCost", "makerRate": -0.0001, "takerRate": 0.0003}
+
+   As for the other :ref:`user-defined classes <config-user-classes>`, register the class and give its name as
+   ``class``, or, in a Python dict config, give the class itself. With the process runner, define it in a ``.py``
+   file (see :ref:`config-parallel`).
+
+   ``placed_at`` is the time at which an order was added to the order book, and order IDs increase in the order
+   in which the orders arrive at each market. Orders placed in the same step have the same ``placed_at``, so the
+   order ID tells which came first. Usually the maker is the order that was waiting in the order book and the
+   taker is the incoming order. After a session without order execution or a trading halt, however, both orders
+   may have been waiting in the book, and both may be market orders; the example then treats the order placed
+   first as the maker.
+
+   ``compute_costs`` receives only the execution: the executed ``price`` and ``volume``, and the buy and sell
+   :class:`~pams.Order`, whose ``volume`` still includes the executed volume. The orders are passed because
+   they carry what the execution log lacks, such as ``placed_at`` and ``kind``. As each instance belongs to one
+   market, everything else can be read through ``self.market``: the order books (``self.market.buy_order_book``
+   and ``self.market.sell_order_book``), the prices, the time (``self.market.get_time()``), and through
+   ``self.market.simulator`` the agents (``self.market.simulator.id2agent``) and the other markets
+   (``self.market.simulator.markets``). An instance can also keep its own state, e.g. the volume that each agent
+   has traded for tiered fees.
+
+   When ``setup`` runs, its market is set up, but the markets created after it, the agents, the sessions and the
+   events are not yet. If the class needs random numbers, create its own ``random.Random`` in ``setup``: drawing
+   from the generators of the runner or of the markets would change the simulation.
+
+.. dropdown:: When ``compute_costs`` is called
+   :icon: info
+
+   While a session executes orders and the market is not halted, the market executes orders after each order or
+   cancel. It first matches the best buy and sell orders, pair by pair, as long as their prices cross, and all
+   the matched pairs get one execution price (see "How the market price is determined" above). Then it executes
+   the pairs one by one in the order in which they were matched, and calls ``compute_costs`` once for each pair,
+   before the executed volume is subtracted from the orders. At that moment:
+
+   - the two orders of the pair and the orders of the later pairs are still in the order books with their volumes
+     before the execution, so the order books can still be crossed;
+   - the earlier pairs are already executed: their volumes are subtracted from their orders, the fully executed
+     orders are removed from the order books, and the executed prices and volumes of the market include them;
+   - the agents' cash and asset volumes include none of the pairs yet. The simulator updates them after all the
+     pairs are executed. Only then are ``executed_order`` of the agents and the events hooked after executions
+     called for each execution.
 
 .. _config-correlations:
 
@@ -1201,8 +1308,9 @@ through ``extends`` like any other value.
   parameters.
 - Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
   ``FCNAgent``) is ambiguous and fails. Register each class only once.
-- Agent classes must inherit from :class:`~pams.agents.Agent`, market classes from :class:`~pams.Market` and
-  event classes from :class:`~pams.events.EventABC`. An agent that inherits from
+- Agent classes must inherit from :class:`~pams.agents.Agent`, market classes from :class:`~pams.Market`,
+  event classes from :class:`~pams.events.EventABC` and transaction cost classes from
+  :class:`~pams.TransactionCost` (see :ref:`config-transaction-costs`). An agent that inherits from
   :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
 - ``samples/user_class`` and ``samples/market_share`` show complete examples.
 
@@ -1299,7 +1407,8 @@ Common errors
    * - ``class for X is found 2 times``
      - Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
        registered twice. Rename the class or register it once.
-   * - ``market class for X does not inherit Market class`` (the same for agent and event classes)
+   * - ``market class for X does not inherit Market class`` (the same for agent, event and transaction cost
+       classes)
      - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
    * - ``class for X must be a class name (str) or a class, but Y is given``
      - The value ``Y`` of ``class`` in block ``X`` of a Python dict config is neither a string nor a class,

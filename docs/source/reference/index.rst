@@ -11,6 +11,7 @@ API reference
    simulators
    sessions
    markets
+   transaction_costs
    fundamentals
    orders
    events
