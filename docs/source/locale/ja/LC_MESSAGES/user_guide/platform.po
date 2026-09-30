@@ -298,10 +298,143 @@ msgstr ""
 "の鍵を含む乱数は ``agent.prng`` から導出してください。"
 
 #: ../../source/user_guide/platform.rst:187
+msgid "TensorFlow runner"
+msgstr "TensorFlow ランナー"
+
+#: ../../source/user_guide/platform.rst:188
+msgid ""
+":class:`pams.runners.TensorFlowAgentParallelRunner` is an experimental "
+":class:`pams.runners.MultiProcessAgentParallelRunner` for agents whose "
+"``submit_orders`` uses `TensorFlow <https://www.tensorflow.org/>`_, e.g., "
+"Keras models. TensorFlow is not a dependency of pams, so install it "
+"separately, e.g., ``pip install tensorflow`` (or ``pip install tensorflow-"
+"cpu`` for the CPU-only build). ``import pams`` does not import TensorFlow, "
+"and creating the runner without TensorFlow raises an ``ImportError``."
+msgstr ""
+":class:`pams.runners.TensorFlowAgentParallelRunner` は、``submit_orders`` で "
+"`TensorFlow <https://www.tensorflow.org/>`_ を使うエージェント（例えば Keras "
+"のモデル）のための実験的な :class:`pams.runners.MultiProcessAgentParallelRunner` "
+"です。TensorFlow は pams の依存パッケージではないため、別途インストールしてください（例えば ``pip install "
+"tensorflow``、CPU 専用版であれば ``pip install tensorflow-cpu``）。``import pams`` は "
+"TensorFlow をインポートせず、TensorFlow がインストールされていない状態でこのランナーを作成すると ``ImportError`` "
+"が送出されます。"
+
+#: ../../source/user_guide/platform.rst:194
+msgid ""
+"The worker processes are started by ``spawn`` by default "
+"(``default_start_method = \"spawn\"``), because TensorFlow is not fork-safe."
+" Once TensorFlow has run on the main process, e.g., to build the models of "
+"the agents or in an earlier :class:`pams.runners.SequentialRunner`, a worker"
+" process started by ``fork`` has a copy of its memory but not its threads: "
+"TensorFlow operations can hang there, GPUs cannot be used, and TensorFlow "
+"cannot be configured."
+msgstr ""
+"TensorFlow は fork セーフでないため、ワーカープロセスはデフォルトで ``spawn`` "
+"によって起動されます（``default_start_method = \"spawn\"``）。メインプロセスで一度 TensorFlow "
+"が実行されると（例えばエージェントのモデルを構築するためや、先に実行した :class:`pams.runners.SequentialRunner` "
+"の中で）、``fork`` で起動されたワーカープロセスはそのメモリのコピーを持ちますが、スレッドは持ちません。そのため、そこでは TensorFlow"
+" の演算がハングすることがあり、GPU は使えず、TensorFlow を設定することもできません。"
+
+#: ../../source/user_guide/platform.rst:198
+msgid ""
+"Each worker process configures TensorFlow once before it runs any task, by "
+"``simulation.tensorflowIntraOpThreads``, "
+"``simulation.tensorflowInterOpThreads`` and "
+"``simulation.tensorflowGpuMemoryGrowth`` (see :ref:`config-parallel-"
+"tensorflow`), and then calls the worker initializer given by "
+"``_get_worker_initializer()``, e.g., ``load_model`` above. By default, the "
+"CPUs are divided among the worker processes running at the same time, and "
+"the memory growth of the GPUs is enabled so that the worker processes can "
+"share a GPU. The main process is not configured. To give each worker process"
+" its own GPU, call ``tf.config.set_visible_devices`` in the initializer; "
+"``CUDA_VISIBLE_DEVICES`` set there has no effect by default, because the "
+"GPUs are already listed to enable their memory growth."
+msgstr ""
+"各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation.tensorflowIntraOpThreads``、``simulation.tensorflowInterOpThreads``、``simulation.tensorflowGpuMemoryGrowth``"
+" で TensorFlow を設定し（:ref:`config-parallel-tensorflow` "
+"を参照）、その後、``_get_worker_initializer()`` で与えられるワーカーの初期化関数（例えば上記の "
+"``load_model``）を呼び出します。デフォルトでは、CPU は同時に動くワーカープロセスの間で分割され、ワーカープロセスが GPU "
+"を共有できるよう GPU のメモリ増加（memory growth）が有効になります。メインプロセスは設定されません。各ワーカープロセスに専用の GPU"
+" を割り当てるには、初期化関数の中で ``tf.config.set_visible_devices`` "
+"を呼び出してください。メモリ増加を有効にするために GPU がすでに列挙されているため、デフォルトでは、そこで設定した "
+"``CUDA_VISIBLE_DEVICES`` は効果がありません。"
+
+#: ../../source/user_guide/platform.rst:206
+msgid ""
+"The agents are pickled in every task (see :ref:`config-parallel`). "
+"``tf.Tensor`` and ``tf.Variable`` are pickled as copies of their values, a "
+"Keras 3 model is pickled by saving it in the ``.keras`` format, which takes "
+"tens of milliseconds even for a small model, and a function made by "
+"``tf.function`` cannot be pickled. Therefore, keep a key of the model, such "
+"as its path, in the agent, and get the model from a cache at the top level "
+"of a module as below, so that each worker process loads it once and reuses "
+"it in the following steps."
+msgstr ""
+"エージェントはタスクごとに pickle 化されます（:ref:`config-parallel` を参照）。``tf.Tensor`` と "
+"``tf.Variable`` はその値のコピーとして pickle 化され、Keras 3 のモデルは ``.keras`` 形式で保存することで "
+"pickle 化されます（小さなモデルでも数十ミリ秒かかります）。また、``tf.function`` で作られた関数は pickle "
+"化できません。そのため、エージェントにはモデルのキー（例えばそのパス）を保持させ、以下のようにモジュールのトップレベルにあるキャッシュからモデルを取得してください。こうすることで、各ワーカープロセスはモデルを一度だけ読み込み、以降のステップで再利用します。"
+
+#: ../../source/user_guide/platform.rst:211
+msgid ""
+"Importing TensorFlow at the top level of a module is fine, but do not run "
+"TensorFlow (e.g., create tensors or models) at the top level of the modules "
+"that the worker processes import, such as the main script; otherwise, "
+"TensorFlow is initialized before it is configured, and the simulation fails."
+msgstr ""
+"モジュールのトップレベルで TensorFlow "
+"をインポートすることは問題ありませんが、メインスクリプトなど、ワーカープロセスがインポートするモジュールのトップレベルで TensorFlow "
+"を実行（例えばテンソルやモデルを作成）しないでください。そうしないと、TensorFlow が設定される前に初期化され、シミュレーションは失敗します。"
+
+#: ../../source/user_guide/platform.rst:214
+msgid ""
+"Derive the random numbers, e.g., the seeds of "
+"``tf.random.stateless_normal``, from ``agent.prng``, so that the results are"
+" the same as :class:`pams.runners.SequentialRunner`. The random states of "
+"TensorFlow on the worker processes are not returned to the main process."
+msgstr ""
+"結果が :class:`pams.runners.SequentialRunner` と同じになるよう、乱数（例えば "
+"``tf.random.stateless_normal`` のシード）は ``agent.prng`` から導出してください。ワーカープロセス上の "
+"TensorFlow の乱数状態はメインプロセスに返されません。"
+
+#: ../../source/user_guide/platform.rst:217
+msgid ""
+"On CPUs, the results of large operations, such as reductions and matrix "
+"multiplications over long axes, depend on the number of intra-op threads, "
+"even with ``tf.config.experimental.enable_op_determinism()``. The default "
+"number on the worker processes can differ from the main process, where "
+"TensorFlow uses all the CPUs, and it changes with ``numParallel`` and "
+"``maxNormalOrders``. For results identical to "
+":class:`pams.runners.SequentialRunner`, set "
+"``simulation.tensorflowIntraOpThreads``, and set the same number by "
+"``tf.config.threading.set_intra_op_parallelism_threads`` on the process "
+"running :class:`pams.runners.SequentialRunner` before TensorFlow runs there."
+msgstr ""
+"CPU "
+"では、長い軸に沿ったリダクションや行列積などの大きな演算の結果は、``tf.config.experimental.enable_op_determinism()``"
+" を使っても、intra-op スレッド数によって変わります。ワーカープロセスでのデフォルトのスレッド数は、TensorFlow がすべての CPU "
+"を使うメインプロセスとは異なることがあり、``numParallel`` と ``maxNormalOrders`` "
+"によっても変わります。:class:`pams.runners.SequentialRunner` "
+"と同一の結果を得るには、``simulation.tensorflowIntraOpThreads`` "
+"を設定し、:class:`pams.runners.SequentialRunner` を実行するプロセスでも、TensorFlow が実行される前に "
+"``tf.config.threading.set_intra_op_parallelism_threads`` で同じ数を設定してください。"
+
+#: ../../source/user_guide/platform.rst:224
+msgid ""
+"The runner is faster than :class:`pams.runners.SequentialRunner` only if the"
+" TensorFlow computations of the agents are much heavier than the copy of the"
+" simulation in every task. Starting each worker process, which imports "
+"TensorFlow, also takes seconds."
+msgstr ""
+"このランナーが :class:`pams.runners.SequentialRunner` より速くなるのは、エージェントの TensorFlow "
+"の計算が、タスクごとのシミュレーションのコピーよりもはるかに重い場合に限られます。また、TensorFlow "
+"をインポートする各ワーカープロセスの起動にも数秒かかります。"
+
+#: ../../source/user_guide/platform.rst:268
 msgid "Agents using PyTorch"
 msgstr "PyTorchを使うエージェント"
 
-#: ../../source/user_guide/platform.rst:188
+#: ../../source/user_guide/platform.rst:269
 msgid ""
 ":class:`pams.runners.TorchAgentParallelRunner` (experimental) is a subclass "
 "of :class:`pams.runners.MultiProcessAgentParallelRunner` for agents that use"
@@ -319,7 +452,7 @@ msgstr ""
 "などにより各自でインストールしてください（お使いのプラットフォームとアクセラレーター向けのビルドについては、PyTorchのWebサイトを参照してください）。pamsがPyTorchをインポートするのはこのランナーが作成されたときのみで、PyTorchがインストールされていない場合、ランナーは"
 " ``ImportError`` を送出します。このランナーは、プロセスランナーの機能に加えて、以下を行います："
 
-#: ../../source/user_guide/platform.rst:194
+#: ../../source/user_guide/platform.rst:275
 msgid ""
 "starts the worker processes by ``spawn`` unless ``simulation.startMethod`` "
 "is set, because ``fork`` is unsafe with PyTorch: CUDA cannot be initialized "
@@ -336,7 +469,7 @@ msgstr ""
 "の下に置く必要があり、ユーザー定義クラスはインポート可能な ``.py`` ファイルに記述する必要があります（:ref:`config-"
 "parallel` を参照）。"
 
-#: ../../source/user_guide/platform.rst:199
+#: ../../source/user_guide/platform.rst:280
 msgid ""
 "sets the number of threads of PyTorch on each worker process to "
 "``simulation.torchNumThreads`` (default: the number of threads of PyTorch on"
@@ -349,7 +482,7 @@ msgstr ""
 "に設定します（デフォルト：メインプロセスでのPyTorchのスレッド数を、``numParallel`` とセッションの "
 "``maxNormalOrders`` の最大値のうち小さい方で割った値、ただし最小1）。小さなモデルでは、多くの場合1が最も高速です。"
 
-#: ../../source/user_guide/platform.rst:203
+#: ../../source/user_guide/platform.rst:284
 msgid ""
 "sets the sharing strategy of :mod:`torch.multiprocessing` to ``file_system``"
 " on the main process, which affects the whole process, and on the worker "
@@ -360,7 +493,7 @@ msgstr ""
 "に設定します。メインプロセスでの設定はプロセス全体に影響します。サブクラスは、クラス属性 ``torch_sharing_strategy`` を "
 "``None`` に設定することで、現在の戦略を維持できます。"
 
-#: ../../source/user_guide/platform.rst:207
+#: ../../source/user_guide/platform.rst:288
 msgid ""
 "Tensors held by agents, such as the parameters of their models, are sent to "
 "the worker processes through shared memory: they are moved to shared memory "
@@ -368,7 +501,7 @@ msgid ""
 "tensor instead of its data. Keep the following in mind."
 msgstr "モデルのパラメータなど、エージェントが保持するテンソルは、共有メモリを通じてワーカープロセスに送られます。テンソルは最初のタスクで共有メモリに移され、以降のタスクではテンソルのデータの代わりに、テンソルごとに数百バイトのハンドルが送られます。以下の点に注意してください。"
 
-#: ../../source/user_guide/platform.rst:211
+#: ../../source/user_guide/platform.rst:292
 msgid ""
 "Each task still refers to every tensor of every agent, and opening them "
 "takes time, so the cost of a task grows with the number of tensors, e.g., "
@@ -381,7 +514,7 @@ msgstr ""
 " :class:`pams.runners.SequentialRunner` より高速になるのは ``submit_orders`` "
 "にそれよりもはるかに長い時間がかかる場合に限られるため、お使いのエージェントで計測してください。"
 
-#: ../../source/user_guide/platform.rst:215
+#: ../../source/user_guide/platform.rst:296
 msgid ""
 "On Linux, the shared memory is in ``/dev/shm``, which must be large enough "
 "for the tensors of all the agents. Docker gives 64 MB by default, which can "
@@ -390,7 +523,7 @@ msgstr ""
 "Linuxでは共有メモリは ``/dev/shm`` にあり、すべてのエージェントのテンソルを格納できる大きさが必要です。Dockerのデフォルトは64"
 " MBで、``--shm-size`` で増やせます。"
 
-#: ../../source/user_guide/platform.rst:217
+#: ../../source/user_guide/platform.rst:298
 msgid ""
 "The worker processes see the same memory as the main process, so in-place "
 "changes of the tensors in ``submit_orders``, e.g., by training, change the "
@@ -401,7 +534,7 @@ msgstr ""
 "内での（学習などによる）テンソルのインプレースの変更は、メインプロセス上のテンソルを変更します。一方、ワーカープロセス上でのエージェントのその他の変更は失われます。``submit_orders``"
 " ではテンソルを読み取り専用にしてください。"
 
-#: ../../source/user_guide/platform.rst:220
+#: ../../source/user_guide/platform.rst:301
 msgid ""
 "Only the state of the ``prng`` of each agent comes back from the worker "
 "processes. Draw the random numbers of PyTorch from a generator seeded by it,"
@@ -412,7 +545,7 @@ msgstr ""
 "の状態のみです。PyTorchの乱数は、PyTorchのグローバルな生成器ではなく、``torch.Generator().manual_seed(self.prng.randrange(2**32))``"
 " のように ``prng`` でシードを設定した生成器から生成してください。"
 
-#: ../../source/user_guide/platform.rst:223
+#: ../../source/user_guide/platform.rst:304
 msgid ""
 "The results of some operations of PyTorch, e.g., matrix products, can differ"
 " in rounding with the number of threads and with the device, and such a "
@@ -424,7 +557,7 @@ msgstr ""
 " を ``torch.set_num_threads(n)`` の後に実行し、``torchNumThreads`` を ``n`` "
 "に設定してください。"
 
-#: ../../source/user_guide/platform.rst:228
+#: ../../source/user_guide/platform.rst:309
 msgid ""
 "The runner does not choose the device. The worker processes see the same "
 "devices as the main process, and each worker process using CUDA creates its "

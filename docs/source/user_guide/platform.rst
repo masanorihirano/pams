@@ -183,6 +183,87 @@ and creating the runner without JAX raises an ``ImportError``.
         runner.class_register(MyFlaxAgent)
         runner.main()
 
+TensorFlow runner
+^^^^^^^^^^^^^^^^^^^^^^^^^
+:class:`pams.runners.TensorFlowAgentParallelRunner` is an experimental
+:class:`pams.runners.MultiProcessAgentParallelRunner` for agents whose ``submit_orders`` uses
+`TensorFlow <https://www.tensorflow.org/>`_, e.g., Keras models. TensorFlow is not a dependency of pams, so install
+it separately, e.g., ``pip install tensorflow`` (or ``pip install tensorflow-cpu`` for the CPU-only build).
+``import pams`` does not import TensorFlow, and creating the runner without TensorFlow raises an ``ImportError``.
+
+- The worker processes are started by ``spawn`` by default (``default_start_method = "spawn"``), because TensorFlow
+  is not fork-safe. Once TensorFlow has run on the main process, e.g., to build the models of the agents or in an
+  earlier :class:`pams.runners.SequentialRunner`, a worker process started by ``fork`` has a copy of its memory but
+  not its threads: TensorFlow operations can hang there, GPUs cannot be used, and TensorFlow cannot be configured.
+- Each worker process configures TensorFlow once before it runs any task, by
+  ``simulation.tensorflowIntraOpThreads``, ``simulation.tensorflowInterOpThreads`` and
+  ``simulation.tensorflowGpuMemoryGrowth`` (see :ref:`config-parallel-tensorflow`), and then calls the worker
+  initializer given by ``_get_worker_initializer()``, e.g., ``load_model`` above. By default, the CPUs are divided
+  among the worker processes running at the same time, and the memory growth of the GPUs is enabled so that the
+  worker processes can share a GPU. The main process is not configured. To give each worker process its own GPU,
+  call ``tf.config.set_visible_devices`` in the initializer; ``CUDA_VISIBLE_DEVICES`` set there has no effect by
+  default, because the GPUs are already listed to enable their memory growth.
+- The agents are pickled in every task (see :ref:`config-parallel`). ``tf.Tensor`` and ``tf.Variable`` are pickled
+  as copies of their values, a Keras 3 model is pickled by saving it in the ``.keras`` format, which takes tens of
+  milliseconds even for a small model, and a function made by ``tf.function`` cannot be pickled. Therefore, keep a
+  key of the model, such as its path, in the agent, and get the model from a cache at the top level of a module as
+  below, so that each worker process loads it once and reuses it in the following steps.
+- Importing TensorFlow at the top level of a module is fine, but do not run TensorFlow (e.g., create tensors or
+  models) at the top level of the modules that the worker processes import, such as the main script; otherwise,
+  TensorFlow is initialized before it is configured, and the simulation fails.
+- Derive the random numbers, e.g., the seeds of ``tf.random.stateless_normal``, from ``agent.prng``, so that the
+  results are the same as :class:`pams.runners.SequentialRunner`. The random states of TensorFlow on the worker
+  processes are not returned to the main process.
+- On CPUs, the results of large operations, such as reductions and matrix multiplications over long axes, depend on
+  the number of intra-op threads, even with ``tf.config.experimental.enable_op_determinism()``. The default number
+  on the worker processes can differ from the main process, where TensorFlow uses all the CPUs, and it changes with
+  ``numParallel`` and ``maxNormalOrders``. For results identical to :class:`pams.runners.SequentialRunner`, set
+  ``simulation.tensorflowIntraOpThreads``, and set the same number by
+  ``tf.config.threading.set_intra_op_parallelism_threads`` on the process running
+  :class:`pams.runners.SequentialRunner` before TensorFlow runs there.
+- The runner is faster than :class:`pams.runners.SequentialRunner` only if the TensorFlow computations of the agents
+  are much heavier than the copy of the simulation in every task. Starting each worker process, which imports
+  TensorFlow, also takes seconds.
+
+.. code-block:: python
+
+    # my_agent.py, which the worker processes can import
+    import functools
+
+    import tensorflow as tf
+
+    from pams.agents import Agent
+
+
+    @functools.lru_cache(maxsize=None)
+    def get_model(path):  # loaded once per process
+        return tf.keras.models.load_model(path)
+
+
+    class MyKerasAgent(Agent):
+        def setup(self, settings, accessible_markets_ids, *args, **kwargs):
+            super().setup(settings, accessible_markets_ids, *args, **kwargs)
+            self.model_path = settings["modelPath"]  # only the path is pickled
+
+        def submit_orders(self, markets):
+            model = get_model(self.model_path)
+            ...  # e.g., model(features, training=False)
+
+.. code-block:: python
+
+    # main.py
+    import random
+
+    from my_agent import MyKerasAgent
+    from pams.runners import TensorFlowAgentParallelRunner
+
+    if __name__ == "__main__":
+        runner = TensorFlowAgentParallelRunner(
+            settings=setting_dict_or_json, prng=random.Random(42)
+        )
+        runner.class_register(MyKerasAgent)
+        runner.main()
+
 Agents using PyTorch
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 :class:`pams.runners.TorchAgentParallelRunner` (experimental) is a subclass of
