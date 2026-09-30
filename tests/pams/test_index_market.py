@@ -208,3 +208,8 @@ class TestIndexMarket:
         assert logs[0].sell_transaction_cost == 0.0005 * 300.0 * 2
         # the transaction cost of the index market does not apply to its components
         assert m1.transaction_cost is None
+        # the index market collects the costs, and its components collect nothing
+        assert im.get_transaction_cost_revenues() == [0.0005 * 300.0 * 2 * 2]
+        assert im.get_cumulative_transaction_cost_revenue() == 0.0005 * 300.0 * 2 * 2
+        m1._update_time(next_fundamental_price=300.0)
+        assert m1.get_transaction_cost_revenues() == [0.0]

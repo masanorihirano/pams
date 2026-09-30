@@ -37,6 +37,7 @@ from .dummy import HighFrequencyGivenOrdersAgent
 from .dummy import MakerTakerTransactionCost
 from .dummy import RandomlyIdleFCNAgent
 from .dummy import SimulatorAccessingLogger
+from .dummy import TransactionCostRevenueLogger
 
 
 class TestSequentialRunner(TestRunner):
@@ -2246,6 +2247,12 @@ class TestSequentialRunner(TestRunner):
             assert [agent.cash_amount for agent in runner.simulator.agents] == [
                 agent.cash_amount for agent in base_runner.simulator.agents
             ]
+        for runner in [base_runner, null_runner, zero_runner]:
+            for market in runner.simulator.markets:
+                assert market.get_transaction_cost_revenues() == [0.0] * (
+                    market.get_time() + 1
+                )
+                assert market.get_cumulative_transaction_cost_revenue() == 0.0
 
         # With costs, both sides pay the rate times the executed value.
         paid: Dict[int, float] = {}
@@ -2266,6 +2273,11 @@ class TestSequentialRunner(TestRunner):
             assert agent.cash_amount == pytest.approx(
                 base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
             )
+        # the market collects what the agents paid
+        market = cost_runner.simulator.markets[0]
+        assert market.get_cumulative_transaction_cost_revenue() == pytest.approx(
+            sum(paid.values())
+        )
 
     def _check_run_user_transaction_cost(
         self,
@@ -2339,6 +2351,21 @@ class TestSequentialRunner(TestRunner):
             assert agent.cash_amount == pytest.approx(
                 base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
             )
+        for market in base_runner.simulator.markets:
+            assert market.get_cumulative_transaction_cost_revenue() == 0.0
+        for market in cost_runner.simulator.markets:
+            assert market.get_transaction_cost_revenues() == [
+                sum(
+                    log.buy_transaction_cost + log.sell_transaction_cost
+                    for log in cost_logger.execution_logs
+                    if log.market_id == market.market_id and log.time == t
+                )
+                for t in range(market.get_time() + 1)
+            ]
+        assert sum(
+            market.get_cumulative_transaction_cost_revenue()
+            for market in cost_runner.simulator.markets
+        ) == pytest.approx(sum(paid.values()))
         return [
             (
                 log.buy_order_id,
@@ -2356,6 +2383,216 @@ class TestSequentialRunner(TestRunner):
         self._check_run_user_transaction_cost(
             setting=copy.deepcopy(self.default_setting), by_name=by_name
         )
+
+    def _transaction_cost_revenue_setting(self, with_costs: bool) -> Dict[str, Any]:
+        """Return the setting of two spot markets and an index market.
+
+        With the costs, SpotMarket-1 charges proportional costs, SpotMarket-2 charges no
+        costs, and IndexMarket-I gives the makers rebates that are larger than the costs of
+        the takers, so each execution in IndexMarket-I reduces its revenue. No orders are
+        executed in the first session.
+
+        Args:
+            with_costs (bool): whether the markets charge transaction costs.
+
+        Returns:
+            Dict[str, Any]: setting.
+
+        """
+        simulation: Dict[str, Any] = {
+            key: value
+            for key, value in self.default_setting["simulation"].items()
+            if key not in ["markets", "agents", "sessions"]
+        }
+        simulation.update(
+            {
+                "markets": ["SpotMarket-1", "SpotMarket-2", "IndexMarket-I"],
+                "agents": [
+                    "FCNAgents-1",
+                    "FCNAgents-2",
+                    "FCNAgents-I",
+                    "ArbitrageAgents",
+                ],
+                "sessions": [
+                    {
+                        "sessionName": 0,
+                        "iterationSteps": 5,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": False,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                    },
+                    {
+                        "sessionName": 1,
+                        "iterationSteps": 20,
+                        "withOrderPlacement": True,
+                        "withOrderExecution": True,
+                        "withPrint": True,
+                        "maxNormalOrders": 3,
+                    },
+                ],
+            }
+        )
+        fcn_agents: Dict[str, Any] = copy.deepcopy(self.default_setting["FCNAgents"])
+        fcn_agents["numAgents"] = 20
+        setting: Dict[str, Any] = {
+            "simulation": simulation,
+            "SpotMarket": {
+                "class": "Market",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+            },
+            "SpotMarket-1": {"extends": "SpotMarket"},
+            "SpotMarket-2": {"extends": "SpotMarket"},
+            "IndexMarket-I": {
+                "class": "IndexMarket",
+                "tickSize": 0.00001,
+                "marketPrice": 300.0,
+                "outstandingShares": 25000,
+                "markets": ["SpotMarket-1", "SpotMarket-2"],
+            },
+            "FCNAgents": fcn_agents,
+            "FCNAgents-1": {"extends": "FCNAgents", "markets": ["SpotMarket-1"]},
+            "FCNAgents-2": {"extends": "FCNAgents", "markets": ["SpotMarket-2"]},
+            "FCNAgents-I": {"extends": "FCNAgents", "markets": ["IndexMarket-I"]},
+            "ArbitrageAgents": {
+                "class": "ArbitrageAgent",
+                "numAgents": 10,
+                "markets": ["IndexMarket-I", "SpotMarket-1", "SpotMarket-2"],
+                "assetVolume": 50,
+                "cashAmount": 150000,
+                "orderVolume": 1,
+                "orderThresholdPrice": 1.0,
+            },
+        }
+        if with_costs:
+            setting["SpotMarket-1"]["transactionCost"] = {
+                "class": "ProportionalTransactionCost",
+                "rate": 0.001,
+            }
+            setting["IndexMarket-I"]["transactionCost"] = {
+                "class": MakerTakerTransactionCost,
+                "makerRate": -0.0005,
+                "takerRate": 0.0002,
+            }
+        return setting
+
+    def _run_transaction_cost_revenues(
+        self, runner_class: Type[SequentialRunner], with_costs: bool
+    ) -> Tuple[Runner, TransactionCostRevenueLogger]:
+        logger = TransactionCostRevenueLogger()
+        runner = runner_class(
+            settings=self._transaction_cost_revenue_setting(with_costs=with_costs),
+            prng=random.Random(42),
+            logger=logger,
+        )
+        runner._setup()
+        runner._run()
+        return runner, logger
+
+    def test_run_transaction_cost_revenues(self) -> None:
+        n_steps = 25
+        base_runner, base_logger = self._run_transaction_cost_revenues(
+            runner_class=self.runner_class, with_costs=False
+        )
+        cost_runner, cost_logger = self._run_transaction_cost_revenues(
+            runner_class=self.runner_class, with_costs=True
+        )
+        for runner, logger in [(base_runner, base_logger), (cost_runner, cost_logger)]:
+            markets = runner.simulator.markets
+            assert [market.name for market in markets] == [
+                "SpotMarket-1",
+                "SpotMarket-2",
+                "IndexMarket-I",
+            ]
+            for market in markets:
+                # after the run, the time is one step after the last step
+                assert market.get_time() == n_steps
+                revenues = market.get_transaction_cost_revenues()
+                assert (
+                    len(revenues) == len(market.get_executed_volumes()) == n_steps + 1
+                )
+                assert len(market._transaction_cost_revenues) == len(
+                    market._executed_volumes
+                )
+                logs = [
+                    log
+                    for log in logger.execution_logs
+                    if log.market_id == market.market_id
+                ]
+                assert len(logs) > 0
+                assert min(log.time for log in logs) >= 5
+                # the revenue of each step is the sum of the costs of its executions
+                assert revenues == [
+                    sum(
+                        log.buy_transaction_cost + log.sell_transaction_cost
+                        for log in logs
+                        if log.time == t
+                    )
+                    for t in range(n_steps + 1)
+                ]
+                assert market.get_cumulative_transaction_cost_revenue() == sum(
+                    revenues, 0.0
+                )
+            # the logger reads the revenues of each market at the end of each step
+            assert sorted(
+                (market_id, t) for market_id, t, _, _ in logger.revenues
+            ) == sorted(
+                (market.market_id, t) for market in markets for t in range(n_steps)
+            )
+            for market_id, t, revenue, cumulative in logger.revenues:
+                market = runner.simulator.id2market[market_id]
+                assert revenue == market.get_transaction_cost_revenue(time=t)
+                assert cumulative == market.get_cumulative_transaction_cost_revenue(
+                    time=t
+                )
+
+        # the costs do not change the prices and the executions
+        for base_market, market in zip(
+            base_runner.simulator.markets, cost_runner.simulator.markets
+        ):
+            assert market.get_market_prices() == base_market.get_market_prices()
+            assert market.get_executed_volumes() == base_market.get_executed_volumes()
+        assert [
+            (log.market_id, log.time, log.buy_order_id, log.sell_order_id, log.volume)
+            for log in cost_logger.execution_logs
+        ] == [
+            (log.market_id, log.time, log.buy_order_id, log.sell_order_id, log.volume)
+            for log in base_logger.execution_logs
+        ]
+
+        # without costs, the revenues are 0.0
+        for market in base_runner.simulator.markets:
+            assert market.get_transaction_cost_revenues() == [0.0] * (n_steps + 1)
+            assert market.get_cumulative_transaction_cost_revenue() == 0.0
+        spot_market_1, spot_market_2, index_market = cost_runner.simulator.markets
+        assert spot_market_2.get_transaction_cost_revenues() == [0.0] * (n_steps + 1)
+        assert all(
+            revenue >= 0.0 for revenue in spot_market_1.get_transaction_cost_revenues()
+        )
+        assert spot_market_1.get_cumulative_transaction_cost_revenue() > 0.0
+        # the rebates of the makers are larger than the costs of the takers
+        assert all(
+            revenue <= 0.0 for revenue in index_market.get_transaction_cost_revenues()
+        )
+        assert index_market.get_cumulative_transaction_cost_revenue() < 0.0
+
+        # the markets collect what the agents lose to the costs
+        lost = sum(
+            base_agent.cash_amount - agent.cash_amount
+            for base_agent, agent in zip(
+                base_runner.simulator.agents, cost_runner.simulator.agents
+            )
+        )
+        assert sum(
+            market.get_cumulative_transaction_cost_revenue()
+            for market in cost_runner.simulator.markets
+        ) == pytest.approx(lost, abs=1e-6)
+        for base_agent, agent in zip(
+            base_runner.simulator.agents, cost_runner.simulator.agents
+        ):
+            assert agent.asset_volumes == base_agent.asset_volumes
 
     def test_run_logger_can_access_simulator(self) -> None:
         logger = SimulatorAccessingLogger()

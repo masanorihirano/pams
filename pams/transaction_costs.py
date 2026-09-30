@@ -33,7 +33,11 @@ class TransactionCost(ABC):
 
     The market calls :func:`compute_costs` once for each execution and records the costs in
     :class:`pams.logs.ExecutionLog` as ``buy_transaction_cost`` and ``sell_transaction_cost``. The simulator
-    subtracts them from the cash of the buyer and the seller. Nobody receives them.
+    subtracts them from the cash of the buyer and the seller. No agent receives them. Instead, the market adds both
+    costs to the transaction costs that it collects in the time step, which
+    :func:`pams.Market.get_transaction_cost_revenues` returns for each time step and
+    :func:`pams.Market.get_cumulative_transaction_cost_revenue` returns as the balance up to a time step. Negative
+    costs (rebates) reduce them.
 
     When the market executes orders, which the runner asks it to do after each order or cancel while the market
     is running, it first matches the best buy and sell orders as long as their prices cross and determines one
@@ -46,7 +50,7 @@ class TransactionCost(ABC):
       books can still be crossed;
     - the earlier pairs of the same matching are already executed: their volumes are subtracted from their
       orders, the fully executed orders are removed from the order books, and the executed prices and volumes
-      of the market include them;
+      and the transaction cost revenue of the market include them;
     - the cash and the asset volumes of the agents do not include any pair of the matching yet, because the
       simulator updates them after all the pairs are executed.
 

@@ -263,6 +263,46 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             agent_class=agent_class,
         )
 
+    def test_transaction_cost_revenues_same_as_sequential(self) -> None:
+        sequential_runner, sequential_logger = self._run_transaction_cost_revenues(
+            runner_class=SequentialRunner, with_costs=True
+        )
+        parallel_runner, parallel_logger = self._run_transaction_cost_revenues(
+            runner_class=self.runner_class, with_costs=True
+        )
+        assert isinstance(parallel_runner, self.runner_class)
+        sequential_markets = sequential_runner.simulator.markets
+        parallel_markets = parallel_runner.simulator.markets
+        assert len(parallel_markets) == len(sequential_markets) == 3
+        for sequential_market, parallel_market in zip(
+            sequential_markets, parallel_markets
+        ):
+            assert parallel_market.name == sequential_market.name
+            assert parallel_market.get_time() == sequential_market.get_time()
+            assert (
+                parallel_market.get_transaction_cost_revenues()
+                == sequential_market.get_transaction_cost_revenues()
+            )
+            assert (
+                parallel_market.get_cumulative_transaction_cost_revenue()
+                == sequential_market.get_cumulative_transaction_cost_revenue()
+            )
+        assert any(
+            market.get_cumulative_transaction_cost_revenue() != 0.0
+            for market in parallel_markets
+        )
+        assert parallel_logger.revenues == sequential_logger.revenues
+        assert [
+            (log.market_id, log.buy_transaction_cost, log.sell_transaction_cost)
+            for log in parallel_logger.execution_logs
+        ] == [
+            (log.market_id, log.buy_transaction_cost, log.sell_transaction_cost)
+            for log in sequential_logger.execution_logs
+        ]
+        assert [agent.cash_amount for agent in parallel_runner.simulator.agents] == [
+            agent.cash_amount for agent in sequential_runner.simulator.agents
+        ]
+
     def test_collect_orders_from_normal_agents_asks_same_agents(self) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["FCNAgents"]["class"] = "IdleEvenIDFCNAgent"

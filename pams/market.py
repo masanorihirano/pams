@@ -28,6 +28,23 @@ T = TypeVar("T")
 class Market:
     """Market class.
 
+    If ``transaction_cost`` is set (see :class:`pams.TransactionCost`), the market charges transaction costs to the
+    buyer and the seller of each execution and records the net transaction costs that it collects in each time
+    step, which :func:`get_transaction_cost_revenues` and :func:`get_cumulative_transaction_cost_revenue` return.
+    A logger can read them through ``log.market`` in :func:`pams.logs.Logger.process_market_step_end_log`, and an
+    event can read them through ``market`` in :func:`pams.events.EventABC.hooked_after_step_for_market`, e.g.,
+
+    .. code-block:: python
+
+        class TransactionCostRevenueLogger(Logger):
+            def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+                market = log.market
+                print(
+                    market.name,
+                    market.get_transaction_cost_revenue(),  # in this time step
+                    market.get_cumulative_transaction_cost_revenue(),  # up to this time step
+                )
+
     .. seealso::
         - :class:`pams.index_market.IndexMarket`: IndexMarket
     """
@@ -68,6 +85,7 @@ class Market:
         self._fundamental_prices: List[Optional[float]] = []
         self._executed_volumes: List[int] = []
         self._executed_total_prices: List[float] = []
+        self._transaction_cost_revenues: List[float] = []
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
@@ -362,6 +380,70 @@ class Market:
             ),
         )
 
+    def get_transaction_cost_revenues(
+        self, times: Union[Iterable[int], None] = None
+    ) -> List[float]:
+        """Get the transaction costs collected by this market in each time step.
+
+        The transaction cost revenue of a time step is the sum of the transaction costs charged to the buyers and
+        the sellers of the executions in that time step. Negative costs (rebates) reduce it, so it can be
+        negative. It is 0.0 if the market has no transaction cost.
+
+        Args:
+            times (Union[Iterable[int], None]): time steps.
+
+        Returns:
+            List[float]: transaction cost revenues.
+
+        """
+        return cast(
+            List[float],
+            self._extract_sequential_data_by_time(
+                times, cast(List[Optional[float]], self._transaction_cost_revenues)
+            ),
+        )
+
+    def get_transaction_cost_revenue(self, time: Union[int, None] = None) -> float:
+        """Get the transaction costs collected by this market in a time step.
+
+        The transaction cost revenue of a time step is the sum of the transaction costs charged to the buyers and
+        the sellers of the executions in that time step. Negative costs (rebates) reduce it, so it can be
+        negative. It is 0.0 if the market has no transaction cost.
+
+        Args:
+            time (Union[int, None]): time step.
+
+        Returns:
+            float: transaction cost revenue.
+
+        """
+        return cast(
+            float,
+            self._extract_data_by_time(
+                time, cast(List[Optional[float]], self._transaction_cost_revenues)
+            ),
+        )
+
+    def get_cumulative_transaction_cost_revenue(
+        self, time: Union[int, None] = None
+    ) -> float:
+        """Get the transaction costs collected by this market from time step 0 to a time step.
+
+        This is the balance of the transaction costs of this market up to the time step, i.e., the sum of the
+        transaction cost revenues (see :func:`get_transaction_cost_revenues`) from time step 0 to ``time``.
+        Negative costs (rebates) reduce it, so it can be negative. It is 0.0 if the market has no transaction cost.
+
+        Args:
+            time (Union[int, None]): time step.
+
+        Returns:
+            float: cumulative transaction cost revenue.
+
+        """
+        if time is None:
+            time = self.time
+        return sum(self.get_transaction_cost_revenues(times=range(time + 1)), 0.0)
+
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
         """Get the number of buy orders.
 
@@ -451,6 +533,9 @@ class Market:
         ]
         self._executed_total_prices = self._executed_total_prices + [
             0 for _ in range(length - len(self._executed_total_prices))
+        ]
+        self._transaction_cost_revenues = self._transaction_cost_revenues + [
+            0.0 for _ in range(length - len(self._transaction_cost_revenues))
         ]
         self._n_buy_orders = self._n_buy_orders + [
             0 for _ in range(length - len(self._n_buy_orders))
@@ -767,7 +852,8 @@ class Market:
         """Execute orders (internal method).
 
         If ``transaction_cost`` is set, its ``compute_costs`` is called before the volume is subtracted from the
-        orders, and the costs are recorded in the execution log. Otherwise, the costs are 0.0.
+        orders, the costs are recorded in the execution log, and their sum is added to the transaction cost revenue
+        of the current time step. Otherwise, the costs are 0.0.
 
         Args:
             price (float): price.
@@ -819,6 +905,9 @@ class Market:
         self._last_executed_prices[self.time] = price
         self._executed_volumes[self.time] += volume
         self._executed_total_prices[self.time] += volume * price
+        self._transaction_cost_revenues[self.time] += (
+            buy_transaction_cost + sell_transaction_cost
+        )
         self._update_market_price()
 
         # ToDo: Agent modification will be handled in simulator

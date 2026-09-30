@@ -105,6 +105,27 @@ class ExecutionCountLogger(Logger):
         self.execution_logs.append(log)
 
 
+class TransactionCostRevenueLogger(ExecutionCountLogger):
+    """Logger that reads the transaction cost revenues of the markets at the end of each step."""
+
+    def __init__(self) -> None:
+        """Initialize the records."""
+        super().__init__()
+        # (market ID, time, revenue of the time step, cumulative revenue)
+        self.revenues: List[Tuple[int, int, float, float]] = []
+
+    def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+        market = log.market
+        self.revenues.append(
+            (
+                market.market_id,
+                market.get_time(),
+                market.get_transaction_cost_revenue(),
+                market.get_cumulative_transaction_cost_revenue(),
+            )
+        )
+
+
 class SimulatorAccessingLogger(Logger):
     def __init__(self) -> None:
         """Initialize counters."""

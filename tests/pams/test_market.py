@@ -44,6 +44,7 @@ class TestMarket:
         assert m._fundamental_prices == [1.0] + [None for _ in range(m.chunk_size - 1)]
         assert m._executed_volumes == [0 for _ in range(m.chunk_size)]
         assert m._executed_total_prices == [0.0 for _ in range(m.chunk_size)]
+        assert m._transaction_cost_revenues == [0.0 for _ in range(m.chunk_size)]
         assert m._n_buy_orders == [0 for _ in range(m.chunk_size)]
         assert m._n_sell_orders == [0 for _ in range(m.chunk_size)]
         assert m.get_market_price() == 1.0
@@ -56,6 +57,9 @@ class TestMarket:
         assert m.get_executed_volume() == 0
         assert m.get_executed_total_prices() == [0]
         assert m.get_executed_total_price() == 0
+        assert m.get_transaction_cost_revenues() == [0.0]
+        assert m.get_transaction_cost_revenue() == 0.0
+        assert m.get_cumulative_transaction_cost_revenue() == 0.0
         assert m.get_n_buy_orders() == [0]
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0]
@@ -80,6 +84,12 @@ class TestMarket:
             m.get_executed_total_prices(range(2))
         with pytest.raises(AssertionError):
             m.get_executed_total_price(1)
+        with pytest.raises(AssertionError):
+            m.get_transaction_cost_revenues(range(2))
+        with pytest.raises(AssertionError):
+            m.get_transaction_cost_revenue(1)
+        with pytest.raises(AssertionError):
+            m.get_cumulative_transaction_cost_revenue(1)
         with pytest.raises(AssertionError):
             m.get_n_buy_orders(range(2))
         with pytest.raises(AssertionError):
@@ -120,6 +130,7 @@ class TestMarket:
         assert m._executed_total_prices == [
             1.0 if i == 1 else 0 for i in range(m.chunk_size)
         ]
+        assert m._transaction_cost_revenues == [0.0 for _ in range(m.chunk_size)]
         assert m._n_buy_orders == [1 if i == 0 else 0 for i in range(m.chunk_size)]
         assert m._n_sell_orders == [1 if i == 1 else 0 for i in range(m.chunk_size)]
         assert m.get_market_price() == 1.0
@@ -132,6 +143,9 @@ class TestMarket:
         assert m.get_executed_volume() == 0
         assert m.get_executed_total_prices() == [0, 1.0, 0]
         assert m.get_executed_total_price() == 0
+        assert m.get_transaction_cost_revenues() == [0.0, 0.0, 0.0]
+        assert m.get_transaction_cost_revenue() == 0.0
+        assert m.get_cumulative_transaction_cost_revenue() == 0.0
         assert m.get_n_buy_orders() == [1, 0, 0]
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0, 1, 0]
@@ -1098,6 +1112,9 @@ class TestMarket:
         assert logs[0].sell_transaction_cost == 0.0
         assert isinstance(logs[0].buy_transaction_cost, float)
         assert isinstance(logs[0].sell_transaction_cost, float)
+        assert market.get_transaction_cost_revenues() == [0.0]
+        assert market.get_cumulative_transaction_cost_revenue() == 0.0
+        assert isinstance(market.get_transaction_cost_revenue(), float)
 
     @pytest.mark.parametrize("rate", [0.0, 0.002])
     def test_execute_orders_proportional_transaction_cost(self, rate: float) -> None:
@@ -1118,6 +1135,9 @@ class TestMarket:
         assert (logs[0].price, logs[0].volume) == (10.0, 2)
         assert logs[0].buy_transaction_cost == rate * 10.0 * 2
         assert logs[0].sell_transaction_cost == rate * 10.0 * 2
+        # the market collects the costs of both sides
+        assert market.get_transaction_cost_revenue() == 2 * rate * 10.0 * 2
+        assert market.get_transaction_cost_revenues() == [2 * rate * 10.0 * 2]
         logger = market.logger
         assert logger is not None
         assert [
@@ -1139,6 +1159,7 @@ class TestMarket:
                         "buy_book": list(self.market.buy_order_book.priority_queue),
                         "sell_book": list(self.market.sell_order_book.priority_queue),
                         "executed_volume": self.market.get_executed_volume(),
+                        "revenue": self.market.get_transaction_cost_revenue(),
                         "time": self.market.get_time(),
                     }
                 )
@@ -1171,15 +1192,18 @@ class TestMarket:
             sell_order2,
         ]
         assert calls[0]["executed_volume"] == 0
+        assert calls[0]["revenue"] == 0.0
         # the first pair is executed, but the second one is not
         assert calls[1]["volumes"] == (1, 1)
         assert calls[1]["buy_book"] == [buy_order]
         assert calls[1]["sell_book"] == [sell_order2]
         assert calls[1]["executed_volume"] == 1
+        assert calls[1]["revenue"] == 0.25
         assert [call["time"] for call in calls] == [market.get_time()] * 2
         assert [
             (log.buy_transaction_cost, log.sell_transaction_cost) for log in logs
         ] == [(0.5, -0.25), (1.0, -0.5)]
+        assert market.get_transaction_cost_revenue() == 0.75
         assert len(market.buy_order_book) == 0
         assert len(market.sell_order_book) == 0
 
@@ -1238,6 +1262,149 @@ class TestMarket:
         else:
             assert logs[0].buy_transaction_cost == pytest.approx(taker_cost)
             assert logs[0].sell_transaction_cost == pytest.approx(maker_cost)
+
+    def test_transaction_cost_revenues(self) -> None:
+        queued_costs: List[Tuple[float, float]] = [
+            (1.5, 0.5),
+            (0.25, -1.0),
+            (-2.0, -0.5),
+        ]
+
+        class QueuedTransactionCost(TransactionCost):
+            def compute_costs(
+                self, price: float, volume: int, buy_order: Order, sell_order: Order
+            ) -> Tuple[float, float]:
+                return queued_costs.pop(0)
+
+        market = self._make_running_market()
+        market.transaction_cost = QueuedTransactionCost(market=market)
+        logs: List[ExecutionLog] = []
+        # time step 0: two executions
+        for agent_id, price in [(0, 9), (1, 10)]:
+            market._add_order(
+                Order(
+                    agent_id=agent_id,
+                    market_id=0,
+                    is_buy=False,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=price,
+                )
+            )
+        market._add_order(
+            Order(
+                agent_id=2,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=2,
+                price=10,
+            )
+        )
+        logs += market._execution()
+        assert len(logs) == 2
+        assert market.get_transaction_cost_revenue() == 1.25
+        # time step 1: no execution
+        market._update_time(10.0)
+        assert market.get_transaction_cost_revenue() == 0.0
+        # time step 2: one execution with rebates on both sides
+        market._update_time(10.0)
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=3,
+                price=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=1,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=3,
+                price=10,
+            )
+        )
+        logs += market._execution()
+        assert len(logs) == 3
+        assert queued_costs == []
+
+        assert market.get_transaction_cost_revenues() == [1.25, 0.0, -2.5]
+        assert market.get_transaction_cost_revenues(times=[2, 0]) == [-2.5, 1.25]
+        assert market.get_transaction_cost_revenues(times=range(2)) == [1.25, 0.0]
+        assert market.get_transaction_cost_revenue() == -2.5
+        assert market.get_transaction_cost_revenue(time=0) == 1.25
+        assert market.get_transaction_cost_revenue(time=1) == 0.0
+        assert market.get_cumulative_transaction_cost_revenue() == -1.25
+        assert market.get_cumulative_transaction_cost_revenue(time=0) == 1.25
+        assert market.get_cumulative_transaction_cost_revenue(time=1) == 1.25
+        assert market.get_cumulative_transaction_cost_revenue(time=2) == -1.25
+        assert all(
+            isinstance(revenue, float)
+            for revenue in market.get_transaction_cost_revenues()
+        )
+        assert isinstance(market.get_cumulative_transaction_cost_revenue(), float)
+        # the revenue is the sum of the costs in the execution logs
+        for t in range(3):
+            assert market.get_transaction_cost_revenue(time=t) == sum(
+                log.buy_transaction_cost + log.sell_transaction_cost
+                for log in logs
+                if log.time == t
+            )
+        assert market.get_cumulative_transaction_cost_revenue() == sum(
+            log.buy_transaction_cost + log.sell_transaction_cost for log in logs
+        )
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_transaction_cost_revenues(times=range(4))
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_transaction_cost_revenue(time=3)
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_cumulative_transaction_cost_revenue(time=3)
+
+    @pytest.mark.parametrize("time_", [3, 99, 100, 250])
+    def test_transaction_cost_revenues_after_set_time(self, time_: int) -> None:
+        market = self._make_running_market()
+        transaction_cost = ProportionalTransactionCost(market=market)
+        transaction_cost.setup(settings={"rate": 0.01})
+        market.transaction_cost = transaction_cost
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=1,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=10,
+            )
+        )
+        market._execution()
+        # e.g., a new session sets the time
+        market._set_time(time=time_, next_fundamental_price=10.0)
+        assert len(market._transaction_cost_revenues) == len(market._executed_volumes)
+        assert len(market._transaction_cost_revenues) == len(market._mid_prices)
+        assert len(market._transaction_cost_revenues) > time_
+        revenues = market.get_transaction_cost_revenues()
+        assert len(revenues) == len(market.get_executed_volumes()) == time_ + 1
+        assert revenues == [pytest.approx(0.2)] + [0.0] * time_
+        assert market.get_cumulative_transaction_cost_revenue() == pytest.approx(0.2)
+        market._update_time(10.0)
+        assert len(market._transaction_cost_revenues) == len(market._executed_volumes)
+        assert market.get_transaction_cost_revenue() == 0.0
+        assert len(market.get_transaction_cost_revenues()) == time_ + 2
 
     def _make_running_market(self) -> Market:
         market = self.base_class(

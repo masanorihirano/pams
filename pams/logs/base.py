@@ -174,6 +174,10 @@ class ExecutionLog(Log):
     """Execution type log class.
 
     This log is usually generated when an order is executed on markets.
+
+    ``buy_transaction_cost`` and ``sell_transaction_cost`` are the transaction costs charged to the buyer and the
+    seller (0.0 if the market has no transaction cost). The market adds both to the transaction costs that it
+    collects in the time step (see :func:`pams.Market.get_transaction_cost_revenues`).
     """
 
     def __init__(
