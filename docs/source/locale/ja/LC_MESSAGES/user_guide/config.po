@@ -589,13 +589,15 @@ msgstr ""
 #: ../../source/user_guide/config.rst:301
 msgid ""
 "Other keys in ``simulation`` are ignored, except the keys that "
-":class:`~pams.runners.TensorFlowAgentParallelRunner` reads (see :ref"
-":`config-parallel-tensorflow`). In particular, events are not listed here "
-"but in each session."
+":class:`~pams.runners.JaxAgentParallelRunner` and "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-"
+"parallel-jax` and :ref:`config-parallel-tensorflow`). In particular, events "
+"are not listed here but in each session."
 msgstr ""
-"``simulation`` "
-"内のその他のキーは、:class:`~pams.runners.TensorFlowAgentParallelRunner` が読み込むキー（:ref"
-":`config-parallel-tensorflow` を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。"
+"``simulation`` 内のその他のキーは、:class:`~pams.runners.JaxAgentParallelRunner` と "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` が読み込むキー（:ref:`config-"
+"parallel-jax` と :ref:`config-parallel-tensorflow` "
+"を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。"
 
 #: ../../source/user_guide/config.rst:304
 msgid ""
@@ -2203,17 +2205,21 @@ msgid ""
 "reaches the target market at exactly this step, nothing happens."
 msgstr "セッション開始から数えた、誤発注が発生するステップです。ちょうどこのステップに対象市場へ注文が1つも届かなかった場合は、何も起こりません。"
 
-#: ../../source/user_guide/config.rst:1049
+#: ../../source/user_guide/config.rst:1061
 msgid ""
-"Rate :math:`r` relative to the current market price. Must be written as a "
-"float. ``0.0`` does not mean \"no mistake\": it places a sell at :math:`P`."
+"Rate :math:`r` relative to the current market price, a finite number greater"
+" than ``-1.0``. Must be written as a float. ``0.0`` does not mean \"no "
+"mistake\": it places a sell at :math:`P`. If :math:`P (1 + r)`, or :math:`P "
+"(1 + r)` divided by the tick size, overflows to infinity, the simulation "
+"stops with an error at the trigger step."
 msgstr ""
-"現在の市場価格に対する変化率 :math:`r` です。浮動小数点数で記述する必要があります。``0.0`` "
-"は「誤発注なし」を意味せず、:math:`P` での売り注文になります。"
+"現在の市場価格に対する変化率 :math:`r` で、``-1.0`` より大きい有限の値です。浮動小数点数で記述する必要があります。``0.0`` "
+"は「誤発注なし」を意味せず、:math:`P` での売り注文になります。:math:`P (1 + r)`、または :math:`P (1 + r)` "
+"をティックサイズで割った値がオーバーフローして無限大になる場合、トリガーとなるステップでシミュレーションがエラーで停止します。"
 
 #: ../../source/user_guide/config.rst:1053
-msgid "Volume of the mistaken order."
-msgstr "誤発注された注文の数量です。"
+msgid "Volume of the mistaken order, greater than 0."
+msgstr "誤発注された注文の数量で、0より大きい値です。"
 
 #: ../../source/user_guide/config.rst:1054
 msgid "``orderTimeLength`` |required|"
@@ -2536,10 +2542,90 @@ msgstr ""
 "回だけ読み込んでください（:doc:`platform` を参照）。"
 
 #: ../../source/user_guide/config.rst:1219
+msgid "JAX/Flax runner"
+msgstr "JAX/Flax ランナー"
+
+#: ../../source/user_guide/config.rst:1244
+msgid ""
+":class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process "
+"runner for agents that use JAX in ``submit_orders``, for example Flax "
+"models. JAX is not installed with PAMS: install it yourself, in the same "
+"command as PAMS so that pip chooses versions that work with PAMS (for "
+"example ``pip install pams jax flax``). The runner starts its worker "
+"processes by ``\"spawn\"`` unless ``simulation.startMethod`` is set. Each "
+"worker process configures JAX once, before it runs any task, with these keys"
+" in ``simulation``, which the other runners ignore:"
+msgstr ""
+":class:`~pams.runners.JaxAgentParallelRunner` （実験的）は、``submit_orders`` で JAX"
+" を使うエージェント（例えば Flax のモデル）のためのプロセスランナーです。JAX は PAMS と一緒にはインストールされないため、pip が "
+"PAMS で動作するバージョンを選ぶように、PAMS と同じコマンドで各自インストールしてください（例えば ``pip install pams jax"
+" flax``）。このランナーは、``simulation.startMethod`` が設定されていない限り、``\"spawn\"`` "
+"でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで JAX "
+"を設定します。これらのキーは他のランナーでは無視されます："
+
+#: ../../source/user_guide/config.rst:1234
+msgid "``jaxPlatforms`` |optional|"
+msgstr "``jaxPlatforms`` |optional|"
+
+#: ../../source/user_guide/config.rst:1236
+msgid ""
+"The platforms that JAX uses on the worker processes, such as ``\"cpu\"`` or "
+"``\"cuda\"`` (``jax_platforms`` of JAX). Default: ``JAX_PLATFORMS`` in the "
+"environment if it is set; otherwise JAX chooses."
+msgstr ""
+"ワーカープロセスで JAX が使うプラットフォームです。例えば ``\"cpu\"`` や ``\"cuda\"`` です（JAX の "
+"``jax_platforms``）。デフォルト：環境変数 ``JAX_PLATFORMS`` が設定されていればその値、設定されていなければ JAX "
+"が選択します。"
+
+#: ../../source/user_guide/config.rst:1238
+msgid "``jaxPreallocate`` |optional|"
+msgstr "``jaxPreallocate`` |optional|"
+
+#: ../../source/user_guide/config.rst:1240
+#, python-format
+msgid ""
+"Whether JAX preallocates GPU memory on each worker process "
+"(``XLA_PYTHON_CLIENT_PREALLOCATE``). Default: "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; otherwise"
+" ``false``, so that the worker processes can share a GPU (by default, JAX "
+"preallocates 75% of it)."
+msgstr ""
+"各ワーカープロセスで JAX が GPU "
+"メモリを事前確保するかどうかです（``XLA_PYTHON_CLIENT_PREALLOCATE``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` が設定されていればその値、設定されていなければ "
+"``false``。ワーカープロセスが GPU を共有できるようにするためです（JAX はデフォルトで GPU メモリの 75% を事前確保します）。"
+
+#: ../../source/user_guide/config.rst:1243
+msgid "``jaxMemoryFraction`` |optional|"
+msgstr "``jaxMemoryFraction`` |optional|"
+
+#: ../../source/user_guide/config.rst:1244
+msgid "number in (0, 1]"
+msgstr "(0, 1] の数値"
+
+#: ../../source/user_guide/config.rst:1245
+msgid ""
+"The fraction of GPU memory that JAX can use on each worker process "
+"(``XLA_PYTHON_CLIENT_MEM_FRACTION``). Default: "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in the "
+"environment if it is set; otherwise the default of JAX (0.75)."
+msgstr ""
+"各ワーカープロセスで JAX が使える GPU "
+"メモリの割合です（``XLA_PYTHON_CLIENT_MEM_FRACTION``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` （または "
+"``XLA_CLIENT_MEM_FRACTION``）が設定されていればその値、設定されていなければ JAX のデフォルト（0.75）。"
+
+#: ../../source/user_guide/config.rst:1249
+msgid ""
+"These keys do not configure JAX on the main process. See :doc:`platform` for"
+" how to write agents for this runner."
+msgstr "これらのキーはメインプロセスの JAX を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` を参照してください。"
+
+#: ../../source/user_guide/config.rst:1281
 msgid "TensorFlow runner"
 msgstr "TensorFlow ランナー"
 
-#: ../../source/user_guide/config.rst:1221
+#: ../../source/user_guide/config.rst:1283
 msgid ""
 ":class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the "
 "process runner for agents that use TensorFlow in ``submit_orders``, for "
@@ -2558,11 +2644,11 @@ msgstr ""
 "でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで TensorFlow "
 "を設定します。これらのキーは他のランナーでは無視されます："
 
-#: ../../source/user_guide/config.rst:1234
+#: ../../source/user_guide/config.rst:1296
 msgid "``tensorflowIntraOpThreads`` |optional|"
 msgstr "``tensorflowIntraOpThreads`` |optional|"
 
-#: ../../source/user_guide/config.rst:1236
+#: ../../source/user_guide/config.rst:1298
 msgid ""
 "The number of threads that TensorFlow uses to run one operation, such as a "
 "matrix multiplication, on each worker process. Default: the number of CPUs "
@@ -2577,21 +2663,21 @@ msgstr ""
 "数より多くのスレッドを使わないようにするためです。大きな演算の結果はこの値によって変わることがあるため、結果を再現できるようにするには明示的に設定してください（:doc:`platform`"
 " を参照）。"
 
-#: ../../source/user_guide/config.rst:1241
+#: ../../source/user_guide/config.rst:1303
 msgid "``tensorflowInterOpThreads`` |optional|"
 msgstr "``tensorflowInterOpThreads`` |optional|"
 
-#: ../../source/user_guide/config.rst:1243
+#: ../../source/user_guide/config.rst:1305
 msgid ""
 "The number of threads that TensorFlow uses to run independent operations at "
 "the same time on each worker process. Default: ``1``."
 msgstr "各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：``1``。"
 
-#: ../../source/user_guide/config.rst:1245
+#: ../../source/user_guide/config.rst:1307
 msgid "``tensorflowGpuMemoryGrowth`` |optional|"
 msgstr "``tensorflowGpuMemoryGrowth`` |optional|"
 
-#: ../../source/user_guide/config.rst:1247
+#: ../../source/user_guide/config.rst:1309
 msgid ""
 "Whether memory growth is enabled for all the visible GPUs on each worker "
 "process. Default: ``true``, so that the worker processes can share a GPU (by"
@@ -2602,7 +2688,7 @@ msgstr ""
 "growth）を有効にするかどうかです。デフォルト：``true``。ワーカープロセスが GPU を共有できるようにするためです（TensorFlow "
 "はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。"
 
-#: ../../source/user_guide/config.rst:1251
+#: ../../source/user_guide/config.rst:1313
 msgid ""
 "These keys do not configure TensorFlow on the main process. See "
 ":doc:`platform` for how to write agents for this runner."

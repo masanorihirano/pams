@@ -199,10 +199,109 @@ msgstr ""
 " 内で ``my_runner.MODEL`` を使います。"
 
 #: ../../source/user_guide/platform.rst:112
+msgid "JAX/Flax runner"
+msgstr "JAX/Flax ランナー"
+
+#: ../../source/user_guide/platform.rst:114
+msgid ""
+":class:`pams.runners.JaxAgentParallelRunner` is an experimental "
+":class:`pams.runners.MultiProcessAgentParallelRunner` for agents whose "
+"``submit_orders`` uses `JAX <https://github.com/jax-ml/jax>`_, e.g., neural "
+"network models of `Flax <https://github.com/google/flax>`_. JAX is not a "
+"dependency of pams, so install it separately, e.g., ``pip install pams jax "
+"flax`` (see the `JAX installation guide "
+"<https://docs.jax.dev/en/latest/installation.html>`_ for GPUs). Include pams"
+" in the command even if it is already installed, so that pip chooses "
+"versions of JAX and Flax that work with the NumPy that pams requires. For "
+"example, pams requires NumPy 1.x on Python 3.12 or earlier, and the last "
+"versions of JAX and Flax that support it are 0.7.1 and 0.12.0. ``import "
+"pams`` does not import JAX, and creating the runner without JAX raises an "
+"``ImportError``."
+msgstr ""
+":class:`pams.runners.JaxAgentParallelRunner` は、``submit_orders`` で `JAX "
+"<https://github.com/jax-ml/jax>`_ （例えば `Flax "
+"<https://github.com/google/flax>`_ のニューラルネットワークのモデル）を使うエージェントのための、実験的な "
+":class:`pams.runners.MultiProcessAgentParallelRunner` "
+"です。JAXはpamsの依存関係ではないため、別途インストールしてください（例えば ``pip install pams jax "
+"flax``。GPUについては `JAXのインストールガイド "
+"<https://docs.jax.dev/en/latest/installation.html>`_ "
+"を参照してください）。pamsがインストール済みでも、コマンドにpamsを含めてください。そうすると、pipはpamsが必要とするNumPyで動作するバージョンのJAXとFlaxを選びます。例えば、Python"
+" 3.12以前ではpamsはNumPy "
+"1.xを必要とし、これをサポートするJAXとFlaxの最後のバージョンは0.7.1と0.12.0です。``import pams`` "
+"ではJAXはインポートされず、JAXがない状態でこのランナーを作成すると ``ImportError`` が送出されます。"
+
+#: ../../source/user_guide/platform.rst:119
+msgid ""
+"The worker processes are started by ``spawn`` by default "
+"(``default_start_method = \"spawn\"``), because ``fork`` is unsafe once JAX "
+"runs its own threads: a forked worker process can deadlock on a lock held by"
+" one of them."
+msgstr ""
+"JAXが独自のスレッドを実行し始めると ``fork`` は安全ではなくなるため、ワーカープロセスはデフォルトで ``spawn`` "
+"によって起動されます（``default_start_method = "
+"\"spawn\"``）。forkされたワーカープロセスは、それらのスレッドのいずれかが保持していたロックでデッドロックする可能性があります。"
+
+#: ../../source/user_guide/platform.rst:121
+msgid ""
+"Each worker process configures JAX once before it runs any task, by "
+"``simulation.jaxPlatforms``, ``simulation.jaxPreallocate`` and "
+"``simulation.jaxMemoryFraction`` (see :ref:`config-parallel-jax`), and then "
+"calls the worker initializer given by ``_get_worker_initializer()``, e.g., "
+"``load_model`` above. The preallocation of GPU memory is disabled by "
+"default, so that the worker processes can share a GPU. The main process is "
+"not configured, so set ``XLA_PYTHON_CLIENT_PREALLOCATE=false`` in the "
+"environment too if the agents use JAX on a GPU when they are created on the "
+"main process."
+msgstr ""
+"各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation.jaxPlatforms``、``simulation.jaxPreallocate``、``simulation.jaxMemoryFraction``"
+" によってJAXを設定し（:ref:`config-parallel-jax` を参照）、その後 "
+"``_get_worker_initializer()`` が返すワーカーの初期化関数（例えば上記の "
+"``load_model``）を呼び出します。ワーカープロセスがGPUを共有できるよう、GPUメモリの事前確保はデフォルトで無効になっています。メインプロセスは設定されないため、エージェントがメインプロセスで作成されるときにGPU上でJAXを使う場合は、環境変数でも"
+" ``XLA_PYTHON_CLIENT_PREALLOCATE=false`` を設定してください。"
+
+#: ../../source/user_guide/platform.rst:127
+msgid ""
+"The worker processes persist during the simulation, so a function compiled "
+"by :func:`jax.jit` is compiled once per worker process at its first call and"
+" reused in the following steps. Compiled functions cannot be pickled: define"
+" them at the top level of a module instead of keeping them as attributes of "
+"the agents."
+msgstr ""
+"ワーカープロセスはシミュレーションの間存続するため、:func:`jax.jit` "
+"でコンパイルされる関数は、最初の呼び出し時にワーカープロセスごとに一度だけコンパイルされ、以降のステップで再利用されます。コンパイルされた関数はpickle化できないため、エージェントの属性として保持するのではなく、モジュールのトップレベルで定義してください。"
+
+#: ../../source/user_guide/platform.rst:130
+msgid ""
+"The jax arrays, Flax modules and parameters that the agents hold are pickled"
+" in every task (see :ref:`config-parallel`) and copied to the default device"
+" of the worker process. Load large or read-only models once per worker "
+"process with the worker initializer instead."
+msgstr ""
+"エージェントが保持するjax配列、Flaxのモジュールとパラメータは、タスクごとにpickle化され（:ref:`config-parallel` "
+"を参照）、ワーカープロセスのデフォルトデバイスにコピーされます。大きなモデルや読み取り専用のモデルは、代わりにワーカーの初期化関数でワーカープロセスごとに一度だけ読み込んでください。"
+
+#: ../../source/user_guide/platform.rst:133
+msgid ""
+"Do not run JAX (e.g., create jax arrays) at the top level of the modules "
+"that the worker processes import, such as the main script, and do not pass "
+"jax arrays to the worker initializer; otherwise, JAX is initialized before "
+"it is configured."
+msgstr "メインスクリプトなど、ワーカープロセスがインポートするモジュールのトップレベルでJAXを実行しないでください（例えばjax配列を作成しないでください）。また、ワーカーの初期化関数にjax配列を渡さないでください。そうしないと、JAXが設定される前に初期化されてしまいます。"
+
+#: ../../source/user_guide/platform.rst:136
+msgid ""
+"Derive the random numbers, including the keys of :mod:`jax.random`, from "
+"``agent.prng``, so that the results are the same as "
+":class:`pams.runners.SequentialRunner`."
+msgstr ""
+"結果が :class:`pams.runners.SequentialRunner` と同じになるよう、:mod:`jax.random` "
+"の鍵を含む乱数は ``agent.prng`` から導出してください。"
+
+#: ../../source/user_guide/platform.rst:187
 msgid "TensorFlow runner"
 msgstr "TensorFlow ランナー"
 
-#: ../../source/user_guide/platform.rst:113
+#: ../../source/user_guide/platform.rst:188
 msgid ""
 ":class:`pams.runners.TensorFlowAgentParallelRunner` is an experimental "
 ":class:`pams.runners.MultiProcessAgentParallelRunner` for agents whose "
@@ -220,7 +319,7 @@ msgstr ""
 "TensorFlow をインポートせず、TensorFlow がインストールされていない状態でこのランナーを作成すると ``ImportError`` "
 "が送出されます。"
 
-#: ../../source/user_guide/platform.rst:119
+#: ../../source/user_guide/platform.rst:194
 msgid ""
 "The worker processes are started by ``spawn`` by default "
 "(``default_start_method = \"spawn\"``), because TensorFlow is not fork-safe."
@@ -236,7 +335,7 @@ msgstr ""
 "の中で）、``fork`` で起動されたワーカープロセスはそのメモリのコピーを持ちますが、スレッドは持ちません。そのため、そこでは TensorFlow"
 " の演算がハングすることがあり、GPU は使えず、TensorFlow を設定することもできません。"
 
-#: ../../source/user_guide/platform.rst:123
+#: ../../source/user_guide/platform.rst:198
 msgid ""
 "Each worker process configures TensorFlow once before it runs any task, by "
 "``simulation.tensorflowIntraOpThreads``, "
@@ -260,7 +359,7 @@ msgstr ""
 "を呼び出してください。メモリ増加を有効にするために GPU がすでに列挙されているため、デフォルトでは、そこで設定した "
 "``CUDA_VISIBLE_DEVICES`` は効果がありません。"
 
-#: ../../source/user_guide/platform.rst:131
+#: ../../source/user_guide/platform.rst:206
 msgid ""
 "The agents are pickled in every task (see :ref:`config-parallel`). "
 "``tf.Tensor`` and ``tf.Variable`` are pickled as copies of their values, a "
@@ -276,7 +375,7 @@ msgstr ""
 "pickle 化されます（小さなモデルでも数十ミリ秒かかります）。また、``tf.function`` で作られた関数は pickle "
 "化できません。そのため、エージェントにはモデルのキー（例えばそのパス）を保持させ、以下のようにモジュールのトップレベルにあるキャッシュからモデルを取得してください。こうすることで、各ワーカープロセスはモデルを一度だけ読み込み、以降のステップで再利用します。"
 
-#: ../../source/user_guide/platform.rst:136
+#: ../../source/user_guide/platform.rst:211
 msgid ""
 "Importing TensorFlow at the top level of a module is fine, but do not run "
 "TensorFlow (e.g., create tensors or models) at the top level of the modules "
@@ -287,7 +386,7 @@ msgstr ""
 "をインポートすることは問題ありませんが、メインスクリプトなど、ワーカープロセスがインポートするモジュールのトップレベルで TensorFlow "
 "を実行（例えばテンソルやモデルを作成）しないでください。そうしないと、TensorFlow が設定される前に初期化され、シミュレーションは失敗します。"
 
-#: ../../source/user_guide/platform.rst:139
+#: ../../source/user_guide/platform.rst:214
 msgid ""
 "Derive the random numbers, e.g., the seeds of "
 "``tf.random.stateless_normal``, from ``agent.prng``, so that the results are"
@@ -298,7 +397,7 @@ msgstr ""
 "``tf.random.stateless_normal`` のシード）は ``agent.prng`` から導出してください。ワーカープロセス上の "
 "TensorFlow の乱数状態はメインプロセスに返されません。"
 
-#: ../../source/user_guide/platform.rst:142
+#: ../../source/user_guide/platform.rst:217
 msgid ""
 "On CPUs, the results of large operations, such as reductions and matrix "
 "multiplications over long axes, depend on the number of intra-op threads, "
@@ -320,7 +419,7 @@ msgstr ""
 "を設定し、:class:`pams.runners.SequentialRunner` を実行するプロセスでも、TensorFlow が実行される前に "
 "``tf.config.threading.set_intra_op_parallelism_threads`` で同じ数を設定してください。"
 
-#: ../../source/user_guide/platform.rst:149
+#: ../../source/user_guide/platform.rst:224
 msgid ""
 "The runner is faster than :class:`pams.runners.SequentialRunner` only if the"
 " TensorFlow computations of the agents are much heavier than the copy of the"
