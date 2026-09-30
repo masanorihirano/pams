@@ -969,11 +969,15 @@ JsonRandom notation (``cashAmount`` and ``assetVolume`` still do).
      - int ≥ 1
      - Lifetime (TTL) of its orders in steps. Default: ``1``. Must be a JSON integer.
 
-- ``markets`` must include the index market group **and** the groups of all its component markets.
-  Otherwise the component orders are still sent, and the simulation stops with a ``KeyError`` (a market ID)
-  when the first one is executed.
-  Unlike plham, the component markets are not added automatically; the agent warns at setup about each
-  index market with missing components.
+- The agent trades only the index markets whose groups are in ``markets``. It skips any other ``IndexMarket``
+  without an error, whether or not ``markets`` includes its component markets, and it warns about this only if
+  ``markets`` includes no ``IndexMarket`` at all (see below).
+- For each index market that it trades, ``markets`` must also include the groups of all its component markets.
+  Unlike plham, the component markets are not added automatically; the agent warns at setup about each such
+  index market with missing components. The simulation still runs normally until the agent finds an arbitrage
+  opportunity in that index market. Then it submits orders for the component markets, and the simulation stops
+  with a ``ValueError`` (``order for an inaccessible market is not allowed``). If no such opportunity comes, the
+  simulation ends without the error.
 - If ``markets`` includes no ``IndexMarket``, the agent never places an order, and it warns about this at setup.
 - All component markets must have the same ``outstandingShares``.
 - It only trades while the index and all its components are executing orders.
@@ -995,7 +999,7 @@ below). Old orders are not cancelled; they expire after ``orderTimeLength`` step
    * - ``targetMarket`` |required|
      - market instance name
      - The market to quote in. It must also be one of the agent's tradable markets; otherwise the simulation
-       stops with a ``KeyError`` (a market ID) when its first order is executed.
+       stops with a ``ValueError`` when the agent first submits orders.
    * - ``netInterestSpread`` |required| |jsonrandom|
      - number
      - Full spread between the two orders, as a fraction of the fundamental price (``0.02`` = 2%).
@@ -1431,10 +1435,16 @@ Common errors
      - A name in ``targetMarkets`` of a ``PriceLimitRule`` or ``TradingHaltRule``, or the ``target`` of an
        ``OrderMistakeShock``, is not a market instance name. Use the instance name (``Market-0``), not the group
        name.
+   * - ``order for an inaccessible market is not allowed``
+     - An agent submitted an order for a market that it cannot trade: a ``MarketMakerAgent`` whose
+       ``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose ``markets`` lack the component
+       markets. Add the market group named in the message to the agent's ``markets``.
+   * - ``cancel order for an order of another agent is not allowed``
+     - A user-defined agent submitted a ``Cancel`` of an order that has its own ``agent_id`` but the same
+       ``order_id``, price, time step, side and kind as an order that another agent placed. Cancel only the
+       orders that the agent itself placed.
    * - ``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs
-     - A market was used that the agent cannot trade: a ``MarketMakerAgent`` whose ``targetMarket`` is not in
-       its ``markets``, or an ``ArbitrageAgent`` whose ``markets`` lack the component markets. A
-       ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket`` fails the same way.
+     - A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its component markets instead.
    * - ``market name X is duplicate`` / ``agent name X is duplicate``
      - Two groups produce the same instance name, e.g. a group listed twice or an inherited ``prefix``.
    * - ``X.numAgents and (X.from or X.to) cannot be used at the same time``
