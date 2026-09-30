@@ -1,5 +1,8 @@
+import argparse
 import copy
+import csv
 import json
+import math
 import os.path
 import random
 import runpy
@@ -16,6 +19,7 @@ from pams.market import Market
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners import SequentialRunner
+from samples.parallel_main import benchmark
 from samples.parallel_main.main import main
 from samples.parallel_main.make_config import main as make_config_main
 from samples.parallel_main.make_config import make_config
@@ -325,6 +329,23 @@ def test_make_config_cli(capsys: pytest.CaptureFixture[str], tmp_path: Any) -> N
             "main.py",
             ["--config", f"{SAMPLE_DIR}/config.json", "--runner", "sequential"],
         ),
+        (
+            "benchmark.py",
+            [
+                "--spots",
+                "1",
+                "--steps",
+                "2",
+                "--agents-per-market",
+                "2",
+                "--arbitrage-agents",
+                "1",
+                "--runners",
+                "sequential",
+                "--workloads",
+                "off",
+            ],
+        ),
     ],
 )
 def test_run_as_script(
@@ -334,3 +355,74 @@ def test_run_as_script(
     with mock.patch("sys.argv", [path] + args):
         runpy.run_path(path, run_name="__main__")
     assert capsys.readouterr().out != ""
+
+
+def test_benchmark(tmp_path: Any, capsys: pytest.CaptureFixture[str]) -> None:
+    pytest.importorskip("matplotlib")
+    output = os.path.join(str(tmp_path), "benchmark.csv")
+    image = os.path.join(str(tmp_path), "benchmark.png")
+    benchmark.main(
+        [
+            "--spots",
+            "2",
+            "--steps",
+            "3",
+            "--warmup",
+            "1",
+            "--agents-per-market",
+            "5",
+            "--arbitrage-agents",
+            "2",
+            "--num-parallel",
+            "1",
+            "2",
+            "--runners",
+            "sequential",
+            "multi_thread",
+            "multi_process",
+            "--workloads",
+            "off",
+            "2x2",
+            "--output",
+            output,
+            "--plot",
+            image,
+        ]
+    )
+    assert len(capsys.readouterr().out.splitlines()) == 10
+    with open(output, encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        assert reader.fieldnames == benchmark.COLUMNS
+        rows = list(reader)
+    assert len(rows) == 2 * (1 + 2 + 2)
+    assert [row["workload"] for row in rows] == ["off"] * 5 + ["2x2"] * 5
+    assert [row["numParallel"] for row in rows] == ["0", "1", "2", "1", "2"] * 2
+    assert len({row["digest"] for row in rows}) == 1
+    for row in rows:
+        for key in ["total", "first_step", "step", "collect", "handle"]:
+            value = float(row[key])
+            assert math.isfinite(value)
+            assert value >= 0.0
+    assert os.path.getsize(image) > 0
+
+    benchmark.check_digests(rows=rows)
+    rows[-1]["digest"] = "different"
+    with pytest.raises(RuntimeError):
+        benchmark.check_digests(rows=rows)
+
+
+def test_benchmark_options() -> None:
+    assert benchmark.parse_workload("off") is None
+    assert benchmark.parse_workload("10x20") == (10, 20)
+    for value in ["0x5", "5x0", "abc", "1x2x3", "-1x5"]:
+        with pytest.raises(argparse.ArgumentTypeError):
+            benchmark.parse_workload(value)
+    assert benchmark.format_workload(None) == "off"
+    assert benchmark.format_workload((10, 20)) == "10x20"
+    assert benchmark._format_major_tick(0.01, None) == "0.01"
+    assert benchmark._format_minor_tick(0.002, None) == "0.002"
+    assert benchmark._format_minor_tick(50.0, None) == "50"
+    assert benchmark._format_minor_tick(0.003, None) == ""
+    assert benchmark._format_minor_tick(0.0, None) == ""
+    with pytest.raises(SystemExit):
+        benchmark.main(["--steps", "1", "--warmup", "1"])
