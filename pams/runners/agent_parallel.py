@@ -385,13 +385,7 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                             continue
                         if not session.with_order_placement:
                             raise AssertionError("currently order is not accepted")
-                        if (
-                            sum(order.agent_id != agent.agent_id for order in orders)
-                            > 0
-                        ):
-                            raise ValueError(
-                                "spoofing order is not allowed. please check agent_id in order"
-                            )
+                        self._check_submitted_orders(agent=agent, orders=orders)
                         all_orders.append(orders)
                         n_orders += 1
             finally:
@@ -581,6 +575,10 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         the orders referred by cancel orders are replaced with the orders on the main process
         because
         the orders returned from the worker process are copies of them.
+        An order is replaced with the order in the order book found by
+        ``_get_placed_order_to_cancel`` only if their agent IDs are the same, so that
+        ``_check_submitted_orders`` checks the cancel orders in the same way as
+        :class:`pams.runners.SequentialRunner`.
 
         Args:
             agent (Agent): agent on the main process.
@@ -595,15 +593,13 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
             agent=agent, orders=orders, prng_state=prng_state
         )
         for order in orders:
-            if isinstance(order, Cancel):
-                market: Market = self.simulator.id2market[order.order.market_id]
-                order_book = (
-                    market.buy_order_book
-                    if order.order.is_buy
-                    else market.sell_order_book
-                )
-                for placed_order in order_book.priority_queue:
-                    if placed_order == order.order:
-                        order.order = placed_order
-                        break
+            if not isinstance(order, Cancel):
+                continue
+            placed_order: Optional[Order] = self._get_placed_order_to_cancel(
+                cancel=order
+            )
+            # the replacement must not change the agent_id of the cancel order. a cancel order of
+            # an order of another agent is left as it is and rejected by _check_submitted_orders.
+            if placed_order is not None and placed_order.agent_id == order.agent_id:
+                order.order = placed_order
         return orders
