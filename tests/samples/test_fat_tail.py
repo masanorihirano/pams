@@ -28,3 +28,4 @@ def test_fat_tail(capsys: pytest.CaptureFixture[str]) -> None:
     # margins, the price is out of this range in about 5% of the steps)
     outside = sum(not 200.0 < float(line[4]) < 400.0 for line in lines)
     assert outside <= 0.02 * len(lines)
+    assert len({float(line[4]) for line in lines[500:]}) > 1
