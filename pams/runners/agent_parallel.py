@@ -20,6 +20,7 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 from typing import Type
 from typing import Union
@@ -42,12 +43,21 @@ _UNSYNCABLE_ATTRIBUTES: Tuple[str, ...] = ("simulator", "logger", "prng")
 # marks a listed attribute that the agent on the worker does not have
 _MISSING = object()
 
-# result of _submit_orders_in_worker for each agent: orders, prng state, and synced attributes
-_WorkerResult = Tuple[List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]]]
+# result of _submit_orders_in_worker for each agent: orders, prng state, synced attributes, and
+# the names of the attributes that the agent assigned or deleted but does not list
+_WorkerResult = Tuple[
+    List[Union[Order, Cancel]], Any, Optional[Dict[str, Any]], Optional[Tuple[str, ...]]
+]
 
 # token of an object of the simulation, which identifies the object in every copy of the
 # simulation, e.g., ("market", 0) for the market whose ID is 0
 _Token = Tuple[Any, ...]
+
+# first words of the warning about changes to attributes not listed in synced_attributes, which
+# do not change so that users can filter the warning by them
+_UNSYNCED_CHANGES_WARNING: str = (
+    "Changes to attributes not listed in synced_attributes are lost"
+)
 
 
 def _iter_simulation_objects(simulator: Simulator) -> Iterator[Tuple[Any, _Token]]:
@@ -289,6 +299,42 @@ def _load_worker_results(
     return results
 
 
+def _find_unsynced_changes(
+    attributes_before: Dict[str, Any],
+    attributes_after: Dict[str, Any],
+    synced_names: Tuple[str, ...],
+) -> Optional[Tuple[str, ...]]:
+    """Find the attributes that an agent assigned or deleted but does not list (internal function).
+
+    Args:
+        attributes_before (Dict[str, Any]): shallow copy of the attributes of the agent before
+            :func:`pams.agents.Agent.submit_orders`. It is emptied by this function.
+        attributes_after (Dict[str, Any]): attributes of the agent after the call.
+        synced_names (Tuple[str, ...]): names listed in
+            :attr:`pams.agents.Agent.synced_attributes`.
+
+    Returns:
+        Tuple[str, ...], Optional: sorted names of the attributes that were added, deleted, or
+        assigned another object, except the listed ones and those that the runner manages.
+        None if there are none.
+
+    """
+    changed_names: List[str] = [
+        name
+        for name, value in attributes_after.items()
+        if attributes_before.pop(name, _MISSING) is not value
+    ]
+    changed_names.extend(attributes_before)  # deleted attributes
+    unsynced_names = sorted(
+        name
+        for name in changed_names
+        if name not in synced_names and name not in _UNSYNCABLE_ATTRIBUTES
+    )
+    if len(unsynced_names) == 0:
+        return None
+    return tuple(unsynced_names)
+
+
 def _check_synced_attributes(agent: Agent) -> None:
     """Check :attr:`pams.agents.Agent.synced_attributes` of an agent (internal function).
 
@@ -382,6 +428,7 @@ def _submit_orders_in_worker(
     agents: List[Agent],
     markets: List[Market],
     synced_attributes: Optional[List[Tuple[str, ...]]] = None,
+    find_unsynced_changes: bool = False,
 ) -> Union[List[_WorkerResult], bytes]:
     """Call :func:`pams.agents.Agent.submit_orders` of agents on a worker (internal function).
 
@@ -407,15 +454,22 @@ def _submit_orders_in_worker(
         synced_attributes (List[Tuple[str, ...]], Optional): for each agent, the names of the
             attributes to return, i.e., its :attr:`pams.agents.Agent.synced_attributes` read on
             the main process. None (the default) means that no attributes are returned.
+        find_unsynced_changes (bool): whether to find the attributes that each agent assigns or
+            deletes in :func:`pams.agents.Agent.submit_orders` but does not list in
+            ``synced_attributes``. The default is False.
 
     Returns:
         Union[List[_WorkerResult], bytes]: for each agent, a tuple of orders submitted by the
             agent, the state of the agent's pseudo random number generator after the
-            submission, and the named attributes that the agent has after the submission. The
-            attributes are None if the agent has no names in ``synced_attributes``. The state
-            and the attributes are required to update the agent on the main process when this
-            function runs on another process. The list of the tuples is pickled into bytes if
-            an agent has names in ``synced_attributes``.
+            submission, the named attributes that the agent has after the submission, and the
+            sorted names of the attributes that the agent added, deleted, or assigned another
+            object in the submission except the named ones and ``"simulator"``, ``"logger"``,
+            and ``"prng"``. The attributes are None if the agent has no names in
+            ``synced_attributes``, and the names are None if there are none or
+            ``find_unsynced_changes`` is False. The state and the attributes are required to
+            update the agent on the main process when this function runs on another process.
+            The list of the tuples is pickled into bytes if an agent has names in
+            ``synced_attributes``.
 
     """
     initializer_error: Optional[BaseException] = getattr(
@@ -430,6 +484,10 @@ def _submit_orders_in_worker(
     )
     results: List[_WorkerResult] = []
     for agent, names in zip(agents, names_of_agents):
+        # a shallow copy is enough because only assignments and deletions are found
+        attributes_before: Optional[Dict[str, Any]] = (
+            dict(vars(agent)) if find_unsynced_changes else None
+        )
         orders: List[Union[Order, Cancel]] = agent.submit_orders(markets=markets)
         attributes: Optional[Dict[str, Any]] = None
         if len(names) > 0:
@@ -439,7 +497,14 @@ def _submit_orders_in_worker(
                 value = getattr(agent, name, _MISSING)
                 if value is not _MISSING:
                     attributes[name] = value
-        results.append((orders, agent.prng.getstate(), attributes))
+        unsynced_names: Optional[Tuple[str, ...]] = None
+        if attributes_before is not None:
+            unsynced_names = _find_unsynced_changes(
+                attributes_before=attributes_before,
+                attributes_after=vars(agent),
+                synced_names=names,
+            )
+        results.append((orders, agent.prng.getstate(), attributes, unsynced_names))
     if all(len(names) == 0 for names in names_of_agents):
         return results
     # the results are pickled here, not by the executor, so that the objects of the simulation
@@ -447,8 +512,8 @@ def _submit_orders_in_worker(
     buffer = io.BytesIO()
     _WorkerResultPickler(buffer, simulator=agents[0].simulator).dump(
         [
-            (orders, _PickledState(state=prng_state), attributes)
-            for orders, prng_state, attributes in results
+            (orders, _PickledState(state=prng_state), attributes, unsynced_names)
+            for orders, prng_state, attributes, unsynced_names in results
         ]
     )
     return buffer.getvalue()
@@ -536,6 +601,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         )
         self.num_parallel: int = max((os.cpu_count() or 1) - 1, 1)
         self.executor: Optional[Executor] = None
+        # pairs of an agent class and an attribute name that the runner has warned about
+        self._warned_unsynced_changes: Set[Tuple[Type[Agent], str]] = set()
 
     def _setup(self) -> None:
         """Set up the simulation (internal method).
@@ -726,6 +793,51 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 # attribute set at runtime that a worker started by spawn does not have
                 pass
 
+    def _warn_unsynced_changes(
+        self, agents: List[Agent], names_of_agents: List[Optional[Tuple[str, ...]]]
+    ) -> None:
+        """Warn about the changes to attributes that are not synced (internal method).
+
+        A warning is issued for each agent class whose agents assigned or deleted attributes
+        not listed in :attr:`pams.agents.Agent.synced_attributes` in
+        :func:`pams.agents.Agent.submit_orders` on the workers, because such changes are lost.
+        The workers find such attributes only if ``_sync_attributes_from_workers`` is True, i.e.,
+        for :class:`pams.runners.MultiProcessAgentParallelRunner`.
+        Each pair of an agent class and an attribute name is warned about at most once per
+        runner. The message starts with "Changes to attributes not listed in synced_attributes
+        are lost", so that the warning can be filtered by it.
+
+        Args:
+            agents (List[Agent]): agents on the main process.
+            names_of_agents (List[Tuple[str, ...], Optional]): for each agent, the names found
+                by the worker, or None.
+
+        Returns:
+            None
+
+        """
+        # the names not warned about yet for each agent class, in the order of the agents
+        new_names_of_classes: Dict[Type[Agent], Set[str]] = {}
+        for agent, names in zip(agents, names_of_agents):
+            if names is None:
+                continue
+            agent_class: Type[Agent] = agent.__class__
+            for name in names:
+                if (agent_class, name) not in self._warned_unsynced_changes:
+                    new_names_of_classes.setdefault(agent_class, set()).add(name)
+        for agent_class, new_names in new_names_of_classes.items():
+            class_name = agent_class.__name__
+            warnings.warn(
+                f"{_UNSYNCED_CHANGES_WARNING}: {class_name} assigned or deleted"
+                f" {', '.join(repr(name) for name in sorted(new_names))} in submit_orders on"
+                f" a worker process of {self.__class__.__name__}. List them in"
+                f" {class_name}.synced_attributes to keep the changes.",
+                stacklevel=2,
+            )
+            self._warned_unsynced_changes.update(
+                (agent_class, name) for name in new_names
+            )
+
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
@@ -738,7 +850,8 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
         :func:`pams.runners.SequentialRunner._collect_orders_from_normal_agents`.
         Each batch is split into chunks by ``_split_agents_into_chunks``, and each chunk is
         submitted to the executor as one task. After all the tasks of the batch are finished,
-        their results are loaded, and then the result of each agent is passed to
+        their results are loaded, the changes that are not synced are warned about (only if the
+        workers find them), and then the result of each agent is passed to
         ``_receive_synced_attributes_from_worker`` (only if the worker sends back attributes) and
         to ``_receive_orders_from_worker``, even if the agent submits no orders. If a task fails,
         its error is raised as soon as it is found, and no agent of the batch is updated.
@@ -783,7 +896,13 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 for chunk in chunks
             ]
             futures: List["Future[Union[List[_WorkerResult], bytes]]"] = [
-                executor.submit(_submit_orders_in_worker, chunk, markets, names)
+                executor.submit(
+                    _submit_orders_in_worker,
+                    chunk,
+                    markets,
+                    names,
+                    self._sync_attributes_from_workers,
+                )
                 for chunk, names in zip(chunks, synced_attributes)
             ]
             try:
@@ -794,21 +913,29 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 for future in futures:
                     if future in done and future.exception() is not None:
                         future.result()  # raises the error of the task
-                # all the results are loaded before any agent is updated, so that no agent is
-                # updated if one of them fails. The objects of the simulation are looked up in
-                # the same table for all the results of the batch. The table matches the copies
-                # on the workers because nothing on the main process changes the markets, their
-                # order books, the agents, the sessions, or the events between the submission of
-                # the tasks and here: the collected orders are handled only after all the
-                # batches, and the agents of the previous batches were only given new
-                # attributes and prng states (see _SimulationObjects.get).
+                # all the results are loaded and warned about before any agent is updated, so
+                # that no agent is updated if one of them fails. The objects of the simulation
+                # are looked up in the same table for all the results of the batch. The table
+                # matches the copies on the workers because nothing on the main process changes
+                # the markets, their order books, the agents, the sessions, or the events
+                # between the submission of the tasks and here: the collected orders are handled
+                # only after all the batches, and the agents of the previous batches were only
+                # given new attributes and prng states (see _SimulationObjects.get).
                 objects = _SimulationObjects(simulator=self.simulator)
                 results_of_chunks: List[List[_WorkerResult]] = [
                     _load_worker_results(results=future.result(), objects=objects)
                     for future in futures
                 ]
+                self._warn_unsynced_changes(
+                    agents=batch,
+                    names_of_agents=[
+                        result[3] for results in results_of_chunks for result in results
+                    ],
+                )
                 for chunk, results in zip(chunks, results_of_chunks):
-                    for agent, (orders, prng_state, attributes) in zip(chunk, results):
+                    for agent, (orders, prng_state, attributes, _) in zip(
+                        chunk, results
+                    ):
                         if attributes is not None:
                             self._receive_synced_attributes_from_worker(
                                 agent=agent, attributes=attributes
@@ -867,6 +994,9 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         reflected to the agent on the main process. Other attributes modified in
         :func:`pams.agents.Agent.submit_orders` are discarded, although in-place changes to memory
         that a library shares between processes, e.g., PyTorch tensors on the CPU, can remain.
+        A warning is issued when an agent assigns or deletes an attribute that is not listed, at
+        most once for each agent class and attribute name per runner; changes made in place,
+        e.g., by appending to a list, are not detected.
         The listed attributes are sent back after every call, even if the agent submits no
         orders, and are set on the agent before the orders are handled. The listed values and
         the orders of all the agents of a task are pickled together, so references among them

@@ -1196,8 +1196,8 @@ the same seed. They call ``submit_orders`` of normal agents in parallel; everyth
 - **User-defined agents** must not change shared objects (markets, other agents, the logger) in
   ``submit_orders``. With the process runner, changes an agent makes to its own attributes in ``submit_orders``
   are lost, or only partly kept, unless the attributes are listed in :attr:`~pams.agents.Agent.synced_attributes`
-  (see :ref:`config-synced-attributes`); update other state in callbacks like ``executed_order``, which run in the
-  main process.
+  (see :ref:`config-synced-attributes`), and the runner warns about the attributes that are assigned or deleted
+  without being listed; update other state in callbacks like ``executed_order``, which run in the main process.
 
 The number of worker threads or processes is set by ``simulation.numParallel`` (see :ref:`config-simulation`;
 default: the number of CPUs minus 1, at least 1).
@@ -1321,6 +1321,15 @@ Keep the following in mind:
   optimizer, are lost. Do not rely on this; list every attribute that ``submit_orders`` changes. The gradients
   (``.grad``) of tensors are not sent between processes, so gradients accumulated across calls of
   ``submit_orders`` are lost.
+- **Warning**: the runner warns with a ``UserWarning`` when ``submit_orders`` assigns or deletes an attribute of the
+  agent that is not listed, because the change is lost. The warning names the agent class and the attributes, and
+  it is shown at most once for each agent class and attribute per runner. Its message starts with
+  ``Changes to attributes not listed in synced_attributes are lost``, which does not change, so it can be filtered,
+  e.g., by ``warnings.filterwarnings("ignore", message="Changes to attributes not listed in synced_attributes")``.
+  Only assignments and deletions are detected; changes made in place, such as appending to a list or training a
+  model, are not. So no warning is shown for an unlisted PyTorch model that is trained in place, even though its
+  parameters can reach the main process through shared memory while the state of its optimizer is lost (see
+  **Shared memory**). The built-in agents cause no warning.
 - **Pickling**: the listed attributes must be pickled with the agent; if ``__getstate__`` drops one of them, it is
   deleted from the agent in the main process.
 - **Checks**: the names must be a tuple or list of strings. The runner checks them when it is set up and whenever

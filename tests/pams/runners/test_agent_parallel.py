@@ -8,6 +8,7 @@ import re
 import time
 import traceback
 import uuid
+import warnings
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import Executor
 from concurrent.futures import Future
@@ -33,7 +34,9 @@ from pams.order import Order
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import MultiThreadAgentParallelRunner
 from pams.runners import agent_parallel
+from pams.runners.agent_parallel import _UNSYNCED_CHANGES_WARNING
 from pams.runners.agent_parallel import _check_synced_attributes
+from pams.runners.agent_parallel import _find_unsynced_changes
 from pams.runners.agent_parallel import _load_worker_results
 from pams.runners.agent_parallel import _SimulationObjects
 from pams.runners.agent_parallel import _submit_orders_in_worker
@@ -219,6 +222,28 @@ def _assert_references_to_simulation(simulator: Simulator) -> None:
                     assert any(order is my_order for my_order in agent.my_orders)
 
 
+def _unsynced_changes_messages(record: List[warnings.WarningMessage]) -> List[str]:
+    """Get the messages of the warnings about changes to attributes that are not synced."""
+    messages: List[str] = []
+    for warning in record:
+        message = str(warning.message)
+        if message.startswith(_UNSYNCED_CHANGES_WARNING):
+            assert warning.category is UserWarning
+            messages.append(message)
+    return messages
+
+
+def _unsynced_changes_message(
+    agent_class: str, names: str, runner_class: Type[SequentialRunner]
+) -> str:
+    return (
+        f"Changes to attributes not listed in synced_attributes are lost: {agent_class}"
+        f" assigned or deleted {names} in submit_orders on a worker process of"
+        f" {runner_class.__name__}. List them in {agent_class}.synced_attributes to keep"
+        " the changes."
+    )
+
+
 def _track_received_results(
     runner: MultiThreadAgentParallelRunner, monkeypatch: pytest.MonkeyPatch
 ) -> List[Tuple[str, int]]:
@@ -297,6 +322,11 @@ def _assert_same_results(
                 assert not order.is_canceled
 
 
+# the built-in agents and the agents that list all the attributes that they change must not cause
+# the warning about changes to attributes that are not synced. The tests expecting it catch it.
+@pytest.mark.filterwarnings(
+    "error:Changes to attributes not listed in synced_attributes"
+)
 class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
     runner_class: Type[SequentialRunner] = MultiThreadAgentParallelRunner
     default_setting: Dict = {
@@ -937,12 +967,13 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert isinstance(data, bytes)
         results = _load_results(results=data, simulator=simulator)
         assert len(results) == 2
-        orders, prng_state, attributes = results[0]
+        orders, prng_state, attributes, unsynced_names = results[0]
         assert orders == []
         assert prng_state == agent.prng.getstate()
         assert attributes == {name: getattr(agent, name) for name in names}
         assert attributes is not None
         assert attributes["weights"] is attributes["same_weights"]
+        assert unsynced_names is None
         # an agent without names sends back nothing, even if its class lists attributes
         assert len(results[1][0]) == 1
         assert results[1][2] is None
@@ -954,7 +985,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             simulator=simulator,
         )
         assert len(results) == 1
-        orders, _, attributes = results[0]
+        orders, _, attributes, _ = results[0]
         assert len(orders) == 1
         assert not hasattr(agent, "bias")
         assert attributes is not None
@@ -975,6 +1006,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert isinstance(plain_results, list)
         assert len(plain_results) == 1
         assert plain_results[0][2] is None
+        assert plain_results[0][3] is None
         assert agent.n_calls == 6
 
     def _reference_setting(self, agent_class: str) -> Dict:
@@ -1007,7 +1039,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         )
         results = _load_results(results=data, simulator=simulator)
         assert len(results) == 1
-        orders, prng_state, attributes = results[0]
+        orders, prng_state, attributes, _ = results[0]
         assert len(orders) == 1
         assert prng_state == agent.prng.getstate()
         assert attributes is not None
@@ -1052,7 +1084,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert isinstance(data, bytes)
         results = _load_results(results=data, simulator=simulator)
         assert len(results) == 2
-        orders, _, attributes = results[0]
+        orders, _, attributes, _ = results[0]
         assert attributes is not None
         my_orders = attributes["my_orders"]
         assert my_orders is not agent.my_orders
@@ -1072,7 +1104,7 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         assert cancel.order is my_orders_before[0]
         assert new_order is my_orders[3]
         assert new_order is not agent.my_orders[3]
-        other_orders, _, other_attributes = results[1]
+        other_orders, _, other_attributes, _ = results[1]
         assert other_attributes is not None
         assert len(other_orders) == 1
         assert other_orders[0] is other_attributes["my_orders"][0]
@@ -1222,6 +1254,168 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             assert any(
                 order.volume > 0 and not order.is_canceled for order in removed_orders
             )
+
+    def test_find_unsynced_changes(self) -> None:
+        kept: List[float] = [1.0]
+        attributes_before: Dict[str, Any] = {
+            "kept": kept,
+            "reassigned": [1.0],
+            "deleted": 1,
+            "listed": 1,
+            "prng": random.Random(),
+        }
+        attributes_after: Dict[str, Any] = {
+            "kept": kept,
+            "reassigned": [1.0],
+            "listed": 2,
+            "prng": random.Random(),
+            "added": None,
+        }
+        assert _find_unsynced_changes(
+            attributes_before=attributes_before,
+            attributes_after=attributes_after,
+            synced_names=("listed",),
+        ) == ("added", "deleted", "reassigned")
+        # changes made in place are not found
+        kept.append(2.0)
+        assert (
+            _find_unsynced_changes(
+                attributes_before={"kept": kept},
+                attributes_after={"kept": kept},
+                synced_names=(),
+            )
+            is None
+        )
+
+    def test_submit_orders_in_worker_finds_unsynced_changes(self) -> None:
+        setting = self._learning_setting()
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        markets = simulator.markets
+        simulator._update_times_on_markets(markets)
+        agent, other_agent = simulator.normal_frequency_agents[:2]
+        assert isinstance(other_agent, LearningAgent)
+        # the first call assigns n_calls and last_price and adds bias. prices and weights are
+        # changed in place, so they are not found
+        results = _load_results(
+            results=_submit_orders_in_worker(
+                agents=[agent, other_agent],
+                markets=markets,
+                synced_attributes=[("n_calls", "prices"), ()],
+                find_unsynced_changes=True,
+            ),
+            simulator=simulator,
+        )
+        assert results[0][3] == ("bias", "last_price")
+        assert results[1][3] == ("bias", "last_price", "n_calls")
+        # nothing is found if all the changed attributes are listed
+        results = _load_results(
+            results=_submit_orders_in_worker(
+                agents=[agent],
+                markets=markets,
+                synced_attributes=[tuple(LearningAgent.synced_attributes)],
+                find_unsynced_changes=True,
+            ),
+            simulator=simulator,
+        )
+        assert results[0][3] is None
+        # nothing is looked for by default, and the results are not pickled if no agent lists
+        # names
+        plain_results = _submit_orders_in_worker(
+            agents=[other_agent], markets=markets, synced_attributes=[()]
+        )
+        assert isinstance(plain_results, list)
+        assert plain_results[0][3] is None
+        assert other_agent.n_calls == 2
+
+    def test_submit_orders_in_worker_finds_no_changes_of_fcn_agents(self) -> None:
+        # the built-in agents do not assign or delete attributes in submit_orders
+        _, runner = self._make_runners(setting=self.default_setting)
+        runner._setup()
+        runner._shutdown_executor()
+        simulator = runner.simulator
+        markets = simulator.markets
+        simulator._update_times_on_markets(markets)
+        agents = simulator.normal_frequency_agents
+        results = _submit_orders_in_worker(
+            agents=agents, markets=markets, find_unsynced_changes=True
+        )
+        assert isinstance(results, list)
+        assert len(results) == len(agents)
+        assert sum(len(result[0]) for result in results) > 0
+        assert all(result[3] is None for result in results)
+
+    @pytest.mark.parametrize(
+        "synced_attributes, warned_names",
+        [
+            ([], "'bias', 'last_price', 'n_calls'"),
+            (["n_calls", "prices", "last_price", "weights", "same_weights"], "'bias'"),
+            (None, None),
+        ],
+        ids=["none", "all but bias", "all"],
+    )
+    def test_unsynced_changes_warning(
+        self, synced_attributes: Optional[List[str]], warned_names: Optional[str]
+    ) -> None:
+        setting = self._learning_setting(synced_attributes=synced_attributes)
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
+            runner._run()
+        messages = _unsynced_changes_messages(record=record)
+        if warned_names is None or not self.receives_synced_attributes:
+            # the thread runner changes the agents themselves, so nothing is lost
+            assert len(messages) == 0
+        else:
+            # warned only once in the whole simulation
+            assert messages == [
+                _unsynced_changes_message(
+                    agent_class="LearningAgent",
+                    names=warned_names,
+                    runner_class=self.runner_class,
+                )
+            ]
+
+    def test_unsynced_changes_warning_for_each_class(self) -> None:
+        setting = self._learning_setting(synced_attributes=[])
+        setting["UnsyncedAgents"] = copy.deepcopy(setting["FCNAgents"])
+        setting["UnsyncedAgents"]["class"] = "UnsyncedLearningAgent"
+        del setting["UnsyncedAgents"]["syncedAttributes"]
+        setting["simulation"]["agents"] = ["FCNAgents", "UnsyncedAgents"]
+        setting["simulation"]["sessions"][0]["maxNormalOrders"] = 10
+        _, runner = self._make_runners(setting=setting)
+        runner._setup()
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
+            runner._run()
+        messages = _unsynced_changes_messages(record=record)
+        if not self.receives_synced_attributes:
+            assert len(messages) == 0
+            return
+        assert sorted(messages) == [
+            _unsynced_changes_message(
+                agent_class=agent_class,
+                names="'bias', 'last_price', 'n_calls'",
+                runner_class=self.runner_class,
+            )
+            for agent_class in ["LearningAgent", "UnsyncedLearningAgent"]
+        ]
+        # the first words of the message, which are documented, filter out the warning
+        filtered_runner = self._make_runner(
+            runner_class=self.runner_class, setting=setting
+        )
+        filtered_runner._setup()
+        with warnings.catch_warnings(record=True) as record:
+            warnings.simplefilter("always")
+            warnings.filterwarnings(
+                "ignore",
+                message="Changes to attributes not listed in synced_attributes",
+            )
+            filtered_runner._run()
+        assert len(_unsynced_changes_messages(record=record)) == 0
 
     def test_receive_synced_attributes_from_worker(
         self, monkeypatch: pytest.MonkeyPatch
@@ -1393,6 +1587,9 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             assert _learning_states(agents[:4]) == learning_states_before
 
 
+@pytest.mark.filterwarnings(
+    "error:Changes to attributes not listed in synced_attributes"
+)
 class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
     runner_class: Type[SequentialRunner] = MultiProcessAgentParallelRunner
     custom_pool_provider: Type[Executor] = CustomProcessPoolExecutor
@@ -1447,7 +1644,19 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         initial_states = _learning_states(parallel_runner.simulator.agents)
         assert initial_states == _learning_states(sequential_runner.simulator.agents)
         sequential_runner._run()
-        parallel_runner._run()
+        # the runner warns that the changes are lost. prices and weights are changed in place,
+        # so they are not named
+        with pytest.warns(
+            UserWarning,
+            match=re.escape(
+                _unsynced_changes_message(
+                    agent_class="LearningAgent",
+                    names="'bias', 'last_price', 'n_calls'",
+                    runner_class=self.runner_class,
+                )
+            ),
+        ):
+            parallel_runner._run()
         assert _learning_states(parallel_runner.simulator.agents) == initial_states
         assert _learning_states(sequential_runner.simulator.agents) != initial_states
         assert len(received) > 0

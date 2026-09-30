@@ -48,10 +48,12 @@ class Agent(ABC):
     #: the sessions, the simulator, and the like, which are sent back as references to the objects
     #: in the main process. Other objects are copies, including orders that are no longer in an
     #: order book and objects shared with other agents. ``"simulator"``, ``"logger"``, and
-    #: ``"prng"`` cannot be listed. Subclasses can override it, and an instance can set it,
-    #: e.g., in :func:`setup`. The runner checks it when it is set up and whenever it asks this
-    #: agent to submit orders. Other runners and high-frequency agents do not use it. The default
-    #: is an empty tuple. See :ref:`config-synced-attributes` for an example and other caveats.
+    #: ``"prng"`` cannot be listed. The runner warns when :func:`submit_orders` assigns or deletes
+    #: an attribute that is not listed, because the change is lost. Subclasses can override it,
+    #: and an instance can set it, e.g., in :func:`setup`. The runner checks it when it is set up
+    #: and whenever it asks this agent to submit orders. Other runners and high-frequency agents
+    #: do not use it. The default is an empty tuple. See :ref:`config-synced-attributes` for an
+    #: example and other caveats.
     synced_attributes: Union[Tuple[str, ...], List[str]] = ()
 
     def __init__(
