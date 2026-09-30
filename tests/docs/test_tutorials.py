@@ -174,7 +174,7 @@ def test_page_text() -> None:
 def test_record_runners(monkeypatch: pytest.MonkeyPatch) -> None:
     tutorial = load_tutorial("tutorial_first_simulation")
     runners: List[SequentialRunner] = record_runners(monkeypatch)
-    assert runners == []
+    assert not runners
     runner: SequentialRunner = tutorial.run_simulation(42)[0]
     assert runners == [runner]
 

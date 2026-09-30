@@ -180,7 +180,8 @@ def test_market_share_main(
     tutorial = load_tutorial("tutorial_market_share")
 
     # the two runs of seed 42
-    tick_10, tick_2 = runners[:2]
+    tick_10: SequentialRunner = runners[0]
+    tick_2: SequentialRunner = runners[1]
     shares_10: List[float] = tutorial.share_of_b(tick_10)
     shares_2: List[float] = tutorial.share_of_b(tick_2)
     prices_a: List[float] = tick_10.simulator.name2market[
