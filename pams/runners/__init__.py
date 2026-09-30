@@ -2,5 +2,6 @@
 from .agent_parallel import MultiProcessAgentParallelRunner
 from .agent_parallel import MultiThreadAgentParallelRunner
 from .base import Runner
+from .jax_parallel import JaxAgentParallelRunner
 from .sequential import SequentialRunner
 from .torch_parallel import TorchAgentParallelRunner

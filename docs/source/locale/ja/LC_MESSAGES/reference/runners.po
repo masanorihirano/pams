@@ -65,13 +65,25 @@ msgstr "マルチプロセスのエージェント並列ランナークラス。
 
 #: ../../source/reference/runners.rst:13:<autosummary>:1
 msgid ""
+":py:obj:`runners.JaxAgentParallelRunner "
+"<pams.runners.JaxAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+msgstr ""
+":py:obj:`runners.JaxAgentParallelRunner "
+"<pams.runners.JaxAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
+
+#: ../../source/reference/runners.rst:13:<autosummary>:1
+msgid "JAX Agent Parallel runner class."
+msgstr "JAX用のエージェント並列ランナークラス。"
+
+#: ../../source/reference/runners.rst:14:<autosummary>:1
+msgid ""
 ":py:obj:`runners.TorchAgentParallelRunner "
 "<pams.runners.TorchAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
 msgstr ""
 ":py:obj:`runners.TorchAgentParallelRunner "
 "<pams.runners.TorchAgentParallelRunner>`\\ \\(settings\\[\\, ...\\]\\)"
 
-#: ../../source/reference/runners.rst:13:<autosummary>:1
+#: ../../source/reference/runners.rst:14:<autosummary>:1
 msgid "Multi Process Agent Parallel runner class for agents using PyTorch."
 msgstr "PyTorchを使うエージェントのためのマルチプロセスのエージェント並列ランナークラス。"
 
