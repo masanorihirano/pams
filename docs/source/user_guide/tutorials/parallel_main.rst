@@ -83,8 +83,8 @@ Configs
 - 100 arbitrage agents, which trade between the index market and the spot markets.
 - A fundamental price shock of -10% on ``SpotMarket-1`` at time 0.
 - One session of 500 steps. In each step, every FCN agent is asked for orders (``maxNormalOrders`` is
-  10\ :sup:`10`). After the orders of each FCN agent are handled, the arbitrage agents are asked in random order
-  until one of them submits orders (``maxHighFrequencyOrders`` is 1).
+  10\ :sup:`10`). After the orders of each FCN agent that submits orders are handled, the arbitrage agents are
+  asked in random order until one of them submits orders (``maxHighFrequencyOrders`` is 1).
 - The FCN agents are ``WorkloadFCNAgent`` with the workload 10x10 and ``orderRate`` 0.1, as in ``run.sh`` of
   Plham.
 
@@ -99,11 +99,11 @@ scale:
 Runs at the full scale take long. On our machine, 500 steps of ``config-002.json`` took about 5 minutes with
 :class:`~pams.runners.SequentialRunner`, and the time per step grows as the order books fill up.
 ``config-009.json``, with about three times as many agents, takes longer still. ``config-099.json`` is included to
-follow Plham, but running it at the full scale is not practical in PAMS. With 99 spot markets, most of the time
-goes to matching the orders, because the whole order book is re-heapified for each execution, and to the arbitrage
-agents, which trade on 100 markets. In our trial, it did not finish in more than 10 minutes. Make smaller configs
-with ``make_config.py`` instead. ``config.json`` has 2 spot markets, 20 FCN agents on each market, 10 arbitrage
-agents and 20 steps, and it runs in about a second.
+follow Plham, but running it at the full scale is not practical in PAMS. On our machine, its first step alone took
+more than 4 minutes with :class:`~pams.runners.SequentialRunner`. With 99 spot markets, most of the time goes to
+matching the orders, because the whole order book is re-heapified for each execution, and to the arbitrage agents,
+which trade on 100 markets. Make smaller configs with ``make_config.py`` instead. ``config.json`` has 2 spot
+markets, 20 FCN agents on each market, 10 arbitrage agents and 20 steps, and it runs in about a second.
 
 Running
 ~~~~~~~
@@ -114,7 +114,7 @@ Run the sample from the root of the repository, so that the worker processes can
 
    python -m samples.parallel_main.main --config samples/parallel_main/config.json --seed 1
    python -m samples.parallel_main.main --config samples/parallel_main/config.json --seed 1 --runner sequential
-   python -m samples.parallel_main.main --config samples/parallel_main/config-009.json --seed 1 --num-parallel 4
+   python -m samples.parallel_main.main --config samples/parallel_main/config.json --seed 1 --num-parallel 4
 
 ``main.py`` chooses only the runner, and the model is given by the config. ``--runner`` is ``sequential``,
 ``multi_thread`` or ``multi_process`` (the default), and ``--num-parallel`` overrides ``simulation.numParallel``
@@ -131,20 +131,25 @@ Benchmark
 
    python -m samples.parallel_main.benchmark --output benchmark.csv --plot benchmark.png
 
+With the default settings, it takes several minutes, most of them with the workload 100x100. On Windows, set the
+environment variable ``OPENBLAS_NUM_THREADS=1`` first (see the last item below); otherwise, every process reserves
+about 1.5 GB of memory. ``--plot`` requires matplotlib.
+
 By default, it runs the model of ``config-009.json`` (9 spot markets, 5000 FCN agents and 100 arbitrage agents)
 for 5 steps with the workload off, 10x10 and 100x100, with :class:`~pams.runners.SequentialRunner` and with
 :class:`~pams.runners.MultiProcessAgentParallelRunner` at ``numParallel`` 1, 2, 4 and 8. Each step is split into
 two phases:
 
 - **collect**: the normal agents decide their orders. For the parallel runners, this includes sending the agents
-  to the workers and receiving the orders. In the terms of Torii et al. (2016), it is T_w + T_c, the work of the
+  to the workers and receiving the orders. In the terms of Torii et al. (2017), it is T_w + T_c, the work of the
   agents plus the communication.
 - **handle**: the orders are executed and the high-frequency agents (here, the arbitrage agents) are asked for
   orders. It is T_m, the work of the master, and it is always sequential.
 
-The first step, which includes starting the worker processes, is excluded from the means. Because the time per
-step grows as the order books fill up, compare the runners with each other rather than with a full run. All the
-runs must give the same results, and the benchmark raises an error if they do not. See ``--help`` for the other
+The two phases together are shown as "step". They do not include the events and the updates of the markets between
+the steps. The first step, which includes starting the worker processes, is excluded from the means. Because the
+time per step grows as the order books fill up, compare the runners with each other rather than with a full run. All
+the runs must give the same results, and the benchmark raises an error if they do not. See ``--help`` for the other
 options.
 
 The figure and the table below show the results on our machine: Windows 11, an Intel Core i7-14700K with 28
@@ -155,13 +160,13 @@ of the three runs of a setting took up to about 30% longer than the fastest, and
 times below 0.5 seconds.
 
 .. figure:: images/parallel_main_benchmark.png
-   :alt: The time per step of the whole step and of the collect and handle phases against numParallel, with the
-         workload off, 10x10 and 100x100
+   :alt: The time per step of the two phases together (step) and of the collect and handle phases against
+         numParallel, with the workload off, 10x10 and 100x100
 
    The mean time per step of steps 2 to 5, the median of three runs, with 9 spot markets, 5000 FCN agents and 100
-   arbitrage agents. The red, green and blue lines are the whole step, the collect phase and the handle phase. The
-   solid lines are :class:`~pams.runners.MultiProcessAgentParallelRunner`, and the dashed lines are
-   :class:`~pams.runners.SequentialRunner`. Measured on 2026-10-01 on a Windows 11 machine with 28 logical
+   arbitrage agents. The red, green and blue lines are the two phases together (step), the collect phase and the
+   handle phase. The solid lines are :class:`~pams.runners.MultiProcessAgentParallelRunner`, and the dashed lines
+   are :class:`~pams.runners.SequentialRunner`. Measured on 2026-10-01 on a Windows 11 machine with 28 logical
    processors and Python 3.14, while other jobs were running on it.
 
 .. list-table:: The time per step of the collect phase with the workload 100x100 (median of three runs)
@@ -199,7 +204,9 @@ times below 0.5 seconds.
   phase to 4.1 seconds with 8 workers, about 3.2 times faster. With 16 workers, it is slower again, because T_c
   grows while the work of each worker shrinks.
 - The handle phase does not depend on the runner or ``numParallel``; it stays at about 0.4 seconds per step. As
-  Amdahl's law says, it limits the speed-up of the whole step, as T_m does in the figure of Torii et al. (2016).
+  Amdahl's law says, it limits the speed-up of the two phases together. T_m limits the speed-up in the same way in
+  Fig. 5 of Torii et al. (2017), with 100 markets. In their Fig. 4, with 10 markets, which is the figure of the
+  Plham tutorial, the curve flattens at 64 nodes mainly because T_c grows.
 - :class:`~pams.runners.MultiThreadAgentParallelRunner` does not speed up this workload, because the workload is
   pure Python code, and the global interpreter lock (GIL) of the standard build of Python lets only one thread run
   Python code at a time. In a separate run with the workload 100x100, its collect phase took 10.7 to 15.6 seconds
@@ -223,19 +230,24 @@ Differences from Plham
   nodes) for the whole run and sends them only the changes of the markets in each step. The process runner of PAMS
   uses a pool of processes on one machine and, in each step, copies the agents together with the whole simulation
   to the workers. This is why PAMS needs a much heavier workload than 10x10 before a parallel run pays off. The
-  results of Torii et al. (2016) were measured with up to 64 nodes of the K computer, so only the shapes of the
-  curves can be compared with those here.
+  figure of the Plham tutorial (Fig. 4 of Torii et al. (2017)) was measured with 4 to 64 nodes of the K computer,
+  and the paper goes up to 256 nodes, so only the shapes of the curves can be compared with those here.
 - **Determinism.** In PAMS, every runner gives the same results as :class:`~pams.runners.SequentialRunner` for the
-  same seed. The parallel runs of Plham are not reproducible.
+  same seed. The parallel runner of Plham does not shuffle the agents as its sequential runner does, and it joins
+  the orders of its workers (and of their threads) in the order in which they finish. Therefore, its results
+  differ from those of the sequential runner and can change from run to run.
 - **Events.** ``ParallelMain`` of Plham creates no events, so its parallel runs have no price shock even though
   the config enables it. PAMS keeps the shock in every runner; ``make_config.py --no-shock`` removes it.
 - **Random numbers of the workload.** The workload of Plham draws from the random number generator of the agent,
   so turning the workload on changes the orders. In PAMS, it has its own generator, as explained above.
-- **Discarded price.** Plham adds the option prices to a variable so that the work is not skipped. PAMS throws the
-  price away, which Python does not skip either, so ``submit_orders`` changes no state of the agent.
+- **Discarded price.** Plham adds the option prices to a variable of the agent (``bsSum``). PAMS throws the price
+  away; Python still computes it, and ``submit_orders`` changes no state of the agent.
 - **Parameters.** Plham reads the environment variables ``BS_WORKLOAD``, ``BS_NSAMPLES``, ``BS_NSTEPS`` and
   ``ORDER_RATE``. PAMS reads the config keys ``bsWorkload``, ``bsNumSamples``, ``bsNumSteps`` and ``orderRate``,
-  which can differ between agent groups, and ``X10_NPLACES`` becomes ``numParallel`` or ``--num-parallel``.
+  which can differ between agent groups.
+- **Workers.** ``numParallel`` (or ``--num-parallel``) corresponds to the number of worker places of Plham,
+  ``X10_NPLACES - 1``, because place 0 is the master. Plham also splits the agents of each worker over
+  ``X10_NTHREADS`` threads, which PAMS has no counterpart for.
 - **Version of the agent.** The agent of the Plham tutorial calls itself again instead of the FCN agent, so it never
   submits orders; the later version (v0.3) fixes this. PAMS follows v0.3. In addition, PAMS draws no random number
   for ``orderRate`` when it is 1.0, so that the agent then behaves exactly as :class:`~pams.agents.FCNAgent`.
