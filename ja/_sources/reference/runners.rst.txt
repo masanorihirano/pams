@@ -10,3 +10,4 @@ Runner
     runners.SequentialRunner
     runners.MultiThreadAgentParallelRunner
     runners.MultiProcessAgentParallelRunner
+    runners.JaxAgentParallelRunner

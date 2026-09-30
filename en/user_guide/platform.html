@@ -212,6 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -418,6 +419,79 @@ so that the model is not copied in every task.</p>
 </pre></div>
 </div>
 </section>
+<section id="jax-flax-runner">
+<h3>JAX/Flax runner<a class="headerlink" href="#jax-flax-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.JaxAgentParallelRunner</span></code></a> is an experimental <a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a>
+for agents whose <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> uses <a class="reference external" href="https://github.com/jax-ml/jax">JAX</a>, e.g., neural network models of
+<a class="reference external" href="https://github.com/google/flax">Flax</a>. JAX is not a dependency of pams, so install it separately, e.g.,
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pams</span> <span class="pre">jax</span> <span class="pre">flax</span></code> (see the <a class="reference external" href="https://docs.jax.dev/en/latest/installation.html">JAX installation guide</a>
+for GPUs). Include pams in the command even if it is already installed, so that pip chooses versions of JAX and
+Flax that work with the NumPy that pams requires. For example, pams requires NumPy 1.x on Python 3.12 or earlier,
+and the last versions of JAX and Flax that support it are 0.7.1 and 0.12.0. <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">pams</span></code> does not import JAX,
+and creating the runner without JAX raises an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code>.</p>
+<ul class="simple">
+<li><p>The worker processes are started by <code class="docutils literal notranslate"><span class="pre">spawn</span></code> by default (<code class="docutils literal notranslate"><span class="pre">default_start_method</span> <span class="pre">=</span> <span class="pre">&quot;spawn&quot;</span></code>), because <code class="docutils literal notranslate"><span class="pre">fork</span></code>
+is unsafe once JAX runs its own threads: a forked worker process can deadlock on a lock held by one of them.</p></li>
+<li><p>Each worker process configures JAX once before it runs any task, by <code class="docutils literal notranslate"><span class="pre">simulation.jaxPlatforms</span></code>,
+<code class="docutils literal notranslate"><span class="pre">simulation.jaxPreallocate</span></code> and <code class="docutils literal notranslate"><span class="pre">simulation.jaxMemoryFraction</span></code> (see <a class="reference internal" href="config.html#config-parallel-jax"><span class="std std-ref">JAX/Flax runner</span></a>), and then
+calls the worker initializer given by <code class="docutils literal notranslate"><span class="pre">_get_worker_initializer()</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">load_model</span></code> above.
+The preallocation of GPU memory is disabled by default, so that the worker processes can share a GPU.
+The main process is not configured, so set <code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_PREALLOCATE=false</span></code> in the environment too if
+the agents use JAX on a GPU when they are created on the main process.</p></li>
+<li><p>The worker processes persist during the simulation, so a function compiled by <code class="xref py py-func docutils literal notranslate"><span class="pre">jax.jit()</span></code> is compiled once
+per worker process at its first call and reused in the following steps. Compiled functions cannot be pickled:
+define them at the top level of a module instead of keeping them as attributes of the agents.</p></li>
+<li><p>The jax arrays, Flax modules and parameters that the agents hold are pickled in every task (see
+<a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a>) and copied to the default device of the worker process. Load large or read-only models
+once per worker process with the worker initializer instead.</p></li>
+<li><p>Do not run JAX (e.g., create jax arrays) at the top level of the modules that the worker processes import, such
+as the main script, and do not pass jax arrays to the worker initializer; otherwise, JAX is initialized before
+it is configured.</p></li>
+<li><p>Derive the random numbers, including the keys of <code class="xref py py-mod docutils literal notranslate"><span class="pre">jax.random</span></code>, from <code class="docutils literal notranslate"><span class="pre">agent.prng</span></code>, so that the results are
+the same as <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_agent.py, which the worker processes can import</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flax.linen</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="nd">@nn</span><span class="o">.</span><span class="n">compact</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="nd">@jax</span><span class="o">.</span><span class="n">jit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>  <span class="c1"># compiled once per worker process</span>
+    <span class="k">return</span> <span class="n">Model</span><span class="p">()</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyFlaxAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">jax</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,)))</span>  <span class="c1"># pickled in every task</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">):</span>
+        <span class="o">...</span>  <span class="c1"># e.g., predict(self.params, features)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyFlaxAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">JaxAgentParallelRunner</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">JaxAgentParallelRunner</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">))</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">class_register</span><span class="p">(</span><span class="n">MyFlaxAgent</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -480,6 +554,7 @@ so that the model is not copied in every task.</p>
 <li><a class="reference internal" href="#class-architecture">Class architecture</a></li>
 <li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
 <li><a class="reference internal" href="#customizing-the-workers">Customizing the workers</a></li>
+<li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
 </ul>
 </li>
 </ul>

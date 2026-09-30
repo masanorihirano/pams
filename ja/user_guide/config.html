@@ -212,6 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">シミュレーター</a><input aria-label="Toggle navigation of シミュレーター" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -1741,6 +1742,40 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <p><code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> は、プロセスランナーがワーカープロセスを起動する開始方式を設定します：<code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> （Windows と macOS でのデフォルト）、<code class="docutils literal notranslate"><span class="pre">&quot;fork&quot;</span></code> （Python 3.13 までの Linux でのデフォルト）、<code class="docutils literal notranslate"><span class="pre">&quot;forkserver&quot;</span></code> （Python 3.14 以降の Linux でのデフォルト）のいずれかです。そのプラットフォームで <code class="xref py py-func docutils literal notranslate"><span class="pre">multiprocessing.get_all_start_methods()</span></code> が返す値のみ指定でき、それ以外の値はエラーになります。このキーがない場合は、ランナーのサブクラスが別のデフォルトを設定していない限り、プラットフォームのデフォルトが使われます。fork されたプロセスでは動作しないライブラリ（CUDA を使う PyTorch、TensorFlow、JAX など）をエージェントが使う場合は <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> を使ってください。開始方式によってシミュレーション結果は変わりません。</p>
 <p>プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle 可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code> で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。</p>
 <p>このような参照があるため、各タスクではシミュレーション全体がコピーされます。コピーの大きさはエージェント 1 個あたり約 4 KB（1000 個のエージェントで約 4 MB）で、その大部分は各エージェントの乱数生成器の状態です。コピーには数十ミリ秒かかり、組み込みエージェントの <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> よりはるかに長い時間がかかります。このコストを抑えるため、同時に注文の提出を求められるエージェントは最大 <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> 個のタスクに分けられます。ニューラルネットワークのモデルなど、エージェントが保持するオブジェクトは、他のエージェントのタスクも含めてすべてのタスクでコピーされます。このようなオブジェクトは pickle 化の対象から除外し（例えば <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code> を使います）、読み取り専用であれば、代わりにワーカープロセスごとに 1 回だけ読み込んでください（<a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> を参照）。</p>
+<section id="jax-flax-runner">
+<span id="config-parallel-jax"></span><h3>JAX/Flax ランナー<a class="headerlink" href="#jax-flax-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JaxAgentParallelRunner</span></code></a> （実験的）は、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> で JAX を使うエージェント（例えば Flax のモデル）のためのプロセスランナーです。JAX は PAMS と一緒にはインストールされないため、pip が PAMS で動作するバージョンを選ぶように、PAMS と同じコマンドで各自インストールしてください（例えば <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pams</span> <span class="pre">jax</span> <span class="pre">flax</span></code>）。このランナーは、<code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が設定されていない限り、<code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、<code class="docutils literal notranslate"><span class="pre">simulation</span></code> の以下のキーで JAX を設定します。これらのキーは他のランナーでは無視されます：</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>キー</p></th>
+<th class="head"><p>値</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jaxPlatforms</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>文字列</p></td>
+<td><p>ワーカープロセスで JAX が使うプラットフォームです。例えば <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code> や <code class="docutils literal notranslate"><span class="pre">&quot;cuda&quot;</span></code> です（JAX の <code class="docutils literal notranslate"><span class="pre">jax_platforms</span></code>）。デフォルト：環境変数 <code class="docutils literal notranslate"><span class="pre">JAX_PLATFORMS</span></code> が設定されていればその値、設定されていなければ JAX が選択します。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jaxPreallocate</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>真偽値</p></td>
+<td><p>各ワーカープロセスで JAX が GPU メモリを事前確保するかどうかです（<code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_PREALLOCATE</span></code>）。デフォルト：環境変数 <code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_PREALLOCATE</span></code> が設定されていればその値、設定されていなければ <code class="docutils literal notranslate"><span class="pre">false</span></code>。ワーカープロセスが GPU を共有できるようにするためです（JAX はデフォルトで GPU メモリの 75% を事前確保します）。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jaxMemoryFraction</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>(0, 1] の数値</p></td>
+<td><p>各ワーカープロセスで JAX が使える GPU メモリの割合です（<code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_MEM_FRACTION</span></code>）。デフォルト：環境変数 <code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_MEM_FRACTION</span></code> （または <code class="docutils literal notranslate"><span class="pre">XLA_CLIENT_MEM_FRACTION</span></code>）が設定されていればその値、設定されていなければ JAX のデフォルト（0.75）。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>これらのキーはメインプロセスの JAX を設定しません。このランナー向けのエージェントの書き方は <a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> を参照してください。</p>
+</section>
 </section>
 <section id="troubleshooting">
 <span id="config-troubleshooting"></span><h2>トラブルシューティング<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
@@ -1992,7 +2027,10 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </li>
 <li><a class="reference internal" href="#random-parameters-jsonrandom">ランダムパラメータ（JsonRandom）</a></li>
 <li><a class="reference internal" href="#user-defined-classes">ユーザー定義クラス</a></li>
-<li><a class="reference internal" href="#parallel-runners">並列ランナー</a></li>
+<li><a class="reference internal" href="#parallel-runners">並列ランナー</a><ul>
+<li><a class="reference internal" href="#jax-flax-runner">JAX/Flax ランナー</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#troubleshooting">トラブルシューティング</a><ul>
 <li><a class="reference internal" href="#silent-pitfalls">エラーにならない落とし穴</a></li>
 <li><a class="reference internal" href="#common-errors">よくあるエラー</a></li>

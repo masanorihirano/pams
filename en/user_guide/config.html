@@ -212,6 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -1994,6 +1995,49 @@ much longer than <code class="docutils literal notranslate"><span class="pre">su
 are split into at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> tasks. An object held by an agent, such as a neural network model, is copied
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
 <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>), and if it is read-only, load it once per worker process instead (see <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>).</p>
+<section id="jax-flax-runner">
+<span id="config-parallel-jax"></span><h3>JAX/Flax runner<a class="headerlink" href="#jax-flax-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JaxAgentParallelRunner</span></code></a> (experimental) is the process runner for agents that use JAX in
+<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>, for example Flax models. JAX is not installed with PAMS: install it yourself, in the same command
+as PAMS so that pip chooses versions that work with PAMS (for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pams</span> <span class="pre">jax</span> <span class="pre">flax</span></code>). The runner
+starts its worker processes by <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> unless <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is set. Each worker process configures
+JAX once, before it runs any task, with these keys in <code class="docutils literal notranslate"><span class="pre">simulation</span></code>, which the other runners ignore:</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jaxPlatforms</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>string</p></td>
+<td><p>The platforms that JAX uses on the worker processes, such as <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;cuda&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">jax_platforms</span></code> of
+JAX). Default: <code class="docutils literal notranslate"><span class="pre">JAX_PLATFORMS</span></code> in the environment if it is set; otherwise JAX chooses.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">jaxPreallocate</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>bool</p></td>
+<td><p>Whether JAX preallocates GPU memory on each worker process (<code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_PREALLOCATE</span></code>). Default:
+<code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_PREALLOCATE</span></code> in the environment if it is set; otherwise <code class="docutils literal notranslate"><span class="pre">false</span></code>, so that the worker
+processes can share a GPU (by default, JAX preallocates 75% of it).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">jaxMemoryFraction</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>number in (0, 1]</p></td>
+<td><p>The fraction of GPU memory that JAX can use on each worker process (<code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_MEM_FRACTION</span></code>).
+Default: <code class="docutils literal notranslate"><span class="pre">XLA_PYTHON_CLIENT_MEM_FRACTION</span></code> (or <code class="docutils literal notranslate"><span class="pre">XLA_CLIENT_MEM_FRACTION</span></code>) in the environment if it is set;
+otherwise the default of JAX (0.75).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These keys do not configure JAX on the main process. See <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a> for how to write agents for this runner.</p>
+</section>
 </section>
 <section id="troubleshooting">
 <span id="config-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
@@ -2277,7 +2321,10 @@ A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceS
 </li>
 <li><a class="reference internal" href="#random-parameters-jsonrandom">Random parameters (JsonRandom)</a></li>
 <li><a class="reference internal" href="#user-defined-classes">User-defined classes</a></li>
-<li><a class="reference internal" href="#parallel-runners">Parallel runners</a></li>
+<li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
+<li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
 <li><a class="reference internal" href="#silent-pitfalls">Silent pitfalls</a></li>
 <li><a class="reference internal" href="#common-errors">Common errors</a></li>
