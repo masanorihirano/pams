@@ -96,7 +96,7 @@ scale:
    python -m samples.parallel_main.make_config 9 -o samples/parallel_main/config-009.json
    python -m samples.parallel_main.make_config 99 --steps 20 --agents-per-market 20 -o config-small.json
 
-Runs at the full scale take long. On our machine, 500 steps of ``config-002.json`` took about 5 minutes with
+Runs at the full scale take long. On our machine, 500 steps of ``config-002.json`` took about 8 minutes with
 :class:`~pams.runners.SequentialRunner`, and the time per step grows as the order books fill up.
 ``config-009.json``, with about three times as many agents, takes longer still. ``config-099.json`` is included to
 follow Plham, but running it at the full scale is not practical in PAMS. On our machine, its first step alone took
