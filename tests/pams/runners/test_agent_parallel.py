@@ -747,6 +747,20 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         setting["simulation"]["startMethod"] = "spawn"
         self._run_with_worker_initializer(setting=setting, monkeypatch=monkeypatch)
 
+    @pytest.mark.parametrize("by_name", [True, False])
+    def test_run_user_transaction_cost_spawn(self, by_name: bool) -> None:
+        # the transaction costs are pickled with the markets, so a user class must be
+        # importable on the spawned workers
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = "spawn"
+        parallel_results = self._check_run_user_transaction_cost(
+            setting=setting, by_name=by_name
+        )
+        sequential_results = self._check_run_user_transaction_cost(
+            setting=setting, by_name=by_name, runner_class=SequentialRunner
+        )
+        assert parallel_results == sequential_results
+
     def test_split_agents_into_chunks(self) -> None:
         runner = self.test__init__(
             setting_mode="dict", logger=None, simulator_class=None
