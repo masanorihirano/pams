@@ -1,0 +1,792 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-01 02:03+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:2
+msgid "Parallel simulation (ParallelMain of Plham)"
+msgstr "並列シミュレーション（Plham の ParallelMain）"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:4
+msgid ""
+"This tutorial reproduces the `ParallelMain tutorial "
+"<https://plham.github.io/tutorial/ParallelMain>`_ of Plham, the "
+"predecessor of PAMS, with the parallel runners of PAMS. The model is the "
+"shock transfer model with many spot markets: an index market is made of N"
+" spot markets, the fundamental price of one spot market falls, and "
+"arbitrage agents carry the shock to the index market. There are hundreds "
+"of agents on each market. A parallel runner shares their decisions among "
+"its workers, while the orders are still executed one by one."
+msgstr ""
+"このチュートリアルでは、PAMS の前身である Plham の `ParallelMain のチュートリアル "
+"<https://plham.github.io/tutorial/ParallelMain>`_ を、PAMS "
+"の並列ランナーで再現します。モデルは、多数の現物市場をもつショック伝播モデルです。N 個の現物市場からなるインデックス市場があり、1 "
+"つの現物市場のファンダメンタル価格が下落すると、裁定エージェントがそのショックをインデックス市場に伝えます。各市場には数百のエージェントがいます。並列ランナーはエージェントの意思決定をワーカーに分担させますが、注文は引き続き"
+" 1 件ずつ処理されます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:10
+msgid "The files are in ``samples/parallel_main``:"
+msgstr "ファイルは ``samples/parallel_main`` にあります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:12
+msgid ""
+"``main.py`` runs a config with the runner chosen on the command line. It "
+"is the counterpart of ``ParallelMain`` of Plham."
+msgstr ""
+"``main.py`` は、コマンドラインで選んだランナーで設定ファイルを実行します。Plham の ``ParallelMain`` "
+"に相当します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:14
+msgid ""
+"``workload_fcn_agent.py`` defines ``WorkloadFCNAgent``, an FCN agent with"
+" an extra computational workload."
+msgstr ""
+"``workload_fcn_agent.py`` は、FCN エージェントに計算負荷を加えた ``WorkloadFCNAgent`` "
+"を定義します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:15
+msgid ""
+"``make_config.py`` generates the config for any number of spot markets. "
+"It is the counterpart of ``config.json.sh`` of Plham."
+msgstr ""
+"``make_config.py`` は、任意の数の現物市場の設定ファイルを生成します。Plham の ``config.json.sh`` "
+"に相当します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:17
+msgid ""
+"``config-002.json``, ``config-009.json`` and ``config-099.json`` are the "
+"configs with 2, 9 and 99 spot markets, as in Plham. ``config.json`` is a "
+"small config for quick runs."
+msgstr ""
+"``config-002.json``、``config-009.json``、``config-099.json`` は、Plham "
+"と同じく現物市場が 2、9、99 個の設定ファイルです。``config.json`` は、手早く試すための小さな設定ファイルです。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:19
+msgid "``benchmark.py`` measures the time per step of the runners."
+msgstr "``benchmark.py`` は、各ランナーの 1 ステップあたりの時間を計測します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:21
+msgid ""
+"Read :ref:`config-parallel` first. It explains how the parallel runners "
+"work and what they require of your code."
+msgstr ""
+"まず :ref:`config-parallel` "
+"を読んでください。並列ランナーの仕組みと、並列ランナーを使うコードに求められることを説明しています。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:24
+msgid "WorkloadFCNAgent"
+msgstr "WorkloadFCNAgent"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:26
+msgid ""
+"A parallel runner pays off only when the decisions of the agents take "
+"much longer than sending the work to the workers. The decision of the "
+"built-in :class:`~pams.agents.FCNAgent` is so light that a parallel run "
+"of FCN agents is slower than a sequential run. Therefore, as in Plham, "
+"``WorkloadFCNAgent`` adds an artificial workload. Every time it is asked "
+"for orders on a market, it prices a European call option by a Monte Carlo"
+" simulation of the Black-Scholes model and throws the price away. Then, "
+"with the probability ``orderRate``, it submits the orders of an FCN "
+"agent; otherwise, it submits no orders."
+msgstr ""
+"並列ランナーが効果を持つのは、エージェントの意思決定にかかる時間が、ワーカーに処理を送る時間よりはるかに長い場合だけです。組み込みの "
+":class:`~pams.agents.FCNAgent` の意思決定は非常に軽いため、FCN "
+"エージェントを並列に実行すると逐次実行より遅くなります。そこで、Plham と同じく、``WorkloadFCNAgent`` "
+"は人工的な計算負荷を加えます。ある市場への注文を求められるたびに、Black-Scholes "
+"モデルのモンテカルロシミュレーションでヨーロピアン・コールオプションの価格を計算し、その価格を捨てます。その後、確率 ``orderRate`` "
+"で FCN エージェントと同じ注文を出し、それ以外の場合は注文を出しません。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:37
+msgid ""
+"The agent reads these keys in addition to those of "
+":class:`~pams.agents.FCNAgent`:"
+msgstr "このエージェントは、:class:`~pams.agents.FCNAgent` のキーに加えて、次のキーを読み込みます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:43
+msgid "Key"
+msgstr "キー"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:44
+msgid "Value"
+msgstr "値"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:45
+msgid "Description"
+msgstr "説明"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:46
+msgid "``orderRate``"
+msgstr "``orderRate``"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:47
+msgid "number in [0, 1], fixed or random (see :ref:`config-jsonrandom`)"
+msgstr "[0, 1] の数値。固定値または乱数（:ref:`config-jsonrandom` を参照）"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:48
+msgid ""
+"The probability that the agent submits orders when it is asked. Default: "
+"``0.1``, as ``ORDER_RATE`` in ``run.sh`` of Plham."
+msgstr ""
+"注文を求められたときにエージェントが注文を出す確率。デフォルト：``0.1`` （Plham の ``run.sh`` の "
+"``ORDER_RATE`` と同じ）。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:50
+msgid "``bsWorkload``"
+msgstr "``bsWorkload``"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:51
+msgid "bool"
+msgstr "bool"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:52
+msgid "Whether the agent processes the workload. Default: ``false``."
+msgstr "エージェントが計算負荷を処理するかどうか。デフォルト：``false``。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:53
+msgid "``bsNumSamples``"
+msgstr "``bsNumSamples``"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:54
+#: ../../source/user_guide/tutorials/parallel_main.rst:57
+msgid "int ≥ 1"
+msgstr "int ≥ 1"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:55
+msgid ""
+"The number of price paths of the Monte Carlo simulation. Required if "
+"``bsWorkload`` is ``true``."
+msgstr "モンテカルロシミュレーションの価格パスの数。``bsWorkload`` が ``true`` の場合は必須です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:56
+msgid "``bsNumSteps``"
+msgstr "``bsNumSteps``"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:58
+msgid ""
+"The number of time steps of each path. Required if ``bsWorkload`` is "
+"``true``."
+msgstr "各パスの時間ステップ数。``bsWorkload`` が ``true`` の場合は必須です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:60
+msgid ""
+"The size of the workload is written as ``bsNumSamples`` x ``bsNumSteps`` "
+"below, for example 10x10. The option is the same as in Plham: the initial"
+" price 100, the strike price 100, the risk-free rate 0.1, the volatility "
+"0.3 and the maturity 3."
+msgstr ""
+"以下では、計算負荷の大きさを ``bsNumSamples`` x ``bsNumSteps`` の形で、例えば 10x10 "
+"のように書きます。オプションは Plham と同じで、初期価格 100、行使価格 100、無リスク金利 0.1、ボラティリティ 0.3、満期 3 "
+"です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:64
+msgid ""
+"The Monte Carlo simulation does not draw random numbers from the random "
+"number generator of the agent (``self.prng``). Instead, "
+"``compute_workload`` makes its own generator with a seed made of the "
+"agent ID, the market ID and the time:"
+msgstr ""
+"モンテカルロシミュレーションは、エージェントの乱数生成器（``self.prng``）から乱数を引きません。代わりに、``compute_workload``"
+" は、エージェント ID、市場 ID、時刻からなるシードで専用の乱数生成器を作ります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:72
+msgid ""
+"Therefore, the workload changes neither the orders nor the results of the"
+" simulation, and the same work is done in every runner. You can turn the "
+"workload on and off, or change its size, and compare only the time taken."
+msgstr "そのため、計算負荷によって注文もシミュレーションの結果も変わらず、どのランナーでも同じ計算が行われます。計算負荷のオンとオフを切り替えたり、大きさを変えたりしても、変わるのはかかる時間だけなので、時間だけを比べられます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:76
+msgid "Configs"
+msgstr "設定ファイル"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:78
+msgid "``make_config.py`` builds the model of the sample of Plham:"
+msgstr "``make_config.py`` は、Plham のサンプルと同じモデルを作ります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:80
+msgid ""
+"N spot markets, ``SpotMarket-1`` to ``SpotMarket-N``, and an index market"
+" ``IndexMarket-I`` made of them."
+msgstr ""
+"N 個の現物市場 ``SpotMarket-1`` ～ ``SpotMarket-N`` と、それらからなるインデックス市場 "
+"``IndexMarket-I``。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:81
+msgid ""
+"500 FCN agents on each market. Those on the index market put a smaller "
+"weight on the fundamental price (``fundamentalWeight`` 0.5 instead of "
+"1.0)."
+msgstr ""
+"各市場に 500 の FCN エージェント。インデックス市場の FCN "
+"エージェントは、ファンダメンタル価格への重みが小さくなっています（``fundamentalWeight`` が 1.0 ではなく 0.5）。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:83
+msgid ""
+"100 arbitrage agents, which trade between the index market and the spot "
+"markets."
+msgstr "インデックス市場と現物市場の間で取引する 100 の裁定エージェント。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:84
+#, python-format
+msgid "A fundamental price shock of -10% on ``SpotMarket-1`` at time 0."
+msgstr "時刻 0 に ``SpotMarket-1`` のファンダメンタル価格を -10% 変化させるショック。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:85
+msgid ""
+"One session of 500 steps. In each step, every FCN agent is asked for "
+"orders (``maxNormalOrders`` is 10\\ :sup:`10`). After the orders of each "
+"FCN agent that submits orders are handled, the arbitrage agents are asked"
+" in random order until one of them submits orders "
+"(``maxHighFrequencyOrders`` is 1)."
+msgstr ""
+"500 ステップのセッション 1 つ。各ステップで、すべての FCN エージェントが注文を求められます（``maxNormalOrders`` は"
+" 10\\ :sup:`10`）。注文を出した各 FCN "
+"エージェントの注文が処理された後、裁定エージェントの誰かが注文を出すまで、裁定エージェントにランダムな順で注文を求めます（``maxHighFrequencyOrders``"
+" は 1）。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:88
+msgid ""
+"The FCN agents are ``WorkloadFCNAgent`` with the workload 10x10 and "
+"``orderRate`` 0.1, as in ``run.sh`` of Plham."
+msgstr ""
+"FCN エージェントは、Plham の ``run.sh`` と同じく、計算負荷 10x10、``orderRate`` 0.1 の "
+"``WorkloadFCNAgent`` です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:91
+msgid ""
+"The checked-in configs are generated as follows, and the options of "
+"``make_config.py`` (see ``--help``) change the scale:"
+msgstr ""
+"リポジトリにある設定ファイルは次のように生成したものです。``make_config.py`` のオプション（``--help`` "
+"を参照）で規模を変えられます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:99
+msgid ""
+"Runs at the full scale take long. On our machine, 500 steps of "
+"``config-002.json`` took about 8 minutes with "
+":class:`~pams.runners.SequentialRunner`, and the time per step grows as "
+"the order books fill up. ``config-009.json``, with about three times as "
+"many agents, takes longer still. ``config-099.json`` is included to "
+"follow Plham, but running it at the full scale is not practical in PAMS. "
+"On our machine, its first step alone took more than 4 minutes with "
+":class:`~pams.runners.SequentialRunner`. With 99 spot markets, most of "
+"the time goes to matching the orders, because the whole order book is re-"
+"heapified for each execution, and to the arbitrage agents, which trade on"
+" 100 markets. Make smaller configs with ``make_config.py`` instead. "
+"``config.json`` has 2 spot markets, 20 FCN agents on each market, 10 "
+"arbitrage agents and 20 steps, and it runs in about a second."
+msgstr ""
+"元の規模での実行には時間がかかります。私たちのマシンでは、``config-002.json`` の 500 ステップに "
+":class:`~pams.runners.SequentialRunner` で約 8 分かかり、板に注文がたまるにつれて 1 "
+"ステップあたりの時間が長くなりました。エージェントが約 3 倍の ``config-009.json`` "
+"は、さらに時間がかかります。``config-099.json`` は Plham に合わせて含めていますが、PAMS "
+"で元の規模のまま実行するのは現実的ではありません。私たちのマシンでは、:class:`~pams.runners.SequentialRunner`"
+" で最初の 1 ステップだけで 4 分以上かかりました。現物市場が 99 "
+"個あると、時間の大半は、約定のたびに板全体をヒープに組み直す注文の照合と、100 の市場で取引する裁定エージェントに費やされます。代わりに "
+"``make_config.py`` で小さな設定ファイルを作ってください。``config.json`` は、現物市場 2 個、各市場に FCN"
+" エージェント 20、裁定エージェント 10、20 ステップの設定で、約 1 秒で終わります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:109
+msgid "Running"
+msgstr "実行"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:111
+msgid ""
+"Run the sample from the root of the repository, so that the worker "
+"processes can import ``WorkloadFCNAgent``:"
+msgstr "ワーカープロセスが ``WorkloadFCNAgent`` をインポートできるように、サンプルはリポジトリのルートから実行してください。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:119
+msgid ""
+"``main.py`` chooses only the runner, and the model is given by the "
+"config. ``--runner`` is ``sequential``, ``multi_thread`` or "
+"``multi_process`` (the default), and ``--num-parallel`` overrides "
+"``simulation.numParallel`` of the config. For the same seed, the market "
+"logs of all the runners are identical; only the lines starting with "
+"``#``, which show the time taken, differ. As the process runner requires,"
+" ``main.py`` creates and runs the runner under ``if __name__ == "
+"\"__main__\":``."
+msgstr ""
+"``main.py`` が選ぶのはランナーだけで、モデルは設定ファイルで決まります。``--runner`` は "
+"``sequential``、``multi_thread``、``multi_process`` （デフォルト）のいずれかで、``--num-"
+"parallel`` は設定ファイルの ``simulation.numParallel`` "
+"を上書きします。シードが同じなら、どのランナーでも市場のログは同一で、異なるのはかかった時間を表す ``#`` "
+"で始まる行だけです。プロセスランナーの要件どおり、``main.py`` はランナーの作成と実行を ``if __name__ == "
+"\"__main__\":`` の下で行います。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:126
+msgid "Benchmark"
+msgstr "ベンチマーク"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:128
+msgid ""
+"``benchmark.py`` measures how the time per step changes with the runner "
+"and ``numParallel``:"
+msgstr "``benchmark.py`` は、ランナーと ``numParallel`` によって 1 ステップあたりの時間がどう変わるかを計測します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:134
+msgid ""
+"With the default settings, it takes several minutes, most of them with "
+"the workload 100x100. On Windows, set the environment variable "
+"``OPENBLAS_NUM_THREADS=1`` first (see the last item below); otherwise, "
+"every process reserves about 1.5 GB of memory. ``--plot`` requires "
+"matplotlib."
+msgstr ""
+"デフォルトの設定では数分かかり、その大半は計算負荷 100x100 の実行です。Windows では、先に環境変数 "
+"``OPENBLAS_NUM_THREADS=1`` を設定してください（下の最後の項目を参照）。設定しないと、プロセスごとに約 1.5 GB "
+"のメモリを確保します。``--plot`` には matplotlib が必要です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:134
+msgid ""
+"By default, it runs the model of ``config-009.json`` (9 spot markets, "
+"5000 FCN agents and 100 arbitrage agents) for 5 steps with the workload "
+"off, 10x10 and 100x100, with :class:`~pams.runners.SequentialRunner` and "
+"with :class:`~pams.runners.MultiProcessAgentParallelRunner` at "
+"``numParallel`` 1, 2, 4 and 8. Each step is split into two phases:"
+msgstr ""
+"デフォルトでは、``config-009.json`` のモデル（現物市場 9 個、FCN エージェント 5000、裁定エージェント "
+"100）を、計算負荷なし、10x10、100x100 "
+"のそれぞれについて、:class:`~pams.runners.SequentialRunner` と、``numParallel`` を "
+"1、2、4、8 とした :class:`~pams.runners.MultiProcessAgentParallelRunner` で 5 "
+"ステップ実行します。各ステップは 2 つのフェーズに分けて計測します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:143
+msgid ""
+"**collect**: the normal agents decide their orders. For the parallel "
+"runners, this includes sending the agents to the workers and receiving "
+"the orders. In the terms of Torii et al. (2017), it is T_w + T_c, the "
+"work of the agents plus the communication."
+msgstr ""
+"**collect**：通常エージェントが注文を決めるフェーズです。並列ランナーでは、ワーカーにエージェントを送り、注文を受け取る時間も含みます。Torii"
+" et al. (2017) の用語では T_w + T_c、つまりエージェントの処理と通信の時間にあたります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:142
+msgid ""
+"**handle**: the orders are executed and the high-frequency agents (here, "
+"the arbitrage agents) are asked for orders. It is T_m, the work of the "
+"master, and it is always sequential."
+msgstr ""
+"**handle**：注文を処理し、高頻度エージェント（ここでは裁定エージェント）に注文を求めるフェーズです。マスターの処理である T_m "
+"にあたり、常に逐次的に処理されます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:149
+msgid ""
+"The two phases together are shown as \"step\". They do not include the "
+"events and the updates of the markets between the steps. The first step, "
+"which includes starting the worker processes, is excluded from the means."
+" Because the time per step grows as the order books fill up, compare the "
+"runners with each other rather than with a full run. All the runs must "
+"give the same results, and the benchmark raises an error if they do not. "
+"See ``--help`` for the other options."
+msgstr ""
+"2 "
+"つのフェーズを合わせた時間は「step」として示します。これには、イベントと、ステップ間の市場の更新は含まれません。ワーカープロセスの起動を含む最初のステップは、平均から除きます。板に注文がたまるにつれて"
+" 1 "
+"ステップあたりの時間は長くなるので、元の規模での実行と比べるのではなく、ランナーどうしで比べてください。すべての実行は同じ結果になる必要があり、そうでなければベンチマークはエラーを出します。その他のオプションは"
+" ``--help`` を参照してください。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:150
+#, python-format
+msgid ""
+"The figure and the table below show the results on our machine: Windows "
+"11, an Intel Core i7-14700K with 28 logical processors, 64 GB of memory "
+"and Python 3.14, on 2026-10-01. We ran the command above with ``--num-"
+"parallel 1 2 4 8 16 --repeat 3`` and the environment variable "
+"``OPENBLAS_NUM_THREADS=1`` (see the last item below). Other jobs were "
+"running on the machine at the same time, so the numbers show only the "
+"trends: the slowest of the three runs of a setting took up to about 30% "
+"longer than the fastest, and up to about 70% longer for the times below "
+"0.5 seconds."
+msgstr ""
+"下の図と表は、私たちのマシン（Windows 11、論理プロセッサ 28 個の Intel Core i7-14700K、メモリ 64 "
+"GB、Python 3.14）で 2026-10-01 に計測した結果です。上のコマンドに ``--num-parallel 1 2 4 8 16"
+" --repeat 3`` を付け、環境変数 ``OPENBLAS_NUM_THREADS=1`` "
+"を設定して実行しました（最後の項目を参照）。計測中はマシン上で他のジョブも動いていたため、数値は傾向を示すものにすぎません。同じ設定の 3 "
+"回の実行のうち、最も遅いものは最も速いものより最大で約 30% 長くかかり、0.5 秒未満の時間では最大で約 70% 長くかかりました。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:162
+msgid ""
+"The time per step of the two phases together (step) and of the collect "
+"and handle phases against\n"
+"numParallel, with the workload off, 10x10 and 100x100"
+msgstr ""
+"計算負荷なし、10x10、100x100 での、2 つのフェーズを合わせた時間（step）、collect フェーズ、handle フェーズの 1"
+" ステップあたりの時間と numParallel の関係"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:166
+msgid ""
+"The mean time per step of steps 2 to 5, the median of three runs, with 9 "
+"spot markets, 5000 FCN agents and 100 arbitrage agents. The red, green "
+"and blue lines are the two phases together (step), the collect phase and "
+"the handle phase. The solid lines are "
+":class:`~pams.runners.MultiProcessAgentParallelRunner`, and the dashed "
+"lines are :class:`~pams.runners.SequentialRunner`. Measured on 2026-10-01"
+" on a Windows 11 machine with 28 logical processors and Python 3.14, "
+"while other jobs were running on it."
+msgstr ""
+"現物市場 9 個、FCN エージェント 5000、裁定エージェント 100 での、ステップ 2 ～ 5 の 1 ステップあたりの平均時間（3 "
+"回の実行の中央値）。赤、緑、青の線は、それぞれ 2 つのフェーズを合わせた時間（step）、collect フェーズ、handle "
+"フェーズです。実線は :class:`~pams.runners.MultiProcessAgentParallelRunner`、破線は "
+":class:`~pams.runners.SequentialRunner` です。2026-10-01 "
+"に、他のジョブも動いている、論理プロセッサ 28 個、Python 3.14 の Windows 11 マシンで計測しました。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:167
+msgid ""
+"The time per step of the collect phase with the workload 100x100 (median "
+"of three runs)"
+msgstr "計算負荷 100x100 での collect フェーズの 1 ステップあたりの時間（3 回の実行の中央値）"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:171
+msgid "Runner"
+msgstr "ランナー"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:172
+msgid "collect [s]"
+msgstr "collect [秒]"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:173
+msgid "Speed-up"
+msgstr "速度向上率"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:174
+msgid ":class:`~pams.runners.SequentialRunner`"
+msgstr ":class:`~pams.runners.SequentialRunner`"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:175
+msgid "13.0"
+msgstr "13.0"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:176
+#: ../../source/user_guide/tutorials/parallel_main.rst:179
+msgid "1.0"
+msgstr "1.0"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:177
+msgid "Process runner, ``numParallel`` 1"
+msgstr "プロセスランナー、``numParallel`` 1"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:178
+msgid "13.3"
+msgstr "13.3"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:180
+msgid "Process runner, ``numParallel`` 2"
+msgstr "プロセスランナー、``numParallel`` 2"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:181
+msgid "7.8"
+msgstr "7.8"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:182
+msgid "1.7"
+msgstr "1.7"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:183
+msgid "Process runner, ``numParallel`` 4"
+msgstr "プロセスランナー、``numParallel`` 4"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:184
+msgid "4.8"
+msgstr "4.8"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:185
+msgid "2.7"
+msgstr "2.7"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:186
+msgid "Process runner, ``numParallel`` 8"
+msgstr "プロセスランナー、``numParallel`` 8"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:187
+msgid "4.1"
+msgstr "4.1"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:188
+msgid "3.2"
+msgstr "3.2"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:189
+msgid "Process runner, ``numParallel`` 16"
+msgstr "プロセスランナー、``numParallel`` 16"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:190
+msgid "5.5"
+msgstr "5.5"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:191
+msgid "2.4"
+msgstr "2.4"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:193
+msgid ""
+"With the workload off or 10x10, the process runner is slower than the "
+"sequential runner, and it gets slower still as ``numParallel`` grows. "
+"Every task copies the whole simulation, about 20 MB here, to a worker. It"
+" takes about 0.2 seconds to pickle and as long to unpickle, while the "
+"decisions of all the FCN agents take less than 0.2 seconds per step with "
+"the workload 10x10. Because the main process pickles the tasks one by "
+"one, T_c grows with the number of tasks, that is, with ``numParallel``."
+msgstr ""
+"計算負荷なしと 10x10 では、プロセスランナーは逐次実行ランナーより遅く、``numParallel`` "
+"が増えるほどさらに遅くなります。各タスクは、シミュレーション全体（ここでは約 20 MB）をワーカーにコピーします。その pickle 化に約 "
+"0.2 秒、復元にも同じくらいかかりますが、計算負荷 10x10 では、すべての FCN エージェントの意思決定にかかる時間は 1 ステップあたり"
+" 0.2 秒未満です。メインプロセスはタスクを 1 つずつ pickle 化するため、T_c はタスクの数、つまり ``numParallel``"
+" とともに増えます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:198
+msgid ""
+"With the workload 100x100, the decisions take about 13 seconds per step, "
+"and the process runner cuts the collect phase to 4.1 seconds with 8 "
+"workers, about 3.2 times faster. With 16 workers, it is slower again, "
+"because T_c grows while the work of each worker shrinks."
+msgstr ""
+"計算負荷 100x100 では、意思決定に 1 ステップあたり約 13 秒かかり、プロセスランナーはワーカー 8 個で collect フェーズを"
+" 4.1 秒、約 3.2 倍の速さに短縮します。ワーカーが 16 個になると、各ワーカーの処理が減る一方で T_c "
+"が増えるため、再び遅くなります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:206
+msgid ""
+"The handle phase does not depend on the runner or ``numParallel``; it "
+"stays at about 0.4 seconds per step. As Amdahl's law says, it limits the "
+"speed-up of the two phases together. T_m limits the speed-up in the same "
+"way in Fig. 5 of Torii et al. (2017), with 100 markets. In their Fig. 4, "
+"with 10 markets, which is the figure of the Plham tutorial, the curve "
+"flattens at 64 nodes mainly because T_c grows."
+msgstr ""
+"handle フェーズは、ランナーにも ``numParallel`` にもよらず、1 ステップあたり約 0.4 "
+"秒のままです。アムダールの法則のとおり、このフェーズが 2 つのフェーズを合わせた時間の高速化を制限します。Torii et al. (2017)"
+" の Fig. 5（市場 100 個）でも、T_m が同じように高速化を制限しています。一方、Plham のチュートリアルの図でもある同論文の "
+"Fig. 4（市場 10 個）では、64 ノードで曲線が平らになりますが、これは主に T_c が増えるためです。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:203
+msgid ""
+":class:`~pams.runners.MultiThreadAgentParallelRunner` does not speed up "
+"this workload, because the workload is pure Python code, and the global "
+"interpreter lock (GIL) of the standard build of Python lets only one "
+"thread run Python code at a time. In a separate run with the workload "
+"100x100, its collect phase took 10.7 to 15.6 seconds per step with "
+"``numParallel`` 2 to 16, against 12.5 seconds with the sequential runner,"
+" which is within the variation between runs."
+msgstr ""
+":class:`~pams.runners.MultiThreadAgentParallelRunner` "
+"では、この計算負荷は速くなりません。計算負荷は純粋な Python のコードで、標準ビルドの Python "
+"では、グローバルインタプリタロック（GIL）により Python のコードを同時に実行できるスレッドは 1 つだけだからです。計算負荷 "
+"100x100 での別の実行では、collect フェーズに、``numParallel`` 2 ～ 16 で 1 ステップあたり 10.7 ～ "
+"15.6 秒かかり、逐次実行ランナーでは 12.5 秒でした。この差は実行ごとのばらつきの範囲内です。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:208
+msgid ""
+"Each worker process holds a copy of the simulation, so the memory grows "
+"with ``numParallel``. With 16 workers, the 17 processes reserved about 4 "
+"GB in total. On Windows, however, NumPy and SciPy, which PAMS imports, "
+"also reserve (commit) about 0.75 GB each for OpenBLAS in every process, "
+"although they use little of it. The amount depends on the number of "
+"threads of OpenBLAS, which is the number of logical processors by "
+"default. Without ``OPENBLAS_NUM_THREADS=1``, a run with 16 workers "
+"reserves about 25 GB in total. On our shared machine, this exceeded the "
+"commit limit, and a worker failed with ``MemoryError``. With the "
+"variable, importing PAMS reserves about 45 MB per process instead of 1.5 "
+"GB, and the results are the same."
+msgstr ""
+"各ワーカープロセスはシミュレーションのコピーを持つため、メモリは ``numParallel`` とともに増えます。ワーカー 16 個では、17 "
+"のプロセスで合計約 4 GB を確保しました。ただし Windows では、PAMS がインポートする NumPy と SciPy "
+"も、実際に使うのはわずかであるにもかかわらず、各プロセスでそれぞれ約 0.75 GB のメモリを OpenBLAS "
+"のために確保（コミット）します。この量は OpenBLAS "
+"のスレッド数によって決まり、スレッド数はデフォルトでは論理プロセッサの数です。``OPENBLAS_NUM_THREADS=1`` "
+"を設定しないと、ワーカー 16 個の実行では合計約 25 GB "
+"を確保します。共有マシンである私たちのマシンでは、これがコミットの上限を超え、ワーカーが ``MemoryError`` "
+"で失敗しました。この変数を設定すると、PAMS のインポートで確保されるメモリはプロセスあたり 1.5 GB ではなく約 45 MB "
+"になり、結果は変わりません。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:216
+msgid ""
+"In short, the process runner pays off only when ``submit_orders`` takes "
+"much longer than copying the simulation, and a few workers give most of "
+"the speed-up. For light agents, use "
+":class:`~pams.runners.SequentialRunner`."
+msgstr ""
+"まとめると、プロセスランナーが効果を持つのは、``submit_orders`` "
+"にシミュレーションのコピーよりはるかに長い時間がかかる場合だけで、高速化の大部分は少数のワーカーで得られます。軽いエージェントには "
+":class:`~pams.runners.SequentialRunner` を使ってください。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:220
+msgid "Differences from Plham"
+msgstr "Plham との違い"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:229
+msgid ""
+"**Runner.** The parallel runner of Plham keeps the agents in its workers "
+"(MPI processes, possibly on many nodes) for the whole run and sends them "
+"only the changes of the markets in each step. The process runner of PAMS "
+"uses a pool of processes on one machine and, in each step, copies the "
+"agents together with the whole simulation to the workers. This is why "
+"PAMS needs a much heavier workload than 10x10 before a parallel run pays "
+"off. The figure of the Plham tutorial (Fig. 4 of Torii et al. (2017)) was"
+" measured with 4 to 64 nodes of the K computer, and the paper goes up to "
+"256 nodes, so only the shapes of the curves can be compared with those "
+"here."
+msgstr ""
+"**ランナー**：Plham の並列ランナーは、エージェントを実行中ずっとワーカー（MPI "
+"プロセスで、多数のノードに分散できます）に置いたままにし、各ステップでは市場の変化だけを送ります。PAMS のプロセスランナーは 1 "
+"台のマシン上のプロセスプールを使い、各ステップでエージェントをシミュレーション全体とともにワーカーにコピーします。そのため、PAMS "
+"で並列実行が効果を持つには、10x10 よりはるかに重い計算負荷が必要です。Plham のチュートリアルの図（Torii et al. "
+"(2017) の Fig. 4）は京コンピュータの 4 ～ 64 ノードで計測されたもので、この論文は最大 256 "
+"ノードまで扱っています。そのため、ここでの結果と比べられるのは曲線の形だけです。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:235
+msgid ""
+"**Determinism.** In PAMS, every runner gives the same results as "
+":class:`~pams.runners.SequentialRunner` for the same seed. The parallel "
+"runner of Plham does not shuffle the agents as its sequential runner "
+"does, and it joins the orders of its workers (and of their threads) in "
+"the order in which they finish. Therefore, its results differ from those "
+"of the sequential runner and can change from run to run."
+msgstr ""
+"**決定性**：PAMS では、同じシードであれば、どのランナーも :class:`~pams.runners.SequentialRunner`"
+" と同じ結果になります。Plham "
+"の並列ランナーは、逐次実行ランナーとは違ってエージェントをシャッフルせず、ワーカー（とそのスレッド）の注文を処理が終わった順に連結します。そのため、その結果は逐次実行ランナーの結果と異なり、実行のたびに変わることがあります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:230
+msgid ""
+"**Events.** ``ParallelMain`` of Plham creates no events, so its parallel "
+"runs have no price shock even though the config enables it. PAMS keeps "
+"the shock in every runner; ``make_config.py --no-shock`` removes it."
+msgstr ""
+"**イベント**：Plham の ``ParallelMain`` "
+"はイベントを作らないため、設定ファイルで有効にしていても、並列実行では価格ショックが起きません。PAMS "
+"はどのランナーでもショックを保ちます。``make_config.py --no-shock`` でショックを除けます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:232
+msgid ""
+"**Random numbers of the workload.** The workload of Plham draws from the "
+"random number generator of the agent, so turning the workload on changes "
+"the orders. In PAMS, it has its own generator, as explained above."
+msgstr ""
+"**計算負荷の乱数**：Plham の計算負荷はエージェントの乱数生成器から乱数を引くため、計算負荷をオンにすると注文が変わります。PAMS "
+"では、前述のとおり計算負荷が専用の乱数生成器を持ちます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:243
+msgid ""
+"**Discarded price.** Plham adds the option prices to a variable of the "
+"agent (``bsSum``). PAMS throws the price away; Python still computes it, "
+"and ``submit_orders`` changes no state of the agent."
+msgstr ""
+"**捨てられる価格**：Plham は、オプション価格をエージェントの変数（``bsSum``）に足し合わせます。PAMS "
+"は価格を捨てますが、Python はそれでも計算を行い、``submit_orders`` はエージェントの状態を何も変えません。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:245
+msgid ""
+"**Parameters.** Plham reads the environment variables ``BS_WORKLOAD``, "
+"``BS_NSAMPLES``, ``BS_NSTEPS`` and ``ORDER_RATE``. PAMS reads the config "
+"keys ``bsWorkload``, ``bsNumSamples``, ``bsNumSteps`` and ``orderRate``, "
+"which can differ between agent groups."
+msgstr ""
+"**パラメータ**：Plham は環境変数 "
+"``BS_WORKLOAD``、``BS_NSAMPLES``、``BS_NSTEPS``、``ORDER_RATE`` を読みます。PAMS "
+"は、エージェントのグループごとに変えられる設定ファイルのキー "
+"``bsWorkload``、``bsNumSamples``、``bsNumSteps``、``orderRate`` を読みます。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:248
+msgid ""
+"**Workers.** ``numParallel`` (or ``--num-parallel``) corresponds to the "
+"number of worker places of Plham, ``X10_NPLACES - 1``, because place 0 is"
+" the master. Plham also splits the agents of each worker over "
+"``X10_NTHREADS`` threads, which PAMS has no counterpart for."
+msgstr ""
+"**ワーカー**：``numParallel`` （または ``--num-parallel``）は、Plham のワーカーのプレースの数 "
+"``X10_NPLACES - 1`` に相当します。プレース 0 はマスターだからです。Plham はさらに、各ワーカーのエージェントを "
+"``X10_NTHREADS`` 個のスレッドに分けますが、PAMS にはこれに相当するものはありません。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:239
+msgid ""
+"**Version of the agent.** The agent of the Plham tutorial calls itself "
+"again instead of the FCN agent, so it never submits orders; the later "
+"version (v0.3) fixes this. PAMS follows v0.3. In addition, PAMS draws no "
+"random number for ``orderRate`` when it is 1.0, so that the agent then "
+"behaves exactly as :class:`~pams.agents.FCNAgent`."
+msgstr ""
+"**エージェントの版**：Plham のチュートリアルのエージェントは、FCN "
+"エージェントではなく自分自身を再び呼び出すため、注文を出すことがありません。後の版（v0.3）ではこれが修正されており、PAMS は v0.3 "
+"に従います。さらに、PAMS は ``orderRate`` が 1.0 のときには乱数を引かないため、そのときエージェントは "
+":class:`~pams.agents.FCNAgent` とまったく同じに振る舞います。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:242
+msgid ""
+"**Configs.** The configs of the Plham tutorial use ``FCNAgent``, although"
+" the text uses ``WorkloadFCNAgent``; those of PAMS use "
+"``WorkloadFCNAgent``. ``maxHifreqOrders`` is ``maxHighFrequencyOrders`` "
+"in PAMS. The arbitrage agents list the spot markets as well as the index "
+"market, because an agent of PAMS can trade only on the markets it lists."
+msgstr ""
+"**設定ファイル**：Plham のチュートリアルの設定ファイルは、本文では ``WorkloadFCNAgent`` を使うとしながら "
+"``FCNAgent`` を指定しています。PAMS の設定ファイルは ``WorkloadFCNAgent`` "
+"を指定します。``maxHifreqOrders`` は PAMS では ``maxHighFrequencyOrders`` です。PAMS "
+"のエージェントは列挙した市場でしか取引できないため、裁定エージェントにはインデックス市場に加えて現物市場も列挙しています。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:246
+msgid ""
+"**Measurement.** The figure of Plham shows the time of whole runs against"
+" the number of nodes. The benchmark of PAMS measures the time per step of"
+" the first steps, because full runs take long."
+msgstr ""
+"**計測**：Plham の図は、ノード数に対する実行全体の時間を示しています。PAMS "
+"のベンチマークは、元の規模での実行に時間がかかるため、最初の数ステップの 1 ステップあたりの時間を計測します。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:248
+msgid ""
+"**Language.** PAMS is written in Python, not X10. The classes that the "
+"process runner uses must be importable from a ``.py`` file."
+msgstr ""
+"**言語**：PAMS は X10 ではなく Python で書かれています。プロセスランナーが使うクラスは、``.py`` "
+"ファイルからインポートできる必要があります。"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:252
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:254
+msgid ""
+"Torii, T., Kamada, T., Izumi, K. and Yamada, K. (2016). Platform Design "
+"for Large-Scale Artificial Market Simulation and Preliminary Evaluation "
+"on the K computer. The 21st International Symposium on Artificial Life "
+"and Robotics (AROB 21st), OS10-2."
+msgstr ""
+"Torii, T., Kamada, T., Izumi, K. and Yamada, K. (2016). Platform Design "
+"for Large-Scale Artificial Market Simulation and Preliminary Evaluation "
+"on the K computer. The 21st International Symposium on Artificial Life "
+"and Robotics (AROB 21st), OS10-2."
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:257
+msgid ""
+"Torii, T., Kamada, T., Izumi, K. and Yamada, K. (2017). Platform design "
+"for large-scale artificial market simulation and preliminary evaluation "
+"on the K computer. Artificial Life and Robotics, 22(3), 301-307. "
+"https://doi.org/10.1007/s10015-017-0368-z"
+msgstr ""
+"Torii, T., Kamada, T., Izumi, K. and Yamada, K. (2017). Platform design "
+"for large-scale artificial market simulation and preliminary evaluation "
+"on the K computer. Artificial Life and Robotics, 22(3), 301-307. "
+"https://doi.org/10.1007/s10015-017-0368-z"
+
+#: ../../source/user_guide/tutorials/parallel_main.rst:260
+msgid ""
+"Plham tutorial, ParallelMain: "
+"https://plham.github.io/tutorial/ParallelMain"
+msgstr "Plham のチュートリアル、ParallelMain：https://plham.github.io/tutorial/ParallelMain"
+
