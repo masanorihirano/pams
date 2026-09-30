@@ -559,8 +559,7 @@ class TestSequentialRunner(TestRunner):
         runner._generate_markets(market_type_names=["Market"])
         market = runner.simulator.markets[0]
         transaction_cost = market.transaction_cost
-        assert type(transaction_cost) is expected_class
-        assert isinstance(transaction_cost, TransactionCost)
+        assert isinstance(transaction_cost, expected_class)
         assert transaction_cost.market is market
         # "transactionCost" is left in the settings of the market, and the settings of
         # the transaction cost do not include "class"
@@ -607,7 +606,7 @@ class TestSequentialRunner(TestRunner):
         markets = runner.simulator.markets
         assert len(markets) == 2
         costs = [market.transaction_cost for market in markets]
-        assert all(type(cost) is RecordingTransactionCost for cost in costs)
+        assert all(isinstance(cost, RecordingTransactionCost) for cost in costs)
         assert costs[0] is not costs[1]
         assert [cast(TransactionCost, cost).market for cost in costs] == markets
         assert [func for func, _ in runner._pending_setups] == [
@@ -2296,7 +2295,8 @@ class TestSequentialRunner(TestRunner):
             runner._setup()
             runner._run()
             results.append((runner, logger))
-        (base_runner, base_logger), (cost_runner, cost_logger) = results
+        base_runner, base_logger = results[0]
+        cost_runner, cost_logger = results[1]
         for market in cost_runner.simulator.markets:
             assert isinstance(market.transaction_cost, MakerTakerTransactionCost)
         assert len(base_logger.execution_logs) > 0

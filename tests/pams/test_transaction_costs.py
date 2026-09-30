@@ -45,10 +45,13 @@ class TestTransactionCost:
         class NoComputeCosts(TransactionCost):
             pass
 
+        # instantiating these classes must fail, which is what is tested here
+        # pylint: disable=abstract-class-instantiated
         with pytest.raises(TypeError):
             TransactionCost(market=_make_market())  # type: ignore
         with pytest.raises(TypeError):
             NoComputeCosts(market=_make_market())  # type: ignore
+        # pylint: enable=abstract-class-instantiated
 
     def test_init_and_setup(self) -> None:
         market = _make_market()
