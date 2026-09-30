@@ -223,6 +223,46 @@ msgstr "発注した注文が市場に受理されたときに呼び出される
 msgid "log for order submission"
 msgstr "発注のログ"
 
+#: docstring of pams.agents.Agent.synced_attributes:1
+msgid ""
+"names of the attributes that must survive :func:`submit_orders` on a "
+"worker process of :class:`pams.runners.MultiProcessAgentParallelRunner`, "
+"e.g., ``(\"net\", \"optimizer\")`` for a neural network that the agent "
+"trains in :func:`submit_orders` and its optimizer. That runner calls "
+":func:`submit_orders` on a copy of this agent. After the call, it sets "
+"each listed attribute of the copy on this agent, or deletes it from this "
+"agent if the copy does not have it. The values of one agent are pickled "
+"together, so references among them are kept as far as pickling keeps them"
+" (e.g., not between a Keras model and its optimizer, because Keras models"
+" are saved and reloaded). An attribute that is not listed but refers to a"
+" listed object keeps referring to the old object, so list such attributes"
+" together, e.g., a model, its optimizer, and the optimizer's scheduler. "
+"The values are copies, so do not list objects that are shared with other "
+"agents, the markets, or the simulator, or that refer to this agent or any"
+" of them. ``\"simulator\"``, ``\"logger\"``, and ``\"prng\"`` cannot be "
+"listed. Subclasses can override it, and an instance can set it, e.g., in "
+":func:`setup`. The runner checks it when it is set up and whenever it "
+"asks this agent to submit orders. Other runners and high-frequency agents"
+" do not use it. The default is an empty tuple. See :ref:`config-synced-"
+"attributes` for an example and other caveats."
+msgstr ""
+":class:`pams.runners.MultiProcessAgentParallelRunner` のワーカープロセス上で "
+":func:`submit_orders` が呼び出された後も保持する必要がある属性の名前。例えば、エージェントが "
+":func:`submit_orders` 内で学習させるニューラルネットワークとそのオプティマイザーの場合は ``(\"net\", "
+"\"optimizer\")`` です。そのランナーは、このエージェントのコピーに対して :func:`submit_orders` "
+"を呼び出します。呼び出しの後、列挙された各属性について、コピーの属性をこのエージェントに設定し、コピーがその属性を持たない場合はこのエージェントから削除します。1つのエージェントの値はまとめてpickle化されるため、それらの間の参照は、pickle化で保たれる範囲で保たれます（例えば、Kerasのモデルは保存して再読み込みされるため、Kerasのモデルとそのオプティマイザーの間の参照は保たれません）。列挙されていない属性が列挙されたオブジェクトを参照している場合、その属性は古いオブジェクトを参照し続けるため、このような属性は、例えばモデル、そのオプティマイザー、オプティマイザーのスケジューラーのように、まとめて列挙してください。値はコピーなので、他のエージェント、市場、シミュレーターと共有しているオブジェクトや、このエージェントまたはそれらを参照するオブジェクトは列挙しないでください。``\"simulator\"``、``\"logger\"``、``\"prng\"``"
+" は列挙できません。サブクラスでオーバーライドでき、インスタンスで（例えば :func:`setup` "
+"内で）設定することもできます。ランナーは、セットアップ時と、このエージェントに注文の提出を求めるたびにこれを検査します。その他のランナーと高頻度エージェントはこれを使いません。デフォルトは空のタプルです。例とその他の注意点については"
+" :ref:`config-synced-attributes` を参照してください。"
+
+#: docstring of pams.agents.Agent.synced_attributes
+msgid "type"
+msgstr "型"
+
+#: docstring of pams.agents.Agent.synced_attributes:19
+msgid "Union[Tuple[str, ...], List[str]]"
+msgstr "Union[Tuple[str, ...], List[str]]"
+
 #: of pams.agents.base.Agent.update_asset_volume:1
 #, fuzzy
 msgid "Increasing or decreasing the asset volume."
