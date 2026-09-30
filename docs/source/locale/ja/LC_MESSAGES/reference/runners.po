@@ -74,3 +74,4 @@ msgstr ""
 #: ../../source/reference/runners.rst:13:<autosummary>:1
 msgid "JAX Agent Parallel runner class."
 msgstr "JAX用のエージェント並列ランナークラス。"
+

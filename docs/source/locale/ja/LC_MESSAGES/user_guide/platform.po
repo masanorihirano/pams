@@ -296,3 +296,4 @@ msgid ""
 msgstr ""
 "結果が :class:`pams.runners.SequentialRunner` と同じになるよう、:mod:`jax.random` "
 "の鍵を含む乱数は ``agent.prng`` から導出してください。"
+
