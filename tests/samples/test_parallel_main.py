@@ -244,6 +244,121 @@ def test_setup_errors(updates: Dict[str, Any], removed: List[str]) -> None:
         runner._setup()
 
 
+# samples/Parallel/config-002.json of Plham (commit 3167ba7 of the tutorial) without the
+# duplicated "MEMO" and "NOTE" keys
+PLHAM_CONFIG_002: Dict[str, Any] = {
+    "simulation": {
+        "markets": ["SpotMarket-1", "SpotMarket-2", "IndexMarket-I"],
+        "agents": ["FCNAgents-1", "FCNAgents-2", "FCNAgents-I", "ArbitrageAgents"],
+        "sessions": [
+            {
+                "sessionName": 1,
+                "iterationSteps": 500,
+                "withOrderPlacement": True,
+                "withOrderExecution": True,
+                "withPrint": True,
+                "maxNormalOrders": 10000000000,
+                "maxHifreqOrders": 1,
+                "events": ["FundamentalPriceShock"],
+            }
+        ],
+    },
+    "FundamentalPriceShock": {
+        "class": "FundamentalPriceShock",
+        "target": "SpotMarket-1",
+        "triggerTime": 0,
+        "priceChangeRate": -0.1,
+        "enabled": True,
+    },
+    "SpotMarket": {
+        "class": "Market",
+        "tickSize": 0.00001,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000,
+    },
+    "SpotMarket-1": {"extends": "SpotMarket"},
+    "SpotMarket-2": {"extends": "SpotMarket"},
+    "IndexMarket-I": {
+        "class": "IndexMarket",
+        "tickSize": 0.00001,
+        "marketPrice": 300.0,
+        "outstandingShares": 25000,
+        "markets": ["SpotMarket-1", "SpotMarket-2"],
+    },
+    "FCNAgent": {
+        "class": "FCNAgent",
+        "numAgents": 500,
+        "markets": ["Market"],
+        "assetVolume": 50,
+        "cashAmount": 10000,
+        "fundamentalWeight": {"expon": [1.0]},
+        "chartWeight": {"expon": [0.0]},
+        "noiseWeight": {"expon": [1.0]},
+        "noiseScale": 0.001,
+        "timeWindowSize": [100, 200],
+        "orderMargin": [0.0, 0.1],
+    },
+    "FCNAgents-1": {
+        "extends": "FCNAgent",
+        "markets": ["SpotMarket-1"],
+        "fundamentalWeight": {"expon": [1.0]},
+        "chartWeight": {"expon": [0.0]},
+        "noiseWeight": {"expon": [1.0]},
+    },
+    "FCNAgents-2": {
+        "extends": "FCNAgent",
+        "markets": ["SpotMarket-2"],
+        "fundamentalWeight": {"expon": [1.0]},
+        "chartWeight": {"expon": [0.0]},
+        "noiseWeight": {"expon": [1.0]},
+    },
+    "FCNAgents-I": {
+        "extends": "FCNAgent",
+        "markets": ["IndexMarket-I"],
+        "fundamentalWeight": {"expon": [0.5]},
+        "chartWeight": {"expon": [0.0]},
+        "noiseWeight": {"expon": [1.0]},
+    },
+    "ArbitrageAgents": {
+        "class": "ArbitrageAgent",
+        "numAgents": 100,
+        "markets": ["IndexMarket-I"],
+        "assetVolume": 50,
+        "cashAmount": 150000,
+        "orderVolume": 1,
+        "orderThresholdPrice": 1.0,
+    },
+}
+
+
+def resolve_extends(config: Dict[str, Any]) -> Dict[str, Any]:
+    resolved: Dict[str, Any] = {}
+    for name, value in config.items():
+        chain: List[Dict[str, Any]] = [value]
+        while "extends" in chain[-1]:
+            chain.append(config[chain[-1]["extends"]])
+        merged: Dict[str, Any] = {}
+        for item in reversed(chain):
+            merged.update(item)
+        merged.pop("extends", None)
+        resolved[name] = merged
+    return resolved
+
+
+def test_same_values_as_plham() -> None:
+    expected = copy.deepcopy(PLHAM_CONFIG_002)
+    # the differences listed in the tutorial
+    session = expected["simulation"]["sessions"][0]
+    session["maxHighFrequencyOrders"] = session.pop("maxHifreqOrders")
+    expected["FCNAgent"]["class"] = "WorkloadFCNAgent"
+    # BS_WORKLOAD, BS_NSAMPLES, BS_NSTEPS and ORDER_RATE of run.sh of Plham
+    expected["FCNAgent"].update(
+        {"orderRate": 0.1, "bsWorkload": True, "bsNumSamples": 10, "bsNumSteps": 10}
+    )
+    expected["ArbitrageAgents"]["markets"] += ["SpotMarket-1", "SpotMarket-2"]
+    assert resolve_extends(make_config(n_spots=2)) == resolve_extends(expected)
+
+
 @pytest.mark.parametrize("n_spots", [2, 9, 99])
 def test_checked_in_configs(n_spots: int) -> None:
     path = os.path.join(SAMPLE_DIR, f"config-{n_spots:03d}.json")
@@ -426,3 +541,31 @@ def test_benchmark_options() -> None:
     assert benchmark._format_minor_tick(0.0, None) == ""
     with pytest.raises(SystemExit):
         benchmark.main(["--steps", "1", "--warmup", "1"])
+    with pytest.raises(SystemExit):
+        benchmark.main(["--workloads", "off", "0x5"])
+
+
+def test_benchmark_plot_requires_matplotlib(tmp_path: Any) -> None:
+    output = os.path.join(str(tmp_path), "benchmark.csv")
+    image = os.path.join(str(tmp_path), "benchmark.png")
+    with mock.patch("importlib.util.find_spec", return_value=None), pytest.raises(
+        SystemExit
+    ):
+        benchmark.main(["--output", output, "--plot", image])
+    assert not os.path.exists(output)
+    assert not os.path.exists(image)
+
+
+def test_benchmark_checks_digests_before_plot(
+    tmp_path: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    image = os.path.join(str(tmp_path), "benchmark.png")
+    options = ["--spots", "1", "--steps", "2", "--agents-per-market", "2"]
+    options += ["--arbitrage-agents", "1", "--runners", "sequential"]
+    options += ["--workloads", "off", "2x2", "--plot", image]
+    with mock.patch.object(
+        benchmark, "result_digest", side_effect=["a", "b"]
+    ), pytest.raises(RuntimeError):
+        benchmark.main(options)
+    assert len(capsys.readouterr().out.splitlines()) == 2
+    assert not os.path.exists(image)
