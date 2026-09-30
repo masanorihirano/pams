@@ -193,6 +193,7 @@ class MakerTakerTransactionCost(TransactionCost):
     """
 
     def __init__(self, market: Market) -> None:
+        """Initialize the rates."""
         super().__init__(market=market)
         self.maker_rate: float = 0.0
         self.taker_rate: float = 0.0

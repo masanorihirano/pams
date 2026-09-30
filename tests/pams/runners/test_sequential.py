@@ -2270,6 +2270,7 @@ class TestSequentialRunner(TestRunner):
         Returns:
             List[Tuple[int, int, float, int, float, float]]: the order IDs, the price, the
             volume and the costs of the executions with the costs.
+
         """
         maker_rate = -0.0001
         taker_rate = 0.0003
