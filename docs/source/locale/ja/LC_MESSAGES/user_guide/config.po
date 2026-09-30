@@ -1457,15 +1457,16 @@ msgstr ""
 ":class:`~pams.logs.ExecutionLog` はコストを ``buy_transaction_cost`` と "
 "``sell_transaction_cost`` として記録します（コストがない場合は ``0.0``）。"
 
-#: ../../source/user_guide/config.rst:688
+#: ../../source/user_guide/config.rst:690
 msgid ""
 "Transaction costs draw no random numbers, and the built-in agents do not "
 "look at their cash (see :ref:`config-agents`), so for the same seed the "
 "prices and executions are the same with and without costs. Only the "
-"agents' cash differs."
+"agents' cash, the costs in the execution logs and the revenues of the "
+"markets differ."
 msgstr ""
 "取引コストは乱数を使わず、組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
-"を参照）ため、同じシードであれば、価格と約定はコストの有無にかかわらず同じになります。異なるのはエージェントの現金だけです。"
+"を参照）ため、同じシードであれば、価格と約定はコストの有無にかかわらず同じになります。異なるのはエージェントの現金、約定ログのコスト、市場の収入だけです。"
 
 #: ../../source/user_guide/config.rst:694
 msgid ""

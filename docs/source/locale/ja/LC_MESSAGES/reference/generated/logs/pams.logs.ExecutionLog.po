@@ -33,10 +33,10 @@ msgstr "このログは通常、市場で注文が約定したときに生成さ
 
 #: of pams.logs.base.ExecutionLog:5
 msgid ""
-"``buy_transaction_cost`` and ``sell_transaction_cost`` are the transaction "
-"costs charged to the buyer and the seller (0.0 if the market has no "
-"transaction cost). The market adds both to the transaction costs that it "
-"collects in the time step (see "
+"``buy_transaction_cost`` and ``sell_transaction_cost`` are the "
+"transaction costs charged to the buyer and the seller (0.0 if the market "
+"has no transaction cost). The market adds both to the transaction costs "
+"that it collects in the time step (see "
 ":func:`pams.Market.get_transaction_cost_revenues`)."
 msgstr ""
 "``buy_transaction_cost`` と ``sell_transaction_cost`` "

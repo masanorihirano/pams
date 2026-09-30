@@ -86,9 +86,10 @@ msgstr ""
 "市場は約定ごとに :func:`compute_costs` を1回呼び出し、コストを "
 ":class:`pams.logs.ExecutionLog` に ``buy_transaction_cost`` と "
 "``sell_transaction_cost`` "
-"として記録します。シミュレーターはそれらを買い手と売り手の現金から差し引きます。コストを受け取るエージェントはいません。代わりに、市場は両方のコストを、そのステップで徴収する取引コストに加算します。この値は、:func:`pams.Market.get_transaction_cost_revenues`"
-" がステップごとに返し、:func:`pams.Market.get_cumulative_transaction_cost_revenue` "
-"があるステップまでの収支として返します。負のコスト（リベート）はこれらを減らします。"
+"として記録します。シミュレーターはそれらを買い手と売り手の現金から差し引きます。コストを受け取るエージェントはいません。代わりに、市場は両方のコストを、そのステップで徴収する取引コストに加算します。ステップごとの値は"
+" :func:`pams.Market.get_transaction_cost_revenues` が、あるステップまでの収支は "
+":func:`pams.Market.get_cumulative_transaction_cost_revenue` "
+"が返します。負のコスト（リベート）はこれらを減らします。"
 
 #: of pams.transaction_costs.TransactionCost:23
 msgid ""
