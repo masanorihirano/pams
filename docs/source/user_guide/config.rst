@@ -298,7 +298,8 @@ The ``simulation`` block
        platform's default). Only the start methods available on the platform are accepted: Windows has only
        ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
 
-Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
+Other keys in ``simulation`` are ignored, except the keys that :class:`~pams.runners.TensorFlowAgentParallelRunner`
+reads (see :ref:`config-parallel-tensorflow`). In particular, events are not listed here but in each session.
 
 
 .. _config-sessions:

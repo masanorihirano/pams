@@ -586,11 +586,16 @@ msgstr ""
 " で利用できるのは ``\"spawn\"`` のみです。その他のランナーでは無視されます。:ref:`config-parallel` "
 "を参照してください。"
 
-#: ../../source/user_guide/config.rst:296
+#: ../../source/user_guide/config.rst:301
 msgid ""
-"Other keys in ``simulation`` are ignored. In particular, events are not "
-"listed here but in each session."
-msgstr "``simulation`` 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。"
+"Other keys in ``simulation`` are ignored, except the keys that "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` reads (see :ref"
+":`config-parallel-tensorflow`). In particular, events are not listed here "
+"but in each session."
+msgstr ""
+"``simulation`` "
+"内のその他のキーは、:class:`~pams.runners.TensorFlowAgentParallelRunner` が読み込むキー（:ref"
+":`config-parallel-tensorflow` を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。"
 
 #: ../../source/user_guide/config.rst:304
 msgid ""
