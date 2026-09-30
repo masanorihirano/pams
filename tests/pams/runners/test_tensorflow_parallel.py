@@ -5,6 +5,8 @@ import os
 import random
 import subprocess  # nosec B404 # only runs the current Python with fixed code
 import sys
+import traceback
+from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from typing import Any
 from typing import Callable
@@ -20,10 +22,16 @@ import pytest
 from pams.runners import MultiProcessAgentParallelRunner
 from pams.runners import SequentialRunner
 from pams.runners import TensorFlowAgentParallelRunner
+from pams.runners import agent_parallel
 from pams.runners.agent_parallel import _initialize_worker
+from pams.runners.agent_parallel import _submit_orders_in_worker
 from pams.runners.tensorflow_parallel import _initialize_tensorflow_worker
 
 from .dummy import DummyLogger2
+from .dummy import WorkerInitializerAbort
+from .dummy import fail_to_initialize_worker
+from .dummy import fail_to_initialize_worker_with_base_exception
+from .dummy import fail_to_initialize_worker_with_system_exit
 from .dummy import initialize_worker
 from .tensorflow_dummy import TensorFlowAgent
 from .tensorflow_dummy import TensorFlowModelHoldingAgent
@@ -309,6 +317,55 @@ class TestTensorFlowAgentParallelRunner:
         assert exc_info.value.__cause__ is error
         initializer.assert_not_called()
 
+    @pytest.mark.usefixtures("fake_tensorflow")
+    @pytest.mark.parametrize(
+        "initializer,error_class",
+        [
+            (fail_to_initialize_worker, RuntimeError),
+            (fail_to_initialize_worker_with_system_exit, SystemExit),
+            (fail_to_initialize_worker_with_base_exception, WorkerInitializerAbort),
+        ],
+        ids=["Exception", "SystemExit", "BaseException"],
+    )
+    def test_initializer_failure_is_raised_by_tasks(
+        self,
+        initializer: Callable[[], None],
+        error_class: Type[BaseException],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        # the error kept on this thread is removed after the test
+        monkeypatch.setattr(
+            agent_parallel._worker_state, "initializer_error", None, raising=False
+        )
+        # the initializer and its arguments given by _create_executor: any error of the
+        # initializer, even SystemExit, is kept instead of breaking the executor
+        _initialize_worker(_initialize_tensorflow_worker, (1, 1, True, initializer, ()))
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed on this worker"
+        ) as exc_info:
+            _submit_orders_in_worker(agents=[], markets=[])
+        assert isinstance(exc_info.value.__cause__, error_class)
+        assert str(exc_info.value.__cause__) == "error in worker initializer"
+
+    def test_tensorflow_setup_failure_is_raised_by_tasks(
+        self, fake_tensorflow: mock.MagicMock, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(
+            agent_parallel._worker_state, "initializer_error", None, raising=False
+        )
+        threading = fake_tensorflow.config.threading
+        threading.set_intra_op_parallelism_threads.side_effect = RuntimeError(
+            "Intra op parallelism cannot be modified after initialization."
+        )
+        _initialize_worker(_initialize_tensorflow_worker, (1, 1, True, None, ()))
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed on this worker"
+        ) as exc_info:
+            _submit_orders_in_worker(agents=[], markets=[])
+        cause = exc_info.value.__cause__
+        assert isinstance(cause, RuntimeError)
+        assert "already initialized" in str(cause)
+
     @requires_tensorflow
     @pytest.mark.parametrize(
         "agent_class,runner_class",
@@ -426,3 +483,30 @@ class TestTensorFlowAgentParallelRunner:
         # the initializer ran TensorFlow after TensorFlow had been configured;
         # otherwise, the configuration would have failed
         assert (intra_op_threads, inter_op_threads) == (3, 2)
+
+    @requires_tensorflow
+    def test_worker_initializer_failure(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["numParallel"] = 1
+        setting["simulation"]["sessions"][0]["iterationSteps"] = 1
+        runner = self._make_runner(setting=setting)
+        monkeypatch.setattr(
+            runner,
+            "_get_worker_initializer",
+            lambda: fail_to_initialize_worker_with_system_exit,
+        )
+        runner._setup()
+        # SystemExit of the initializer, which is called after TensorFlow is configured, is raised
+        # by the task instead of breaking the executor
+        with pytest.raises(
+            RuntimeError, match="the worker initializer failed on this worker"
+        ) as exc_info:
+            runner._run()
+        assert not isinstance(exc_info.value, BrokenExecutor)
+        # the cause is the traceback of the worker process
+        cause = exc_info.value.__cause__
+        assert cause is not None
+        assert "SystemExit: error in worker initializer" in "".join(
+            traceback.format_exception_only(type(cause), cause)
+        )
+        assert runner.executor is None
