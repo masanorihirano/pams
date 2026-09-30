@@ -1,4 +1,5 @@
 import io
+import math
 import multiprocessing
 import os
 import pickle
@@ -300,12 +301,58 @@ def _load_worker_results(
     return results
 
 
+def _is_equal_immutable_value(value_before: Any, value_after: Any) -> bool:
+    """Check whether two values are equal values of an immutable built-in type (internal function).
+
+    The types are str, bytes, int, float, complex, and tuple, whose elements are compared in the
+    same way. Such values cannot be told apart except by their identity, so assigning an equal
+    value is not a change, e.g., a string constant assigned again in
+    :func:`pams.agents.Agent.submit_orders` is not the old value, which is unpickled on the
+    worker process. Floats are compared with their signs, because 0.0 and -0.0 are equal but
+    differ, and NaN is not equal to itself. Values of other types, including subclasses of these
+    types, are never regarded as equal because they can be mutable or compared in other ways.
+
+    Args:
+        value_before (Any): value before :func:`pams.agents.Agent.submit_orders`.
+        value_after (Any): value after the call.
+
+    Returns:
+        bool: whether the values are equal values of one of these types.
+
+    """
+    value_type = type(value_before)
+    # the exact types are compared because instances of subclasses can be mutable
+    if type(value_after) is not value_type:  # pylint: disable=unidiomatic-typecheck
+        return False
+    if value_type is str or value_type is bytes or value_type is int:
+        return bool(value_before == value_after)
+    if value_type is float:
+        return value_before == value_after and math.copysign(
+            1.0, value_before
+        ) == math.copysign(1.0, value_after)
+    if value_type is complex:
+        return _is_equal_immutable_value(
+            value_before.real, value_after.real
+        ) and _is_equal_immutable_value(value_before.imag, value_after.imag)
+    if value_type is tuple:
+        return len(value_before) == len(value_after) and all(
+            element_before is element_after
+            or _is_equal_immutable_value(element_before, element_after)
+            for element_before, element_after in zip(value_before, value_after)
+        )
+    return False
+
+
 def _find_unsynced_changes(
     attributes_before: Dict[str, Any],
     attributes_after: Dict[str, Any],
     synced_names: Tuple[str, ...],
 ) -> Optional[Tuple[str, ...]]:
     """Find the attributes that an agent assigned or deleted but does not list (internal function).
+
+    An attribute is changed if it is added, deleted, or assigned another object, unless the old
+    and the new objects are equal values of an immutable built-in type (see
+    :func:`_is_equal_immutable_value`). Changes made in place are not found.
 
     Args:
         attributes_before (Dict[str, Any]): shallow copy of the attributes of the agent before
@@ -315,16 +362,17 @@ def _find_unsynced_changes(
             :attr:`pams.agents.Agent.synced_attributes`.
 
     Returns:
-        Tuple[str, ...], Optional: sorted names of the attributes that were added, deleted, or
-        assigned another object, except the listed ones and those that cannot be listed.
-        None if there are none.
+        Tuple[str, ...], Optional: sorted names of the changed attributes, except the listed ones
+        and those that cannot be listed. None if there are none.
 
     """
-    changed_names: List[str] = [
-        name
-        for name, value in attributes_after.items()
-        if attributes_before.pop(name, _MISSING) is not value
-    ]
+    changed_names: List[str] = []
+    for name, value in attributes_after.items():
+        value_before = attributes_before.pop(name, _MISSING)
+        if value_before is not value and not _is_equal_immutable_value(
+            value_before, value
+        ):
+            changed_names.append(name)
     changed_names.extend(attributes_before)  # deleted attributes
     unsynced_names = sorted(
         name

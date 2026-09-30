@@ -1482,6 +1482,74 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             is None
         )
 
+    def test_find_unsynced_changes_ignores_equal_immutable_values(self) -> None:
+        # equal values of immutable built-in types are built again so that they are other
+        # objects, as when an agent assigns a constant again or a computed value
+        kept: List[float] = [1.0]
+        attributes_before: Dict[str, Any] = {
+            "str": "mode",
+            "bytes": b"mode",
+            "int": 10**20,
+            "float": 0.5,
+            "complex": complex(0.5, 1.0),
+            "tuple": ("mode", 10**20, (0.5, kept)),
+            "bool": True,
+            "none": None,
+        }
+        attributes_after: Dict[str, Any] = {
+            "str": "".join(["mo", "de"]),
+            "bytes": b"".join([b"mo", b"de"]),
+            "int": int("1" + "0" * 20),
+            "float": float("0.5"),
+            "complex": complex(float("0.5"), float("1.0")),
+            "tuple": ("".join(["mo", "de"]), int("1" + "0" * 20), (float("0.5"), kept)),
+            "bool": True,
+            "none": None,
+        }
+        for name, value in attributes_after.items():
+            if name not in ("bool", "none"):
+                assert value is not attributes_before[name]
+            assert value == attributes_before[name]
+        assert (
+            _find_unsynced_changes(
+                attributes_before=attributes_before,
+                attributes_after=attributes_after,
+                synced_names=(),
+            )
+            is None
+        )
+        # values that differ, have other types, or can be mutable are changes, even if they are
+        # equal
+        attributes_before = {
+            "other str": "mode",
+            "negative zero": 0.0,
+            "nan": float("nan"),
+            "complex negative zero": complex(0.0, 0.0),
+            "int to float": 1,
+            "int to bool": 1,
+            "str subclass": "mode",
+            "list": [1.0],
+            "tuple with new list": ("mode", [1.0]),
+            "longer tuple": ("mode",),
+        }
+        attributes_after = {
+            "other str": "mode2",
+            "negative zero": -0.0,
+            "nan": float("nan"),
+            "complex negative zero": complex(0.0, -0.0),
+            "int to float": 1.0,
+            "int to bool": True,
+            "str subclass": type("Mode", (str,), {})("mode"),
+            "list": [1.0],
+            "tuple with new list": ("mode", [1.0]),
+            "longer tuple": ("mode", "mode"),
+        }
+        assert _find_unsynced_changes(
+            attributes_before=dict(attributes_before),
+            attributes_after=attributes_after,
+            synced_names=(),
+        ) == tuple(sorted(attributes_before))
+
     def test_submit_orders_in_worker_finds_unsynced_changes(self) -> None:
         setting = self._learning_setting()
         _, runner = self._make_runners(setting=setting)
