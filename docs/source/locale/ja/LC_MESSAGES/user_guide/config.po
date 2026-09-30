@@ -566,6 +566,26 @@ msgstr ""
 "エージェント並列ランナーのワーカー数です（デフォルト：CPU数から1を引いた値、ただし最小1）。:class:`~pams.runners.SequentialRunner`"
 " では無視されます。:ref:`config-parallel` を参照してください。"
 
+#: ../../source/user_guide/config.rst:295
+msgid "``startMethod`` |optional|"
+msgstr "``startMethod`` |optional|"
+
+#: ../../source/user_guide/config.rst:296
+msgid "``\"spawn\"``, ``\"fork\"`` or ``\"forkserver\"``"
+msgstr "``\"spawn\"``、``\"fork\"`` または ``\"forkserver\"``"
+
+#: ../../source/user_guide/config.rst:297
+msgid ""
+"How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker"
+" processes (default: the platform's default). Only the start methods "
+"available on the platform are accepted: Windows has only ``\"spawn\"``. "
+"Ignored by the other runners. See :ref:`config-parallel`."
+msgstr ""
+":class:`~pams.runners.MultiProcessAgentParallelRunner` "
+"がワーカープロセスを起動する開始方式です（デフォルト：プラットフォームのデフォルト）。そのプラットフォームで利用できる開始方式のみ指定できます。Windows"
+" で利用できるのは ``\"spawn\"`` のみです。その他のランナーでは無視されます。:ref:`config-parallel` "
+"を参照してください。"
+
 #: ../../source/user_guide/config.rst:296
 msgid ""
 "Other keys in ``simulation`` are ignored. In particular, events are not "
@@ -597,8 +617,7 @@ msgstr ""
 msgid "``sessionName`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:419
-#: ../../source/user_guide/config.rst:435
+#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:435
 msgid "string"
 msgstr "文字列"
 
@@ -862,16 +881,20 @@ msgstr "市場ブロックとエージェントブロックには、使用する
 msgid "``class`` |required|"
 msgstr ""
 
+#: ../../source/user_guide/config.rst:419
+msgid "string or class"
+msgstr "文字列またはクラス"
+
 #: ../../source/user_guide/config.rst:420
 msgid ""
 "Class name, e.g. ``\"Market\"`` or ``\"FCNAgent\"``. Use the plain class "
 "name (case-sensitive), not a dotted path. Built-in classes are found "
-"automatically; your own classes must be registered (see :ref:`config-user-"
-"classes`)."
+"automatically; your own classes must be registered, or set as the class "
+"itself in a Python dict config (see :ref:`config-user-classes`)."
 msgstr ""
 "``\"Market\"`` や ``\"FCNAgent\"`` "
-"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録する必要があります（:ref"
-":`config-user-classes` を参照）。"
+"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録するか、Python"
+" の dict による設定ではクラスそのものを指定する必要があります（:ref:`config-user-classes` を参照）。"
 
 #: ../../source/user_guide/config.rst:423
 msgid "``extends`` |optional|"
@@ -1839,11 +1862,21 @@ msgid ""
 "``markets`` must include the index market group **and** the groups of all "
 "its component markets. Otherwise the component orders are still sent, and "
 "the simulation stops with a ``KeyError`` (a market ID) when the first one is"
-" executed."
+" executed. Unlike plham, the component markets are not added automatically;"
+" the agent warns at setup about each index market with missing components."
 msgstr ""
 "``markets`` には、インデックス市場の市場グループ **および** "
 "そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します。"
+" ``KeyError`` "
+"（市場ID）で停止します。plhamとは異なり、構成市場は自動的には追加されません。構成市場が欠けているインデックス市場があると、エージェントはセットアップ時にインデックス市場ごとに警告を出します。"
+
+#: ../../source/user_guide/config.rst:839
+msgid ""
+"If ``markets`` includes no ``IndexMarket``, the agent never places an order,"
+" and it warns about this at setup."
+msgstr ""
+"``markets`` に ``IndexMarket`` "
+"が1つも含まれていない場合、エージェントは注文を一切出さず、セットアップ時にその旨の警告を出します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
@@ -2347,6 +2380,25 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1150
 msgid ""
+"When the config is a Python dict, you can instead set the class itself as "
+"the value of ``class``. Such a class is used as is, so it needs no "
+"``class_register`` and its name does not have to be unique:"
+msgstr ""
+"設定が Python の dict の場合は、名前の代わりにクラスそのものを ``class`` "
+"の値に指定することもできます。このクラスはそのまま使われるため、``class_register`` "
+"は不要で、名前が一意である必要もありません："
+
+#: ../../source/user_guide/config.rst:1162
+msgid ""
+"This works only with a Python dict, because a JSON file cannot hold a class."
+" A class set in a block is inherited through ``extends`` like any other "
+"value."
+msgstr ""
+"JSON ファイルはクラスを保持できないため、これは Python の dict でのみ使えます。ブロックに指定したクラスは、他の値と同じように "
+"``extends`` で継承されます。"
+
+#: ../../source/user_guide/config.rst:1165
+msgid ""
 "The block (after ``extends`` is resolved, without ``numAgents`` / "
 "``numMarkets``, ``from``, ``to`` and ``prefix``) is passed to "
 "``setup(settings=...)``, so any extra key you add is available there. To "
@@ -2363,23 +2415,25 @@ msgstr ""
 ":class:`~pams.utils.JsonRandom` を参照）。戻り値は常に float なので、整数パラメータには自分で ``int()``"
 " を適用してください。"
 
-#: ../../source/user_guide/config.rst:1155
+#: ../../source/user_guide/config.rst:1170
 msgid ""
-"Class names must be unique: a class with the same name as a built-in class "
-"(e.g. your own ``FCNAgent``) is ambiguous and fails. Register each class "
-"only once."
+"Class names given as strings must be unique: a class with the same name as "
+"a built-in class (e.g. your own ``FCNAgent``) is ambiguous and fails. "
+"Register each class only once."
 msgstr ""
-"クラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
+"文字列で指定するクラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
 "``FCNAgent``）は曖昧となりエラーになります。各クラスは一度だけ登録してください。"
 
-#: ../../source/user_guide/config.rst:1157
+#: ../../source/user_guide/config.rst:1172
 msgid ""
-"Agent classes must inherit from :class:`~pams.agents.Agent` and market "
-"classes from :class:`~pams.Market`. An agent that inherits from "
+"Agent classes must inherit from :class:`~pams.agents.Agent`, market classes "
+"from :class:`~pams.Market` and event classes from "
+":class:`~pams.events.EventABC`. An agent that inherits from "
 ":class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency "
 "agent."
 msgstr ""
 "エージェントクラスは :class:`~pams.agents.Agent` を、市場クラスは :class:`~pams.Market` "
+"を、イベントクラスは :class:`~pams.events.EventABC` "
 "を継承する必要があります。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
 "を継承している場合、高頻度エージェントとしてスケジュールされます。"
 
@@ -2405,16 +2459,16 @@ msgstr ""
 "（いずれも実験的機能）は同じ設定ファイルを読み込み、同じシードであれば :class:`~pams.runners.SequentialRunner` "
 "と同じ結果になります。これらは通常エージェントの ``submit_orders`` を並列に呼び出し、それ以外はすべて逐次的に処理します。"
 
-#: ../../source/user_guide/config.rst:1171
+#: ../../source/user_guide/config.rst:1176
 msgid ""
 "**Speed**: because of Python's GIL, the thread runner only helps when "
 "``submit_orders`` waits for I/O (for example a call to an external model); "
 "it does not speed up the built-in agents. The process runner is much slower,"
-" because the agent and the markets are copied to a worker process at every "
-"call. See also :doc:`platform`."
+" because the whole simulation is copied to the worker processes in every "
+"step (see below). See also :doc:`platform`."
 msgstr ""
 "**速度**：Python の GIL のため、スレッドランナーが効果を持つのは ``submit_orders`` が I/O "
-"を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、呼び出しのたびにエージェントと市場がワーカープロセスにコピーされるため、はるかに低速です。あわせて"
+"を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、ステップごとにシミュレーション全体がワーカープロセスにコピーされるため（後述）、はるかに低速です。あわせて"
 " :doc:`platform` も参照してください。"
 
 #: ../../source/user_guide/config.rst:1175
@@ -2469,19 +2523,60 @@ msgstr ""
 "では必須です。これがないと実行が失敗するかハングします）。また、ワーカープロセスがインポートできるよう、ユーザー定義クラスはノートブックや対話型セッションではなく"
 " ``.py`` ファイル内で定義してください。"
 
-#: ../../source/user_guide/config.rst:1192
+#: ../../source/user_guide/config.rst:1197
 msgid ""
-"The process runner pickles the agent and the markets at every call, together"
-" with everything they refer to (the simulator, the other agents, the events "
-"and the logger). User-defined agents, markets, events and loggers must "
-"therefore be picklable: for example, a logger that keeps an open file fails "
-"with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data"
-" in memory and write the file after the run."
+"``simulation.startMethod`` sets how the process runner starts its worker "
+"processes: ``\"spawn\"`` (the default on Windows and macOS), ``\"fork\"`` "
+"(the default on Linux up to Python 3.13) or ``\"forkserver\"`` (the default "
+"on Linux from Python 3.14). Only the values that "
+":func:`multiprocessing.get_all_start_methods` returns on the platform are "
+"accepted; any other value is an error. Without the key, the platform's "
+"default is used, unless a subclass of the runner sets another default. Use "
+"``\"spawn\"`` when agents use a library that does not work in a forked "
+"process, such as PyTorch with CUDA, TensorFlow or JAX. The start method does"
+" not change the simulation results."
 msgstr ""
-"プロセスランナーは呼び出しのたびに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに "
+"``simulation.startMethod`` は、プロセスランナーがワーカープロセスを起動する開始方式を設定します：``\"spawn\"`` "
+"（Windows と macOS でのデフォルト）、``\"fork\"`` （Python 3.13 までの Linux "
+"でのデフォルト）、``\"forkserver\"`` （Python 3.14 以降の Linux "
+"でのデフォルト）のいずれかです。そのプラットフォームで :func:`multiprocessing.get_all_start_methods` "
+"が返す値のみ指定でき、それ以外の値はエラーになります。このキーがない場合は、ランナーのサブクラスが別のデフォルトを設定していない限り、プラットフォームのデフォルトが使われます。fork"
+" されたプロセスでは動作しないライブラリ（CUDA を使う PyTorch、TensorFlow、JAX など）をエージェントが使う場合は "
+"``\"spawn\"`` を使ってください。開始方式によってシミュレーション結果は変わりません。"
+
+#: ../../source/user_guide/config.rst:1204
+msgid ""
+"The process runner pickles the agents and the markets for each task, "
+"together with everything they refer to (the simulator, the other agents, the"
+" events and the logger). User-defined agents, markets, events and loggers "
+"must therefore be picklable: for example, a logger that keeps an open file "
+"fails with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep "
+"such data in memory and write the file after the run."
+msgstr ""
+"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに "
 "pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle "
 "可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
 "'_io.TextIOWrapper' object`` で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。"
+
+#: ../../source/user_guide/config.rst:1209
+msgid ""
+"Because of these references, each task copies the whole simulation. The copy"
+" is about 4 KB per agent, mostly the state of each agent's random number "
+"generator (about 4 MB for 1000 agents), and it takes tens of milliseconds, "
+"much longer than ``submit_orders`` of the built-in agents. To limit this "
+"cost, the agents asked at the same time are split into at most "
+"``numParallel`` tasks. An object held by an agent, such as a neural network "
+"model, is copied in every task, even in the tasks of other agents. Exclude "
+"such an object from pickling (for example with ``__getstate__``), and if it "
+"is read-only, load it once per worker process instead (see :doc:`platform`)."
+msgstr ""
+"このような参照があるため、各タスクではシミュレーション全体がコピーされます。コピーの大きさはエージェント 1 個あたり約 4 KB（1000 "
+"個のエージェントで約 4 MB）で、その大部分は各エージェントの乱数生成器の状態です。コピーには数十ミリ秒かかり、組み込みエージェントの "
+"``submit_orders`` よりはるかに長い時間がかかります。このコストを抑えるため、同時に注文の提出を求められるエージェントは最大 "
+"``numParallel`` "
+"個のタスクに分けられます。ニューラルネットワークのモデルなど、エージェントが保持するオブジェクトは、他のエージェントのタスクも含めてすべてのタスクでコピーされます。このようなオブジェクトは"
+" pickle 化の対象から除外し（例えば ``__getstate__`` を使います）、読み取り専用であれば、代わりにワーカープロセスごとに 1 "
+"回だけ読み込んでください（:doc:`platform` を参照）。"
 
 #: ../../source/user_guide/config.rst:1204
 msgid "Silent pitfalls"
@@ -2602,6 +2697,30 @@ msgid ""
 "one), or the same class was registered twice. Rename the class or register "
 "it once."
 msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か、同じクラスが2回登録されています。クラス名を変更するか、1回だけ登録してください。"
+
+#: ../../source/user_guide/config.rst:1256
+msgid ""
+"``market class for X does not inherit Market class`` (the same for agent "
+"and event classes)"
+msgstr "``market class for X does not inherit Market class`` （エージェントクラスとイベントクラスも同様）"
+
+#: ../../source/user_guide/config.rst:1257
+msgid ""
+"The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a "
+"market block."
+msgstr "ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している）。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``class for X must be a class name (str) or a class, but Y is given``"
+msgstr "``class for X must be a class name (str) or a class, but Y is given``"
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"The value ``Y`` of ``class`` in block ``X`` of a Python dict config is "
+"neither a string nor a class, e.g. ``None``."
+msgstr ""
+"Python の dict による設定で、ブロック ``X`` の ``class`` の値 ``Y`` "
+"が文字列でもクラスでもありません（例：``None``）。"
 
 #: ../../source/user_guide/config.rst:1240
 msgid "``X setting is missing in config``"
@@ -2749,6 +2868,34 @@ msgid ""
 "An agent submitted a price that is not a multiple of ``tickSize``; it was "
 "rounded. This is normal for FCN agents."
 msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。"
+
+#: ../../source/user_guide/config.rst:1278
+msgid ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` (warning)"
+msgstr ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` （警告）"
+
+#: ../../source/user_guide/config.rst:1279
+msgid ""
+"Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise "
+"its orders to them fail while the simulation runs."
+msgstr ""
+"市場 ``Z`` の市場グループをエージェントの ``markets`` "
+"に追加してください。追加しない場合、それらの市場への注文はシミュレーション実行中に失敗します。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "``ArbitrageAgent X cannot access any index market`` (warning)"
+msgstr "``ArbitrageAgent X cannot access any index market`` （警告）"
+
+#: ../../source/user_guide/config.rst:1282
+msgid ""
+"The agent never places an order. Add an ``IndexMarket`` group and the groups"
+" of its component markets to its ``markets``."
+msgstr ""
+"このエージェントは注文を一切出しません。``IndexMarket`` "
+"の市場グループとその構成市場の市場グループを、エージェントの ``markets`` に追加してください。"
 
 #: ../../source/user_guide/config.rst:1275
 msgid "``AssertionError`` while the simulation runs"

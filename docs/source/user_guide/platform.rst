@@ -52,8 +52,62 @@ parallelized in each step is limited by ``maxNormalOrders`` of the session.
 
 Because of the GIL of python, :class:`pams.runners.MultiThreadAgentParallelRunner` is beneficial only when
 the order submission of agents waits for I/O (e.g., external models or services).
-:class:`pams.runners.MultiProcessAgentParallelRunner` copies agents and markets to worker processes for each order submission,
+:class:`pams.runners.MultiProcessAgentParallelRunner` copies the whole simulation to the worker processes in every step,
 so it is much slower and the user-defined classes must be picklable and importable from the worker processes.
+How it starts the worker processes (``spawn``, ``fork`` or ``forkserver``) can be set by ``simulation.startMethod``
+in the config. See :ref:`config-parallel` for the details and the cost of the copies.
+
+Customizing the workers
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Subclasses of the parallel runners can customize the workers by overriding the following members.
+
+- ``default_start_method`` (class attribute, process runner only): the start method used when
+  ``simulation.startMethod`` is not set. The default, ``None``, means the platform's default. The start method in use
+  is stored in ``start_method``.
+- ``_get_mp_context()`` (process runner only): the :mod:`multiprocessing` context of the worker processes.
+  The default is ``multiprocessing.get_context(self.start_method)``.
+- ``_get_worker_initializer()`` and ``_get_worker_initargs()``: a function called once on each worker (thread or
+  process) before it runs any task, and its arguments. By default, nothing is called. With the process runner,
+  the function must be defined at the top level of a module that the worker processes can import, and the
+  arguments must be picklable. If the function raises any exception on a worker, including a ``BaseException`` such as
+  ``SystemExit``, the tasks on that worker raise a ``RuntimeError`` caused by the exception, and the simulation fails.
+  With the process runner, the ``__cause__`` of the ``RuntimeError`` is the worker's traceback text, not the exception.
+- ``_create_executor()``: the :class:`concurrent.futures.Executor` that runs the tasks. The default creates
+  ``_parallel_pool_provider`` (:class:`concurrent.futures.ThreadPoolExecutor` or
+  :class:`concurrent.futures.ProcessPoolExecutor`) with the members above and ``numParallel`` workers.
+- ``_split_agents_into_chunks(agents)``: how the agents asked at the same time are split into tasks. The agents
+  of a task are asked one by one on the same worker. The thread runner makes one task per agent, and the process
+  runner makes at most ``numParallel`` tasks of consecutive agents because each task copies the whole simulation.
+  The tasks must keep all the agents in the given order, so that the results stay the same as
+  :class:`pams.runners.SequentialRunner`; otherwise, the simulation fails with a ``ValueError``.
+
+For example, the following runner starts its worker processes by ``spawn`` and loads a model once in each worker
+process. The agents use ``my_runner.MODEL`` in ``submit_orders`` instead of keeping the model as their attribute,
+so that the model is not copied in every task.
+
+.. code-block:: python
+
+    # my_runner.py, which the worker processes can import
+    from typing import Any, Callable, Optional, Tuple
+
+    from pams.runners import MultiProcessAgentParallelRunner
+
+    MODEL = None
+
+
+    def load_model(path: str) -> None:
+        global MODEL
+        MODEL = ...  # load the model from path
+
+
+    class MyRunner(MultiProcessAgentParallelRunner):
+        default_start_method = "spawn"
+
+        def _get_worker_initializer(self) -> Optional[Callable[..., Any]]:
+            return load_model
+
+        def _get_worker_initargs(self) -> Tuple[Any, ...]:
+            return ("model.bin",)
 
 
 

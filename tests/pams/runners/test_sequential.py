@@ -2,6 +2,7 @@ import copy
 import os.path
 import random
 import time
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -18,6 +19,8 @@ from pams import Cancel
 from pams import Market
 from pams import Order
 from pams.agents import Agent
+from pams.agents import FCNAgent
+from pams.events import FundamentalPriceShock
 from pams.runners import Runner
 from pams.runners import SequentialRunner
 from tests.pams.runners.test_base import TestRunner
@@ -25,6 +28,7 @@ from tests.pams.runners.test_base import TestRunner
 from .dummy import DummyLogger
 from .dummy import DummyLogger2
 from .dummy import ExecutionCountLogger
+from .dummy import RandomlyIdleFCNAgent
 from .dummy import SimulatorAccessingLogger
 
 
@@ -415,6 +419,65 @@ class TestSequentialRunner(TestRunner):
         with pytest.raises(ValueError):
             runner._generate_markets(market_type_names=["Market"])
 
+    def test_generate_markets_with_class(self) -> None:
+        class UserDefinedMarket(Market):
+            pass
+
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "MarketBase": {
+                "class": UserDefinedMarket,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+            },
+            "Market": {"extends": "MarketBase", "numMarkets": 2},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        # the class is used without registration
+        runner._generate_markets(market_type_names=["Market"])
+        assert not runner.registered_classes
+        assert [type(market) for market in runner.simulator.markets] == [
+            UserDefinedMarket,
+            UserDefinedMarket,
+        ]
+        assert runner._pending_setups[0][1] == {
+            "settings": {
+                "class": UserDefinedMarket,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+            }
+        }
+
+    @pytest.mark.parametrize(
+        "market_class, match",
+        [
+            (Agent, "market class for Market does not inherit Market class"),
+            ("FCNAgent", "market class for Market does not inherit Market class"),
+            ("LIMIT_ORDER", "market class for Market does not inherit Market class"),
+            (
+                None,
+                r"^class for Market must be a class name \(str\) or a class, "
+                r"but None is given$",
+            ),
+            (1, "class for Market must be a class name"),
+        ],
+    )
+    def test_generate_markets_with_invalid_class(
+        self, market_class: Any, match: str
+    ) -> None:
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {"class": market_class, "tickSize": 0.01, "marketPrice": 300.0},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        with pytest.raises(ValueError, match=match):
+            runner._generate_markets(market_type_names=["Market"])
+        assert len(runner.simulator.markets) == 0
+
     def test_generate_agents(self) -> None:
         setting = {
             "simulation": {"agents": ["Agent"], "markets": ["Market"]},
@@ -676,6 +739,60 @@ class TestSequentialRunner(TestRunner):
         runner._generate_markets(market_type_names=["Market"])
         with pytest.raises(ValueError):
             runner._generate_agents(agent_type_names=["Agent"])
+
+    def test_generate_agents_with_class(self) -> None:
+        class UserDefinedAgent(FCNAgent):
+            pass
+
+        setting = {
+            "simulation": {"agents": ["Agents"], "markets": ["Market"]},
+            "Market": {"class": Market, "tickSize": 0.01, "marketPrice": 300.0},
+            "AgentBase": {"class": UserDefinedAgent, "markets": ["Market"]},
+            "Agents": {"extends": "AgentBase", "numAgents": 3},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        # the classes are used without registration
+        runner._generate_markets(market_type_names=["Market"])
+        runner._generate_agents(agent_type_names=["Agents"])
+        assert not runner.registered_classes
+        assert [type(market) for market in runner.simulator.markets] == [Market]
+        assert [type(agent) for agent in runner.simulator.agents] == [
+            UserDefinedAgent,
+            UserDefinedAgent,
+            UserDefinedAgent,
+        ]
+        assert runner._pending_setups[1][1] == {
+            "settings": {"class": UserDefinedAgent, "markets": ["Market"]},
+            "accessible_markets_ids": [0],
+        }
+
+    @pytest.mark.parametrize(
+        "agent_class, match",
+        [
+            (Market, "agent class for Agents does not inherit Agent class"),
+            ("Market", "agent class for Agents does not inherit Agent class"),
+            ("LIMIT_ORDER", "agent class for Agents does not inherit Agent class"),
+            (None, "class for Agents must be a class name"),
+            (1, "class for Agents must be a class name"),
+        ],
+    )
+    def test_generate_agents_with_invalid_class(
+        self, agent_class: Any, match: str
+    ) -> None:
+        setting = {
+            "simulation": {"agents": ["Agents"], "markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+            "Agents": {"class": agent_class, "markets": ["Market"]},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        with pytest.raises(ValueError, match=match):
+            runner._generate_agents(agent_type_names=["Agents"])
+        assert len(runner.simulator.agents) == 0
 
     def test_set_fundamental_correlation(self) -> None:
         setting = {
@@ -1052,6 +1169,70 @@ class TestSequentialRunner(TestRunner):
             setting_mode="dict", logger=None, simulator_class=None, setting=setting
         )
         with pytest.raises(ValueError):
+            runner._generate_sessions()
+
+    def test_generate_sessions_with_class(self) -> None:
+        class UserDefinedEvent(FundamentalPriceShock):
+            pass
+
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {"sessionName": 0, "iterationSteps": 100, "events": ["Shock"]}
+                ]
+            },
+            "ShockBase": {
+                "class": UserDefinedEvent,
+                "target": "Market",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+            },
+            "Shock": {"extends": "ShockBase"},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        # the class is used without registration
+        runner._generate_sessions()
+        assert not runner.registered_classes
+        assert len(runner._pending_setups) == 3
+        assert runner._pending_setups[1][1] == {
+            "settings": {
+                "class": UserDefinedEvent,
+                "target": "Market",
+                "triggerTime": 0,
+                "priceChangeRate": -0.1,
+            }
+        }
+        event = runner._pending_setups[2][1]["_event"]
+        assert isinstance(event, UserDefinedEvent)
+        assert event.name == "Shock"
+
+    @pytest.mark.parametrize(
+        "event_class, match",
+        [
+            (Market, "event class for Shock does not inherit EventABC class"),
+            ("FCNAgent", "event class for Shock does not inherit EventABC class"),
+            ("LIMIT_ORDER", "event class for Shock does not inherit EventABC class"),
+            (None, "class for Shock must be a class name"),
+            (1, "class for Shock must be a class name"),
+        ],
+    )
+    def test_generate_sessions_with_invalid_class(
+        self, event_class: Any, match: str
+    ) -> None:
+        setting = {
+            "simulation": {
+                "sessions": [
+                    {"sessionName": 0, "iterationSteps": 100, "events": ["Shock"]}
+                ]
+            },
+            "Shock": {"class": event_class},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        with pytest.raises(ValueError, match=match):
             runner._generate_sessions()
 
     def test_setup(self) -> None:
@@ -1821,3 +2002,51 @@ class TestSequentialRunner(TestRunner):
         runner._setup()
         runner._run()
         assert logger.accessed_simulators == [runner.simulator, runner.simulator]
+
+    def test_run_with_class(self) -> None:
+        # the runner with classes in the settings gives the same result as the runner
+        # with class names and registered classes
+        setting = copy.deepcopy(self.default_setting)
+        setting["FCNAgents"]["class"] = "RandomlyIdleFCNAgent"
+        name_runner = self.runner_class(
+            settings=copy.deepcopy(setting),
+            prng=random.Random(42),
+            logger=DummyLogger2(),
+        )
+        name_runner.class_register(cls=RandomlyIdleFCNAgent)
+        setting["Market"]["class"] = Market
+        setting["FCNAgents"]["class"] = RandomlyIdleFCNAgent
+        setting["FundamentalPriceShock"]["class"] = FundamentalPriceShock
+        class_runner = self.runner_class(
+            settings=setting, prng=random.Random(42), logger=DummyLogger2()
+        )
+        for runner in [name_runner, class_runner]:
+            runner._setup()
+            runner._run()
+        assert not class_runner.registered_classes
+        assert [type(agent) for agent in class_runner.simulator.agents] == [
+            RandomlyIdleFCNAgent
+        ] * len(class_runner.simulator.agents)
+        name_market = name_runner.simulator.markets[0]
+        class_market = class_runner.simulator.markets[0]
+        times = range(name_market.get_time() + 1)
+        assert name_market.get_market_prices(times) == class_market.get_market_prices(
+            times
+        )
+        assert name_market.get_fundamental_prices(
+            times
+        ) == class_market.get_fundamental_prices(times)
+        assert [
+            (agent.cash_amount, dict(agent.asset_volumes))
+            for agent in name_runner.simulator.agents
+        ] == [
+            (agent.cash_amount, dict(agent.asset_volumes))
+            for agent in class_runner.simulator.agents
+        ]
+        name_logger = name_runner.logger
+        class_logger = class_runner.logger
+        assert isinstance(name_logger, DummyLogger2)
+        assert isinstance(class_logger, DummyLogger2)
+        assert class_logger.n_order_log > 0
+        assert name_logger.n_order_log == class_logger.n_order_log
+        assert name_logger.n_execution_log == class_logger.n_execution_log

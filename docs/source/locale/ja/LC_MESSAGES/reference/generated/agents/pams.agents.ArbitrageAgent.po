@@ -40,6 +40,13 @@ msgid ""
 "constitutional stock."
 msgstr "現在のところ、インデックス市場では各構成銘柄のウェイトが同一である必要があります。"
 
+#: of pams.agents.arbitrage_agent.ArbitrageAgent:10
+msgid ""
+"Unlike plhamJ, the component markets of an index market are not made "
+"accessible automatically. Therefore, the accessible markets must include "
+"all the component markets of the index markets, too."
+msgstr "plhamJとは異なり、インデックス市場の構成市場は自動的にはアクセス可能になりません。そのため、アクセス可能な市場には、インデックス市場のすべての構成市場も含める必要があります。"
+
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:1
 #, fuzzy
 msgid "Agent setup. Usually be called from simulator/runner automatically."
@@ -81,6 +88,14 @@ msgstr "戻り値"
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:17
 msgid "None"
 msgstr ""
+
+#: of pams.agents.arbitrage_agent.ArbitrageAgent.setup:21
+msgid ""
+"This warns if some component markets of an accessible index market are "
+"not accessible, or if no accessible market is an index market. The latter"
+" check is skipped if some accessible markets are not registered to the "
+"simulator yet, because they may be index markets."
+msgstr "アクセス可能なインデックス市場の構成市場の一部にアクセスできない場合、またはアクセス可能な市場にインデックス市場が1つもない場合に警告します。アクセス可能な市場の一部がまだシミュレーターに登録されていない場合、それらがインデックス市場である可能性があるため、後者のチェックは行いません。"
 
 #: of pams.agents.arbitrage_agent.ArbitrageAgent.submit_orders:1
 #, fuzzy

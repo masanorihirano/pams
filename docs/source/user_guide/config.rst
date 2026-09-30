@@ -292,6 +292,11 @@ The ``simulation`` block
      - Number of workers for the agent-parallel runners (default: the number of CPUs minus 1, at least 1).
        Ignored by
        :class:`~pams.runners.SequentialRunner`. See :ref:`config-parallel`.
+   * - ``startMethod`` |optional|
+     - ``"spawn"``, ``"fork"`` or ``"forkserver"``
+     - How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker processes (default: the
+       platform's default). Only the start methods available on the platform are accepted: Windows has only
+       ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
 
 Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
 
@@ -416,10 +421,10 @@ created and how they are named.
      - Value
      - Description
    * - ``class`` |required|
-     - string
+     - string or class
      - Class name, e.g. ``"Market"`` or ``"FCNAgent"``. Use the plain class name (case-sensitive), not a dotted
-       path. Built-in classes are found automatically; your own classes must be registered
-       (see :ref:`config-user-classes`).
+       path. Built-in classes are found automatically; your own classes must be registered, or set as the
+       class itself in a Python dict config (see :ref:`config-user-classes`).
    * - ``extends`` |optional|
      - block name
      - Inherit the keys of another block. See :ref:`config-extends`.
@@ -858,6 +863,9 @@ JsonRandom notation (``cashAmount`` and ``assetVolume`` still do).
 - ``markets`` must include the index market group **and** the groups of all its component markets.
   Otherwise the component orders are still sent, and the simulation stops with a ``KeyError`` (a market ID)
   when the first one is executed.
+  Unlike plham, the component markets are not added automatically; the agent warns at setup about each
+  index market with missing components.
+- If ``markets`` includes no ``IndexMarket``, the agent never places an order, and it warns about this at setup.
 - All component markets must have the same ``outstandingShares``.
 - It only trades while the index and all its components are executing orders.
 
@@ -1171,15 +1179,31 @@ before calling ``main()``, then refer to it by its class name:
 
    "MyAgents": {"extends": "FCNAgents", "class": "MyAgent", "myParameter": 2.0}
 
+When the config is a Python dict, you can instead set the class itself as the value of ``class``. Such a class
+is used as is, so it needs no ``class_register`` and its name does not have to be unique:
+
+.. code-block:: python
+
+   config = {
+       # ... the other blocks
+       "MyAgents": {"extends": "FCNAgents", "class": MyAgent, "myParameter": 2.0},
+   }
+   runner = SequentialRunner(settings=config)
+   runner.main()
+
+This works only with a Python dict, because a JSON file cannot hold a class. A class set in a block is inherited
+through ``extends`` like any other value.
+
 - The block (after ``extends`` is resolved, without ``numAgents`` / ``numMarkets``, ``from``, ``to`` and
   ``prefix``) is passed to ``setup(settings=...)``, so any extra key you add is available there. To accept JsonRandom notation, draw the value in ``setup`` with
   ``JsonRandom(prng=self.prng).random(settings["myParameter"])`` (``from pams.utils import JsonRandom``; see
   :class:`~pams.utils.JsonRandom`). It always returns a float, so apply ``int()`` yourself for integer
   parameters.
-- Class names must be unique: a class with the same name as a built-in class (e.g. your own ``FCNAgent``)
-  is ambiguous and fails. Register each class only once.
-- Agent classes must inherit from :class:`~pams.agents.Agent` and market classes from :class:`~pams.Market`.
-  An agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
+- Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
+  ``FCNAgent``) is ambiguous and fails. Register each class only once.
+- Agent classes must inherit from :class:`~pams.agents.Agent`, market classes from :class:`~pams.Market` and
+  event classes from :class:`~pams.events.EventABC`. An agent that inherits from
+  :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
 - ``samples/user_class`` and ``samples/market_share`` show complete examples.
 
 
@@ -1194,7 +1218,7 @@ the same seed. They call ``submit_orders`` of normal agents in parallel; everyth
 
 - **Speed**: because of Python's GIL, the thread runner only helps when ``submit_orders`` waits for I/O (for
   example a call to an external model); it does not speed up the built-in agents. The process runner is much
-  slower, because the agent and the markets are copied to a worker process at every call. See also
+  slower, because the whole simulation is copied to the worker processes in every step (see below). See also
   :doc:`platform`.
 - **User-defined agents** must not change shared objects (markets, other agents, the logger) in
   ``submit_orders``. With the process runner, changes an agent makes to its own attributes in ``submit_orders``
@@ -1213,10 +1237,24 @@ With the process runner, put the code that creates and runs the runner under ``i
 ``fork``; without it the run fails or hangs), and define user-defined classes in a ``.py``
 file, not in a notebook or an interactive session, so that the worker processes can import them.
 
-The process runner pickles the agent and the markets at every call, together with everything they refer to (the
+``simulation.startMethod`` sets how the process runner starts its worker processes: ``"spawn"`` (the default on
+Windows and macOS), ``"fork"`` (the default on Linux up to Python 3.13) or ``"forkserver"`` (the default on Linux
+from Python 3.14). Only the values that :func:`multiprocessing.get_all_start_methods` returns on the platform are
+accepted; any other value is an error. Without the key, the platform's default is used, unless a subclass of the
+runner sets another default. Use ``"spawn"`` when agents use a library that does not work in a forked process,
+such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.
+
+The process runner pickles the agents and the markets for each task, together with everything they refer to (the
 simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
 therefore be picklable: for example, a logger that keeps an open file fails with
 ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data in memory and write the file after the run.
+
+Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
+state of each agent's random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,
+much longer than ``submit_orders`` of the built-in agents. To limit this cost, the agents asked at the same time
+are split into at most ``numParallel`` tasks. An object held by an agent, such as a neural network model, is copied
+in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
+``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
 
 
 .. _config-troubleshooting:
@@ -1261,6 +1299,11 @@ Common errors
    * - ``class for X is found 2 times``
      - Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
        registered twice. Rename the class or register it once.
+   * - ``market class for X does not inherit Market class`` (the same for agent and event classes)
+     - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
+   * - ``class for X must be a class name (str) or a class, but Y is given``
+     - The value ``Y`` of ``class`` in block ``X`` of a Python dict config is neither a string nor a class,
+       e.g. ``None``.
    * - ``X setting is missing in config``
      - A name in ``simulation.markets`` or ``simulation.agents`` has no block. Check the spelling.
    * - ``KeyError: 'X'``
@@ -1296,6 +1339,12 @@ Common errors
    * - ``order price does not accord to the tick size`` (warning)
      - An agent submitted a price that is not a multiple of ``tickSize``; it was rounded. This is normal for
        FCN agents.
+   * - ``ArbitrageAgent X can access the index market Y but not its component markets Z`` (warning)
+     - Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise its orders to them fail while
+       the simulation runs.
+   * - ``ArbitrageAgent X cannot access any index market`` (warning)
+     - The agent never places an order. Add an ``IndexMarket`` group and the groups of its component markets to
+       its ``markets``.
    * - ``AssertionError`` while the simulation runs
      - Often an agent parameter out of range (see the FCNAgent warning) or an order to a market missing from a
        ``PriceLimitRule``'s ``targetMarkets``.

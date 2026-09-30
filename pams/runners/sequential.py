@@ -125,6 +125,11 @@ class SequentialRunner(Runner):
             prefix = name + ("-" if n_entities > 1 else "")
         if "class" not in group_settings:
             raise ValueError(f"class is not defined for {name}")
+        if not isinstance(group_settings["class"], (str, type)):
+            raise ValueError(
+                f"class for {name} must be a class name (str) or a class, "
+                f"but {group_settings['class']!r} is given"
+            )
         group_class: Type = find_class(
             name=group_settings["class"], optional_class_list=self.registered_classes
         )
@@ -151,7 +156,9 @@ class SequentialRunner(Runner):
             market_settings, ids, numbered, prefix, market_class = self._parse_group(
                 name=name, count_key="numMarkets"
             )
-            if not issubclass(market_class, Market):
+            if not isinstance(market_class, type) or not issubclass(
+                market_class, Market
+            ):
                 raise ValueError(
                     f"market class for {name} does not inherit Market class"
                 )
@@ -206,7 +213,7 @@ class SequentialRunner(Runner):
             agent_settings, ids, numbered, prefix, agent_class = self._parse_group(
                 name=name, count_key="numAgents"
             )
-            if not issubclass(agent_class, Agent):
+            if not isinstance(agent_class, type) or not issubclass(agent_class, Agent):
                 raise ValueError(f"agent class for {name} does not inherit Agent class")
             if "markets" not in agent_settings:
                 raise ValueError(f"markets is required in {name}")
@@ -317,11 +324,21 @@ class SequentialRunner(Runner):
                     )
                     if "class" not in event_setting:
                         raise ValueError(f"class is required in {event_name}")
-                    event_class_name = event_setting["class"]
+                    if not isinstance(event_setting["class"], (str, type)):
+                        raise ValueError(
+                            f"class for {event_name} must be a class name (str) "
+                            f"or a class, but {event_setting['class']!r} is given"
+                        )
                     event_class: Type[EventABC] = find_class(
-                        name=event_class_name,
+                        name=event_setting["class"],
                         optional_class_list=self.registered_classes,
                     )
+                    if not isinstance(event_class, type) or not issubclass(
+                        event_class, EventABC
+                    ):
+                        raise ValueError(
+                            f"event class for {event_name} does not inherit EventABC class"
+                        )
                     event = event_class(
                         event_id=i_event,
                         prng=random.Random(self._prng.randint(0, 2**31)),
