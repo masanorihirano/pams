@@ -329,6 +329,7 @@
 <div class="admonition note">
 <p class="admonition-title">注釈</p>
 <p>現在のところ、インデックス市場では各構成銘柄のウェイトが同一である必要があります。</p>
+<p>plhamJとは異なり、インデックス市場の構成市場は自動的にはアクセス可能になりません。そのため、アクセス可能な市場には、インデックス市場のすべての構成市場も含める必要があります。</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.ArbitrageAgent.setup">
@@ -350,6 +351,10 @@
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>アクセス可能なインデックス市場の構成市場の一部にアクセスできない場合、またはアクセス可能な市場にインデックス市場が1つもない場合に警告します。アクセス可能な市場の一部がまだシミュレーターに登録されていない場合、それらがインデックス市場である可能性があるため、後者のチェックは行いません。</p>
+</div>
 </dd></dl>
 
 <dl class="py method">

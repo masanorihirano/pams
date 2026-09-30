@@ -1551,7 +1551,10 @@ Must be a JSON integer.</p></td>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">markets</span></code> must include the index market group <strong>and</strong> the groups of all its component markets.
 Otherwise the component orders are still sent, and the simulation stops with a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> (a market ID)
-when the first one is executed.</p></li>
+when the first one is executed.
+Unlike plham, the component markets are not added automatically; the agent warns at setup about each
+index market with missing components.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">markets</span></code> includes no <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>, the agent never places an order, and it warns about this at setup.</p></li>
 <li><p>All component markets must have the same <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code>.</p></li>
 <li><p>It only trades while the index and all its components are executing orders.</p></li>
 </ul>
@@ -2089,6 +2092,14 @@ its <code class="docutils literal notranslate"><span class="pre">markets</span><
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">price</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">accord</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">tick</span> <span class="pre">size</span></code> (warning)</p></td>
 <td><p>An agent submitted a price that is not a multiple of <code class="docutils literal notranslate"><span class="pre">tickSize</span></code>; it was rounded. This is normal for
 FCN agents.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span> <span class="pre">X</span> <span class="pre">can</span> <span class="pre">access</span> <span class="pre">the</span> <span class="pre">index</span> <span class="pre">market</span> <span class="pre">Y</span> <span class="pre">but</span> <span class="pre">not</span> <span class="pre">its</span> <span class="pre">component</span> <span class="pre">markets</span> <span class="pre">Z</span></code> (warning)</p></td>
+<td><p>Add the groups of the markets <code class="docutils literal notranslate"><span class="pre">Z</span></code> to <code class="docutils literal notranslate"><span class="pre">markets</span></code> of the agent. Otherwise its orders to them fail while
+the simulation runs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span> <span class="pre">X</span> <span class="pre">cannot</span> <span class="pre">access</span> <span class="pre">any</span> <span class="pre">index</span> <span class="pre">market</span></code> (warning)</p></td>
+<td><p>The agent never places an order. Add an <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> group and the groups of its component markets to
+its <code class="docutils literal notranslate"><span class="pre">markets</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AssertionError</span></code> while the simulation runs</p></td>
 <td><p>Often an agent parameter out of range (see the FCNAgent warning) or an order to a market missing from a

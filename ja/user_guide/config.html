@@ -1390,7 +1390,8 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </table>
 </div>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">markets</span></code> には、インデックス市場の市場グループ <strong>および</strong> そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> （市場ID）で停止します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">markets</span></code> には、インデックス市場の市場グループ <strong>および</strong> そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> （市場ID）で停止します。plhamとは異なり、構成市場は自動的には追加されません。構成市場が欠けているインデックス市場があると、エージェントはセットアップ時にインデックス市場ごとに警告を出します。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">markets</span></code> に <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> が1つも含まれていない場合、エージェントは注文を一切出さず、セットアップ時にその旨の警告を出します。</p></li>
 <li><p>すべての構成市場の <code class="docutils literal notranslate"><span class="pre">outstandingShares</span></code> が同じである必要があります。</p></li>
 <li><p>インデックス市場とそのすべての構成市場が注文を約定させている間のみ取引を行います。</p></li>
 </ul>
@@ -1824,6 +1825,12 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">order</span> <span class="pre">price</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">accord</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">tick</span> <span class="pre">size</span></code> （警告）</p></td>
 <td><p>エージェントが <code class="docutils literal notranslate"><span class="pre">tickSize</span></code> の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span> <span class="pre">X</span> <span class="pre">can</span> <span class="pre">access</span> <span class="pre">the</span> <span class="pre">index</span> <span class="pre">market</span> <span class="pre">Y</span> <span class="pre">but</span> <span class="pre">not</span> <span class="pre">its</span> <span class="pre">component</span> <span class="pre">markets</span> <span class="pre">Z</span></code> （警告）</p></td>
+<td><p>市場 <code class="docutils literal notranslate"><span class="pre">Z</span></code> の市場グループをエージェントの <code class="docutils literal notranslate"><span class="pre">markets</span></code> に追加してください。追加しない場合、それらの市場への注文はシミュレーション実行中に失敗します。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ArbitrageAgent</span> <span class="pre">X</span> <span class="pre">cannot</span> <span class="pre">access</span> <span class="pre">any</span> <span class="pre">index</span> <span class="pre">market</span></code> （警告）</p></td>
+<td><p>このエージェントは注文を一切出しません。<code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> の市場グループとその構成市場の市場グループを、エージェントの <code class="docutils literal notranslate"><span class="pre">markets</span></code> に追加してください。</p></td>
 </tr>
 <tr class="row-even"><td><p>シミュレーション実行中の <code class="docutils literal notranslate"><span class="pre">AssertionError</span></code></p></td>
 <td><p>多くの場合、エージェントのパラメータが範囲外である（FCNAgentの警告を参照）か、<code class="docutils literal notranslate"><span class="pre">PriceLimitRule</span></code> の <code class="docutils literal notranslate"><span class="pre">targetMarkets</span></code> に含まれていない市場への注文が原因です。</p></td>

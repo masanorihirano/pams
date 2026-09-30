@@ -330,6 +330,8 @@ Arbitrage agent mainly aimed to take arbitrage chance between spot markets and i
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Currently, index markets must have the same weight for each constitutional stock.</p>
+<p>Unlike plhamJ, the component markets of an index market are not made accessible automatically.
+Therefore, the accessible markets must include all the component markets of the index markets, too.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.ArbitrageAgent.setup">
@@ -353,6 +355,13 @@ This can include the parameter “orderTimeLength”.</p></li>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This warns if some component markets of an accessible index market are not accessible,
+or if no accessible market is an index market.
+The latter check is skipped if some accessible markets are not registered to the simulator yet,
+because they may be index markets.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">

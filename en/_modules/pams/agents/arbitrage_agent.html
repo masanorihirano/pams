@@ -314,6 +314,7 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for pams.agents.arbitrage_agent</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
@@ -339,6 +340,9 @@
 
 <span class="sd">    Note:</span>
 <span class="sd">        Currently, index markets must have the same weight for each constitutional stock.</span>
+
+<span class="sd">        Unlike plhamJ, the component markets of an index market are not made accessible automatically.</span>
+<span class="sd">        Therefore, the accessible markets must include all the component markets of the index markets, too.</span>
 
 <span class="sd">    """</span>
 
@@ -384,6 +388,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 
+<span class="sd">        Note:</span>
+<span class="sd">            This warns if some component markets of an accessible index market are not accessible,</span>
+<span class="sd">            or if no accessible market is an index market.</span>
+<span class="sd">            The latter check is skipped if some accessible markets are not registered to the simulator yet,</span>
+<span class="sd">            because they may be index markets.</span>
+
 <span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="s2">"orderVolume"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
@@ -397,7 +407,42 @@
         <span class="k">if</span> <span class="s2">"orderTimeLength"</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"orderTimeLength"</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"orderTimeLength have to be int"</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"orderTimeLength"</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">order_time_length</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"orderTimeLength"</span><span class="p">]</span>
+
+        <span class="c1"># runners set up all the markets before the agents, so the components of index markets are known here</span>
+        <span class="n">id2market</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">id2market</span>
+        <span class="n">accessible_markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">id2market</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">market_id</span> <span class="ow">in</span> <span class="n">accessible_markets_ids</span>
+            <span class="k">if</span> <span class="n">market_id</span> <span class="ow">in</span> <span class="n">id2market</span>
+        <span class="p">]</span>
+        <span class="n">index_markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IndexMarket</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">market</span> <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">accessible_markets</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">market</span><span class="p">,</span> <span class="n">IndexMarket</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">index_markets</span><span class="p">:</span>
+            <span class="n">missing_markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">market</span>
+                <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">index</span><span class="o">.</span><span class="n">get_components</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_markets</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">missing_market_names</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">market</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">missing_markets</span>
+                <span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> can access the index market </span><span class="si">{</span><span class="n">index</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"but not its component markets </span><span class="si">{</span><span class="n">missing_market_names</span><span class="si">}</span><span class="s2">, so its orders to them will fail. "</span>
+                    <span class="s2">"Add the groups of these markets to markets in the settings of this agent."</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="c1"># a market not registered to the simulator yet may be an index market</span>
+        <span class="n">all_registered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">accessible_markets</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">accessible_markets_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index_markets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">all_registered</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> cannot access any index market, so it never submits orders. "</span>
+                <span class="s2">"Add an index market and its component markets to markets in the settings of this agent."</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="n">Market</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
