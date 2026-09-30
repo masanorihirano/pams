@@ -13,6 +13,9 @@ from typing import Tuple
 
 import matplotlib
 import pytest
+from matplotlib.testing.compare import compare_images
+from PIL import Image
+from PIL import ImageDraw
 
 from pams.agents import FCNAgent
 from pams.runners import SequentialRunner
@@ -33,6 +36,7 @@ USER_GUIDE_DIR: str = os.path.join(
 )
 TUTORIAL_DIR: str = os.path.join(USER_GUIDE_DIR, "tutorials")
 CODE_DIR: str = os.path.join(TUTORIAL_DIR, "code")
+IMAGE_DIR: str = os.path.join(TUTORIAL_DIR, "images")
 
 # Runner.main() prints the time taken, which changes from run to run
 TIME_LABELS: Tuple[str, str] = ("# INITIALIZATION TIME ", "# EXECUTION TIME ")
@@ -113,6 +117,88 @@ def assert_shown(shown: List[str], output: List[str]) -> None:
         else:
             pytest.fail(f"not in the output: {segment}")
     assert position <= len(actual) - len(last)
+
+
+def page_text(page: str) -> str:
+    """Read a tutorial page as one line, with each run of white space as one space."""
+    return " ".join(" ".join(read_page(page)).split())
+
+
+def assert_in_page(page: str, *phrases: str) -> None:
+    """Check that a tutorial page states each phrase, also across line breaks."""
+    text: str = page_text(page)
+    for phrase in phrases:
+        assert phrase in text, f"not in {page}: {phrase}"
+
+
+def record_runners(monkeypatch: pytest.MonkeyPatch) -> List[SequentialRunner]:
+    """Keep every runner whose main() runs from now on, in the order of the runs."""
+    runners: List[SequentialRunner] = []
+    run = SequentialRunner.main
+
+    def main(self: SequentialRunner) -> None:
+        run(self)
+        runners.append(self)
+
+    monkeypatch.setattr(SequentialRunner, "main", main)
+    return runners
+
+
+def assert_same_image(
+    name: str, path: Path, version: str = matplotlib.__version__
+) -> None:
+    """Check that an image drawn by a script is the image shown in a page.
+
+    Other versions of matplotlib draw the same plot with small differences, so the
+    pixels are compared only when ``version`` is the version that drew the image of
+    the page. The sizes are always compared.
+    """
+    expected: str = os.path.join(IMAGE_DIR, name)
+    with Image.open(expected) as image:
+        drawn_by: str = image.info.get("Software", "")
+        size: Tuple[int, int] = image.size
+    with Image.open(path) as image:
+        assert image.size == pytest.approx(size, rel=0.02)
+    if drawn_by.startswith(f"Matplotlib version{version},"):
+        assert compare_images(expected, str(path), tol=1.0) is None
+
+
+def test_page_text() -> None:
+    # "without a price limit, measures how long" spans two lines of the page
+    assert "\n" not in page_text("price_limit.rst")
+    assert_in_page("price_limit.rst", "without a price limit, measures how long")
+    with pytest.raises(AssertionError, match="not in price_limit.rst: no such"):
+        assert_in_page("price_limit.rst", "no such phrase")
+
+
+def test_record_runners(monkeypatch: pytest.MonkeyPatch) -> None:
+    tutorial = load_tutorial("tutorial_first_simulation")
+    runners: List[SequentialRunner] = record_runners(monkeypatch)
+    assert runners == []
+    runner: SequentialRunner = tutorial.run_simulation(42)[0]
+    assert runners == [runner]
+
+
+def test_assert_same_image(tmp_path: Path) -> None:
+    name: str = "price_limit_prices.png"
+    with Image.open(os.path.join(IMAGE_DIR, name)) as image:
+        # such as "Matplotlib version3.11.2, https://matplotlib.org/"
+        drawn_by: str = image.info["Software"]
+        same = image.copy()
+        changed = image.copy()
+        smaller = image.resize((image.width // 2, image.height // 2))
+    version: str = drawn_by[len("Matplotlib version") :].split(",")[0]
+    same.save(tmp_path / "same.png")
+    ImageDraw.Draw(changed).rectangle((100, 100, 300, 300), fill="black")
+    changed.save(tmp_path / "changed.png")
+    smaller.save(tmp_path / "smaller.png")
+    assert_same_image(name, tmp_path / "same.png", version=version)
+    with pytest.raises(AssertionError):
+        assert_same_image(name, tmp_path / "changed.png", version=version)
+    # with another version of matplotlib, only the sizes are compared
+    assert_same_image(name, tmp_path / "changed.png", version="0.0.0")
+    with pytest.raises(AssertionError):
+        assert_same_image(name, tmp_path / "smaller.png", version="0.0.0")
 
 
 def test_assert_shown() -> None:
