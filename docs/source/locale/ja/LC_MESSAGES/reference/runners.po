@@ -75,3 +75,15 @@ msgstr ""
 msgid "JAX Agent Parallel runner class."
 msgstr "JAX用のエージェント並列ランナークラス。"
 
+#: ../../source/reference/runners.rst:14:<autosummary>:1
+msgid ""
+":py:obj:`runners.TensorFlowAgentParallelRunner "
+"<pams.runners.TensorFlowAgentParallelRunner>`\\ \\(settings\\)"
+msgstr ""
+":py:obj:`runners.TensorFlowAgentParallelRunner "
+"<pams.runners.TensorFlowAgentParallelRunner>`\\ \\(settings\\)"
+
+#: ../../source/reference/runners.rst:14:<autosummary>:1
+msgid "TensorFlow Agent Parallel runner class."
+msgstr "TensorFlow のエージェント並列ランナークラス。"
+

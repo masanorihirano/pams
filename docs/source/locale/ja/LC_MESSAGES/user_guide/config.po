@@ -586,11 +586,18 @@ msgstr ""
 " で利用できるのは ``\"spawn\"`` のみです。その他のランナーでは無視されます。:ref:`config-parallel` "
 "を参照してください。"
 
-#: ../../source/user_guide/config.rst:296
+#: ../../source/user_guide/config.rst:301
 msgid ""
-"Other keys in ``simulation`` are ignored. In particular, events are not "
-"listed here but in each session."
-msgstr "``simulation`` 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。"
+"Other keys in ``simulation`` are ignored, except the keys that "
+":class:`~pams.runners.JaxAgentParallelRunner` and "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-"
+"parallel-jax` and :ref:`config-parallel-tensorflow`). In particular, events "
+"are not listed here but in each session."
+msgstr ""
+"``simulation`` 内のその他のキーは、:class:`~pams.runners.JaxAgentParallelRunner` と "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` が読み込むキー（:ref:`config-"
+"parallel-jax` と :ref:`config-parallel-tensorflow` "
+"を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。"
 
 #: ../../source/user_guide/config.rst:304
 msgid ""
@@ -2613,6 +2620,81 @@ msgid ""
 "These keys do not configure JAX on the main process. See :doc:`platform` for"
 " how to write agents for this runner."
 msgstr "これらのキーはメインプロセスの JAX を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` を参照してください。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "TensorFlow runner"
+msgstr "TensorFlow ランナー"
+
+#: ../../source/user_guide/config.rst:1283
+msgid ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the "
+"process runner for agents that use TensorFlow in ``submit_orders``, for "
+"example Keras models. TensorFlow is not installed with PAMS: install it "
+"yourself (for example ``pip install tensorflow``, or ``pip install "
+"tensorflow-cpu`` for the CPU-only build). The runner starts its worker "
+"processes by ``\"spawn\"`` unless ``simulation.startMethod`` is set. Each "
+"worker process configures TensorFlow once, before it runs any task, with "
+"these keys in ``simulation``, which the other runners ignore:"
+msgstr ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` "
+"（実験的機能）は、``submit_orders`` で TensorFlow を使うエージェント（例えば Keras "
+"のモデル）のためのプロセスランナーです。TensorFlow は PAMS と一緒にはインストールされないため、各自でインストールしてください（例えば "
+"``pip install tensorflow``、CPU 専用版であれば ``pip install tensorflow-"
+"cpu``）。このランナーは、``simulation.startMethod`` が設定されていない限り、``\"spawn\"`` "
+"でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで TensorFlow "
+"を設定します。これらのキーは他のランナーでは無視されます："
+
+#: ../../source/user_guide/config.rst:1296
+msgid "``tensorflowIntraOpThreads`` |optional|"
+msgstr "``tensorflowIntraOpThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:1298
+msgid ""
+"The number of threads that TensorFlow uses to run one operation, such as a "
+"matrix multiplication, on each worker process. Default: the number of CPUs "
+"divided by the smaller of ``numParallel`` and ``maxNormalOrders`` (at least "
+"1), so that the worker processes running at the same time do not use more "
+"threads than the CPUs in total. The results of large operations can depend "
+"on this number, so set it explicitly for reproducible results (see "
+":doc:`platform`)."
+msgstr ""
+"各ワーカープロセスで、TensorFlow が 1 つの演算（例えば行列積）の実行に使うスレッド数です。デフォルト：CPU 数を "
+"``numParallel`` と ``maxNormalOrders`` の小さい方で割った値（最小 1）。同時に動くワーカープロセス全体で CPU "
+"数より多くのスレッドを使わないようにするためです。大きな演算の結果はこの値によって変わることがあるため、結果を再現できるようにするには明示的に設定してください（:doc:`platform`"
+" を参照）。"
+
+#: ../../source/user_guide/config.rst:1303
+msgid "``tensorflowInterOpThreads`` |optional|"
+msgstr "``tensorflowInterOpThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:1305
+msgid ""
+"The number of threads that TensorFlow uses to run independent operations at "
+"the same time on each worker process. Default: ``1``."
+msgstr "各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：``1``。"
+
+#: ../../source/user_guide/config.rst:1307
+msgid "``tensorflowGpuMemoryGrowth`` |optional|"
+msgstr "``tensorflowGpuMemoryGrowth`` |optional|"
+
+#: ../../source/user_guide/config.rst:1309
+msgid ""
+"Whether memory growth is enabled for all the visible GPUs on each worker "
+"process. Default: ``true``, so that the worker processes can share a GPU (by"
+" default, TensorFlow allocates almost all the memory of a GPU to the first "
+"process that uses it)."
+msgstr ""
+"各ワーカープロセスで、認識されているすべての GPU のメモリ増加（memory "
+"growth）を有効にするかどうかです。デフォルト：``true``。ワーカープロセスが GPU を共有できるようにするためです（TensorFlow "
+"はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。"
+
+#: ../../source/user_guide/config.rst:1313
+msgid ""
+"These keys do not configure TensorFlow on the main process. See "
+":doc:`platform` for how to write agents for this runner."
+msgstr ""
+"これらのキーはメインプロセスの TensorFlow を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` "
+"を参照してください。"
 
 #: ../../source/user_guide/config.rst:1204
 msgid "Silent pitfalls"
