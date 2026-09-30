@@ -729,7 +729,7 @@ Only the agents' cash differs.
 
    As for the other :ref:`user-defined classes <config-user-classes>`, register the class and give its name as
    ``class``, or, in a Python dict config, give the class itself. With the process runner, define it in a ``.py``
-   file (see :ref:`config-parallel`).
+   file and keep its instances picklable (see :ref:`config-parallel`).
 
    ``placed_at`` is the time at which an order was added to the order book, and order IDs increase in the order
    in which the orders arrive at each market. Orders placed in the same step have the same ``placed_at``, so the
@@ -1353,9 +1353,10 @@ runner sets another default. Use ``"spawn"`` when agents use a library that does
 such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.
 
 The process runner pickles the agents and the markets for each task, together with everything they refer to (the
-simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
-therefore be picklable: for example, a logger that keeps an open file fails with
-``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data in memory and write the file after the run.
+simulator, the other agents, the events, the transaction costs and the logger). User-defined agents, markets,
+events, transaction costs and loggers must therefore be picklable: for example, a logger that keeps an open file
+fails with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data in memory and write the file
+after the run.
 
 Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
 state of each agent's random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,

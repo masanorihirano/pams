@@ -1485,16 +1485,17 @@ msgstr ""
 " ``setup`` で読み込みます。``setup`` はデフォルトでは何もしません。次の例では、先に出された注文（メイカー）に "
 "``makerRate`` を、もう一方の注文（テイカー）に ``takerRate`` を課します："
 
-#: ../../source/user_guide/config.rst:730
+#: ../../source/user_guide/config.rst:731
 msgid ""
 "As for the other :ref:`user-defined classes <config-user-classes>`, "
 "register the class and give its name as ``class``, or, in a Python dict "
 "config, give the class itself. With the process runner, define it in a "
-"``.py`` file (see :ref:`config-parallel`)."
+"``.py`` file and keep its instances picklable (see :ref:`config-"
+"parallel`)."
 msgstr ""
 "他の :ref:`ユーザー定義クラス <config-user-classes>` と同様に、クラスを登録してその名前を ``class`` "
 "に指定するか、Python の dict による設定ではクラスそのものを指定します。プロセスランナーを使う場合は、クラスを ``.py`` "
-"ファイルで定義してください（:ref:`config-parallel` を参照）。"
+"ファイルで定義し、そのインスタンスを pickle 可能にしてください（:ref:`config-parallel` を参照）。"
 
 #: ../../source/user_guide/config.rst:734
 msgid ""
@@ -2707,17 +2708,18 @@ msgstr ""
 " されたプロセスでは動作しないライブラリ（CUDA を使う PyTorch、TensorFlow、JAX など）をエージェントが使う場合は "
 "``\"spawn\"`` を使ってください。開始方式によってシミュレーション結果は変わりません。"
 
-#: ../../source/user_guide/config.rst:1204
+#: ../../source/user_guide/config.rst:1357
 msgid ""
 "The process runner pickles the agents and the markets for each task, "
-"together with everything they refer to (the simulator, the other agents, the"
-" events and the logger). User-defined agents, markets, events and loggers "
-"must therefore be picklable: for example, a logger that keeps an open file "
-"fails with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep "
-"such data in memory and write the file after the run."
+"together with everything they refer to (the simulator, the other agents, "
+"the events, the transaction costs and the logger). User-defined agents, "
+"markets, events, transaction costs and loggers must therefore be "
+"picklable: for example, a logger that keeps an open file fails with "
+"``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data "
+"in memory and write the file after the run."
 msgstr ""
-"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに "
-"pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle "
+"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、取引コスト、ロガー）とともに"
+" pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、取引コスト、ロガーは pickle "
 "可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
 "'_io.TextIOWrapper' object`` で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。"
 
