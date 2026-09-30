@@ -1984,10 +1984,11 @@ class TestSequentialRunner(TestRunner):
         assert name_logger.n_order_log == class_logger.n_order_log
         assert name_logger.n_execution_log == class_logger.n_execution_log
 
-    def _setup_market_access_runner(self, agent_class: str) -> SequentialRunner:
+    @staticmethod
+    def _market_access_setting(agent_class: str) -> Dict:
         # agents can access Market (market_id 0) but not OtherMarkets-0 and OtherMarkets-1
         # (market_id 1 and 2). market_id 3 does not exist.
-        setting = {
+        return {
             "simulation": {
                 "markets": ["Market", "OtherMarkets"],
                 "agents": ["Agents"],
@@ -2002,6 +2003,10 @@ class TestSequentialRunner(TestRunner):
                         "maxHighFrequencyOrders": 3,
                     }
                 ],
+                # used only by the agent-parallel runners.
+                # MultiProcessAgentParallelRunner asks the 3 agents of a batch in the chunks
+                # of 2 and 1 agents on any machine.
+                "numParallel": 2,
             },
             "Market": {"class": "Market", "tickSize": 0.00001, "marketPrice": 300.0},
             "OtherMarkets": {"extends": "Market", "numMarkets": 2},
@@ -2013,8 +2018,13 @@ class TestSequentialRunner(TestRunner):
                 "cashAmount": 10000,
             },
         }
+
+    def _setup_market_access_runner(self, agent_class: str) -> SequentialRunner:
         runner = self.test__init__(
-            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+            setting_mode="dict",
+            logger=None,
+            simulator_class=None,
+            setting=self._market_access_setting(agent_class=agent_class),
         )
         assert isinstance(runner, SequentialRunner)
         runner.class_register(cls=GivenOrdersAgent)

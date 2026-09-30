@@ -21,6 +21,7 @@ from typing import Union
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams.agents import Agent
 from pams.order import Cancel
 from pams.order import Order
@@ -34,6 +35,7 @@ from .dummy import WAIT_TIME
 from .dummy import CancelingAgent
 from .dummy import DummyLogger2
 from .dummy import FCNDelayAgent
+from .dummy import GivenOrdersAgent
 from .dummy import IdleEvenIDFCNAgent
 from .dummy import RaisingAgent
 from .dummy import RandomlyIdleFCNAgent
@@ -350,6 +352,103 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
         placed_orders = runner.simulator.markets[2].buy_order_book.priority_queue
         assert len(placed_orders) == len(runner.simulator.agents)
         assert all(not order.is_canceled for order in placed_orders)
+
+    @staticmethod
+    def _set_rejected_orders(runner: SequentialRunner, rejected: str) -> str:
+        # the first agent asked submits a valid order, and the second and third agents submit
+        # rejected orders. Return the error for the second agent.
+        def make_order(agent: Agent, market_id: int) -> Order:
+            return Order(
+                agent_id=agent.agent_id,
+                market_id=market_id,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=300.0,
+            )
+
+        # the agents in the order that _collect_orders_from_normal_agents asks them
+        prng = random.Random()
+        prng.setstate(runner._prng.getstate())
+        agents = runner.simulator.normal_frequency_agents
+        first, second, third, _, owner = prng.sample(agents, len(agents))
+        if isinstance(runner, MultiProcessAgentParallelRunner):
+            # the first and second agents are asked in the same chunk
+            assert runner._split_agents_into_chunks(agents=[first, second, third]) == [
+                [first, second],
+                [third],
+            ]
+        assert isinstance(first, GivenOrdersAgent)
+        assert isinstance(second, GivenOrdersAgent)
+        assert isinstance(third, GivenOrdersAgent)
+        first.orders_to_submit = [make_order(agent=first, market_id=0)]
+        if rejected == "inaccessible":
+            second.orders_to_submit = [make_order(agent=second, market_id=2)]
+            third.orders_to_submit = [make_order(agent=third, market_id=1)]
+            return (
+                "order for an inaccessible market is not allowed. "
+                f"{second.name} cannot access OtherMarkets-1. "
+                "please add OtherMarkets to markets of Agents or check market_id in order"
+            )
+        if rejected == "nonexistent":
+            second.orders_to_submit = [make_order(agent=second, market_id=3)]
+            third.orders_to_submit = [make_order(agent=third, market_id=4)]
+            return (
+                "order for a nonexistent market is not allowed. "
+                f"{second.name} submitted it for market_id 3. "
+                "please check market_id in order"
+            )
+        market = runner.simulator.markets[0]
+        placed_orders = [make_order(agent=owner, market_id=0) for _ in range(2)]
+        for agent, placed_order in zip([second, third], placed_orders):
+            market._add_order(order=placed_order)
+            # a forged order equal to the order that the owner placed
+            forged_order = make_order(agent=agent, market_id=0)
+            forged_order.order_id = placed_order.order_id
+            forged_order.placed_at = placed_order.placed_at
+            agent.orders_to_submit = [Cancel(order=forged_order)]
+        return (
+            "cancel order for an order of another agent is not allowed. "
+            f"{second.name} tried to cancel order_id {placed_orders[0].order_id} "
+            f"in Market, which {owner.name} placed. please check order in cancel order"
+        )
+
+    @pytest.mark.parametrize("rejected", ["inaccessible", "nonexistent", "cancel"])
+    def test_check_submitted_orders_same_as_sequential(self, rejected: str) -> None:
+        # the orders have to be checked for each agent in the order of the agents, even in a chunk
+        # of several agents, so that the error is the same as SequentialRunner
+        setting = self._market_access_setting(agent_class="GivenOrdersAgent")
+        sequential_runner, parallel_runner = self._make_runners(setting=setting)
+        expected_errors: List[str] = []
+        errors: List[str] = []
+        order_books: List[List[List[Tuple[int, Optional[int], bool]]]] = []
+        for runner in [sequential_runner, parallel_runner]:
+            runner.class_register(cls=GivenOrdersAgent)
+            runner._setup()
+            runner.simulator._update_times_on_markets(runner.simulator.markets)
+            expected_errors.append(
+                self._set_rejected_orders(runner=runner, rejected=rejected)
+            )
+            with pytest.raises(ValueError) as exc_info:
+                runner._collect_orders_from_normal_agents(
+                    session=runner.simulator.sessions[0]
+                )
+            errors.append(str(exc_info.value))
+            order_books.append(
+                [
+                    [
+                        (order.agent_id, order.order_id, order.is_canceled)
+                        for order in order_book.priority_queue
+                    ]
+                    for market in runner.simulator.markets
+                    for order_book in [market.buy_order_book, market.sell_order_book]
+                ]
+            )
+        assert errors == expected_errors
+        assert errors[0] == errors[1]
+        assert order_books[0] == order_books[1]
+        assert sequential_runner._prng.getstate() == parallel_runner._prng.getstate()
+        parallel_runner._shutdown_executor()
 
     def test_num_parallel_default(self) -> None:
         setting = copy.deepcopy(self.default_setting)
