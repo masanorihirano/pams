@@ -37,8 +37,9 @@ from .sequential import SequentialRunner
 # state of the current worker thread or process, set by _initialize_worker
 _worker_state = threading.local()
 
-# attributes that agents cannot list in synced_attributes because the runner manages them
-_UNSYNCABLE_ATTRIBUTES: Tuple[str, ...] = ("simulator", "logger", "prng")
+# attributes that agents cannot list in synced_attributes: the runner manages the first three,
+# and setting "__dict__" would replace all the attributes of the agent, including those three
+_UNSYNCABLE_ATTRIBUTES: Tuple[str, ...] = ("simulator", "logger", "prng", "__dict__")
 
 # marks a listed attribute that the agent on the worker does not have
 _MISSING = object()
@@ -315,7 +316,7 @@ def _find_unsynced_changes(
 
     Returns:
         Tuple[str, ...], Optional: sorted names of the attributes that were added, deleted, or
-        assigned another object, except the listed ones and those that the runner manages.
+        assigned another object, except the listed ones and those that cannot be listed.
         None if there are none.
 
     """
@@ -355,9 +356,14 @@ def _check_synced_attributes(agent: Agent) -> None:
         )
     for name in synced_attributes:
         if name in _UNSYNCABLE_ATTRIBUTES:
+            reason = (
+                "it holds all the attributes of the agent"
+                if name == "__dict__"
+                else "the runner manages it"
+            )
             raise ValueError(
                 f"{agent.__class__.__name__}.synced_attributes must not include {name!r}"
-                f" because the runner manages it"
+                f" because {reason}"
             )
 
 
@@ -463,13 +469,13 @@ def _submit_orders_in_worker(
             agent, the state of the agent's pseudo random number generator after the
             submission, the named attributes that the agent has after the submission, and the
             sorted names of the attributes that the agent added, deleted, or assigned another
-            object in the submission except the named ones and ``"simulator"``, ``"logger"``,
-            and ``"prng"``. The attributes are None if the agent has no names in
-            ``synced_attributes``, and the names are None if there are none or
-            ``find_unsynced_changes`` is False. The state and the attributes are required to
-            update the agent on the main process when this function runs on another process.
-            The list of the tuples is pickled into bytes if an agent has names in
-            ``synced_attributes``.
+            object in the submission except the named ones and those that cannot be named, i.e.,
+            ``"simulator"``, ``"logger"``, ``"prng"``, and ``"__dict__"``. The attributes are
+            None if the agent has no names in ``synced_attributes``, and the names are None if
+            there are none or ``find_unsynced_changes`` is False. The state and the attributes
+            are required to update the agent on the main process when this function runs on
+            another process. The list of the tuples is pickled into bytes if an agent has names
+            in ``synced_attributes``.
 
     """
     initializer_error: Optional[BaseException] = getattr(
@@ -1015,9 +1021,10 @@ class MultiProcessAgentParallelRunner(MultiThreadAgentParallelRunner):
         attributes must be listed too.
         Other objects shared with other agents, e.g., a model shared by agents, are copied, and
         which agents share a copy afterwards depends on how the agents are split into tasks.
-        ``"simulator"``, ``"logger"``, and ``"prng"`` cannot be listed. The names are read on the
-        main process whenever the agent is asked, and a ValueError is raised if they are invalid,
-        both then and in ``_setup``.
+        ``"simulator"``, ``"logger"``, and ``"prng"``, which the runner manages, and
+        ``"__dict__"``, which holds all the attributes of the agent, cannot be listed. The names
+        are read on the main process whenever the agent is asked, and a ValueError is raised if
+        they are invalid, both then and in ``_setup``.
         See :ref:`config-synced-attributes` for an example with PyTorch and other caveats.
         User-defined agents for this runner can also keep their states through the callbacks such
         as :func:`pams.agents.Agent.submitted_order` and :func:`pams.agents.Agent.executed_order`,

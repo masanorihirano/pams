@@ -877,10 +877,14 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             (["simulator"], "must not include 'simulator'"),
             (["n_calls", "logger"], "must not include 'logger'"),
             (("prng",), "must not include 'prng'"),
+            (
+                ["n_calls", "__dict__"],
+                "must not include '__dict__' because it holds all the attributes",
+            ),
             (["n_calls", 1], "must be a tuple or list of str"),
             ("n_calls", "must be a tuple or list of str"),
         ],
-        ids=["simulator", "logger", "prng", "non-str", "str"],
+        ids=["simulator", "logger", "prng", "__dict__", "non-str", "str"],
     )
     def test_synced_attributes_invalid(
         self, synced_attributes: Any, message: str
@@ -1675,10 +1679,14 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
             (["simulator"], "must not include 'simulator'"),
             (["n_calls", "logger"], "must not include 'logger'"),
             (("prng",), "must not include 'prng'"),
+            (
+                ["n_calls", "__dict__"],
+                "must not include '__dict__' because it holds all the attributes",
+            ),
             (["n_calls", 1], "must be a tuple or list of str"),
             ("n_calls", "must be a tuple or list of str"),
         ],
-        ids=["simulator", "logger", "prng", "non-str", "str"],
+        ids=["simulator", "logger", "prng", "__dict__", "non-str", "str"],
     )
     def test_synced_attributes_invalid(
         self, synced_attributes: Any, message: str

@@ -1314,7 +1314,7 @@ Keep the following in mind:
   and unlisted attributes keep referring to the old object, so identify such orders by their ``market_id`` and
   ``order_id``, not by ``is``. Other objects are copies too: an object shared with other agents, such as a model or
   a dict that several agents use, is no longer shared, and which agents share a copy depends on how the agents are
-  split into tasks. ``"simulator"``, ``"logger"`` and ``"prng"`` cannot be listed.
+  split into tasks.
 - **Shared memory**: some libraries share memory between processes instead of copying it. For example, PyTorch
   sends tensors on the CPU through shared memory, so the parameters of an unlisted model that are updated in place,
   e.g., by training, can reach the agent in the main process, while other changes, such as the state of its
@@ -1332,8 +1332,10 @@ Keep the following in mind:
   **Shared memory**). The built-in agents cause no warning.
 - **Pickling**: the listed attributes must be pickled with the agent; if ``__getstate__`` drops one of them, it is
   deleted from the agent in the main process.
-- **Checks**: the names must be a tuple or list of strings. The runner checks them when it is set up and whenever
-  it asks the agent, and raises a ``ValueError`` naming the agent class if they are invalid.
+- **Checks**: the names must be a tuple or list of strings. They must not include ``"simulator"``, ``"logger"`` or
+  ``"prng"``, which the runner manages, or ``"__dict__"``, which holds all the attributes of the agent, so list the
+  attributes one by one. The runner checks them when it is set up and whenever it asks the agent, and raises a
+  ``ValueError`` naming the agent class if they are invalid.
 
 
 .. _config-troubleshooting:
