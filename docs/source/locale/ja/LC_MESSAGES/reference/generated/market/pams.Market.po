@@ -60,57 +60,6 @@ msgstr "戻り値"
 msgid "None"
 msgstr ""
 
-#: of pams.market.Market.compute_transaction_costs:1
-msgid "Compute the transaction costs of an execution."
-msgstr "約定の取引コストを計算します。"
-
-#: of pams.market.Market.compute_transaction_costs:3
-msgid ""
-"This is called by the market for every execution. The costs are recorded "
-"in :class:`pams.logs.ExecutionLog` and subtracted from the cash of the "
-"buyer and the seller by the simulator."
-msgstr ""
-"市場は約定のたびにこのメソッドを呼び出します。コストは :class:`pams.logs.ExecutionLog` "
-"に記録され、シミュレーターによって買い手と売り手の現金から差し引かれます。"
-
-#: of pams.market.Market.compute_transaction_costs:7
-msgid ""
-"By default, both the buyer and the seller pay ``transaction_cost_rate`` "
-"times the executed value (``price * volume``). ``transaction_cost_rate`` "
-"is set by \"transactionCostRate\" in the market settings and is 0.0 (no "
-"costs) by default."
-msgstr ""
-"デフォルトでは、買い手と売り手の双方が約定金額（``price * volume``）の ``transaction_cost_rate`` "
-"倍を支払います。``transaction_cost_rate`` は市場の設定の \"transactionCostRate\" "
-"で設定され、デフォルトは 0.0（コストなし）です。"
-
-#: of pams.market.Market.compute_transaction_costs:11
-msgid ""
-"To implement other fee schedules, e.g., different rates for buyers and "
-"sellers or for makers and takers, or fixed fees, override this method. "
-"Negative costs are rebates, which are added to the agent's cash."
-msgstr "買い手と売り手、あるいはメイカーとテイカーで料率を変える場合や固定手数料など、別の手数料体系を実装するには、このメソッドをオーバーライドしてください。負のコストはリベートであり、エージェントの現金に加算されます。"
-
-#: of pams.market.Market.compute_transaction_costs:15
-msgid "executed price."
-msgstr "約定価格。"
-
-#: of pams.market.Market.compute_transaction_costs:18
-msgid "executed volume."
-msgstr "約定数量。"
-
-#: of pams.market.Market.compute_transaction_costs:21
-msgid "buy order."
-msgstr "買い注文。"
-
-#: of pams.market.Market.compute_transaction_costs:24
-msgid "sell order."
-msgstr "売り注文。"
-
-#: of pams.market.Market.compute_transaction_costs:27
-msgid "transaction costs charged to the buyer and the seller."
-msgstr "買い手と売り手に課される取引コスト。"
-
 #: of pams.market.Market.convert_to_price:1
 #, fuzzy
 msgid "Convert tick to price."
@@ -418,14 +367,11 @@ msgid ""
 "market configuration. Usually, automatically set from json config of "
 "simulator. This must include the parameters \"tickSize\" and either "
 "\"marketPrice\" or \"fundamentalPrice\". This can include the parameter "
-"\"outstandingShares\" and \"tradeVolume\". This can also include the "
-"parameter \"transactionCostRate\", a number in [0.0, 1.0) (see "
-":func:`compute_transaction_costs`)."
+"\"outstandingShares\" and \"tradeVolume\"."
 msgstr ""
 "市場の設定。通常は、シミュレーターのJSON設定から自動的に設定されます。パラメータ \"tickSize\" と、\"marketPrice\""
 " または \"fundamentalPrice\" のいずれかを含む必要があります。パラメータ \"outstandingShares\" および"
-" \"tradeVolume\" を含めることもできます。パラメータ \"transactionCostRate\"（[0.0, 1.0) "
-"の範囲の数値。:func:`compute_transaction_costs` を参照）を含めることもできます。"
+" \"tradeVolume\" を含めることもできます。"
 
 #: of pams.market.Market.setup:10 pams.market.Market.setup:12
 msgid "not used."
