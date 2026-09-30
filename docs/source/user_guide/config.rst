@@ -1242,10 +1242,10 @@ JAX/Flax runner
 ~~~~~~~~~~~~~~~
 
 :class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process runner for agents that use JAX in
-``submit_orders``, for example Flax models. JAX is not installed with PAMS: install it yourself (for example
-``pip install jax flax``). The runner starts its worker processes by ``"spawn"`` unless ``simulation.startMethod``
-is set. Each worker process configures JAX once, before it runs any task, with these keys in ``simulation``, which
-the other runners ignore:
+``submit_orders``, for example Flax models. JAX is not installed with PAMS: install it yourself, in the same command
+as PAMS so that pip chooses versions that work with PAMS (for example ``pip install pams jax flax``). The runner
+starts its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+JAX once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
 
 .. list-table::
    :header-rows: 1

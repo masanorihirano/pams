@@ -65,5 +65,5 @@ def test_import_error(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(sys.modules, "jax", None)
     with pytest.raises(ImportError, match="requires JAX") as exc_info:
         JaxAgentParallelRunner(settings=copy.deepcopy(SETTING))
-    assert "pip install jax" in str(exc_info.value)
+    assert "pip install pams jax flax" in str(exc_info.value)
     assert isinstance(exc_info.value.__cause__, ImportError)

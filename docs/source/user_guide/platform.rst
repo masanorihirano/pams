@@ -114,8 +114,11 @@ JAX/Flax runner
 :class:`pams.runners.JaxAgentParallelRunner` is an experimental :class:`pams.runners.MultiProcessAgentParallelRunner`
 for agents whose ``submit_orders`` uses `JAX <https://github.com/jax-ml/jax>`_, e.g., neural network models of
 `Flax <https://github.com/google/flax>`_. JAX is not a dependency of pams, so install it separately, e.g.,
-``pip install jax flax`` (see the `JAX installation guide <https://docs.jax.dev/en/latest/installation.html>`_
-for GPUs). ``import pams`` does not import JAX, and creating the runner without JAX raises an ``ImportError``.
+``pip install pams jax flax`` (see the `JAX installation guide <https://docs.jax.dev/en/latest/installation.html>`_
+for GPUs). Include pams in the command even if it is already installed, so that pip chooses versions of JAX and
+Flax that work with the NumPy that pams requires. For example, pams requires NumPy 1.x on Python 3.12 or earlier,
+and the last versions of JAX and Flax that support it are 0.7.1 and 0.12.0. ``import pams`` does not import JAX,
+and creating the runner without JAX raises an ``ImportError``.
 
 - The worker processes are started by ``spawn`` by default (``default_start_method = "spawn"``), because ``fork``
   is unsafe once JAX runs its own threads: a forked worker process can deadlock on a lock held by one of them.
