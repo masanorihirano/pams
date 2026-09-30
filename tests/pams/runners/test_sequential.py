@@ -9,6 +9,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 from typing import Union
+from typing import cast
 from unittest import mock
 
 import pytest
@@ -18,6 +19,8 @@ from pams import LIMIT_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
+from pams import ProportionalTransactionCost
+from pams import TransactionCost
 from pams.agents import Agent
 from pams.agents import FCNAgent
 from pams.events import FundamentalPriceShock
@@ -28,6 +31,7 @@ from tests.pams.runners.test_base import TestRunner
 from .dummy import DummyLogger
 from .dummy import DummyLogger2
 from .dummy import ExecutionCountLogger
+from .dummy import MakerTakerTransactionCost
 from .dummy import RandomlyIdleFCNAgent
 from .dummy import SimulatorAccessingLogger
 
@@ -477,6 +481,242 @@ class TestSequentialRunner(TestRunner):
         with pytest.raises(ValueError, match=match):
             runner._generate_markets(market_type_names=["Market"])
         assert len(runner.simulator.markets) == 0
+
+    @pytest.mark.parametrize("has_key", [False, True])
+    def test_generate_markets_without_transaction_cost(self, has_key: bool) -> None:
+        setting: Dict[str, Any] = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
+        }
+        if has_key:
+            setting["Market"]["transactionCost"] = None
+        runner = self.test__init__(
+            setting_mode="dict",
+            logger=None,
+            simulator_class=None,
+            setting=copy.deepcopy(setting),
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        market = runner.simulator.markets[0]
+        assert market.transaction_cost is None
+        assert runner._pending_setups == [
+            (market.setup, {"settings": setting["Market"]})
+        ]
+
+    @pytest.mark.parametrize(
+        "cost_class, cost_settings, registered, expected_class",
+        [
+            (
+                "ProportionalTransactionCost",
+                {"rate": 0.001},
+                False,
+                ProportionalTransactionCost,
+            ),
+            (
+                ProportionalTransactionCost,
+                {"rate": 0.001},
+                False,
+                ProportionalTransactionCost,
+            ),
+            (
+                "MakerTakerTransactionCost",
+                {"makerRate": -0.0001, "takerRate": 0.0003},
+                True,
+                MakerTakerTransactionCost,
+            ),
+            (
+                MakerTakerTransactionCost,
+                {"makerRate": -0.0001, "takerRate": 0.0003},
+                False,
+                MakerTakerTransactionCost,
+            ),
+        ],
+    )
+    def test_generate_markets_with_transaction_cost(
+        self,
+        cost_class: Union[str, Type],
+        cost_settings: Dict[str, Any],
+        registered: bool,
+        expected_class: Type[TransactionCost],
+    ) -> None:
+        setting: Dict[str, Any] = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "transactionCost": {"class": cost_class, **cost_settings},
+            },
+        }
+        runner = self.test__init__(
+            setting_mode="dict",
+            logger=None,
+            simulator_class=None,
+            setting=copy.deepcopy(setting),
+        )
+        if registered:
+            runner.class_register(cls=expected_class)
+        runner._generate_markets(market_type_names=["Market"])
+        market = runner.simulator.markets[0]
+        transaction_cost = market.transaction_cost
+        assert type(transaction_cost) is expected_class
+        assert isinstance(transaction_cost, TransactionCost)
+        assert transaction_cost.market is market
+        # "transactionCost" is left in the settings of the market, and the settings of
+        # the transaction cost do not include "class"
+        assert runner._pending_setups == [
+            (market.setup, {"settings": setting["Market"]}),
+            (transaction_cost.setup, {"settings": cost_settings}),
+        ]
+        for func, kwargs in runner._pending_setups:
+            func(**kwargs)
+        if isinstance(transaction_cost, ProportionalTransactionCost):
+            assert transaction_cost.rate == 0.001
+        else:
+            assert isinstance(transaction_cost, MakerTakerTransactionCost)
+            assert transaction_cost.maker_rate == -0.0001
+            assert transaction_cost.taker_rate == 0.0003
+
+    def test_generate_markets_transaction_cost_per_market(self) -> None:
+        setup_calls: List[Tuple[TransactionCost, Dict[str, Any], float]] = []
+
+        class RecordingTransactionCost(ProportionalTransactionCost):
+            def setup(
+                self, settings: Dict[str, Any], *args: Any, **kwargs: Any
+            ) -> None:
+                setup_calls.append(
+                    (self, copy.deepcopy(settings), self.market.tick_size)
+                )
+                super().setup(settings, *args, **kwargs)
+
+        cost_setting = {"class": RecordingTransactionCost, "rate": 0.001}
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "MarketBase": {
+                "class": "Market",
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "transactionCost": cost_setting,
+            },
+            "Market": {"extends": "MarketBase", "numMarkets": 2},
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        runner._generate_markets(market_type_names=["Market"])
+        markets = runner.simulator.markets
+        assert len(markets) == 2
+        costs = [market.transaction_cost for market in markets]
+        assert all(type(cost) is RecordingTransactionCost for cost in costs)
+        assert costs[0] is not costs[1]
+        assert [cast(TransactionCost, cost).market for cost in costs] == markets
+        assert [func for func, _ in runner._pending_setups] == [
+            markets[0].setup,
+            cast(TransactionCost, costs[0]).setup,
+            markets[1].setup,
+            cast(TransactionCost, costs[1]).setup,
+        ]
+        for func, kwargs in runner._pending_setups:
+            func(**kwargs)
+        # each transaction cost is set up once, after its market, without "class"
+        assert setup_calls == [
+            (costs[0], {"rate": 0.001}, 0.01),
+            (costs[1], {"rate": 0.001}, 0.01),
+        ]
+        assert [cast(ProportionalTransactionCost, cost).rate for cost in costs] == [
+            0.001,
+            0.001,
+        ]
+        assert cost_setting == {"class": RecordingTransactionCost, "rate": 0.001}
+
+    @pytest.mark.parametrize(
+        "transaction_cost, error, match",
+        [
+            (
+                0.001,
+                ValueError,
+                r"^Market\.transactionCost must be an object or null, "
+                r"but 0\.001 is given$",
+            ),
+            (
+                True,
+                ValueError,
+                r"^Market\.transactionCost must be an object or null, "
+                r"but True is given$",
+            ),
+            (
+                "ProportionalTransactionCost",
+                ValueError,
+                r"^Market\.transactionCost must be an object or null, "
+                r"but 'ProportionalTransactionCost' is given$",
+            ),
+            (
+                [{"class": "ProportionalTransactionCost", "rate": 0.001}],
+                ValueError,
+                r"^Market\.transactionCost must be an object or null, but \[",
+            ),
+            (
+                {"rate": 0.001},
+                ValueError,
+                r"^class is not defined for Market\.transactionCost$",
+            ),
+            (
+                {"class": None, "rate": 0.001},
+                ValueError,
+                r"^class for Market\.transactionCost must be a class name \(str\) "
+                r"or a class, but None is given$",
+            ),
+            (
+                {"class": "UnknownTransactionCost", "rate": 0.001},
+                AttributeError,
+                r"^class for UnknownTransactionCost is found 0 times$",
+            ),
+            (
+                {"class": "MakerTakerTransactionCost"},
+                AttributeError,
+                r"^class for MakerTakerTransactionCost is found 0 times$",
+            ),
+            (
+                {"class": "Market"},
+                ValueError,
+                r"^transaction cost class for Market does not inherit "
+                r"TransactionCost class$",
+            ),
+            (
+                {"class": FCNAgent},
+                ValueError,
+                r"^transaction cost class for Market does not inherit "
+                r"TransactionCost class$",
+            ),
+            (
+                {"class": "LIMIT_ORDER"},
+                ValueError,
+                r"^transaction cost class for Market does not inherit "
+                r"TransactionCost class$",
+            ),
+        ],
+    )
+    def test_generate_markets_with_invalid_transaction_cost(
+        self, transaction_cost: Any, error: Type[Exception], match: str
+    ) -> None:
+        setting = {
+            "simulation": {"markets": ["Market"]},
+            "Market": {
+                "class": "Market",
+                "numMarkets": 2,
+                "tickSize": 0.01,
+                "marketPrice": 300.0,
+                "transactionCost": transaction_cost,
+            },
+        }
+        runner = self.test__init__(
+            setting_mode="dict", logger=None, simulator_class=None, setting=setting
+        )
+        with pytest.raises(error, match=match):
+            runner._generate_markets(market_type_names=["Market"])
+        # the setting is checked before any market is created
+        assert len(runner.simulator.markets) == 0
+        assert not runner._pending_setups
 
     def test_generate_agents(self) -> None:
         setting = {
@@ -1922,10 +2162,12 @@ class TestSequentialRunner(TestRunner):
         )
 
     def test_run_transaction_costs(self) -> None:
-        def run(rate: Optional[float]) -> Tuple[Runner, ExecutionCountLogger]:
+        def run(
+            has_key: bool, transaction_cost: Optional[Dict[str, Any]] = None
+        ) -> Tuple[Runner, ExecutionCountLogger]:
             setting = copy.deepcopy(self.default_setting)
-            if rate is not None:
-                setting["Market"]["transactionCostRate"] = rate
+            if has_key:
+                setting["Market"]["transactionCost"] = transaction_cost
             logger = ExecutionCountLogger()
             runner = self.test__init__(
                 setting_mode="dict",
@@ -1938,14 +2180,29 @@ class TestSequentialRunner(TestRunner):
             return runner, logger
 
         rate = 0.001
-        base_runner, base_logger = run(rate=None)
-        zero_runner, zero_logger = run(rate=0.0)
-        cost_runner, cost_logger = run(rate=rate)
+        base_runner, base_logger = run(has_key=False)
+        null_runner, null_logger = run(has_key=True, transaction_cost=None)
+        zero_runner, zero_logger = run(
+            has_key=True,
+            transaction_cost={"class": "ProportionalTransactionCost", "rate": 0.0},
+        )
+        cost_runner, cost_logger = run(
+            has_key=True,
+            transaction_cost={"class": "ProportionalTransactionCost", "rate": rate},
+        )
         assert len(base_logger.execution_logs) > 0
+        for runner in [base_runner, null_runner]:
+            for market in runner.simulator.markets:
+                assert market.transaction_cost is None
+        for runner, expected_rate in [(zero_runner, 0.0), (cost_runner, rate)]:
+            for market in runner.simulator.markets:
+                assert isinstance(market.transaction_cost, ProportionalTransactionCost)
+                assert market.transaction_cost.rate == expected_rate
 
-        # The built-in agents ignore their cash, so the costs do not change the prices,
-        # the executions and the asset volumes.
-        for runner in [zero_runner, cost_runner]:
+        # The runner and the transaction costs draw no random numbers, and the built-in
+        # agents ignore their cash, so the costs do not change the prices, the
+        # executions and the asset volumes.
+        for runner in [null_runner, zero_runner, cost_runner]:
             for base_market, market in zip(
                 base_runner.simulator.markets, runner.simulator.markets
             ):
@@ -1957,7 +2214,11 @@ class TestSequentialRunner(TestRunner):
                 base_runner.simulator.agents, runner.simulator.agents
             ):
                 assert agent.asset_volumes == base_agent.asset_volumes
-        for logs in [zero_logger.execution_logs, cost_logger.execution_logs]:
+        for logs in [
+            null_logger.execution_logs,
+            zero_logger.execution_logs,
+            cost_logger.execution_logs,
+        ]:
             assert [
                 (log.time, log.buy_agent_id, log.sell_agent_id, log.price, log.volume)
                 for log in logs
@@ -1966,20 +2227,25 @@ class TestSequentialRunner(TestRunner):
                 for log in base_logger.execution_logs
             ]
 
-        # Without costs, the cash is exactly the same as before.
-        for log in base_logger.execution_logs + zero_logger.execution_logs:
+        # Without costs, the cash is exactly the same.
+        for log in (
+            base_logger.execution_logs
+            + null_logger.execution_logs
+            + zero_logger.execution_logs
+        ):
             assert log.buy_transaction_cost == 0.0
             assert log.sell_transaction_cost == 0.0
-        assert [agent.cash_amount for agent in zero_runner.simulator.agents] == [
-            agent.cash_amount for agent in base_runner.simulator.agents
-        ]
+        for runner in [null_runner, zero_runner]:
+            assert [agent.cash_amount for agent in runner.simulator.agents] == [
+                agent.cash_amount for agent in base_runner.simulator.agents
+            ]
 
         # With costs, both sides pay the rate times the executed value.
         paid: Dict[int, float] = {}
         for log in cost_logger.execution_logs:
             expected = rate * log.price * log.volume
-            assert log.buy_transaction_cost == pytest.approx(expected)
-            assert log.sell_transaction_cost == pytest.approx(expected)
+            assert log.buy_transaction_cost == expected
+            assert log.sell_transaction_cost == expected
             paid[log.buy_agent_id] = (
                 paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_cost
             )
@@ -1993,6 +2259,94 @@ class TestSequentialRunner(TestRunner):
             assert agent.cash_amount == pytest.approx(
                 base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
             )
+
+    def _check_run_user_transaction_cost(
+        self,
+        setting: Dict[str, Any],
+        by_name: bool,
+        runner_class: Optional[Type[SequentialRunner]] = None,
+    ) -> List[Tuple[int, int, float, int, float, float]]:
+        """Run with and without MakerTakerTransactionCost and check the costs.
+
+        Returns:
+            List[Tuple[int, int, float, int, float, float]]: the order IDs, the price, the
+            volume and the costs of the executions with the costs.
+        """
+        maker_rate = -0.0001
+        taker_rate = 0.0003
+        results: List[Tuple[Runner, ExecutionCountLogger]] = []
+        for transaction_cost in [
+            None,
+            {
+                "class": "MakerTakerTransactionCost"
+                if by_name
+                else MakerTakerTransactionCost,
+                "makerRate": maker_rate,
+                "takerRate": taker_rate,
+            },
+        ]:
+            run_setting = copy.deepcopy(setting)
+            run_setting["Market"]["transactionCost"] = transaction_cost
+            logger = ExecutionCountLogger()
+            runner = (runner_class or self.runner_class)(
+                settings=run_setting, prng=random.Random(42), logger=logger
+            )
+            if by_name:
+                runner.class_register(cls=MakerTakerTransactionCost)
+            runner._setup()
+            runner._run()
+            results.append((runner, logger))
+        (base_runner, base_logger), (cost_runner, cost_logger) = results
+        for market in cost_runner.simulator.markets:
+            assert isinstance(market.transaction_cost, MakerTakerTransactionCost)
+        assert len(base_logger.execution_logs) > 0
+        assert [
+            (log.time, log.buy_order_id, log.sell_order_id, log.price, log.volume)
+            for log in cost_logger.execution_logs
+        ] == [
+            (log.time, log.buy_order_id, log.sell_order_id, log.price, log.volume)
+            for log in base_logger.execution_logs
+        ]
+        paid: Dict[int, float] = {}
+        for log in cost_logger.execution_logs:
+            value = log.price * log.volume
+            # order IDs increase with the arrival of orders in each market, so the
+            # order with the smaller ID was placed first and is the maker
+            if log.buy_order_id < log.sell_order_id:
+                expected = (maker_rate * value, taker_rate * value)
+            else:
+                expected = (taker_rate * value, maker_rate * value)
+            assert (log.buy_transaction_cost, log.sell_transaction_cost) == expected
+            paid[log.buy_agent_id] = (
+                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_cost
+            )
+            paid[log.sell_agent_id] = (
+                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_cost
+            )
+        for base_agent, agent in zip(
+            base_runner.simulator.agents, cost_runner.simulator.agents
+        ):
+            assert agent.asset_volumes == base_agent.asset_volumes
+            assert agent.cash_amount == pytest.approx(
+                base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
+            )
+        return [
+            (
+                log.buy_order_id,
+                log.sell_order_id,
+                log.price,
+                log.volume,
+                log.buy_transaction_cost,
+                log.sell_transaction_cost,
+            )
+            for log in cost_logger.execution_logs
+        ]
+
+    @pytest.mark.parametrize("by_name", [True, False])
+    def test_run_user_transaction_cost(self, by_name: bool) -> None:
+        self._check_run_user_transaction_cost(
+            setting=copy.deepcopy(self.default_setting), by_name=by_name
+        )
 
     def test_run_logger_can_access_simulator(self) -> None:
         logger = SimulatorAccessingLogger()

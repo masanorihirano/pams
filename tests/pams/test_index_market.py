@@ -2,8 +2,11 @@ import random
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams import IndexMarket
 from pams import Market
+from pams import Order
+from pams import ProportionalTransactionCost
 from pams import Simulator
 
 
@@ -55,35 +58,6 @@ class TestIndexMarket:
         im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
         with pytest.warns(Warning):
             im.setup(settings=setting)
-
-    def test_setup_transaction_cost_rate(self) -> None:
-        sim = Simulator(prng=random.Random(32))
-        m1 = Market(market_id=0, prng=random.Random(42), simulator=sim, name="market")
-        m1.setup(
-            settings={"tickSize": 0.001, "outstandingShares": 100, "marketPrice": 300.0}
-        )
-        sim._add_market(market=m1)
-        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
-        im.setup(
-            settings={
-                "tickSize": 0.001,
-                "marketPrice": 300.0,
-                "markets": ["market"],
-                "transactionCostRate": 0.0005,
-            }
-        )
-        assert im.transaction_cost_rate == 0.0005
-        assert m1.transaction_cost_rate == 0.0
-        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
-        with pytest.raises(ValueError):
-            im.setup(
-                settings={
-                    "tickSize": 0.001,
-                    "marketPrice": 300.0,
-                    "markets": ["market"],
-                    "transactionCostRate": -0.0005,
-                }
-            )
 
     def test_add_market(self) -> None:
         sim = Simulator(prng=random.Random(32))
@@ -201,3 +175,36 @@ class TestIndexMarket:
         assert not im.is_all_markets_running()
         m2._is_running = True
         assert im.is_all_markets_running()
+
+    def test_execution_with_transaction_cost(self) -> None:
+        sim = Simulator(prng=random.Random(32))
+        m1 = Market(market_id=0, prng=random.Random(42), simulator=sim, name="market")
+        m1.setup(
+            settings={"tickSize": 0.001, "outstandingShares": 100, "marketPrice": 300.0}
+        )
+        sim._add_market(market=m1)
+        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
+        im.setup(
+            settings={"tickSize": 0.001, "marketPrice": 300.0, "markets": ["market"]}
+        )
+        assert im.transaction_cost is None
+        transaction_cost = ProportionalTransactionCost(market=im)
+        transaction_cost.setup(settings={"rate": 0.0005})
+        im.transaction_cost = transaction_cost
+        im._update_time(next_fundamental_price=300.0)
+        im._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=1, is_buy=False, kind=LIMIT_ORDER, volume=3, price=300
+        )
+        im._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=1, is_buy=True, kind=LIMIT_ORDER, volume=2, price=301
+        )
+        im._add_order(buy_order)
+        logs = im._execution()
+        assert len(logs) == 1
+        assert (logs[0].price, logs[0].volume) == (300.0, 2)
+        assert logs[0].buy_transaction_cost == 0.0005 * 300.0 * 2
+        assert logs[0].sell_transaction_cost == 0.0005 * 300.0 * 2
+        # the transaction cost of the index market does not apply to its components
+        assert m1.transaction_cost is None

@@ -30,6 +30,7 @@ from ..order import Cancel
 from ..order import Order
 from ..session import Session
 from ..simulator import Simulator
+from ..transaction_costs import TransactionCost
 from ..utils.class_finder import find_class
 from ..utils.json_extends import json_extends
 from .base import Runner
@@ -141,8 +142,53 @@ class SequentialRunner(Runner):
             group_class,
         )
 
+    def _parse_transaction_cost(
+        self, name: str, market_settings: Dict
+    ) -> Tuple[Optional[Type[TransactionCost]], Dict]:
+        """Parse the transaction cost setting of a market group (internal method).
+
+        Args:
+            name (str): name of the market group in the config.
+            market_settings (Dict): the extended settings of the market group.
+
+        Returns:
+            Tuple[Optional[Type[TransactionCost]], Dict]: the transaction cost class, or None if
+            "transactionCost" is absent or null, and its settings without "class".
+
+        """
+        cost_settings: Any = market_settings.get("transactionCost")
+        if cost_settings is None:
+            return None, {}
+        if not isinstance(cost_settings, dict):
+            raise ValueError(
+                f"{name}.transactionCost must be an object or null, but {cost_settings!r} is given"
+            )
+        if "class" not in cost_settings:
+            raise ValueError(f"class is not defined for {name}.transactionCost")
+        if not isinstance(cost_settings["class"], (str, type)):
+            raise ValueError(
+                f"class for {name}.transactionCost must be a class name (str) or a class, "
+                f"but {cost_settings['class']!r} is given"
+            )
+        cost_class: Type = find_class(
+            name=cost_settings["class"], optional_class_list=self.registered_classes
+        )
+        if not isinstance(cost_class, type) or not issubclass(
+            cost_class, TransactionCost
+        ):
+            raise ValueError(
+                f"transaction cost class for {name} does not inherit TransactionCost class"
+            )
+        return cost_class, {
+            key: value for key, value in cost_settings.items() if key != "class"
+        }
+
     def _generate_markets(self, market_type_names: List[str]) -> None:
         """Generate markets (internal method).
+
+        If a market group has "transactionCost", an instance of its class is created for each market
+        of the group and set to ``market.transaction_cost``. Its setup is called right after the setup
+        of the market.
 
         Args:
             market_type_names (List[str]): name list of market type.
@@ -176,6 +222,9 @@ class SequentialRunner(Runner):
             fundamental_volatility: float = 0.0
             if "fundamentalVolatility" in market_settings:
                 fundamental_volatility = float(market_settings["fundamentalVolatility"])
+            cost_class, cost_settings = self._parse_transaction_cost(
+                name=name, market_settings=market_settings
+            )
 
             for i in ids:
                 market = market_class(
@@ -197,6 +246,12 @@ class SequentialRunner(Runner):
                 self._pending_setups.append(
                     (market.setup, {"settings": market_settings})
                 )
+                if cost_class is not None:
+                    transaction_cost = cost_class(market=market)
+                    market.transaction_cost = transaction_cost
+                    self._pending_setups.append(
+                        (transaction_cost.setup, {"settings": cost_settings})
+                    )
 
     def _generate_agents(self, agent_type_names: List[str]) -> None:
         """Generate agents (internal method).

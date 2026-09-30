@@ -6,7 +6,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
+from typing import cast
 
 from pams import LIMIT_ORDER
 from pams import Simulator
@@ -25,6 +27,7 @@ from pams.logs import SimulationEndLog
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
+from pams.transaction_costs import TransactionCost
 
 WAIT_TIME = 0.2  # seconds
 
@@ -178,6 +181,37 @@ class RaisingAgent(Agent):
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         raise RuntimeError("error in submit_orders")
+
+
+class MakerTakerTransactionCost(TransactionCost):
+    """Transaction cost with a maker rate and a taker rate.
+
+    The order placed first is the maker, and the other is the taker. Order IDs increase with the
+    arrival of orders in each market, so they break the tie between orders placed at the same time.
+    This class is defined here so that it can be pickled with the markets and used on worker
+    processes.
+    """
+
+    def __init__(self, market: Market) -> None:
+        super().__init__(market=market)
+        self.maker_rate: float = 0.0
+        self.taker_rate: float = 0.0
+
+    def setup(self, settings: Dict[str, Any], *args: Any, **kwargs: Any) -> None:
+        self.maker_rate = float(settings["makerRate"])
+        self.taker_rate = float(settings["takerRate"])
+
+    def compute_costs(
+        self, price: float, volume: int, buy_order: Order, sell_order: Order
+    ) -> Tuple[float, float]:
+        value = price * volume
+        maker_cost = self.maker_rate * value
+        taker_cost = self.taker_rate * value
+        buy_arrival = (cast(int, buy_order.placed_at), cast(int, buy_order.order_id))
+        sell_arrival = (cast(int, sell_order.placed_at), cast(int, sell_order.order_id))
+        if buy_arrival < sell_arrival:
+            return maker_cost, taker_cost
+        return taker_cost, maker_cost
 
 
 # The functions below are defined at the top level so that the agent-parallel runners can pickle
