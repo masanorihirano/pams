@@ -1798,11 +1798,21 @@ msgid ""
 "``markets`` must include the index market group **and** the groups of all "
 "its component markets. Otherwise the component orders are still sent, and "
 "the simulation stops with a ``KeyError`` (a market ID) when the first one is"
-" executed."
+" executed. Unlike plham, the component markets are not added automatically;"
+" the agent warns at setup about each index market with missing components."
 msgstr ""
 "``markets`` には、インデックス市場の市場グループ **および** "
 "そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します。"
+" ``KeyError`` "
+"（市場ID）で停止します。plhamとは異なり、構成市場は自動的には追加されません。構成市場が欠けているインデックス市場があると、エージェントはセットアップ時にインデックス市場ごとに警告を出します。"
+
+#: ../../source/user_guide/config.rst:839
+msgid ""
+"If ``markets`` includes no ``IndexMarket``, the agent never places an order,"
+" and it warns about this at setup."
+msgstr ""
+"``markets`` に ``IndexMarket`` "
+"が1つも含まれていない場合、エージェントは注文を一切出さず、セットアップ時にその旨の警告を出します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
@@ -2794,6 +2804,34 @@ msgid ""
 "An agent submitted a price that is not a multiple of ``tickSize``; it was "
 "rounded. This is normal for FCN agents."
 msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。"
+
+#: ../../source/user_guide/config.rst:1278
+msgid ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` (warning)"
+msgstr ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` （警告）"
+
+#: ../../source/user_guide/config.rst:1279
+msgid ""
+"Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise "
+"its orders to them fail while the simulation runs."
+msgstr ""
+"市場 ``Z`` の市場グループをエージェントの ``markets`` "
+"に追加してください。追加しない場合、それらの市場への注文はシミュレーション実行中に失敗します。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "``ArbitrageAgent X cannot access any index market`` (warning)"
+msgstr "``ArbitrageAgent X cannot access any index market`` （警告）"
+
+#: ../../source/user_guide/config.rst:1282
+msgid ""
+"The agent never places an order. Add an ``IndexMarket`` group and the groups"
+" of its component markets to its ``markets``."
+msgstr ""
+"このエージェントは注文を一切出しません。``IndexMarket`` "
+"の市場グループとその構成市場の市場グループを、エージェントの ``markets`` に追加してください。"
 
 #: ../../source/user_guide/config.rst:1275
 msgid "``AssertionError`` while the simulation runs"
