@@ -1,0 +1,665 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>pams.runners.tensorflow_parallel - pams documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">pams  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">pams  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/preface.html">Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">About this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/platform.html">Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/config.html">JSON configuration</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../user_guide/tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/tutorials/outline.html">Outline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/runners.html">Runner</a><input aria-label="Toggle navigation of Runner" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/simulator/pams.Simulator.html">Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/sessions.html">Session</a><input aria-label="Toggle navigation of Session" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/session/pams.Session.html">Session</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/markets.html">Market</a><input aria-label="Toggle navigation of Market" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/market/pams.IndexMarket.html">IndexMarket</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/fundamentals.html">Fundamentals</a><input aria-label="Toggle navigation of Fundamentals" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/orders.html">Order</a><input aria-label="Toggle navigation of Order" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/events.html">Events</a><input aria-label="Toggle navigation of Events" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.EventABC.html">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/logs.html">Logs</a><input aria-label="Toggle navigation of Logs" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/loggers.html">Logger</a><input aria-label="Toggle navigation of Logger" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/agents.html">Agents</a><input aria-label="Toggle navigation of Agents" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../reference/utils.html">Utils</a><input aria-label="Toggle navigation of Utils" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for pams.runners.tensorflow_parallel</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">Executor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIOWrapper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.agent_parallel</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiProcessAgentParallelRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.agent_parallel</span><span class="w"> </span><span class="kn">import</span> <span class="n">_initialize_worker</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_import_tensorflow</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Import TensorFlow (internal function).</span>
+
+<span class="sd">    TensorFlow is an optional dependency of PAMS, so it is imported only when it is used.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ModuleType: the ``tensorflow`` module.</span>
+
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span>  <span class="c1"># pylint: disable=import-outside-toplevel # optional dependency</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">"TensorFlowAgentParallelRunner requires TensorFlow, which is not installed."</span>
+            <span class="s2">" Install it, e.g., by `pip install tensorflow`"</span>
+            <span class="s2">" (or `pip install tensorflow-cpu` for the CPU-only build)."</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="k">return</span> <span class="n">tensorflow</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_initialize_tensorflow_worker</span><span class="p">(</span>
+    <span class="n">intra_op_parallelism_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">inter_op_parallelism_threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">gpu_memory_growth</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">initializer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+    <span class="n">initargs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Configure TensorFlow on a worker process and call the initializer (internal function).</span>
+
+<span class="sd">    This function is called once on each worker process of</span>
+<span class="sd">    :class:`pams.runners.TensorFlowAgentParallelRunner` before the process runs any task. TensorFlow</span>
+<span class="sd">    can be configured only before it is initialized on the process, i.e., before it runs any</span>
+<span class="sd">    operation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        intra_op_parallelism_threads (int): number of threads used to run one operation.</span>
+<span class="sd">        inter_op_parallelism_threads (int): number of threads used to run independent operations.</span>
+<span class="sd">        gpu_memory_growth (bool): whether to enable memory growth for all the visible GPUs.</span>
+<span class="sd">        initializer (Callable[..., Any], Optional): worker initializer called after TensorFlow is</span>
+<span class="sd">            configured. If it is None, nothing is called.</span>
+<span class="sd">        initargs (Tuple[Any, ...]): arguments of the worker initializer.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    """</span>
+    <span class="n">tf</span> <span class="o">=</span> <span class="n">_import_tensorflow</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">threading</span><span class="o">.</span><span class="n">set_intra_op_parallelism_threads</span><span class="p">(</span>
+            <span class="n">intra_op_parallelism_threads</span>
+        <span class="p">)</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">threading</span><span class="o">.</span><span class="n">set_inter_op_parallelism_threads</span><span class="p">(</span>
+            <span class="n">inter_op_parallelism_threads</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">gpu_memory_growth</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">gpu</span> <span class="ow">in</span> <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">list_physical_devices</span><span class="p">(</span><span class="s2">"GPU"</span><span class="p">):</span>
+                <span class="n">tf</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">experimental</span><span class="o">.</span><span class="n">set_memory_growth</span><span class="p">(</span><span class="n">gpu</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">"TensorFlow cannot be configured because it is already initialized on this worker"</span>
+            <span class="s2">" process. This happens if the worker process is started by fork after TensorFlow is"</span>
+            <span class="s2">" used on the main process, or if TensorFlow is used at the top level of the main"</span>
+            <span class="s2">" module, which the worker processes import when they are started by spawn."</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="k">if</span> <span class="n">initializer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">initializer</span><span class="p">(</span><span class="o">*</span><span class="n">initargs</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_num_threads</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Check the number of threads given in the config (internal function).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str): key of the number of threads in ``simulation``.</span>
+<span class="sd">        value (Any): value given in the config.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: the number of threads.</span>
+
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"simulation.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> must be a positive integer, but </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is given"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<div class="viewcode-block" id="TensorFlowAgentParallelRunner">
+<a class="viewcode-back" href="../../../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TensorFlowAgentParallelRunner</span><span class="p">(</span><span class="n">MultiProcessAgentParallelRunner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""TensorFlow Agent Parallel runner class. This is experimental.</span>
+
+<span class="sd">    This runner is :class:`pams.runners.MultiProcessAgentParallelRunner` whose worker processes are</span>
+<span class="sd">    prepared for agents that use `TensorFlow &lt;https://www.tensorflow.org/&gt;`_ in</span>
+<span class="sd">    :func:`pams.agents.Agent.submit_orders`, e.g., Keras models. The simulation results are</span>
+<span class="sd">    identical to those of :class:`pams.runners.SequentialRunner` with the same settings and the same</span>
+<span class="sd">    seed as long as the agents are deterministic and TensorFlow uses the same number of threads</span>
+<span class="sd">    (see below).</span>
+
+<span class="sd">    TensorFlow is an optional dependency of PAMS: ``import pams`` does not import it, and this</span>
+<span class="sd">    runner imports it when it is created. If TensorFlow is not installed, an ImportError is raised.</span>
+<span class="sd">    Install it by ``pip install tensorflow`` (or ``pip install tensorflow-cpu`` for the CPU-only</span>
+<span class="sd">    build).</span>
+
+<span class="sd">    The worker processes are started by ``spawn`` by default, i.e., :attr:`default_start_method` is</span>
+<span class="sd">    ``"spawn"``, because TensorFlow is not fork-safe. Once TensorFlow runs an operation, the process</span>
+<span class="sd">    has thread pools (and CUDA contexts for GPUs), but a process started by ``fork`` has only a copy</span>
+<span class="sd">    of the thread calling fork. In the forked process, operations that use the thread pools of</span>
+<span class="sd">    TensorFlow, e.g., a large matrix multiplication, hang, GPUs cannot be used, and TensorFlow</span>
+<span class="sd">    cannot be configured anymore. Such a fork happens easily, e.g., when agents build their models</span>
+<span class="sd">    on the main process or a :class:`pams.runners.SequentialRunner` is run before on the same</span>
+<span class="sd">    process. A spawned process starts a new interpreter and initializes TensorFlow by itself.</span>
+<span class="sd">    ``simulation.startMethod`` in the config still takes precedence: ``forkserver`` is also safe if</span>
+<span class="sd">    TensorFlow is not used at the top level of the main module, and ``fork`` works only if</span>
+<span class="sd">    TensorFlow is not used on the main process before the simulation.</span>
+
+<span class="sd">    Each worker process configures TensorFlow once before it runs any task, by the following keys of</span>
+<span class="sd">    ``simulation`` in the config:</span>
+
+<span class="sd">    - ``tensorflowIntraOpThreads`` (int ≥ 1): number of threads that TensorFlow uses to run one</span>
+<span class="sd">      operation, e.g., a matrix multiplication, in each worker process. The default is the number</span>
+<span class="sd">      of CPUs divided by the number of worker processes running tasks at the same time, i.e., the</span>
+<span class="sd">      smaller of ``numParallel`` and the largest ``maxNormalOrders`` of the sessions (at least 1),</span>
+<span class="sd">      so that the worker processes do not use more threads than the CPUs in total. TensorFlow</span>
+<span class="sd">      uses all the CPUs in each process by default. The results of TensorFlow can depend on this</span>
+<span class="sd">      number (see below).</span>
+<span class="sd">    - ``tensorflowInterOpThreads`` (int ≥ 1): number of threads that TensorFlow uses to run</span>
+<span class="sd">      independent operations at the same time in each worker process. The default is 1.</span>
+<span class="sd">    - ``tensorflowGpuMemoryGrowth`` (bool): whether to enable memory growth for all the visible GPUs</span>
+<span class="sd">      in each worker process. The default is true. Without memory growth, TensorFlow allocates</span>
+<span class="sd">      almost all the memory of a GPU in the first process using it, so the other worker processes</span>
+<span class="sd">      fail with out of memory errors when they share the GPU. Set it to false to keep the default</span>
+<span class="sd">      behavior of TensorFlow, e.g., when each worker process uses its own GPU.</span>
+
+<span class="sd">    Then, the initializer given by ``_get_worker_initializer`` is called as in</span>
+<span class="sd">    :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., to load a read-only model once per</span>
+<span class="sd">    worker process. These keys do not configure TensorFlow on the main process. If</span>
+<span class="sd">    ``tensorflowGpuMemoryGrowth`` is true, TensorFlow lists the GPUs before the initializer is</span>
+<span class="sd">    called, so the initializer cannot select the GPUs of a worker process by the environment</span>
+<span class="sd">    variable ``CUDA_VISIBLE_DEVICES``; use ``tf.config.set_visible_devices`` instead.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        As :class:`pams.runners.MultiProcessAgentParallelRunner`, this runner pickles the agents and</span>
+<span class="sd">        the markets, i.e., the whole simulation, for each task. ``tf.Tensor`` and ``tf.Variable``</span>
+<span class="sd">        held by agents are pickled as copies of their values, and Keras 3 models are pickled by</span>
+<span class="sd">        saving them in the ``.keras`` format, which takes tens of milliseconds even for a small</span>
+<span class="sd">        model, in every task and even in the tasks of other agents. Objects made by</span>
+<span class="sd">        ``tf.function`` cannot be pickled even if they are defined at the top level of a module.</span>
+<span class="sd">        Therefore, agents should not hold models as their attributes. Instead, an agent should hold</span>
+<span class="sd">        a key of its model, such as the path of a saved model, and get the model from a cache at the</span>
+<span class="sd">        top level of a module, e.g., a function decorated by :func:`functools.lru_cache` that loads</span>
+<span class="sd">        the model. Then, each worker process loads the model once, at its first task or in the</span>
+<span class="sd">        worker initializer, and reuses it in the later tasks, and</span>
+<span class="sd">        :class:`pams.runners.SequentialRunner` can run the same agents.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Only the orders and the state of the agent's pseudo random number generator (``prng``) are</span>
+<span class="sd">        returned from the worker processes. The random states of TensorFlow, e.g., the global seed</span>
+<span class="sd">        and ``tf.random.Generator``, are not returned, and which worker process runs an agent</span>
+<span class="sd">        changes from run to run. For the same results as :class:`pams.runners.SequentialRunner`,</span>
+<span class="sd">        agents should draw random numbers from ``prng``, e.g., the seeds of stateless random</span>
+<span class="sd">        operations such as ``tf.random.stateless_normal``.</span>
+
+<span class="sd">        Models must also give the same outputs on every process. On CPUs, the outputs of the</span>
+<span class="sd">        operations that TensorFlow splits among threads, e.g., reductions and matrix</span>
+<span class="sd">        multiplications over long axes, depend on the number of intra-op threads, even with</span>
+<span class="sd">        ``tf.config.experimental.enable_op_determinism``. The default number of this runner</span>
+<span class="sd">        depends on the number of CPUs, ``numParallel`` and ``maxNormalOrders``, and it can differ</span>
+<span class="sd">        from that of the main process, where TensorFlow uses all the CPUs. Therefore, for results</span>
+<span class="sd">        identical to :class:`pams.runners.SequentialRunner`, or across different ``numParallel``,</span>
+<span class="sd">        set ``tensorflowIntraOpThreads`` explicitly, and set the same number on the process</span>
+<span class="sd">        running :class:`pams.runners.SequentialRunner` by</span>
+<span class="sd">        ``tf.config.threading.set_intra_op_parallelism_threads`` before TensorFlow is</span>
+<span class="sd">        initialized there. On GPUs, some operations are not deterministic unless</span>
+<span class="sd">        ``tf.config.experimental.enable_op_determinism`` is called on the main process and in the</span>
+<span class="sd">        worker processes.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This runner makes the simulation faster only if the TensorFlow computations in</span>
+<span class="sd">        :func:`pams.agents.Agent.submit_orders` are much heavier than the cost of pickling the</span>
+<span class="sd">        simulation in every task. Moreover, each worker process imports and initializes TensorFlow</span>
+<span class="sd">        at its start, which takes seconds and hundreds of megabytes of memory per process.</span>
+<span class="sd">    """</span>
+
+    <span class="c1">#: Optional[str]: start method of the worker processes used when ``simulation.startMethod`` is</span>
+    <span class="c1">#: not set in the config. TensorFlow is not fork-safe, so it is ``"spawn"``.</span>
+    <span class="n">default_start_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"spawn"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="n">TextIOWrapper</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">prng</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">simulator_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Simulator</span><span class="p">]</span> <span class="o">=</span> <span class="n">Simulator</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Initialize.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Union[Dict, TextIOWrapper, os.PathLike, str]): runner configuration.</span>
+<span class="sd">            prng (random.Random, Optional): pseudo random number generator for this runner.</span>
+<span class="sd">            logger (Logger, Optional): logger instance.</span>
+<span class="sd">            simulator_class (Type[Simulator]): type of simulator.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="n">_import_tensorflow</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">prng</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">simulator_class</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">intra_op_parallelism_threads</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inter_op_parallelism_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gpu_memory_growth</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set up the simulation (internal method).</span>
+
+<span class="sd">        In addition to :func:`pams.runners.MultiProcessAgentParallelRunner._setup`,</span>
+<span class="sd">        ``simulation.tensorflowIntraOpThreads``, ``simulation.tensorflowInterOpThreads`` and</span>
+<span class="sd">        ``simulation.tensorflowGpuMemoryGrowth`` are read before the executor is prepared.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"simulation"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">:</span>
+            <span class="n">simulation_settings</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s2">"simulation"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s2">"tensorflowIntraOpThreads"</span> <span class="ow">in</span> <span class="n">simulation_settings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">intra_op_parallelism_threads</span> <span class="o">=</span> <span class="n">_check_num_threads</span><span class="p">(</span>
+                    <span class="n">key</span><span class="o">=</span><span class="s2">"tensorflowIntraOpThreads"</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s2">"tensorflowIntraOpThreads"</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"tensorflowInterOpThreads"</span> <span class="ow">in</span> <span class="n">simulation_settings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">inter_op_parallelism_threads</span> <span class="o">=</span> <span class="n">_check_num_threads</span><span class="p">(</span>
+                    <span class="n">key</span><span class="o">=</span><span class="s2">"tensorflowInterOpThreads"</span><span class="p">,</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">simulation_settings</span><span class="p">[</span><span class="s2">"tensorflowInterOpThreads"</span><span class="p">],</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">"tensorflowGpuMemoryGrowth"</span> <span class="ow">in</span> <span class="n">simulation_settings</span><span class="p">:</span>
+                <span class="n">gpu_memory_growth</span> <span class="o">=</span> <span class="n">simulation_settings</span><span class="p">[</span><span class="s2">"tensorflowGpuMemoryGrowth"</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gpu_memory_growth</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">"simulation.tensorflowGpuMemoryGrowth must be a boolean, "</span>
+                        <span class="sa">f</span><span class="s2">"but </span><span class="si">{</span><span class="n">gpu_memory_growth</span><span class="si">}</span><span class="s2"> is given"</span>
+                    <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gpu_memory_growth</span> <span class="o">=</span> <span class="n">gpu_memory_growth</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_setup</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_intra_op_parallelism_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the number of intra-op threads on each worker process (internal method).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: ``intra_op_parallelism_threads`` if it is set by</span>
+<span class="sd">            ``simulation.tensorflowIntraOpThreads``; otherwise, the number of CPUs divided by the</span>
+<span class="sd">            number of worker processes running tasks at the same time, i.e., the smaller of</span>
+<span class="sd">            ``num_parallel`` and the largest ``max_normal_orders`` of the sessions (at least 1).</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">intra_op_parallelism_threads</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intra_op_parallelism_threads</span>
+        <span class="c1"># at most max_normal_orders agents are asked at the same time</span>
+        <span class="n">max_normal_orders</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">max_normal_orders</span> <span class="k">for</span> <span class="n">session</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">sessions</span><span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">n_concurrent_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">,</span> <span class="n">max_normal_orders</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">((</span><span class="n">os</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_concurrent_workers</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Executor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Create a new executor (internal method).</span>
+
+<span class="sd">        In addition to :func:`pams.runners.MultiProcessAgentParallelRunner._create_executor`, each</span>
+<span class="sd">        worker process configures TensorFlow by ``simulation.tensorflowIntraOpThreads``,</span>
+<span class="sd">        ``simulation.tensorflowInterOpThreads`` and ``simulation.tensorflowGpuMemoryGrowth``</span>
+<span class="sd">        before it calls the initializer given by ``_get_worker_initializer`` and</span>
+<span class="sd">        ``_get_worker_initargs``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Executor: new executor.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_pool_provider</span><span class="p">(</span>
+            <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">,</span>
+            <span class="n">mp_context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_mp_context</span><span class="p">(),</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">_initialize_worker</span><span class="p">,</span>
+            <span class="n">initargs</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">_initialize_tensorflow_worker</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_intra_op_parallelism_threads</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inter_op_parallelism_threads</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">gpu_memory_growth</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initializer</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_initargs</span><span class="p">(),</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Masanori HIRANO
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

@@ -298,7 +298,9 @@ The ``simulation`` block
        platform's default). Only the start methods available on the platform are accepted: Windows has only
        ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
 
-Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
+Other keys in ``simulation`` are ignored, except the keys that :class:`~pams.runners.JaxAgentParallelRunner` and
+:class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-parallel-jax` and
+:ref:`config-parallel-tensorflow`). In particular, events are not listed here but in each session.
 
 
 .. _config-sessions:
@@ -1272,6 +1274,44 @@ JAX once, before it runs any task, with these keys in ``simulation``, which the 
        otherwise the default of JAX (0.75).
 
 These keys do not configure JAX on the main process. See :doc:`platform` for how to write agents for this runner.
+
+.. _config-parallel-tensorflow:
+
+TensorFlow runner
+~~~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the process runner for agents that use
+TensorFlow in ``submit_orders``, for example Keras models. TensorFlow is not installed with PAMS: install it yourself
+(for example ``pip install tensorflow``, or ``pip install tensorflow-cpu`` for the CPU-only build). The runner starts
+its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+TensorFlow once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``tensorflowIntraOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
+       worker process. Default: the number of CPUs divided by the smaller of ``numParallel`` and ``maxNormalOrders``
+       (at least 1), so that the worker processes running at the same time do not use more threads than the CPUs in
+       total. The results of large operations can depend on this number, so set it explicitly for reproducible
+       results (see :doc:`platform`).
+   * - ``tensorflowInterOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run independent operations at the same time on each worker
+       process. Default: ``1``.
+   * - ``tensorflowGpuMemoryGrowth`` |optional|
+     - bool
+     - Whether memory growth is enabled for all the visible GPUs on each worker process. Default: ``true``, so that
+       the worker processes can share a GPU (by default, TensorFlow allocates almost all the memory of a GPU to the
+       first process that uses it).
+
+These keys do not configure TensorFlow on the main process. See :doc:`platform` for how to write agents for this
+runner.
 
 
 .. _config-troubleshooting:

@@ -1,0 +1,446 @@
+<!doctype html>
+<html class="no-js" lang="ja" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="索引" href="../../../genindex.html"><link rel="search" title="検索" href="../../../search.html"><link rel="next" title="シミュレーター" href="../../simulators.html"><link rel="prev" title="JaxAgentParallelRunner" href="pams.runners.JaxAgentParallelRunner.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>TensorFlowAgentParallelRunner - pams ドキュメント</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">pams  ドキュメント</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">pams  ドキュメント</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="検索" name="q" aria-label="検索">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../user_guide/index.html">ユーザーガイド</a><input aria-label="Toggle navigation of ユーザーガイド" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/preface.html">はじめに</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/about.html">このプロジェクトについて</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/install.html">インストール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/platform.html">プラットフォーム</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../user_guide/config.html">JSON設定</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../user_guide/tutorials/index.html">チュートリアル</a><input aria-label="Toggle navigation of チュートリアル" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../user_guide/tutorials/outline.html">概要</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">APIリファレンス</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../runners.html">ランナー</a><input aria-label="Toggle navigation of ランナー" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.runners.SequentialRunner.html">SequentialRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">TensorFlowAgentParallelRunner</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../simulators.html">シミュレーター</a><input aria-label="Toggle navigation of シミュレーター" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../simulator/pams.Simulator.html">Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../sessions.html">セッション</a><input aria-label="Toggle navigation of セッション" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../session/pams.Session.html">Session</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../markets.html">市場</a><input aria-label="Toggle navigation of 市場" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../market/pams.IndexMarket.html">IndexMarket</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../fundamentals.html">ファンダメンタルズ</a><input aria-label="Toggle navigation of ファンダメンタルズ" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../orders.html">注文</a><input aria-label="Toggle navigation of 注文" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../events.html">イベント</a><input aria-label="Toggle navigation of イベント" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventABC.html">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../logs.html">ログ</a><input aria-label="Toggle navigation of ログ" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../loggers.html">ロガー</a><input aria-label="Toggle navigation of ロガー" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../agents.html">エージェント</a><input aria-label="Toggle navigation of エージェント" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../utils.html">ユーティリティ</a><input aria-label="Toggle navigation of ユーティリティ" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils/pams.utils.class_finder.html">class_finder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/pams.utils.json_extends.html">json_extends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../../_sources/reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="tensorflowagentparallelrunner">
+<h1>TensorFlowAgentParallelRunner<a class="headerlink" href="#tensorflowagentparallelrunner" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pams.runners.TensorFlowAgentParallelRunner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.runners.</span></span><span class="sig-name descname"><span class="pre">TensorFlowAgentParallelRunner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_class=&lt;class</span> <span class="pre">'pams.simulator.Simulator'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/runners/tensorflow_parallel.html#TensorFlowAgentParallelRunner"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.runners.TensorFlowAgentParallelRunner" title="Link to this definition">¶</a></dt>
+<dd><p>TensorFlow のエージェント並列ランナークラス。これは実験的な機能です。</p>
+<p>このランナーは、<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> で <a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a> を使うエージェント（例えば Keras のモデル）向けにワーカープロセスを準備した <a class="reference internal" href="pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> です。エージェントが決定的であり、TensorFlow が同じスレッド数を使う限り（後述）、シミュレーション結果は、同じ設定と同じシードの <a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> の結果と同一になります。</p>
+<p>TensorFlow は PAMS のオプションの依存パッケージです。<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">pams</span></code> は TensorFlow をインポートせず、このランナーが作成されたときにインポートされます。TensorFlow がインストールされていない場合は ImportError が送出されます。<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow</span></code> でインストールしてください（CPU 専用版であれば <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow-cpu</span></code>）。</p>
+<p>TensorFlow は fork セーフでないため、ワーカープロセスはデフォルトで <code class="docutils literal notranslate"><span class="pre">spawn</span></code> によって起動されます。つまり、<a class="reference internal" href="#pams.runners.TensorFlowAgentParallelRunner.default_start_method" title="pams.runners.TensorFlowAgentParallelRunner.default_start_method"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_start_method</span></code></a> は <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> です。TensorFlow が一度でも演算を実行すると、そのプロセスはスレッドプール（GPU の場合は CUDA コンテキストも）を持ちますが、<code class="docutils literal notranslate"><span class="pre">fork</span></code> で起動されたプロセスは fork を呼び出したスレッドのコピーしか持ちません。fork されたプロセスでは、TensorFlow のスレッドプールを使う演算（例えば大きな行列積）がハングし、GPU は使えず、TensorFlow を設定することもできなくなります。このような fork は、例えばエージェントがメインプロセスでモデルを構築した場合や、同じプロセスで先に <a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> を実行した場合に簡単に起こります。spawn で起動されたプロセスは新しいインタープリターを開始し、TensorFlow を自身で初期化します。それでも、設定ファイルの <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が優先されます。TensorFlow がメインモジュールのトップレベルで使われていなければ <code class="docutils literal notranslate"><span class="pre">forkserver</span></code> も安全であり、<code class="docutils literal notranslate"><span class="pre">fork</span></code> はシミュレーションの前にメインプロセスで TensorFlow が使われていない場合にのみ動作します。</p>
+<p>各ワーカープロセスは、タスクを実行する前に一度だけ、設定ファイルの <code class="docutils literal notranslate"><span class="pre">simulation</span></code> の以下のキーで TensorFlow を設定します：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tensorflowIntraOpThreads</span></code> （int ≥ 1）：各ワーカープロセスで、TensorFlow が 1 つの演算（例えば行列積）の実行に使うスレッド数です。デフォルトは、CPU 数を同時にタスクを実行するワーカープロセス数、すなわち <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> とセッションの <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> の最大値の小さい方（最小 1）で割った値です。これは、ワーカープロセス全体で CPU 数より多くのスレッドを使わないようにするためです。TensorFlow はデフォルトでは各プロセスですべての CPU を使います。TensorFlow の結果はこの値によって変わることがあります（後述）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tensorflowInterOpThreads</span></code> （int ≥ 1）：各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルトは 1 です。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tensorflowGpuMemoryGrowth</span></code> （bool）：各ワーカープロセスで、認識されているすべての GPU のメモリ増加（memory growth）を有効にするかどうかです。デフォルトは true です。メモリ増加が無効だと、TensorFlow は GPU のメモリのほぼすべてを最初にその GPU を使うプロセスに割り当てるため、GPU を共有する他のワーカープロセスはメモリ不足のエラーで失敗します。TensorFlow のデフォルトの動作を維持するには（例えば各ワーカープロセスが専用の GPU を使う場合）、false に設定してください。</p></li>
+</ul>
+<p>その後、<a class="reference internal" href="pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> と同様に、<code class="docutils literal notranslate"><span class="pre">_get_worker_initializer</span></code> で与えられる初期化関数が呼び出されます（例えば、読み取り専用のモデルをワーカープロセスごとに一度だけ読み込むため）。これらのキーはメインプロセスの TensorFlow を設定しません。<code class="docutils literal notranslate"><span class="pre">tensorflowGpuMemoryGrowth</span></code> が true の場合、初期化関数が呼び出される前に TensorFlow が GPU を列挙するため、初期化関数は環境変数 <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES</span></code> でワーカープロセスの GPU を選択できません。代わりに <code class="docutils literal notranslate"><span class="pre">tf.config.set_visible_devices</span></code> を使ってください。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><a class="reference internal" href="pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> と同様に、このランナーはタスクごとにエージェントと市場、すなわちシミュレーション全体を pickle 化します。エージェントが保持する <code class="docutils literal notranslate"><span class="pre">tf.Tensor</span></code> と <code class="docutils literal notranslate"><span class="pre">tf.Variable</span></code> はその値のコピーとして pickle 化され、Keras 3 のモデルは <code class="docutils literal notranslate"><span class="pre">.keras</span></code> 形式で保存することで pickle 化されます。これには小さなモデルでも数十ミリ秒かかり、すべてのタスクで、他のエージェントのタスクでも行われます。<code class="docutils literal notranslate"><span class="pre">tf.function</span></code> で作られたオブジェクトは、モジュールのトップレベルで定義されていても pickle 化できません。そのため、エージェントはモデルを属性として保持するべきではありません。代わりに、エージェントはモデルのキー（例えば保存されたモデルのパス）を保持し、モジュールのトップレベルにあるキャッシュ（例えば、モデルを読み込む関数を <code class="xref py py-func docutils literal notranslate"><span class="pre">functools.lru_cache()</span></code> でデコレートしたもの）からモデルを取得するべきです。そうすれば、各ワーカープロセスは最初のタスクまたはワーカーの初期化関数でモデルを一度だけ読み込んで以降のタスクで再利用し、<a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> も同じエージェントを実行できます。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>ワーカープロセスから返されるのは、注文とエージェントの疑似乱数生成器（<code class="docutils literal notranslate"><span class="pre">prng</span></code>）の状態のみです。TensorFlow の乱数状態（例えばグローバルシードや <code class="docutils literal notranslate"><span class="pre">tf.random.Generator</span></code>）は返されず、どのワーカープロセスがエージェントを実行するかは実行ごとに変わります。<a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> と同じ結果を得るには、エージェントは <code class="docutils literal notranslate"><span class="pre">prng</span></code> から乱数（例えば <code class="docutils literal notranslate"><span class="pre">tf.random.stateless_normal</span></code> などのステートレスな乱数演算のシード）を生成するべきです。</p>
+<p>モデルは、どのプロセスでも同じ出力を返す必要もあります。CPU では、TensorFlow がスレッド間で分割する演算（例えば長い軸に沿ったリダクションや行列積）の出力は、<code class="docutils literal notranslate"><span class="pre">tf.config.experimental.enable_op_determinism</span></code> を使っても、intra-op スレッド数によって変わります。このランナーのデフォルトのスレッド数は CPU 数、<code class="docutils literal notranslate"><span class="pre">numParallel</span></code>、<code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> によって決まり、TensorFlow がすべての CPU を使うメインプロセスのスレッド数とは異なることがあります。そのため、<a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> と同一の結果や、異なる <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> の間で同一の結果を得るには、<code class="docutils literal notranslate"><span class="pre">tensorflowIntraOpThreads</span></code> を明示的に設定し、<a class="reference internal" href="pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> を実行するプロセスでも、TensorFlow が初期化される前に <code class="docutils literal notranslate"><span class="pre">tf.config.threading.set_intra_op_parallelism_threads</span></code> で同じ数を設定してください。GPU では、メインプロセスとワーカープロセスで <code class="docutils literal notranslate"><span class="pre">tf.config.experimental.enable_op_determinism</span></code> を呼び出さない限り、一部の演算は決定的になりません。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>このランナーがシミュレーションを速くするのは、<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> 内の TensorFlow の計算が、タスクごとにシミュレーションを pickle 化するコストよりもはるかに重い場合に限られます。さらに、各ワーカープロセスは起動時に TensorFlow をインポートして初期化するため、プロセスごとに数秒の時間と数百メガバイトのメモリを要します。</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pams.runners.TensorFlowAgentParallelRunner.default_start_method">
+<span class="sig-name descname"><span class="pre">default_start_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'spawn'</span></em><a class="headerlink" href="#pams.runners.TensorFlowAgentParallelRunner.default_start_method" title="Link to this definition">¶</a></dt>
+<dd><p>設定ファイルで <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が設定されていない場合に使われる、ワーカープロセスの開始方式。TensorFlow は fork セーフでないため、<code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> です。</p>
+<dl class="field-list simple">
+<dt class="field-odd">型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../../simulators.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">シミュレーター</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="pams.runners.JaxAgentParallelRunner.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">JaxAgentParallelRunner</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Masanori HIRANO
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">TensorFlowAgentParallelRunner</a><ul>
+<li><a class="reference internal" href="#pams.runners.TensorFlowAgentParallelRunner"><code class="docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner</span></code></a><ul>
+<li><a class="reference internal" href="#pams.runners.TensorFlowAgentParallelRunner.default_start_method"><code class="docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner.default_start_method</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=c033477b"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../../_static/translations.js?v=4755f45a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

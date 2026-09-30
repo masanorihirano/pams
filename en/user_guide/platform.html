@@ -213,6 +213,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -492,6 +493,86 @@ the same as <a class="reference internal" href="../reference/generated/runner/pa
 </pre></div>
 </div>
 </section>
+<section id="tensorflow-runner">
+<h3>TensorFlow runner<a class="headerlink" href="#tensorflow-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner" title="pams.runners.TensorFlowAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.TensorFlowAgentParallelRunner</span></code></a> is an experimental
+<a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a> for agents whose <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> uses
+<a class="reference external" href="https://www.tensorflow.org/">TensorFlow</a>, e.g., Keras models. TensorFlow is not a dependency of pams, so install
+it separately, e.g., <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow</span></code> (or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow-cpu</span></code> for the CPU-only build).
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">pams</span></code> does not import TensorFlow, and creating the runner without TensorFlow raises an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code>.</p>
+<ul class="simple">
+<li><p>The worker processes are started by <code class="docutils literal notranslate"><span class="pre">spawn</span></code> by default (<code class="docutils literal notranslate"><span class="pre">default_start_method</span> <span class="pre">=</span> <span class="pre">&quot;spawn&quot;</span></code>), because TensorFlow
+is not fork-safe. Once TensorFlow has run on the main process, e.g., to build the models of the agents or in an
+earlier <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>, a worker process started by <code class="docutils literal notranslate"><span class="pre">fork</span></code> has a copy of its memory but
+not its threads: TensorFlow operations can hang there, GPUs cannot be used, and TensorFlow cannot be configured.</p></li>
+<li><p>Each worker process configures TensorFlow once before it runs any task, by
+<code class="docutils literal notranslate"><span class="pre">simulation.tensorflowIntraOpThreads</span></code>, <code class="docutils literal notranslate"><span class="pre">simulation.tensorflowInterOpThreads</span></code> and
+<code class="docutils literal notranslate"><span class="pre">simulation.tensorflowGpuMemoryGrowth</span></code> (see <a class="reference internal" href="config.html#config-parallel-tensorflow"><span class="std std-ref">TensorFlow runner</span></a>), and then calls the worker
+initializer given by <code class="docutils literal notranslate"><span class="pre">_get_worker_initializer()</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">load_model</span></code> above. By default, the CPUs are divided
+among the worker processes running at the same time, and the memory growth of the GPUs is enabled so that the
+worker processes can share a GPU. The main process is not configured. To give each worker process its own GPU,
+call <code class="docutils literal notranslate"><span class="pre">tf.config.set_visible_devices</span></code> in the initializer; <code class="docutils literal notranslate"><span class="pre">CUDA_VISIBLE_DEVICES</span></code> set there has no effect by
+default, because the GPUs are already listed to enable their memory growth.</p></li>
+<li><p>The agents are pickled in every task (see <a class="reference internal" href="config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a>). <code class="docutils literal notranslate"><span class="pre">tf.Tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">tf.Variable</span></code> are pickled
+as copies of their values, a Keras 3 model is pickled by saving it in the <code class="docutils literal notranslate"><span class="pre">.keras</span></code> format, which takes tens of
+milliseconds even for a small model, and a function made by <code class="docutils literal notranslate"><span class="pre">tf.function</span></code> cannot be pickled. Therefore, keep a
+key of the model, such as its path, in the agent, and get the model from a cache at the top level of a module as
+below, so that each worker process loads it once and reuses it in the following steps.</p></li>
+<li><p>Importing TensorFlow at the top level of a module is fine, but do not run TensorFlow (e.g., create tensors or
+models) at the top level of the modules that the worker processes import, such as the main script; otherwise,
+TensorFlow is initialized before it is configured, and the simulation fails.</p></li>
+<li><p>Derive the random numbers, e.g., the seeds of <code class="docutils literal notranslate"><span class="pre">tf.random.stateless_normal</span></code>, from <code class="docutils literal notranslate"><span class="pre">agent.prng</span></code>, so that the
+results are the same as <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>. The random states of TensorFlow on the worker
+processes are not returned to the main process.</p></li>
+<li><p>On CPUs, the results of large operations, such as reductions and matrix multiplications over long axes, depend on
+the number of intra-op threads, even with <code class="docutils literal notranslate"><span class="pre">tf.config.experimental.enable_op_determinism()</span></code>. The default number
+on the worker processes can differ from the main process, where TensorFlow uses all the CPUs, and it changes with
+<code class="docutils literal notranslate"><span class="pre">numParallel</span></code> and <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code>. For results identical to <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>, set
+<code class="docutils literal notranslate"><span class="pre">simulation.tensorflowIntraOpThreads</span></code>, and set the same number by
+<code class="docutils literal notranslate"><span class="pre">tf.config.threading.set_intra_op_parallelism_threads</span></code> on the process running
+<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> before TensorFlow runs there.</p></li>
+<li><p>The runner is faster than <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a> only if the TensorFlow computations of the agents
+are much heavier than the copy of the simulation in every task. Starting each worker process, which imports
+TensorFlow, also takes seconds.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_agent.py, which the worker processes can import</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>  <span class="c1"># loaded once per process</span>
+    <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyKerasAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_path</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"modelPath"</span><span class="p">]</span>  <span class="c1"># only the path is pickled</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+        <span class="o">...</span>  <span class="c1"># e.g., model(features, training=False)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># main.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">my_agent</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyKerasAgent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorFlowAgentParallelRunner</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">TensorFlowAgentParallelRunner</span><span class="p">(</span>
+        <span class="n">settings</span><span class="o">=</span><span class="n">setting_dict_or_json</span><span class="p">,</span> <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">class_register</span><span class="p">(</span><span class="n">MyKerasAgent</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -555,6 +636,7 @@ the same as <a class="reference internal" href="../reference/generated/runner/pa
 <li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
 <li><a class="reference internal" href="#customizing-the-workers">Customizing the workers</a></li>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
+<li><a class="reference internal" href="#tensorflow-runner">TensorFlow runner</a></li>
 </ul>
 </li>
 </ul>

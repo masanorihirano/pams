@@ -213,6 +213,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -924,7 +925,9 @@ platform’s default). Only the start methods available on the platform are acce
 </tbody>
 </table>
 </div>
-<p>Other keys in <code class="docutils literal notranslate"><span class="pre">simulation</span></code> are ignored. In particular, events are not listed here but in each session.</p>
+<p>Other keys in <code class="docutils literal notranslate"><span class="pre">simulation</span></code> are ignored, except the keys that <a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JaxAgentParallelRunner</span></code></a> and
+<a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner" title="pams.runners.TensorFlowAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner</span></code></a> read (see <a class="reference internal" href="#config-parallel-jax"><span class="std std-ref">JAX/Flax runner</span></a> and
+<a class="reference internal" href="#config-parallel-tensorflow"><span class="std std-ref">TensorFlow runner</span></a>). In particular, events are not listed here but in each session.</p>
 </section>
 <section id="sessions">
 <span id="config-sessions"></span><h2>Sessions<a class="headerlink" href="#sessions" title="Link to this heading">¶</a></h2>
@@ -2040,6 +2043,52 @@ otherwise the default of JAX (0.75).</p></td>
 </div>
 <p>These keys do not configure JAX on the main process. See <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a> for how to write agents for this runner.</p>
 </section>
+<section id="tensorflow-runner">
+<span id="config-parallel-tensorflow"></span><h3>TensorFlow runner<a class="headerlink" href="#tensorflow-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner" title="pams.runners.TensorFlowAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner</span></code></a> (experimental) is the process runner for agents that use
+TensorFlow in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>, for example Keras models. TensorFlow is not installed with PAMS: install it yourself
+(for example <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow</span></code>, or <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow-cpu</span></code> for the CPU-only build). The runner starts
+its worker processes by <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> unless <code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> is set. Each worker process configures
+TensorFlow once, before it runs any task, with these keys in <code class="docutils literal notranslate"><span class="pre">simulation</span></code>, which the other runners ignore:</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowIntraOpThreads</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>int ≥ 1</p></td>
+<td><p>The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
+worker process. Default: the number of CPUs divided by the smaller of <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> and <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code>
+(at least 1), so that the worker processes running at the same time do not use more threads than the CPUs in
+total. The results of large operations can depend on this number, so set it explicitly for reproducible
+results (see <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowInterOpThreads</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>int ≥ 1</p></td>
+<td><p>The number of threads that TensorFlow uses to run independent operations at the same time on each worker
+process. Default: <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowGpuMemoryGrowth</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>bool</p></td>
+<td><p>Whether memory growth is enabled for all the visible GPUs on each worker process. Default: <code class="docutils literal notranslate"><span class="pre">true</span></code>, so that
+the worker processes can share a GPU (by default, TensorFlow allocates almost all the memory of a GPU to the
+first process that uses it).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These keys do not configure TensorFlow on the main process. See <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a> for how to write agents for this
+runner.</p>
+</section>
 </section>
 <section id="troubleshooting">
 <span id="config-troubleshooting"></span><h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
@@ -2325,6 +2374,7 @@ A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceS
 <li><a class="reference internal" href="#user-defined-classes">User-defined classes</a></li>
 <li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
+<li><a class="reference internal" href="#tensorflow-runner">TensorFlow runner</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>

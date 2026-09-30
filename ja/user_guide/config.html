@@ -213,6 +213,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/simulators.html">シミュレーター</a><input aria-label="Toggle navigation of シミュレーター" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -871,7 +872,7 @@ JsonRandom</div>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">simulation</span></code> 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。</p>
+<p><code class="docutils literal notranslate"><span class="pre">simulation</span></code> 内のその他のキーは、<a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JaxAgentParallelRunner</span></code></a> と <a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner" title="pams.runners.TensorFlowAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner</span></code></a> が読み込むキー（<a class="reference internal" href="#config-parallel-jax"><span class="std std-ref">JAX/Flax ランナー</span></a> と <a class="reference internal" href="#config-parallel-tensorflow"><span class="std std-ref">TensorFlow ランナー</span></a> を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。</p>
 </section>
 <section id="sessions">
 <span id="config-sessions"></span><h2>セッション<a class="headerlink" href="#sessions" title="Link to this heading">¶</a></h2>
@@ -1776,6 +1777,40 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 </div>
 <p>これらのキーはメインプロセスの JAX を設定しません。このランナー向けのエージェントの書き方は <a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> を参照してください。</p>
 </section>
+<section id="tensorflow-runner">
+<span id="config-parallel-tensorflow"></span><h3>TensorFlow ランナー<a class="headerlink" href="#tensorflow-runner" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html#pams.runners.TensorFlowAgentParallelRunner" title="pams.runners.TensorFlowAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorFlowAgentParallelRunner</span></code></a> （実験的機能）は、<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> で TensorFlow を使うエージェント（例えば Keras のモデル）のためのプロセスランナーです。TensorFlow は PAMS と一緒にはインストールされないため、各自でインストールしてください（例えば <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow</span></code>、CPU 専用版であれば <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tensorflow-cpu</span></code>）。このランナーは、<code class="docutils literal notranslate"><span class="pre">simulation.startMethod</span></code> が設定されていない限り、<code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、<code class="docutils literal notranslate"><span class="pre">simulation</span></code> の以下のキーで TensorFlow を設定します。これらのキーは他のランナーでは無視されます：</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22.0%" />
+<col style="width: 18.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>キー</p></th>
+<th class="head"><p>値</p></th>
+<th class="head"><p>説明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowIntraOpThreads</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>int ≥ 1</p></td>
+<td><p>各ワーカープロセスで、TensorFlow が 1 つの演算（例えば行列積）の実行に使うスレッド数です。デフォルト：CPU 数を <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> と <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> の小さい方で割った値（最小 1）。同時に動くワーカープロセス全体で CPU 数より多くのスレッドを使わないようにするためです。大きな演算の結果はこの値によって変わることがあるため、結果を再現できるようにするには明示的に設定してください（<a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> を参照）。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowInterOpThreads</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>int ≥ 1</p></td>
+<td><p>各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：<code class="docutils literal notranslate"><span class="pre">1</span></code>。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensorflowGpuMemoryGrowth</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>真偽値</p></td>
+<td><p>各ワーカープロセスで、認識されているすべての GPU のメモリ増加（memory growth）を有効にするかどうかです。デフォルト：<code class="docutils literal notranslate"><span class="pre">true</span></code>。ワーカープロセスが GPU を共有できるようにするためです（TensorFlow はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>これらのキーはメインプロセスの TensorFlow を設定しません。このランナー向けのエージェントの書き方は <a class="reference internal" href="platform.html"><span class="doc">プラットフォーム</span></a> を参照してください。</p>
+</section>
 </section>
 <section id="troubleshooting">
 <span id="config-troubleshooting"></span><h2>トラブルシューティング<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h2>
@@ -2029,6 +2064,7 @@ w_F \frac{1}{\tau_r} \ln\frac{P^f_t}{P_t}
 <li><a class="reference internal" href="#user-defined-classes">ユーザー定義クラス</a></li>
 <li><a class="reference internal" href="#parallel-runners">並列ランナー</a><ul>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax ランナー</a></li>
+<li><a class="reference internal" href="#tensorflow-runner">TensorFlow ランナー</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#troubleshooting">トラブルシューティング</a><ul>
