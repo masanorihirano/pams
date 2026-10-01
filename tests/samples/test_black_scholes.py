@@ -412,7 +412,7 @@ class TestWorkloadFCNAgentSimulation:
             )
 
 
-def _run_main(argv: List[str], capsys: pytest.CaptureFixture) -> List[str]:
+def _run_main(argv: List[str], capsys: pytest.CaptureFixture[str]) -> List[str]:
     capsys.readouterr()
     with mock.patch("sys.argv", ["main.py"] + argv):
         main()
@@ -431,7 +431,7 @@ def test_black_scholes() -> None:
 
 
 def test_black_scholes_runners(
-    tmp_path: pathlib.Path, capsys: pytest.CaptureFixture
+    tmp_path: pathlib.Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     assert list(RUNNERS.keys()) == ["sequential", "multi_thread", "multi_process"]
     config_path = str(tmp_path / "config.json")
@@ -459,3 +459,50 @@ def test_black_scholes_runners(
         _run_main(
             argv=["--config", config_path, "--runner", "multi_gpu"], capsys=capsys
         )
+
+
+def test_black_scholes_num_parallel(
+    tmp_path: pathlib.Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    config = _small_config()
+    del config["simulation"]["numParallel"]
+    config_path = str(tmp_path / "config.json")
+    with open(config_path, mode="w", encoding="utf-8") as fp:
+        json.dump(config, fp)
+    sequential_lines = _run_main(
+        argv=["--config", config_path, "--seed", "1"], capsys=capsys
+    )
+    num_parallels: List[int] = []
+
+    class RecordingRunner(MultiThreadAgentParallelRunner):
+        def _setup(self) -> None:
+            super()._setup()
+            num_parallels.append(self.num_parallel)
+
+    with mock.patch.dict(RUNNERS, {"multi_thread": RecordingRunner}):
+        for argv in [
+            ["--config", config_path, "--seed", "1", "-r", "multi_thread"],
+            ["--config", config_path, "--seed", "1", "-r", "multi_thread", "-n", "2"],
+            ["-c", config_path, "-s", "1", "-r", "multi_thread", "--num-parallel", "3"],
+        ]:
+            assert _run_main(argv=argv, capsys=capsys) == sequential_lines
+    # without the option, the default of the runner is used
+    assert num_parallels == [
+        MultiThreadAgentParallelRunner(settings=config).num_parallel,
+        2,
+        3,
+    ]
+    # the config file is not changed
+    with open(config_path, mode="r", encoding="utf-8") as fp:
+        assert "numParallel" not in json.load(fp)["simulation"]
+    # the option is ignored by SequentialRunner
+    assert (
+        _run_main(argv=["-c", config_path, "-s", "1", "-n", "2"], capsys=capsys)
+        == sequential_lines
+    )
+    with pytest.raises(ValueError):
+        _run_main(
+            argv=["-c", config_path, "-r", "multi_thread", "-n", "0"], capsys=capsys
+        )
+    with pytest.raises(SystemExit):
+        _run_main(argv=["-c", config_path, "-n", "two"], capsys=capsys)
