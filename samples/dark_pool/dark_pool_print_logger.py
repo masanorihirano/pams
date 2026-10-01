@@ -57,9 +57,10 @@ def get_trade_price(lit_market: Market, dark_pool: Optional[DarkPoolMarket]) -> 
 class DarkPoolPrintLogger(Logger):
     """Logger that prints the market steps of the dark pool sample.
 
-    Each line has the same columns as the output of the DarkPool sample of plhamJ:
-    session ID, time, market ID, market name, market price, fundamental price, trade
-    price (see :func:`get_trade_price`) and executed volume.
+    Each line shows one market at the end of one step, with the following columns
+    separated by spaces: the session ID, the time, the market ID, the market name, the
+    market price, the fundamental price, the trade price (see :func:`get_trade_price`)
+    and the executed volume.
     """
 
     def process_market_step_end_log(self, log: MarketStepEndLog) -> None:

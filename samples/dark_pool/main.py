@@ -1,21 +1,29 @@
 """Dark pool sample.
 
-Port of the DarkPool sample of plhamJ, based on Mizuta et al. (2015). FCN agents trade
-in a lit market and in a dark pool
-(:class:`samples.dark_pool.dark_pool_market.DarkPoolMarket`). Each agent
-(:class:`samples.dark_pool.dark_pool_fcn_agent.DarkPoolFCNAgent`) decides its orders
-from the lit market and sends each of them to the dark pool instead with the
-probability ``darkPoolChance``. The dark pool executes its orders at the mid price of
-the lit market. ``examples/dark_pool.ipynb`` plots and analyses the results.
+This sample simulates a lit market and a dark pool beside it with the artificial
+market model of Mizuta et al. (2015), https://doi.org/10.1007/s40844-015-0020-3. The
+lit market is a continuous double auction. The dark pool
+(:class:`samples.dark_pool.dark_pool_market.DarkPoolMarket`) accepts only market
+orders, which have no price. A new order to it trades at once if an opposite order is
+waiting there and waits otherwise, and the trade price is the mid price of the lit
+market. Each agent (:class:`samples.dark_pool.dark_pool_fcn_agent.DarkPoolFCNAgent`)
+decides its order from the lit market as :class:`pams.agents.FCNAgent` does, from a
+fundamental, a chart and a noise term like the agents of the paper. It then sends the
+order to the dark pool with the probability ``darkPoolChance``, which is ``d`` of the
+paper, and to the lit market otherwise. This is the market selection without smart
+order routing (SOR) in the paper. ``examples/dark_pool.ipynb`` explains the model and
+the measures of the paper and compares the results for several values of
+``darkPoolChance`` with the findings of the paper.
 
-Each printed line has the same columns as the output of plhamJ (see
-:class:`samples.dark_pool.dark_pool_print_logger.DarkPoolPrintLogger`): session, time,
-market ID, market name, market price, fundamental price, trade price and executed
-volume.
+Each printed line shows one market at the end of one step: the session ID, the time,
+the market ID, the market name, the market price, the fundamental price, the trade
+price and the executed volume (see
+:class:`samples.dark_pool.dark_pool_print_logger.DarkPoolPrintLogger`).
 
-The differences of this sample from plhamJ are as follows. ``examples/dark_pool.ipynb``
-also lists the differences that come from PAMS itself, such as the lack of itayose at
-the start of a session.
+This sample is ported from the DarkPool sample of plhamJ and prints the same columns
+as that sample. It differs from that sample as follows, and
+``examples/dark_pool.ipynb`` also lists the differences that come from PAMS itself,
+such as the lack of itayose at the start of a session.
 
 - ``config.json`` sets ``maxNormalOrders`` to ``2``, the number of markets, which is
   the default of plhamJ. The default of PAMS is ``1``.
