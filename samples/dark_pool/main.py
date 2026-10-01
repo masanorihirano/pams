@@ -1,19 +1,23 @@
 """Dark pool sample.
 
-This sample simulates a lit market and a dark pool beside it with the artificial
-market model of Mizuta et al. (2015), https://doi.org/10.1007/s40844-015-0020-3. The
-lit market is a continuous double auction. The dark pool
+This sample simulates a lit market and a dark pool beside it. It takes the dark pool
+and the market selection without smart order routing (SOR) from the artificial market
+model of Mizuta et al. (2015), https://doi.org/10.1007/s40844-015-0020-3. The lit
+market is a continuous double auction. The dark pool
 (:class:`samples.dark_pool.dark_pool_market.DarkPoolMarket`) accepts only market
 orders, which have no price. A new order to it trades at once if an opposite order is
 waiting there and waits otherwise, and the trade price is the mid price of the lit
 market. Each agent (:class:`samples.dark_pool.dark_pool_fcn_agent.DarkPoolFCNAgent`)
-decides its order from the lit market as :class:`pams.agents.FCNAgent` does, from a
-fundamental, a chart and a noise term like the agents of the paper. It then sends the
-order to the dark pool with the probability ``darkPoolChance``, which is ``d`` of the
-paper, and to the lit market otherwise. This is the market selection without smart
-order routing (SOR) in the paper. ``examples/dark_pool.ipynb`` explains the model and
-the measures of the paper and compares the results for several values of
-``darkPoolChance`` with the findings of the paper.
+decides its order to the lit market as :class:`pams.agents.FCNAgent` does. It then
+sends the order to the dark pool with the probability ``darkPoolChance``, which is
+``d`` of the paper, and to the lit market otherwise.
+
+The agents differ from those of the paper in their order rule, which is that of
+:class:`pams.agents.FCNAgent`, and in their parameters. For example, ``config.json``
+sets the chart weight to 0, so the agents have no technical term. The Config section
+of ``examples/dark_pool.ipynb`` compares the parameters, and the notebook also
+explains the model and the measures of the paper and compares the results for several
+values of ``darkPoolChance`` with the findings of the paper.
 
 Each printed line shows one market at the end of one step: the session ID, the time,
 the market ID, the market name, the market price, the fundamental price, the trade
