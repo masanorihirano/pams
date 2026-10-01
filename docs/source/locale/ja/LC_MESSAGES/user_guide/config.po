@@ -1239,27 +1239,27 @@ msgstr ""
 "発行済株式数です。``IndexMarket`` "
 "を構成する市場では必須で、インデックスにおけるその市場の重みとなります。JSONの整数でなければなりません。デフォルトでは設定されていません。"
 
-#: ../../source/user_guide/config.rst:562
-#: ../../source/user_guide/config.rst:631
-msgid "``transactionCost`` |optional|"
-msgstr "``transactionCost`` |optional|"
+#: ../../source/user_guide/config.rst:570
+#: ../../source/user_guide/config.rst:639
+msgid "``transactionFee`` |optional|"
+msgstr "``transactionFee`` |optional|"
 
 #: ../../source/user_guide/config.rst:563
 #: ../../source/user_guide/config.rst:632
 msgid "object or null"
 msgstr "オブジェクトまたは null"
 
-#: ../../source/user_guide/config.rst:564
+#: ../../source/user_guide/config.rst:572
 #, python-brace-format, python-format
 msgid ""
-"Transaction costs charged to the buyer and the seller of each execution, "
-"e.g. ``{\"class\": \"ProportionalTransactionCost\", \"rate\": 0.001}`` "
-"for 0.1% of the executed value (see :ref:`config-transaction-costs`). "
-"Default: no costs."
+"Transaction fees charged to the buyer and the seller of each execution, "
+"e.g. ``{\"class\": \"ProportionalTransactionFee\", \"rate\": 0.001}`` for"
+" 0.1% of the executed value (see :ref:`config-transaction-fees`). "
+"Default: no fees."
 msgstr ""
-"各約定において買い手と売り手に課される取引コストです（例：約定金額の 0.1% なら ``{\"class\": "
-"\"ProportionalTransactionCost\", \"rate\": 0.001}``。:ref:`config-"
-"transaction-costs` を参照）。デフォルトではコストはかかりません。"
+"各約定において買い手と売り手に課される取引手数料です（例：約定金額の 0.1% なら ``{\"class\": "
+"\"ProportionalTransactionFee\", \"rate\": 0.001}``。:ref:`config-"
+"transaction-fees` を参照）。デフォルトでは手数料はかかりません。"
 
 #: ../../source/user_guide/config.rst:558
 msgid ""
@@ -1415,41 +1415,41 @@ msgstr ""
 " ``fundamentalDrift`` と ``fundamentalVolatility`` "
 "は無視されます。開始時に人為的な乖離が生じないよう、インデックスの ``marketPrice`` を構成市場の価格の加重平均に設定してください。"
 
-#: ../../source/user_guide/config.rst:651
-msgid "Transaction costs"
-msgstr "取引コスト"
+#: ../../source/user_guide/config.rst:659
+msgid "Transaction fees"
+msgstr "取引手数料"
 
-#: ../../source/user_guide/config.rst:653
+#: ../../source/user_guide/config.rst:661
 msgid ""
-"The ``transactionCost`` key of a market block (``Market``, "
-"``IndexMarket`` or your own market class) sets the transaction costs of "
-"its markets. Its value is ``null`` or an object whose ``class`` is a "
-":class:`~pams.TransactionCost` class; the other keys of the object are "
-"the settings of that class. Without the key, or with ``null``, no costs "
-"are charged."
+"The ``transactionFee`` key of a market block (``Market``, ``IndexMarket``"
+" or your own market class) sets the transaction fees of its markets. Its "
+"value is ``null`` or an object whose ``class`` is a "
+":class:`~pams.TransactionFee` class; the other keys of the object are the"
+" settings of that class. Without the key, or with ``null``, no fees are "
+"charged."
 msgstr ""
-"市場のブロック（``Market``、``IndexMarket``、または独自の市場クラス）の ``transactionCost`` "
-"キーは、そのブロックの市場の取引コストを設定します。値は ``null``、または ``class`` に "
-":class:`~pams.TransactionCost` "
+"市場のブロック（``Market``、``IndexMarket``、または独自の市場クラス）の ``transactionFee`` "
+"キーは、そのブロックの市場の取引手数料を設定します。値は ``null``、または ``class`` に "
+":class:`~pams.TransactionFee` "
 "のクラスを指定したオブジェクトで、オブジェクトのその他のキーはそのクラスの設定になります。キーがない場合や ``null`` "
-"の場合、コストはかかりません。"
+"の場合、手数料はかかりません。"
 
-#: ../../source/user_guide/config.rst:664
+#: ../../source/user_guide/config.rst:673
 msgid ""
 "The runner creates one instance of the class for each market of the block"
-" and sets it to ``market.transaction_cost`` (``None`` without costs). "
-"Right after the setup of the market, it calls ``setup`` of the instance "
-"with the object without ``class``. Like any object value, the object is "
+" and sets it to ``market.transaction_fee`` (``None`` without fees). Right"
+" after the setup of the market, it calls ``setup`` of the instance with "
+"the object without ``class``. Like any object value, the object is "
 "inherited through ``extends`` as a whole."
 msgstr ""
-"ランナーはブロックの市場ごとにクラスのインスタンスを1つ作成し、``market.transaction_cost`` "
-"に設定します（コストがない場合は ``None``）。そして市場のセットアップの直後に、``class`` "
+"ランナーはブロックの市場ごとにクラスのインスタンスを1つ作成し、``market.transaction_fee`` "
+"に設定します（手数料がない場合は ``None``）。そして市場のセットアップの直後に、``class`` "
 "を除いたオブジェクトを渡してインスタンスの ``setup`` を呼び出します。他のオブジェクト値と同様に、このオブジェクトは "
 "``extends`` によって丸ごと継承されます。"
 
-#: ../../source/user_guide/config.rst:669
-msgid "The built-in :class:`~pams.ProportionalTransactionCost` has one key:"
-msgstr "組み込みの :class:`~pams.ProportionalTransactionCost` のキーは1つです："
+#: ../../source/user_guide/config.rst:678
+msgid "The built-in :class:`~pams.ProportionalTransactionFee` has one key:"
+msgstr "組み込みの :class:`~pams.ProportionalTransactionFee` のキーは1つです："
 
 #: ../../source/user_guide/config.rst:678
 msgid "``rate`` |required|"
@@ -1459,109 +1459,109 @@ msgstr "``rate`` |required|"
 msgid "number in [0, 1)"
 msgstr "[0, 1) の範囲の数値"
 
-#: ../../source/user_guide/config.rst:680
+#: ../../source/user_guide/config.rst:689
 msgid ""
-"Cost paid by both the buyer and the seller, as a fraction of the executed"
-" value (price × volume), e.g. ``0.001`` for 0.1%."
-msgstr "買い手と売り手の双方が支払うコストで、約定金額（価格 × 数量）に対する割合です（例：0.1% なら ``0.001``）。"
+"Fee paid by both the buyer and the seller, as a fraction of the executed "
+"value (price × volume), e.g. ``0.001`` for 0.1%."
+msgstr "買い手と売り手の双方が支払う手数料で、約定金額（価格 × 数量）に対する割合です（例：0.1% なら ``0.001``）。"
 
-#: ../../source/user_guide/config.rst:684
+#: ../../source/user_guide/config.rst:692
 msgid ""
 "When volume :math:`V` is executed at price :math:`P`, the buyer pays "
 ":math:`(1 + c) P V` and the seller receives :math:`(1 - c) P V`, where "
-":math:`c` is ``rate``. No agent receives the costs: they are subtracted "
+":math:`c` is ``rate``. No agent receives the fees: they are subtracted "
 "from the agents' cash, and the market records them as its revenue (see "
 "below). Each :class:`~pams.logs.ExecutionLog` records them as "
-"``buy_transaction_cost`` and ``sell_transaction_cost`` (``0.0`` without "
-"costs)."
+"``buy_transaction_fee`` and ``sell_transaction_fee`` (``0.0`` without "
+"fees)."
 msgstr ""
 "数量 :math:`V` が価格 :math:`P` で約定すると、買い手は :math:`(1 + c) P V` を支払い、売り手は "
 ":math:`(1 - c) P V` を受け取ります。ここで :math:`c` は ``rate`` "
-"です。コストを受け取るエージェントはおらず、コストはエージェントの現金から差し引かれ、市場がその収入として記録します（後述）。各 "
-":class:`~pams.logs.ExecutionLog` はコストを ``buy_transaction_cost`` と "
-"``sell_transaction_cost`` として記録します（コストがない場合は ``0.0``）。"
-
-#: ../../source/user_guide/config.rst:690
-msgid ""
-"Transaction costs draw no random numbers, and the built-in agents do not "
-"look at their cash (see :ref:`config-agents`), so for the same seed the "
-"prices and executions are the same with and without costs. Only the "
-"agents' cash, the costs in the execution logs and the revenues of the "
-"markets differ."
-msgstr ""
-"取引コストは乱数を使わず、組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
-"を参照）ため、同じシードであれば、価格と約定はコストの有無にかかわらず同じになります。異なるのはエージェントの現金、約定ログのコスト、市場の収入だけです。"
-
-#: ../../source/user_guide/config.rst:694
-msgid ""
-"Each market records the transaction costs that it collects in each step: "
-"the sum of ``buy_transaction_cost`` and ``sell_transaction_cost`` of its "
-"executions in the step. Negative costs (rebates) reduce it, so it can be "
-"negative, and it is ``0.0`` without costs. Three methods of "
-":class:`~pams.Market` read it:"
-msgstr ""
-"各市場は、各ステップで徴収した取引コスト、つまりそのステップにおける自身の約定の ``buy_transaction_cost`` と "
-"``sell_transaction_cost`` "
-"の合計を記録します。負のコスト（リベート）はこれを減らすため、負になることもあり、コストがない場合は ``0.0`` "
-"です。:class:`~pams.Market` の3つのメソッドでこれを読み取れます："
+"です。手数料を受け取るエージェントはおらず、手数料はエージェントの現金から差し引かれ、市場がその収入として記録します（後述）。各 "
+":class:`~pams.logs.ExecutionLog` は手数料を ``buy_transaction_fee`` と "
+"``sell_transaction_fee`` として記録します（手数料がない場合は ``0.0``）。"
 
 #: ../../source/user_guide/config.rst:698
 msgid ""
-":meth:`~pams.Market.get_transaction_cost_revenues` returns the revenue of"
-" each step in ``times`` (by default, every step from 0 to the current "
-"step);"
+"Transaction fees draw no random numbers, and the built-in agents do not "
+"look at their cash (see :ref:`config-agents`), so for the same seed the "
+"prices and executions are the same with and without fees. Only the "
+"agents' cash, the fees in the execution logs and the revenues of the "
+"markets differ."
 msgstr ""
-":meth:`~pams.Market.get_transaction_cost_revenues` は、``times`` "
-"の各ステップの収入を返します（デフォルトでは、0から現在のステップまでのすべてのステップ）。"
-
-#: ../../source/user_guide/config.rst:700
-msgid ""
-":meth:`~pams.Market.get_transaction_cost_revenue` returns the revenue of "
-"the step ``time`` (by default, the current step);"
-msgstr ""
-":meth:`~pams.Market.get_transaction_cost_revenue` は、ステップ ``time`` "
-"の収入を返します（デフォルトでは現在のステップ）。"
+"取引手数料は乱数を使わず、組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
+"を参照）ため、同じシードであれば、価格と約定は手数料の有無にかかわらず同じになります。異なるのはエージェントの現金、約定ログの手数料、市場の収入だけです。"
 
 #: ../../source/user_guide/config.rst:702
 msgid ""
-":meth:`~pams.Market.get_cumulative_transaction_cost_revenue` returns the "
+"Each market records the transaction fees that it collects in each step: "
+"the sum of ``buy_transaction_fee`` and ``sell_transaction_fee`` of its "
+"executions in the step. Negative fees (rebates) reduce it, so it can be "
+"negative, and it is ``0.0`` without fees. Three methods of "
+":class:`~pams.Market` read it:"
+msgstr ""
+"各市場は、各ステップで徴収した取引手数料、つまりそのステップにおける自身の約定の ``buy_transaction_fee`` と "
+"``sell_transaction_fee`` "
+"の合計を記録します。負の手数料（リベート）はこれを減らすため、負になることもあり、手数料がない場合は ``0.0`` "
+"です。:class:`~pams.Market` の3つのメソッドでこれを読み取れます："
+
+#: ../../source/user_guide/config.rst:706
+msgid ""
+":meth:`~pams.Market.get_transaction_fee_revenues` returns the revenue of "
+"each step in ``times`` (by default, every step from 0 to the current "
+"step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_fee_revenues` は、``times`` "
+"の各ステップの収入を返します（デフォルトでは、0から現在のステップまでのすべてのステップ）。"
+
+#: ../../source/user_guide/config.rst:708
+msgid ""
+":meth:`~pams.Market.get_transaction_fee_revenue` returns the revenue of "
+"the step ``time`` (by default, the current step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_fee_revenue` は、ステップ ``time`` "
+"の収入を返します（デフォルトでは現在のステップ）。"
+
+#: ../../source/user_guide/config.rst:710
+msgid ""
+":meth:`~pams.Market.get_cumulative_transaction_fee_revenue` returns the "
 "balance of the market, i.e. the sum of the revenues from step 0 to the "
 "step ``time`` (by default, the current step)."
 msgstr ""
-":meth:`~pams.Market.get_cumulative_transaction_cost_revenue` "
+":meth:`~pams.Market.get_cumulative_transaction_fee_revenue` "
 "は、市場の収支、つまりステップ0からステップ ``time`` までの収入の合計を返します（デフォルトでは現在のステップまで）。"
 
-#: ../../source/user_guide/config.rst:705
+#: ../../source/user_guide/config.rst:713
 msgid ""
 "The revenues of all the markets add up to the cash that the agents lose "
-"to the costs. After a run, the time of the markets is one step past the "
+"to the fees. After a run, the time of the markets is one step past the "
 "last step, and the revenue of that step is ``0.0``. The built-in loggers "
 "do not output the revenues, but a logger can read them through "
 "``log.market`` in ``process_market_step_end_log``, and an event through "
 "``market`` in ``hooked_after_step_for_market``:"
 msgstr ""
-"すべての市場の収入の合計は、エージェントがコストによって失う現金に等しくなります。実行後、市場の時刻は最後のステップの1つ後になり、そのステップの収入は"
+"すべての市場の収入の合計は、エージェントが手数料によって失う現金に等しくなります。実行後、市場の時刻は最後のステップの1つ後になり、そのステップの収入は"
 " ``0.0`` です。組み込みのロガーは収入を出力しませんが、ロガーは ``process_market_step_end_log`` の "
 "``log.market`` を通じて、イベントは ``hooked_after_step_for_market`` の ``market`` "
 "を通じて収入を読み取れます："
 
 #: ../../source/user_guide/config.rst
-msgid "Writing your own transaction cost"
-msgstr "独自の取引コストの作成"
+msgid "Writing your own transaction fee"
+msgstr "独自の取引手数料の作成"
 
-#: ../../source/user_guide/config.rst:695
+#: ../../source/user_guide/config.rst:744
 msgid ""
 "For other fee schedules, e.g. different rates for makers and takers, "
-"fixed fees or tiered fees, subclass :class:`~pams.TransactionCost` and "
-"implement ``compute_costs``. It returns the costs of the buyer and the "
-"seller of one execution; negative costs are rebates, which are added to "
+"fixed fees or tiered fees, subclass :class:`~pams.TransactionFee` and "
+"implement ``compute_fees``. It returns the fees of the buyer and the "
+"seller of one execution; negative fees are rebates, which are added to "
 "the cash. Read your keys in ``setup``, which does nothing by default. "
 "This example charges ``makerRate`` to the order placed first (the maker) "
 "and ``takerRate`` to the other order (the taker):"
 msgstr ""
-"メイカーとテイカーで料率を変える場合や固定手数料、段階的な手数料など、別の手数料体系を用いるには、:class:`~pams.TransactionCost`"
-" のサブクラスを作成して ``compute_costs`` "
-"を実装してください。このメソッドは、1回の約定における買い手と売り手のコストを返します。負のコストはリベートであり、現金に加算されます。独自のキーは"
+"メイカーとテイカーで料率を変える場合や固定手数料、段階的な手数料など、別の手数料体系を用いるには、:class:`~pams.TransactionFee`"
+" のサブクラスを作成して ``compute_fees`` "
+"を実装してください。このメソッドは、1回の約定における買い手と売り手の手数料を返します。負の手数料はリベートであり、現金に加算されます。独自のキーは"
 " ``setup`` で読み込みます。``setup`` はデフォルトでは何もしません。次の例では、先に出された注文（メイカー）に "
 "``makerRate`` を、もう一方の注文（テイカー）に ``takerRate`` を課します："
 
@@ -1592,10 +1592,10 @@ msgstr ""
 "``placed_at`` "
 "が同じになるため、どちらが先かは注文IDで判断します。通常、メイカーは板で待っていた注文で、テイカーは新たに到着した注文です。ただし、注文を約定させないセッションや売買停止の後では、両方の注文が板で待っていたことがあり、両方が成行注文であることもあります。その場合、この例では先に出された注文をメイカーとして扱います。"
 
-#: ../../source/user_guide/config.rst:741
+#: ../../source/user_guide/config.rst:790
 msgid ""
-"``compute_costs`` receives only the execution: the executed ``price`` and"
-" ``volume``, and the buy and sell :class:`~pams.Order`, whose ``volume`` "
+"``compute_fees`` receives only the execution: the executed ``price`` and "
+"``volume``, and the buy and sell :class:`~pams.Order`, whose ``volume`` "
 "still includes the executed volume. The orders are passed because they "
 "carry what the execution log lacks, such as ``placed_at`` and ``kind``. "
 "As each instance belongs to one market, everything else can be read "
@@ -1606,7 +1606,7 @@ msgid ""
 "(``self.market.simulator.markets``). An instance can also keep its own "
 "state, e.g. the volume that each agent has traded for tiered fees."
 msgstr ""
-"``compute_costs`` が受け取るのは約定の情報だけです。約定した ``price`` と "
+"``compute_fees`` が受け取るのは約定の情報だけです。約定した ``price`` と "
 "``volume``、そして買い注文と売り注文の :class:`~pams.Order` で、注文の ``volume`` "
 "にはまだ約定数量が含まれています。注文が渡されるのは、``placed_at`` や ``kind`` "
 "など、約定ログにない情報を持っているためです。各インスタンスは1つの市場に属しているため、それ以外の情報はすべて ``self.market`` "
@@ -1629,22 +1629,22 @@ msgstr ""
 "を作成してください。ランナーや市場の乱数生成器から乱数を引くと、シミュレーションが変わってしまいます。"
 
 #: ../../source/user_guide/config.rst
-msgid "When ``compute_costs`` is called"
-msgstr "``compute_costs`` が呼び出されるタイミング"
+msgid "When ``compute_fees`` is called"
+msgstr "``compute_fees`` が呼び出されるタイミング"
 
-#: ../../source/user_guide/config.rst:757
+#: ../../source/user_guide/config.rst:806
 msgid ""
 "While a session executes orders and the market is not halted, the market "
 "executes orders after each order or cancel. It first matches the best buy"
 " and sell orders, pair by pair, as long as their prices cross, and all "
 "the matched pairs get one execution price (see \"How the market price is "
 "determined\" above). Then it executes the pairs one by one in the order "
-"in which they were matched, and calls ``compute_costs`` once for each "
+"in which they were matched, and calls ``compute_fees`` once for each "
 "pair, before the executed volume is subtracted from the orders. At that "
 "moment:"
 msgstr ""
 "セッションが注文を約定させていて、市場が停止していない間、市場は注文や取消のたびに注文を約定させます。まず、最良の買い注文と売り注文を、価格が交差している限り1組ずつマッチングし、マッチングしたすべての組に1つの約定価格を決めます（上記の「市場価格の決まり方」を参照）。次に、マッチングした順に組を1つずつ約定させ、各組について、約定数量が注文から差し引かれる前に"
-" ``compute_costs`` を1回呼び出します。その時点では："
+" ``compute_fees`` を1回呼び出します。その時点では："
 
 #: ../../source/user_guide/config.rst:764
 msgid ""
@@ -1654,13 +1654,13 @@ msgid ""
 "still be crossed;"
 msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
 
-#: ../../source/user_guide/config.rst:807
+#: ../../source/user_guide/config.rst:815
 msgid ""
 "the earlier pairs are already executed: their volumes are subtracted from"
 " their orders, the fully executed orders are removed from the order "
-"books, and the executed prices and volumes and the transaction cost "
+"books, and the executed prices and volumes and the transaction fee "
 "revenue of the market include them;"
-msgstr "前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引コスト収入にもそれらが含まれています。"
+msgstr "前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引手数料収入にもそれらが含まれています。"
 
 #: ../../source/user_guide/config.rst:767
 msgid ""
@@ -2688,19 +2688,19 @@ msgstr ""
 "文字列で指定するクラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
 "``FCNAgent``）は曖昧となりエラーになります。各クラスは一度だけ登録してください。"
 
-#: ../../source/user_guide/config.rst:1311
+#: ../../source/user_guide/config.rst:1368
 msgid ""
 "Agent classes must inherit from :class:`~pams.agents.Agent`, market "
 "classes from :class:`~pams.Market`, event classes from "
-":class:`~pams.events.EventABC` and transaction cost classes from "
-":class:`~pams.TransactionCost` (see :ref:`config-transaction-costs`). An "
+":class:`~pams.events.EventABC` and transaction fee classes from "
+":class:`~pams.TransactionFee` (see :ref:`config-transaction-fees`). An "
 "agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is "
 "scheduled as a high-frequency agent."
 msgstr ""
 "エージェントクラスは :class:`~pams.agents.Agent` を、市場クラスは :class:`~pams.Market` "
-"を、イベントクラスは :class:`~pams.events.EventABC` を、取引コストクラスは "
-":class:`~pams.TransactionCost` を継承する必要があります（:ref:`config-transaction-"
-"costs` を参照）。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
+"を、イベントクラスは :class:`~pams.events.EventABC` を、取引手数料クラスは "
+":class:`~pams.TransactionFee` を継承する必要があります（:ref:`config-transaction-fees`"
+" を参照）。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
 "を継承している場合、高頻度エージェントとしてスケジュールされます。"
 
 #: ../../source/user_guide/config.rst:1159
@@ -2810,18 +2810,18 @@ msgstr ""
 " されたプロセスでは動作しないライブラリ（CUDA を使う PyTorch、TensorFlow、JAX など）をエージェントが使う場合は "
 "``\"spawn\"`` を使ってください。開始方式によってシミュレーション結果は変わりません。"
 
-#: ../../source/user_guide/config.rst:1357
+#: ../../source/user_guide/config.rst:1412
 msgid ""
 "The process runner pickles the agents and the markets for each task, "
 "together with everything they refer to (the simulator, the other agents, "
-"the events, the transaction costs and the logger). User-defined agents, "
-"markets, events, transaction costs and loggers must therefore be "
+"the events, the transaction fees and the logger). User-defined agents, "
+"markets, events, transaction fees and loggers must therefore be "
 "picklable: for example, a logger that keeps an open file fails with "
 "``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data "
 "in memory and write the file after the run."
 msgstr ""
-"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、取引コスト、ロガー）とともに"
-" pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、取引コスト、ロガーは pickle "
+"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、取引手数料、ロガー）とともに"
+" pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、取引手数料、ロガーは pickle "
 "可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
 "'_io.TextIOWrapper' object`` で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。"
 
@@ -3120,23 +3120,22 @@ msgid ""
 "it once."
 msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か、同じクラスが2回登録されています。クラス名を変更するか、1回だけ登録してください。"
 
-#: ../../source/user_guide/config.rst:1410
+#: ../../source/user_guide/config.rst:1541
 msgid ""
 "``market class for X does not inherit Market class`` (the same for agent,"
-" event and transaction cost classes)"
+" event and transaction fee classes)"
 msgstr ""
 "``market class for X does not inherit Market class`` "
-"（エージェントクラス、イベントクラス、取引コストクラスも同様）"
+"（エージェントクラス、イベントクラス、取引手数料クラスも同様）"
 
-#: ../../source/user_guide/config.rst:1415
+#: ../../source/user_guide/config.rst:1543
 msgid ""
 "The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in"
 " a market block, or a class that does not inherit "
-":class:`~pams.TransactionCost` in ``X.transactionCost``."
+":class:`~pams.TransactionFee` in ``X.transactionFee``."
 msgstr ""
 "ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している、または "
-"``X.transactionCost`` に :class:`~pams.TransactionCost` "
-"を継承していないクラスを指定している）。"
+"``X.transactionFee`` に :class:`~pams.TransactionFee` を継承していないクラスを指定している）。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``class for X must be a class name (str) or a class, but Y is given``"
