@@ -1,0 +1,103 @@
+{
+	"simulation": {
+		"markets": ["SpotMarket-1", "SpotMarket-2", "SpotMarket-3", "IndexMarket-I"],
+		"agents": ["FCNAgents-1", "FCNAgents-2", "FCNAgents-3", "FCNAgents-I", "ArbitrageAgents"],
+		"sessions": [
+			{	"sessionName": 1,
+				"iterationSteps": 100,
+				"withOrderPlacement": true,
+				"withOrderExecution": true,
+				"withPrint": true,
+				"maxNormalOrders": 10000000000, "MEMO": "EVERYONE",
+				"maxHighFrequencyOrders": 1,
+				"events": ["FundamentalPriceShock"]
+			}
+		]
+	},
+
+	"FundamentalPriceShock": {
+		"class": "FundamentalPriceShock",
+		"target": "SpotMarket-1",
+		"triggerTime": 0,           "MEMO": "At the beginning of the session",
+		"priceChangeRate": -0.1,    "MEMO": "Sign: negative for down; positive for up; zero for no change",
+		"enabled": true
+	},
+
+	"SpotMarket": {
+		"class": "Market",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000
+	},
+	"SpotMarket-1": {
+		"extends": "SpotMarket"
+	},
+	"SpotMarket-2": {
+		"extends": "SpotMarket"
+	},
+	"SpotMarket-3": {
+		"extends": "SpotMarket"
+	},
+
+	"IndexMarket-I": {
+		"class": "IndexMarket",
+		"tickSize": 0.00001,
+		"marketPrice": 300.0,
+		"outstandingShares": 25000,
+		"markets": ["SpotMarket-1", "SpotMarket-2", "SpotMarket-3"]
+	},
+
+	"FCNAgent": {
+		"class": "WorkloadFCNAgent",
+		"numAgents": 20,
+
+		"MEMO": "Agent class",
+		"assetVolume": 50,
+		"cashAmount": 10000,
+
+		"MEMO": "FCNAgent class",
+		"fundamentalWeight": {"expon": [1.0]},
+		"chartWeight": {"expon": [0.0]},
+		"noiseWeight": {"expon": [1.0]},
+		"noiseScale": 0.001,
+		"timeWindowSize": [100, 200],
+		"orderMargin": [0.0, 0.1],
+
+		"MEMO": "WorkloadFCNAgent class",
+		"bsWorkload": true,
+		"bsLoadShutdown": 50,     "MEMO": "The workload is shut down from the time 50",
+		"bsNumSamples": 10,
+		"bsNumSteps": 10,
+		"orderRate": 0.1
+	},
+	"FCNAgents-1": {
+		"extends": "FCNAgent",
+		"markets": ["SpotMarket-1"]
+	},
+	"FCNAgents-2": {
+		"extends": "FCNAgent",
+		"markets": ["SpotMarket-2"]
+	},
+	"FCNAgents-3": {
+		"extends": "FCNAgent",
+		"markets": ["SpotMarket-3"]
+	},
+	"FCNAgents-I": {
+		"extends": "FCNAgent",
+		"numAgents": 10,
+		"markets": ["IndexMarket-I"],
+		"fundamentalWeight": {"expon": [0.5]}
+	},
+
+	"ArbitrageAgents": {
+		"class": "ArbitrageAgent",
+		"numAgents": 1,
+
+		"markets": ["IndexMarket-I", "SpotMarket-1", "SpotMarket-2", "SpotMarket-3"],
+		"assetVolume": 50,      "NOTE": "per market",
+		"cashAmount": 150000,   "NOTE": "total",
+
+		"orderVolume": 1,
+		"orderThresholdPrice": 1.0
+	}
+}
