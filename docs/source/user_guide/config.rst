@@ -292,8 +292,21 @@ The ``simulation`` block
      - Number of workers for the agent-parallel runners (default: the number of CPUs minus 1, at least 1).
        Ignored by
        :class:`~pams.runners.SequentialRunner`. See :ref:`config-parallel`.
+   * - ``startMethod`` |optional|
+     - ``"spawn"``, ``"fork"`` or ``"forkserver"``
+     - How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker processes (default: the
+       platform's default). Only the start methods available on the platform are accepted: Windows has only
+       ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
+   * - ``torchNumThreads`` |optional|
+     - int ≥ 1
+     - Number of threads of PyTorch on each worker process of :class:`~pams.runners.TorchAgentParallelRunner`
+       (default: the number of threads of PyTorch on the main process divided by the smaller of ``numParallel`` and
+       the largest ``maxNormalOrders`` of the sessions, at least 1). Ignored by the other runners. See
+       :doc:`platform`.
 
-Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
+Other keys in ``simulation`` are ignored, except the keys that :class:`~pams.runners.JaxAgentParallelRunner` and
+:class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-parallel-jax` and
+:ref:`config-parallel-tensorflow`). In particular, events are not listed here but in each session.
 
 
 .. _config-sessions:
@@ -416,10 +429,10 @@ created and how they are named.
      - Value
      - Description
    * - ``class`` |required|
-     - string
+     - string or class
      - Class name, e.g. ``"Market"`` or ``"FCNAgent"``. Use the plain class name (case-sensitive), not a dotted
-       path. Built-in classes are found automatically; your own classes must be registered
-       (see :ref:`config-user-classes`).
+       path. Built-in classes are found automatically; your own classes must be registered, or set as the
+       class itself in a Python dict config (see :ref:`config-user-classes`).
    * - ``extends`` |optional|
      - block name
      - Inherit the keys of another block. See :ref:`config-extends`.
@@ -831,9 +844,16 @@ JsonRandom notation (``cashAmount`` and ``assetVolume`` still do).
      - int ≥ 1
      - Lifetime (TTL) of its orders in steps. Default: ``1``. Must be a JSON integer.
 
-- ``markets`` must include the index market group **and** the groups of all its component markets.
-  Otherwise the component orders are still sent, and the simulation stops with a ``KeyError`` (a market ID)
-  when the first one is executed.
+- The agent trades only the index markets whose groups are in ``markets``. It skips any other ``IndexMarket``
+  without an error, whether or not ``markets`` includes its component markets, and it warns about this only if
+  ``markets`` includes no ``IndexMarket`` at all (see below).
+- For each index market that it trades, ``markets`` must also include the groups of all its component markets.
+  Unlike plham, the component markets are not added automatically; the agent warns at setup about each such
+  index market with missing components. The simulation still runs normally until the agent finds an arbitrage
+  opportunity in that index market. Then it submits orders for the component markets, and the simulation stops
+  with a ``ValueError`` (``order for an inaccessible market is not allowed``). If no such opportunity comes, the
+  simulation ends without the error.
+- If ``markets`` includes no ``IndexMarket``, the agent never places an order, and it warns about this at setup.
 - All component markets must have the same ``outstandingShares``.
 - It only trades while the index and all its components are executing orders.
 
@@ -854,7 +874,7 @@ below). Old orders are not cancelled; they expire after ``orderTimeLength`` step
    * - ``targetMarket`` |required|
      - market instance name
      - The market to quote in. It must also be one of the agent's tradable markets; otherwise the simulation
-       stops with a ``KeyError`` (a market ID) when its first order is executed.
+       stops with a ``ValueError`` when the agent first submits orders.
    * - ``netInterestSpread`` |required| |jsonrandom|
      - number
      - Full spread between the two orders, as a fraction of the fundamental price (``0.02`` = 2%).
@@ -1046,11 +1066,13 @@ the agent that submitted the original order owns the mistaken one.
        exactly this step, nothing happens.
    * - ``priceChangeRate`` |required|
      - float
-     - Rate :math:`r` relative to the current market price. Must be written as a float. ``0.0`` does not mean
-       "no mistake": it places a sell at :math:`P`.
+     - Rate :math:`r` relative to the current market price, a finite number greater than ``-1.0``. Must be
+       written as a float. ``0.0`` does not mean "no mistake": it places a sell at :math:`P`. If :math:`P (1 + r)`,
+       or :math:`P (1 + r)` divided by the tick size, overflows to infinity, the simulation stops with an error
+       at the trigger step.
    * - ``orderVolume`` |required|
      - int
-     - Volume of the mistaken order.
+     - Volume of the mistaken order, greater than 0.
    * - ``orderTimeLength`` |required|
      - int
      - Lifetime (TTL) of the mistaken order in steps.
@@ -1147,15 +1169,31 @@ before calling ``main()``, then refer to it by its class name:
 
    "MyAgents": {"extends": "FCNAgents", "class": "MyAgent", "myParameter": 2.0}
 
+When the config is a Python dict, you can instead set the class itself as the value of ``class``. Such a class
+is used as is, so it needs no ``class_register`` and its name does not have to be unique:
+
+.. code-block:: python
+
+   config = {
+       # ... the other blocks
+       "MyAgents": {"extends": "FCNAgents", "class": MyAgent, "myParameter": 2.0},
+   }
+   runner = SequentialRunner(settings=config)
+   runner.main()
+
+This works only with a Python dict, because a JSON file cannot hold a class. A class set in a block is inherited
+through ``extends`` like any other value.
+
 - The block (after ``extends`` is resolved, without ``numAgents`` / ``numMarkets``, ``from``, ``to`` and
   ``prefix``) is passed to ``setup(settings=...)``, so any extra key you add is available there. To accept JsonRandom notation, draw the value in ``setup`` with
   ``JsonRandom(prng=self.prng).random(settings["myParameter"])`` (``from pams.utils import JsonRandom``; see
   :class:`~pams.utils.JsonRandom`). It always returns a float, so apply ``int()`` yourself for integer
   parameters.
-- Class names must be unique: a class with the same name as a built-in class (e.g. your own ``FCNAgent``)
-  is ambiguous and fails. Register each class only once.
-- Agent classes must inherit from :class:`~pams.agents.Agent` and market classes from :class:`~pams.Market`.
-  An agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
+- Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
+  ``FCNAgent``) is ambiguous and fails. Register each class only once.
+- Agent classes must inherit from :class:`~pams.agents.Agent`, market classes from :class:`~pams.Market` and
+  event classes from :class:`~pams.events.EventABC`. An agent that inherits from
+  :class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency agent.
 - ``samples/user_class`` and ``samples/market_share`` show complete examples.
 
 
@@ -1170,7 +1208,7 @@ the same seed. They call ``submit_orders`` of normal agents in parallel; everyth
 
 - **Speed**: because of Python's GIL, the thread runner only helps when ``submit_orders`` waits for I/O (for
   example a call to an external model); it does not speed up the built-in agents. The process runner is much
-  slower, because the agent and the markets are copied to a worker process at every call. See also
+  slower, because the whole simulation is copied to the worker processes in every step (see below). See also
   :doc:`platform`.
 - **User-defined agents** must not change shared objects (markets, other agents, the logger) in
   ``submit_orders``. With the process runner, changes an agent makes to its own attributes in ``submit_orders``
@@ -1189,10 +1227,97 @@ With the process runner, put the code that creates and runs the runner under ``i
 ``fork``; without it the run fails or hangs), and define user-defined classes in a ``.py``
 file, not in a notebook or an interactive session, so that the worker processes can import them.
 
-The process runner pickles the agent and the markets at every call, together with everything they refer to (the
+``simulation.startMethod`` sets how the process runner starts its worker processes: ``"spawn"`` (the default on
+Windows and macOS), ``"fork"`` (the default on Linux up to Python 3.13) or ``"forkserver"`` (the default on Linux
+from Python 3.14). Only the values that :func:`multiprocessing.get_all_start_methods` returns on the platform are
+accepted; any other value is an error. Without the key, the platform's default is used, unless a subclass of the
+runner sets another default. Use ``"spawn"`` when agents use a library that does not work in a forked process,
+such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.
+
+The process runner pickles the agents and the markets for each task, together with everything they refer to (the
 simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
 therefore be picklable: for example, a logger that keeps an open file fails with
 ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data in memory and write the file after the run.
+
+Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
+state of each agent's random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,
+much longer than ``submit_orders`` of the built-in agents. To limit this cost, the agents asked at the same time
+are split into at most ``numParallel`` tasks. An object held by an agent, such as a neural network model, is copied
+in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
+``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
+
+.. _config-parallel-jax:
+
+JAX/Flax runner
+~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process runner for agents that use JAX in
+``submit_orders``, for example Flax models. JAX is not installed with PAMS: install it yourself, in the same command
+as PAMS so that pip chooses versions that work with PAMS (for example ``pip install pams jax flax``). The runner
+starts its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+JAX once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``jaxPlatforms`` |optional|
+     - string
+     - The platforms that JAX uses on the worker processes, such as ``"cpu"`` or ``"cuda"`` (``jax_platforms`` of
+       JAX). Default: ``JAX_PLATFORMS`` in the environment if it is set; otherwise JAX chooses.
+   * - ``jaxPreallocate`` |optional|
+     - bool
+     - Whether JAX preallocates GPU memory on each worker process (``XLA_PYTHON_CLIENT_PREALLOCATE``). Default:
+       ``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; otherwise ``false``, so that the worker
+       processes can share a GPU (by default, JAX preallocates 75% of it).
+   * - ``jaxMemoryFraction`` |optional|
+     - number in (0, 1]
+     - The fraction of GPU memory that JAX can use on each worker process (``XLA_PYTHON_CLIENT_MEM_FRACTION``).
+       Default: ``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in the environment if it is set;
+       otherwise the default of JAX (0.75).
+
+These keys do not configure JAX on the main process. See :doc:`platform` for how to write agents for this runner.
+
+.. _config-parallel-tensorflow:
+
+TensorFlow runner
+~~~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the process runner for agents that use
+TensorFlow in ``submit_orders``, for example Keras models. TensorFlow is not installed with PAMS: install it yourself
+(for example ``pip install tensorflow``, or ``pip install tensorflow-cpu`` for the CPU-only build). The runner starts
+its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+TensorFlow once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``tensorflowIntraOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
+       worker process. Default: the number of CPUs divided by the smaller of ``numParallel`` and ``maxNormalOrders``
+       (at least 1), so that the worker processes running at the same time do not use more threads than the CPUs in
+       total. The results of large operations can depend on this number, so set it explicitly for reproducible
+       results (see :doc:`platform`).
+   * - ``tensorflowInterOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run independent operations at the same time on each worker
+       process. Default: ``1``.
+   * - ``tensorflowGpuMemoryGrowth`` |optional|
+     - bool
+     - Whether memory growth is enabled for all the visible GPUs on each worker process. Default: ``true``, so that
+       the worker processes can share a GPU (by default, TensorFlow allocates almost all the memory of a GPU to the
+       first process that uses it).
+
+These keys do not configure TensorFlow on the main process. See :doc:`platform` for how to write agents for this
+runner.
 
 
 .. _config-troubleshooting:
@@ -1237,6 +1362,11 @@ Common errors
    * - ``class for X is found 2 times``
      - Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
        registered twice. Rename the class or register it once.
+   * - ``market class for X does not inherit Market class`` (the same for agent and event classes)
+     - The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in a market block.
+   * - ``class for X must be a class name (str) or a class, but Y is given``
+     - The value ``Y`` of ``class`` in block ``X`` of a Python dict config is neither a string nor a class,
+       e.g. ``None``.
    * - ``X setting is missing in config``
      - A name in ``simulation.markets`` or ``simulation.agents`` has no block. Check the spelling.
    * - ``KeyError: 'X'``
@@ -1251,10 +1381,16 @@ Common errors
      - A name in ``targetMarkets`` of a ``PriceLimitRule`` or ``TradingHaltRule``, or the ``target`` of an
        ``OrderMistakeShock``, is not a market instance name. Use the instance name (``Market-0``), not the group
        name.
+   * - ``order for an inaccessible market is not allowed``
+     - An agent submitted an order for a market that it cannot trade: a ``MarketMakerAgent`` whose
+       ``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose ``markets`` lack the component
+       markets. Add the market group named in the message to the agent's ``markets``.
+   * - ``cancel order for an order of another agent is not allowed``
+     - A user-defined agent submitted a ``Cancel`` of an order that has its own ``agent_id`` but the same
+       ``order_id``, price, time step, side and kind as an order that another agent placed. Cancel only the
+       orders that the agent itself placed.
    * - ``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs
-     - A market was used that the agent cannot trade: a ``MarketMakerAgent`` whose ``targetMarket`` is not in
-       its ``markets``, or an ``ArbitrageAgent`` whose ``markets`` lack the component markets. A
-       ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket`` fails the same way.
+     - A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its component markets instead.
    * - ``market name X is duplicate`` / ``agent name X is duplicate``
      - Two groups produce the same instance name, e.g. a group listed twice or an inherited ``prefix``.
    * - ``X.numAgents and (X.from or X.to) cannot be used at the same time``
@@ -1272,6 +1408,12 @@ Common errors
    * - ``order price does not accord to the tick size`` (warning)
      - An agent submitted a price that is not a multiple of ``tickSize``; it was rounded. This is normal for
        FCN agents.
+   * - ``ArbitrageAgent X can access the index market Y but not its component markets Z`` (warning)
+     - Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise its orders to them fail while
+       the simulation runs.
+   * - ``ArbitrageAgent X cannot access any index market`` (warning)
+     - The agent never places an order. Add an ``IndexMarket`` group and the groups of its component markets to
+       its ``markets``.
    * - ``AssertionError`` while the simulation runs
      - Often an agent parameter out of range (see the FCNAgent warning) or an order to a market missing from a
        ``PriceLimitRule``'s ``targetMarkets``.

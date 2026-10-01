@@ -1,0 +1,69 @@
+# Tests of TensorFlowAgentParallelRunner, which need TensorFlow.
+# TensorFlow is an optional dependency, so the main CI does not install it and skips these tests.
+
+name: CI-tensorflow
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# uv uses the Python from actions/setup-python (setup-uv sets UV_PYTHON to the
+# same version) and never downloads one. Only `uv sync` resolves and installs;
+# `uv run` uses that environment as it is.
+env:
+  UV_PYTHON_DOWNLOADS: never
+  UV_NO_SYNC: "1"
+
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.11]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.2.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: false
+      - name: Install dependencies
+        run: |
+          uv sync
+          # the CPU-only build of TensorFlow, installed into the environment of `uv sync` (.venv);
+          # `uv pip install` ignores the requirements of the packages already installed, so without
+          # "numpy<2" it would replace numpy with 2.x if a dependency of TensorFlow needed it, while
+          # pams requires numpy 1.x on Python < 3.13
+          uv pip install tensorflow-cpu "numpy<2"
+          uv pip check
+          # fail here instead of skipping the tests if TensorFlow cannot be imported
+          uv run python -c "import tensorflow as tf; print(tf.__version__)"
+      - name: Test
+        run: |
+          uv run pytest --cov=./ --cov-report=xml tests/pams/runners/test_tensorflow_parallel.py
+      # the other workflows skip the tests using TensorFlow, so Codecov merges this coverage
+      # with the one uploaded by codecov.yml
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} # required for uploads from non-fork branches since v4
+          files: ./coverage.xml
+          flags: tensorflow
+          verbose: true
