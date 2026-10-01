@@ -297,8 +297,16 @@ The ``simulation`` block
      - How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker processes (default: the
        platform's default). Only the start methods available on the platform are accepted: Windows has only
        ``"spawn"``. Ignored by the other runners. See :ref:`config-parallel`.
+   * - ``torchNumThreads`` |optional|
+     - int ≥ 1
+     - Number of threads of PyTorch on each worker process of :class:`~pams.runners.TorchAgentParallelRunner`
+       (default: the number of threads of PyTorch on the main process divided by the smaller of ``numParallel`` and
+       the largest ``maxNormalOrders`` of the sessions, at least 1). Ignored by the other runners. See
+       :doc:`platform`.
 
-Other keys in ``simulation`` are ignored. In particular, events are not listed here but in each session.
+Other keys in ``simulation`` are ignored, except the keys that :class:`~pams.runners.JaxAgentParallelRunner` and
+:class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-parallel-jax` and
+:ref:`config-parallel-tensorflow`). In particular, events are not listed here but in each session.
 
 
 .. _config-sessions:
@@ -1232,11 +1240,13 @@ the agent that submitted the original order owns the mistaken one.
        exactly this step, nothing happens.
    * - ``priceChangeRate`` |required|
      - float
-     - Rate :math:`r` relative to the current market price. Must be written as a float. ``0.0`` does not mean
-       "no mistake": it places a sell at :math:`P`.
+     - Rate :math:`r` relative to the current market price, a finite number greater than ``-1.0``. Must be
+       written as a float. ``0.0`` does not mean "no mistake": it places a sell at :math:`P`. If :math:`P (1 + r)`,
+       or :math:`P (1 + r)` divided by the tick size, overflows to infinity, the simulation stops with an error
+       at the trigger step.
    * - ``orderVolume`` |required|
      - int
-     - Volume of the mistaken order.
+     - Volume of the mistaken order, greater than 0.
    * - ``orderTimeLength`` |required|
      - int
      - Lifetime (TTL) of the mistaken order in steps.
@@ -1411,6 +1421,79 @@ much longer than ``submit_orders`` of the built-in agents. To limit this cost, t
 are split into at most ``numParallel`` tasks. An object held by an agent, such as a neural network model, is copied
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
 ``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
+
+.. _config-parallel-jax:
+
+JAX/Flax runner
+~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process runner for agents that use JAX in
+``submit_orders``, for example Flax models. JAX is not installed with PAMS: install it yourself, in the same command
+as PAMS so that pip chooses versions that work with PAMS (for example ``pip install pams jax flax``). The runner
+starts its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+JAX once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``jaxPlatforms`` |optional|
+     - string
+     - The platforms that JAX uses on the worker processes, such as ``"cpu"`` or ``"cuda"`` (``jax_platforms`` of
+       JAX). Default: ``JAX_PLATFORMS`` in the environment if it is set; otherwise JAX chooses.
+   * - ``jaxPreallocate`` |optional|
+     - bool
+     - Whether JAX preallocates GPU memory on each worker process (``XLA_PYTHON_CLIENT_PREALLOCATE``). Default:
+       ``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; otherwise ``false``, so that the worker
+       processes can share a GPU (by default, JAX preallocates 75% of it).
+   * - ``jaxMemoryFraction`` |optional|
+     - number in (0, 1]
+     - The fraction of GPU memory that JAX can use on each worker process (``XLA_PYTHON_CLIENT_MEM_FRACTION``).
+       Default: ``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in the environment if it is set;
+       otherwise the default of JAX (0.75).
+
+These keys do not configure JAX on the main process. See :doc:`platform` for how to write agents for this runner.
+
+.. _config-parallel-tensorflow:
+
+TensorFlow runner
+~~~~~~~~~~~~~~~~~
+
+:class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the process runner for agents that use
+TensorFlow in ``submit_orders``, for example Keras models. TensorFlow is not installed with PAMS: install it yourself
+(for example ``pip install tensorflow``, or ``pip install tensorflow-cpu`` for the CPU-only build). The runner starts
+its worker processes by ``"spawn"`` unless ``simulation.startMethod`` is set. Each worker process configures
+TensorFlow once, before it runs any task, with these keys in ``simulation``, which the other runners ignore:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 18 60
+
+   * - Key
+     - Value
+     - Description
+   * - ``tensorflowIntraOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run one operation, such as a matrix multiplication, on each
+       worker process. Default: the number of CPUs divided by the smaller of ``numParallel`` and ``maxNormalOrders``
+       (at least 1), so that the worker processes running at the same time do not use more threads than the CPUs in
+       total. The results of large operations can depend on this number, so set it explicitly for reproducible
+       results (see :doc:`platform`).
+   * - ``tensorflowInterOpThreads`` |optional|
+     - int ≥ 1
+     - The number of threads that TensorFlow uses to run independent operations at the same time on each worker
+       process. Default: ``1``.
+   * - ``tensorflowGpuMemoryGrowth`` |optional|
+     - bool
+     - Whether memory growth is enabled for all the visible GPUs on each worker process. Default: ``true``, so that
+       the worker processes can share a GPU (by default, TensorFlow allocates almost all the memory of a GPU to the
+       first process that uses it).
+
+These keys do not configure TensorFlow on the main process. See :doc:`platform` for how to write agents for this
+runner.
 
 
 .. _config-troubleshooting:
