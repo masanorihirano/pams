@@ -433,8 +433,7 @@ class HelperAgent(Agent):
         self.helper: AgentHelper = AgentHelper(agent=self)
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
-        if self.helper.agent is not self:
-            raise AssertionError("the helper does not refer to this agent")
+        assert self.helper.agent is self, "the helper does not refer to this agent"
         market = next(
             market for market in markets if self.is_market_accessible(market.market_id)
         )
