@@ -566,6 +566,39 @@ such an order, not an order that another agent placed. Otherwise, the runners ra
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pams.agents.Agent.synced_attributes">
+<span class="sig-name descname"><span class="pre">synced_attributes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code><span class="pre">[</span><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code><span class="pre">],</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#pams.agents.Agent.synced_attributes" title="Link to this definition">¶</a></dt>
+<dd><p>names of the attributes that must survive
+<a class="reference internal" href="#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit_orders()</span></code></a> on a worker process of
+<a class="reference internal" href="../runner/pams.runners.MultiProcessAgentParallelRunner.html#pams.runners.MultiProcessAgentParallelRunner" title="pams.runners.MultiProcessAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiProcessAgentParallelRunner</span></code></a>, e.g., <code class="docutils literal notranslate"><span class="pre">(&quot;net&quot;,</span> <span class="pre">&quot;optimizer&quot;)</span></code> for a
+neural network that the agent trains in <a class="reference internal" href="#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit_orders()</span></code></a> and its optimizer. That runner
+calls <a class="reference internal" href="#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit_orders()</span></code></a> on a copy of this agent. After the call, it sets each listed
+attribute of the copy on this agent, or deletes it from this agent if the copy does not
+have it. The values and the orders of the agents in a task are pickled together, so
+references among them are kept as far as pickling keeps them (e.g., not between a Keras
+model and its optimizer, because Keras models are saved and reloaded), and an order that
+this agent returns and also keeps in a listed attribute is one object. An attribute that is
+not listed but refers to a listed object keeps referring to the old object, so list such
+attributes together, e.g., a model, its optimizer, and the optimizer’s scheduler. The
+values can refer to this agent, other agents, the markets, the orders in the order books,
+the sessions, the simulator, and the like, which are sent back as references to the objects
+in the main process. Other objects are copies, including orders that are no longer in an
+order book and objects shared with other agents. <code class="docutils literal notranslate"><span class="pre">&quot;simulator&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;logger&quot;</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">&quot;prng&quot;</span></code>, which the runner manages, and <code class="docutils literal notranslate"><span class="pre">&quot;__dict__&quot;</span></code>, which holds all the attributes,
+cannot be listed. The runner warns when <a class="reference internal" href="#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">submit_orders()</span></code></a> assigns or deletes an
+attribute that is not listed, because the change is lost. Subclasses can override it,
+and an instance can set it, e.g., in <a class="reference internal" href="#pams.agents.Agent.setup" title="pams.agents.Agent.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a>. The runner checks it when it is set up
+and whenever it asks this agent to submit orders. Other runners and high-frequency agents
+do not use it. The default is an empty tuple. See <a class="reference internal" href="../../../user_guide/config.html#config-synced-attributes"><span class="std std-ref">Agents that change their own attributes</span></a> for an
+example and other caveats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Tuple[str, …], List[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="pams.agents.Agent.update_asset_volume">
 <span class="sig-name descname"><span class="pre">update_asset_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/agents/base.html#Agent.update_asset_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.agents.Agent.update_asset_volume" title="Link to this definition">¶</a></dt>
@@ -676,6 +709,7 @@ such an order, not an order that another agent placed. Otherwise, the runners ra
 <li><a class="reference internal" href="#pams.agents.Agent.setup"><code class="docutils literal notranslate"><span class="pre">Agent.setup()</span></code></a></li>
 <li><a class="reference internal" href="#pams.agents.Agent.submit_orders"><code class="docutils literal notranslate"><span class="pre">Agent.submit_orders()</span></code></a></li>
 <li><a class="reference internal" href="#pams.agents.Agent.submitted_order"><code class="docutils literal notranslate"><span class="pre">Agent.submitted_order()</span></code></a></li>
+<li><a class="reference internal" href="#pams.agents.Agent.synced_attributes"><code class="docutils literal notranslate"><span class="pre">Agent.synced_attributes</span></code></a></li>
 <li><a class="reference internal" href="#pams.agents.Agent.update_asset_volume"><code class="docutils literal notranslate"><span class="pre">Agent.update_asset_volume()</span></code></a></li>
 <li><a class="reference internal" href="#pams.agents.Agent.update_cash_amount"><code class="docutils literal notranslate"><span class="pre">Agent.update_cash_amount()</span></code></a></li>
 </ul>

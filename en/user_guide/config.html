@@ -2162,7 +2162,9 @@ slower, because the whole simulation is copied to the worker processes in every 
 <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>.</p></li>
 <li><p><strong>User-defined agents</strong> must not change shared objects (markets, other agents, the logger) in
 <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>. With the process runner, changes an agent makes to its own attributes in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>
-are lost; update such state in callbacks like <code class="docutils literal notranslate"><span class="pre">executed_order</span></code>, which run in the main process.</p></li>
+are lost, or only partly kept, unless the attributes are listed in <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">synced_attributes</span></code></a>
+(see <a class="reference internal" href="#config-synced-attributes"><span class="std std-ref">Agents that change their own attributes</span></a>), and the runner warns about the attributes that are assigned or deleted
+without being listed; update other state in callbacks like <code class="docutils literal notranslate"><span class="pre">executed_order</span></code>, which run in the main process.</p></li>
 </ul>
 <p>The number of worker threads or processes is set by <code class="docutils literal notranslate"><span class="pre">simulation.numParallel</span></code> (see <a class="reference internal" href="#config-simulation"><span class="std std-ref">The simulation block</span></a>;
 default: the number of CPUs minus 1, at least 1).</p>
@@ -2190,7 +2192,123 @@ state of each agent’s random number generator (about 4 MB for 1000 agents), an
 much longer than <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> of the built-in agents. To limit this cost, the agents asked at the same time
 are split into at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> tasks. An object held by an agent, such as a neural network model, is copied
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
-<code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>), and if it is read-only, load it once per worker process instead (see <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>).</p>
+<code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>), and if it is read-only, load it once per worker process instead (see <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>). Both
+ways are only for objects that the agents do not change; an object that an agent changes in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>
+must be listed in <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">synced_attributes</span></code></a> instead. Use an object loaded per worker process
+where it is kept, for example in a module variable as in <a class="reference internal" href="platform.html"><span class="doc">Platform</span></a>, or put it back on the agent in
+<code class="docutils literal notranslate"><span class="pre">__setstate__</span></code>, which runs when the agent is copied to the worker process. Do not assign it to the agent in
+<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>: the runner warns that the change is lost, and listing it to avoid the warning would send the
+object back after every call.</p>
+<section id="agents-that-change-their-own-attributes">
+<span id="config-synced-attributes"></span><h3>Agents that change their own attributes<a class="headerlink" href="#agents-that-change-their-own-attributes" title="Link to this heading">¶</a></h3>
+<p>The process runner calls <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> on a copy of the agent in a worker process. An agent that changes its
+own attributes there, for example to train a neural network, must list them in
+<a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">synced_attributes</span></code></a>. After each call, even one that returns no orders, the runner sets the
+listed attributes of the copy on the agent in the main process, or deletes those that the copy does not have. The
+thread runner and <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a> call <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> on the agents themselves and do
+not use this attribute. For example, with PyTorch:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.agents</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DeepAgent</span><span class="p">(</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="c1"># trained in submit_orders, so they are sent back from the worker processes</span>
+    <span class="n">synced_attributes</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"net"</span><span class="p">,</span> <span class="s2">"optimizer"</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">MyNet</span><span class="p">()</span>  <span class="c1"># a torch.nn.Module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">"lr"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>  <span class="c1"># not changed, so not listed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># changed only in executed_order, so not listed</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">executed_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="c1"># called in the main process by all the runners</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+=</span> <span class="n">log</span><span class="o">.</span><span class="n">volume</span> <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">buy_agent_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">else</span> <span class="o">-</span><span class="n">log</span><span class="o">.</span><span class="n">volume</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">):</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># a torch.utils.data.Dataset made from the prices of the markets</span>
+        <span class="c1"># shuffled by a generator seeded from self.prng, not by the global generator of torch</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">32</span><span class="p">))</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>  <span class="c1"># on the CPU</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+        <span class="n">orders</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># make orders with self.net</span>
+        <span class="k">return</span> <span class="n">orders</span>
+</pre></div>
+</div>
+<p>Keep the following in mind:</p>
+<ul class="simple">
+<li><p><strong>Cost</strong>: the listed values are pickled and sent back after every call of <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>, in addition to the
+copies of the whole simulation described above. For a large model, this can take longer than the training. If an
+agent of a task lists attributes, the results of all the agents of the task are pickled in a way that finds the
+objects of the simulation among them (see <strong>Shared objects</strong>). This adds a fixed cost to each task, which grows
+with the numbers of agents and of orders in the order books (less than 1 ms for 1000 agents, small next to the
+copy of the simulation), and pickling lists, dicts and other objects with many elements takes about five to eight
+times as long as usual. Arrays such as NumPy arrays take about as long as usual, because their data is pickled as
+a whole.</p></li>
+<li><p><strong>Parallelism</strong>: still at most <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> agents are asked at the same time.</p></li>
+<li><p><strong>Random numbers</strong>: use <code class="docutils literal notranslate"><span class="pre">self.prng</span></code> or generators seeded from it, such as <code class="docutils literal notranslate"><span class="pre">generator</span></code> above. The global
+generators of libraries (e.g., the one that <code class="docutils literal notranslate"><span class="pre">DataLoader(shuffle=True)</span></code> uses without <code class="docutils literal notranslate"><span class="pre">generator</span></code>) differ between
+the worker processes, so the results would depend on the worker and differ from
+<a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a>.</p></li>
+<li><p><strong>Devices</strong>: keep the listed tensors, including the state of the optimizer, on the CPU when <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>
+returns, because CUDA tensors cannot be sent between processes on Windows. If you train on a GPU, move the model
+and the state of the optimizer back to the CPU before every return, e.g., in a <code class="docutils literal notranslate"><span class="pre">finally</span></code> block.</p></li>
+<li><p><strong>References</strong>: the listed values and the orders of all the agents of a task are pickled together, so references
+among them are kept as far as pickling keeps them; for example, an order that an agent returns and also keeps in a
+listed list is one object. An attribute that is not listed but refers to a listed object, such as a learning rate
+scheduler that refers to the optimizer, keeps referring to the old object, so list such attributes together.
+Keras models are saved and reloaded when they are pickled, so other values do not keep referring to them. For
+example, an attribute that refers to the model’s optimizer comes back as a separate optimizer without its state,
+even if it is listed. List only the model and use its optimizer through <code class="docutils literal notranslate"><span class="pre">model.optimizer</span></code>.</p></li>
+<li><p><strong>Shared objects</strong>: the objects of the simulation in the values are sent back as references to the objects in the
+main process, not as copies. They are the simulator, the logger, the fundamentals, the markets, their order books
+and the orders in the books, the agents (including the agent itself), the sessions, the events, the event hooks,
+the random number generators of the simulator, the markets, the agents, the sessions and the events, and the
+lists, dicts and sets that these objects except the agents hold as attributes. So a value can refer to the agent,
+use markets as the keys of a dict, or keep the current session. An order is a reference only while it is in an
+order book: an order that is waiting in a book is the object in the book, so the agent can look it up there by
+<code class="docutils literal notranslate"><span class="pre">is</span></code>. An order that is in no book when the agent is asked, for example because it has been fully executed,
+canceled or has expired, comes back as a new copy after every call. The copy has the same values, but other agents
+and unlisted attributes keep referring to the old object, so identify such orders by their <code class="docutils literal notranslate"><span class="pre">market_id</span></code> and
+<code class="docutils literal notranslate"><span class="pre">order_id</span></code>, not by <code class="docutils literal notranslate"><span class="pre">is</span></code>. Other objects are copies too: an object shared with other agents, such as a model or
+a dict that several agents use, is no longer shared, and which agents share a copy depends on how the agents are
+split into tasks.</p></li>
+<li><p><strong>Shared memory</strong>: some libraries share memory between processes instead of copying it. For example, PyTorch
+sends tensors on the CPU through shared memory, so the parameters of an unlisted model that are updated in place,
+e.g., by training, can reach the agent in the main process, while other changes, such as the state of its
+optimizer, are lost. Do not rely on this; list every attribute that <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> changes. The gradients
+(<code class="docutils literal notranslate"><span class="pre">.grad</span></code>) of tensors are not sent between processes, so gradients accumulated across calls of
+<code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> are lost.</p></li>
+<li><p><strong>Warning</strong>: the runner warns with a <code class="docutils literal notranslate"><span class="pre">UserWarning</span></code> when <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> assigns or deletes an attribute of the
+agent that is not listed, because the change is lost. The warning names the agent class and the attributes, and
+it is shown at most once for each agent class and attribute per runner. Its message starts with
+<code class="docutils literal notranslate"><span class="pre">Changes</span> <span class="pre">to</span> <span class="pre">attributes</span> <span class="pre">not</span> <span class="pre">listed</span> <span class="pre">in</span> <span class="pre">synced_attributes</span> <span class="pre">are</span> <span class="pre">lost</span></code>, which does not change, so it can be filtered,
+e.g., by <code class="docutils literal notranslate"><span class="pre">warnings.filterwarnings(&quot;ignore&quot;,</span> <span class="pre">message=&quot;Changes</span> <span class="pre">to</span> <span class="pre">attributes</span> <span class="pre">not</span> <span class="pre">listed</span> <span class="pre">in</span> <span class="pre">synced_attributes&quot;)</span></code>.
+Assigning a value equal to the old one is not reported if both are strings, numbers or tuples of them, such as a
+constant assigned again or a price that did not change. Only assignments and deletions are detected; changes
+made in place, such as appending to a list or training a model, are not. So no warning is shown for an unlisted
+PyTorch model that is trained in place, even though its parameters can reach the main process through shared
+memory while the state of its optimizer is lost (see <strong>Shared memory</strong>). Only the attributes in the agent’s
+<code class="docutils literal notranslate"><span class="pre">__dict__</span></code> are compared, so changes to unlisted attributes in <code class="docutils literal notranslate"><span class="pre">__slots__</span></code> are lost without a warning, and so
+are changes to class attributes and module variables, which are never sent back. The listed names are read with
+<code class="docutils literal notranslate"><span class="pre">getattr</span></code> and set with <code class="docutils literal notranslate"><span class="pre">setattr</span></code>, so a property can be listed, but the runner warns about the attribute that
+its setter assigns; list that attribute instead of the property. The built-in agents cause no warning.</p></li>
+<li><p><strong>Pickling</strong>: the listed attributes must be pickled with the agent; if <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code> drops one of them, it is
+deleted from the agent in the main process. The listed values must also be picklable when they are sent back; if
+one is not, the simulation fails with a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> that names the agent class and its <code class="docutils literal notranslate"><span class="pre">agent_id</span></code>.</p></li>
+<li><p><strong>Checks</strong>: the names must be a tuple or list of strings. They must not include <code class="docutils literal notranslate"><span class="pre">&quot;simulator&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;logger&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;prng&quot;</span></code>, which the runner manages, or <code class="docutils literal notranslate"><span class="pre">&quot;__dict__&quot;</span></code>, which holds all the attributes of the agent, so list the
+attributes one by one. The runner checks them when it is set up and whenever it asks the agent, and raises a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the agent class if they are invalid.</p></li>
+</ul>
+</section>
 <section id="jax-flax-runner">
 <span id="config-parallel-jax"></span><h3>JAX/Flax runner<a class="headerlink" href="#jax-flax-runner" title="Link to this heading">¶</a></h3>
 <p><a class="reference internal" href="../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html#pams.runners.JaxAgentParallelRunner" title="pams.runners.JaxAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JaxAgentParallelRunner</span></code></a> (experimental) is the process runner for agents that use JAX in
@@ -2567,6 +2685,7 @@ A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceS
 <li><a class="reference internal" href="#random-parameters-jsonrandom">Random parameters (JsonRandom)</a></li>
 <li><a class="reference internal" href="#user-defined-classes">User-defined classes</a></li>
 <li><a class="reference internal" href="#parallel-runners">Parallel runners</a><ul>
+<li><a class="reference internal" href="#agents-that-change-their-own-attributes">Agents that change their own attributes</a></li>
 <li><a class="reference internal" href="#jax-flax-runner">JAX/Flax runner</a></li>
 <li><a class="reference internal" href="#tensorflow-runner">TensorFlow runner</a></li>
 </ul>

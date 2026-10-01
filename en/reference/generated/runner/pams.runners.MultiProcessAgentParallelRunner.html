@@ -355,18 +355,49 @@ processes by overriding the following members:</p>
 set. For example, <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> is required for libraries that are not fork-safe, such as
 PyTorch with CUDA, TensorFlow, and JAX.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">_get_mp_context</span></code>: the multiprocessing context of the worker processes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_receive_synced_attributes_from_worker</span></code>: sets the attributes listed in
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a> on the agent on the main process.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The agents and the markets are pickled and copied to a worker process for each task.
-Therefore, only the returned orders and the state
-of
-the agent’s pseudo random number generator are reflected to the agent on the main process.
-Other attributes modified in <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> are discarded.
-User-defined agents for this runner should keep their states through the callbacks such as
-<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order" title="pams.agents.Agent.submitted_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submitted_order()</span></code></a> and <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.executed_order" title="pams.agents.Agent.executed_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.executed_order()</span></code></a>,
-which are
-called on the main process, or derive their states from markets.</p>
+Therefore, only the returned orders, the state of the agent’s pseudo random number
+generator, and the attributes listed in <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a> are
+reflected to the agent on the main process. Other attributes modified in
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> are discarded, although in-place changes to memory
+that a library shares between processes, e.g., PyTorch tensors on the CPU, can remain.
+A warning is issued when an agent assigns or deletes an attribute in its <code class="docutils literal notranslate"><span class="pre">__dict__</span></code> that
+is not listed, at most once for each agent class and attribute name per runner. Assigning
+a str, a number, or a tuple of them equal to the old value is not reported, and changes
+made in place, e.g., by appending to a list, and changes to attributes in <code class="docutils literal notranslate"><span class="pre">__slots__</span></code>
+are not detected.
+The listed attributes are sent back after every call, even if the agent submits no
+orders, and are set on the agent before the orders are handled. The listed values and
+the orders of all the agents of a task are pickled together, so references among them
+are kept as far as pickling keeps them, e.g., an order that an agent returns and also
+keeps in a listed attribute is one object on the main process. The objects of the
+simulation among them, i.e., the simulator, the logger, the fundamentals, the markets,
+their order books and the orders in the books, the agents, the sessions, the events, the
+event hooks, the pseudo random number generators of the simulator, the markets, the
+agents, the sessions, and the events, and the lists, dicts, and sets that these objects
+except the agents hold as attributes, are sent back as references to the objects on the
+main process, so the listed values can refer to them. Other objects are copies, including
+orders that are in no order book when the task is sent, e.g., executed, canceled, or
+expired orders, which are new copies after every call; such a copy is equal to the order
+but is not the object that other agents or unlisted attributes refer to. An unlisted
+attribute that refers to a listed object keeps referring to the old object, so such
+attributes must be listed too.
+Other objects shared with other agents, e.g., a model shared by agents, are copied, and
+which agents share a copy afterwards depends on how the agents are split into tasks.
+<code class="docutils literal notranslate"><span class="pre">&quot;simulator&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;logger&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;prng&quot;</span></code>, which the runner manages, and
+<code class="docutils literal notranslate"><span class="pre">&quot;__dict__&quot;</span></code>, which holds all the attributes of the agent, cannot be listed. The names
+are read on the main process whenever the agent is asked, and a ValueError is raised if
+they are invalid, both then and in <code class="docutils literal notranslate"><span class="pre">_setup</span></code>. If the listed values or the orders of an
+agent cannot be pickled, a RuntimeError that names the agent is raised.
+See <a class="reference internal" href="../../../user_guide/config.html#config-synced-attributes"><span class="std std-ref">Agents that change their own attributes</span></a> for an example with PyTorch and other caveats.
+User-defined agents for this runner can also keep their states through the callbacks such
+as <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submitted_order" title="pams.agents.Agent.submitted_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submitted_order()</span></code></a> and <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.executed_order" title="pams.agents.Agent.executed_order"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.executed_order()</span></code></a>,
+which are called on the main process, or derive their states from markets.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -391,7 +422,16 @@ consecutive agents, and each chunk is one task. Thus, the simulation is pickled 
 Large objects held by agents, such as neural network models, are pickled in every task,
 even in the tasks of other agents, unless they are excluded from pickling, e.g., by
 <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code>. Read-only objects of this kind can be loaded once per worker process by
-the worker initializer (see <code class="docutils literal notranslate"><span class="pre">_get_worker_initializer</span></code>) instead.
+the worker initializer (see <code class="docutils literal notranslate"><span class="pre">_get_worker_initializer</span></code>) instead. The agents should use
+such an object where the initializer keeps it, e.g., in a module variable, or put it back
+on themselves in <code class="docutils literal notranslate"><span class="pre">__setstate__</span></code>; assigning it in
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> is warned about. These two ways are only
+for objects that the agents do not change: an object that an agent changes in
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a>, such as a model that it trains, must be listed in
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a>. A listed attribute must be pickled with the
+agent; if <code class="docutils literal notranslate"><span class="pre">__getstate__</span></code> drops it, it is deleted from the agent on the main process.
+The listed attributes are also pickled back after every call of the agent’s
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a>.
 If you want to use parallelization, it is recommended to use
 <a class="reference internal" href="pams.runners.MultiThreadAgentParallelRunner.html#pams.runners.MultiThreadAgentParallelRunner" title="pams.runners.MultiThreadAgentParallelRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.MultiThreadAgentParallelRunner</span></code></a>.</p>
 </div>

@@ -333,6 +333,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..logs.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CancelLog</span>
@@ -360,6 +361,31 @@
 <span class="sd">    .. seealso::</span>
 <span class="sd">        - :class:`pams.agents.FCNAgent`: FCNAgent</span>
 <span class="sd">    """</span>
+
+    <span class="c1">#: Union[Tuple[str, ...], List[str]]: names of the attributes that must survive</span>
+    <span class="c1">#: :func:`submit_orders` on a worker process of</span>
+    <span class="c1">#: :class:`pams.runners.MultiProcessAgentParallelRunner`, e.g., ``("net", "optimizer")`` for a</span>
+    <span class="c1">#: neural network that the agent trains in :func:`submit_orders` and its optimizer. That runner</span>
+    <span class="c1">#: calls :func:`submit_orders` on a copy of this agent. After the call, it sets each listed</span>
+    <span class="c1">#: attribute of the copy on this agent, or deletes it from this agent if the copy does not</span>
+    <span class="c1">#: have it. The values and the orders of the agents in a task are pickled together, so</span>
+    <span class="c1">#: references among them are kept as far as pickling keeps them (e.g., not between a Keras</span>
+    <span class="c1">#: model and its optimizer, because Keras models are saved and reloaded), and an order that</span>
+    <span class="c1">#: this agent returns and also keeps in a listed attribute is one object. An attribute that is</span>
+    <span class="c1">#: not listed but refers to a listed object keeps referring to the old object, so list such</span>
+    <span class="c1">#: attributes together, e.g., a model, its optimizer, and the optimizer's scheduler. The</span>
+    <span class="c1">#: values can refer to this agent, other agents, the markets, the orders in the order books,</span>
+    <span class="c1">#: the sessions, the simulator, and the like, which are sent back as references to the objects</span>
+    <span class="c1">#: in the main process. Other objects are copies, including orders that are no longer in an</span>
+    <span class="c1">#: order book and objects shared with other agents. ``"simulator"``, ``"logger"``, and</span>
+    <span class="c1">#: ``"prng"``, which the runner manages, and ``"__dict__"``, which holds all the attributes,</span>
+    <span class="c1">#: cannot be listed. The runner warns when :func:`submit_orders` assigns or deletes an</span>
+    <span class="c1">#: attribute that is not listed, because the change is lost. Subclasses can override it,</span>
+    <span class="c1">#: and an instance can set it, e.g., in :func:`setup`. The runner checks it when it is set up</span>
+    <span class="c1">#: and whenever it asks this agent to submit orders. Other runners and high-frequency agents</span>
+    <span class="c1">#: do not use it. The default is an empty tuple. See :ref:`config-synced-attributes` for an</span>
+    <span class="c1">#: example and other caveats.</span>
+    <span class="n">synced_attributes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

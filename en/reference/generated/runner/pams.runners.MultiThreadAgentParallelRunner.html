@@ -369,7 +369,10 @@ executor.</p></li>
 The built-in agents only read markets and use their own pseudo random number generators,
 which is thread-safe in this runner because the main thread waits for all the workers before
 handling orders. User-defined agents must not modify shared objects such as markets,
-the simulator, the logger, or other agents in <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a>.</p>
+the simulator, the logger, or other agents in <a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a>.
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.submit_orders" title="pams.agents.Agent.submit_orders"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.agents.Agent.submit_orders()</span></code></a> is called on the agents themselves, not on copies,
+so their changes to their own attributes are kept, and
+<a class="reference internal" href="../agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a> is not used.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

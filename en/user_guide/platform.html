@@ -403,10 +403,18 @@ of a task are asked one by one on the same worker. The thread runner makes one t
 runner makes at most <code class="docutils literal notranslate"><span class="pre">numParallel</span></code> tasks of consecutive agents because each task copies the whole simulation.
 The tasks must keep all the agents in the given order, so that the results stay the same as
 <a class="reference internal" href="../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.runners.SequentialRunner</span></code></a>; otherwise, the simulation fails with a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_receive_synced_attributes_from_worker(agent,</span> <span class="pre">attributes)</span></code> (process runner only): how the attributes listed in
+<a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a> are set on the agent in the main process after <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>.
+<code class="docutils literal notranslate"><span class="pre">attributes</span></code> has the listed attributes that the copy of the agent in the worker process has. The objects of the
+simulation in them, such as the agent, the markets and the orders in the order books, are already the objects in
+the main process (see <a class="reference internal" href="config.html#config-synced-attributes"><span class="std std-ref">Agents that change their own attributes</span></a>). The default sets the values on the agent and deletes the
+listed attributes that are missing. It can be overridden, e.g., to move the values to another device.</p></li>
 </ul>
 <p>For example, the following runner starts its worker processes by <code class="docutils literal notranslate"><span class="pre">spawn</span></code> and loads a model once in each worker
 process. The agents use <code class="docutils literal notranslate"><span class="pre">my_runner.MODEL</span></code> in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> instead of keeping the model as their attribute,
-so that the model is not copied in every task.</p>
+so that the model is not copied in every task. This is only for a model that the agents do not change: a model
+that an agent trains in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> must be its attribute and be listed in
+<a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent.synced_attributes" title="pams.agents.Agent.synced_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pams.agents.Agent.synced_attributes</span></code></a> (see <a class="reference internal" href="config.html#config-synced-attributes"><span class="std std-ref">Agents that change their own attributes</span></a>).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_runner.py, which the worker processes can import</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 

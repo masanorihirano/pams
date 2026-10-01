@@ -1387,7 +1387,9 @@ the same seed. They call ``submit_orders`` of normal agents in parallel; everyth
   :doc:`platform`.
 - **User-defined agents** must not change shared objects (markets, other agents, the logger) in
   ``submit_orders``. With the process runner, changes an agent makes to its own attributes in ``submit_orders``
-  are lost; update such state in callbacks like ``executed_order``, which run in the main process.
+  are lost, or only partly kept, unless the attributes are listed in :attr:`~pams.agents.Agent.synced_attributes`
+  (see :ref:`config-synced-attributes`), and the runner warns about the attributes that are assigned or deleted
+  without being listed; update other state in callbacks like ``executed_order``, which run in the main process.
 
 The number of worker threads or processes is set by ``simulation.numParallel`` (see :ref:`config-simulation`;
 default: the number of CPUs minus 1, at least 1).
@@ -1420,7 +1422,127 @@ state of each agent's random number generator (about 4 MB for 1000 agents), and 
 much longer than ``submit_orders`` of the built-in agents. To limit this cost, the agents asked at the same time
 are split into at most ``numParallel`` tasks. An object held by an agent, such as a neural network model, is copied
 in every task, even in the tasks of other agents. Exclude such an object from pickling (for example with
-``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`).
+``__getstate__``), and if it is read-only, load it once per worker process instead (see :doc:`platform`). Both
+ways are only for objects that the agents do not change; an object that an agent changes in ``submit_orders``
+must be listed in :attr:`~pams.agents.Agent.synced_attributes` instead. Use an object loaded per worker process
+where it is kept, for example in a module variable as in :doc:`platform`, or put it back on the agent in
+``__setstate__``, which runs when the agent is copied to the worker process. Do not assign it to the agent in
+``submit_orders``: the runner warns that the change is lost, and listing it to avoid the warning would send the
+object back after every call.
+
+.. _config-synced-attributes:
+
+Agents that change their own attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The process runner calls ``submit_orders`` on a copy of the agent in a worker process. An agent that changes its
+own attributes there, for example to train a neural network, must list them in
+:attr:`~pams.agents.Agent.synced_attributes`. After each call, even one that returns no orders, the runner sets the
+listed attributes of the copy on the agent in the main process, or deletes those that the copy does not have. The
+thread runner and :class:`~pams.runners.SequentialRunner` call ``submit_orders`` on the agents themselves and do
+not use this attribute. For example, with PyTorch:
+
+.. code-block:: python
+
+   import torch
+
+   from pams.agents import Agent
+
+
+   class DeepAgent(Agent):
+       # trained in submit_orders, so they are sent back from the worker processes
+       synced_attributes = ("net", "optimizer")
+
+       def setup(self, settings, accessible_markets_ids, *args, **kwargs):
+           super().setup(settings, accessible_markets_ids, *args, **kwargs)
+           self.net = MyNet()  # a torch.nn.Module
+           self.optimizer = torch.optim.Adam(self.net.parameters(), lr=settings["lr"])
+           self.criterion = torch.nn.BCEWithLogitsLoss()  # not changed, so not listed
+           self.position = 0  # changed only in executed_order, so not listed
+
+       def executed_order(self, log):
+           # called in the main process by all the runners
+           self.position += log.volume if log.buy_agent_id == self.agent_id else -log.volume
+
+       def submit_orders(self, markets):
+           dataset = ...  # a torch.utils.data.Dataset made from the prices of the markets
+           # shuffled by a generator seeded from self.prng, not by the global generator of torch
+           generator = torch.Generator().manual_seed(self.prng.randrange(2**32))
+           loader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True, generator=generator)
+           self.net.train()
+           for inputs, target in loader:  # on the CPU
+               loss = self.criterion(self.net(inputs), target)
+               self.optimizer.zero_grad()
+               loss.backward()
+               self.optimizer.step()
+           orders = ...  # make orders with self.net
+           return orders
+
+Keep the following in mind:
+
+- **Cost**: the listed values are pickled and sent back after every call of ``submit_orders``, in addition to the
+  copies of the whole simulation described above. For a large model, this can take longer than the training. If an
+  agent of a task lists attributes, the results of all the agents of the task are pickled in a way that finds the
+  objects of the simulation among them (see **Shared objects**). This adds a fixed cost to each task, which grows
+  with the numbers of agents and of orders in the order books (less than 1 ms for 1000 agents, small next to the
+  copy of the simulation), and pickling lists, dicts and other objects with many elements takes about five to eight
+  times as long as usual. Arrays such as NumPy arrays take about as long as usual, because their data is pickled as
+  a whole.
+- **Parallelism**: still at most ``maxNormalOrders`` agents are asked at the same time.
+- **Random numbers**: use ``self.prng`` or generators seeded from it, such as ``generator`` above. The global
+  generators of libraries (e.g., the one that ``DataLoader(shuffle=True)`` uses without ``generator``) differ between
+  the worker processes, so the results would depend on the worker and differ from
+  :class:`~pams.runners.SequentialRunner`.
+- **Devices**: keep the listed tensors, including the state of the optimizer, on the CPU when ``submit_orders``
+  returns, because CUDA tensors cannot be sent between processes on Windows. If you train on a GPU, move the model
+  and the state of the optimizer back to the CPU before every return, e.g., in a ``finally`` block.
+- **References**: the listed values and the orders of all the agents of a task are pickled together, so references
+  among them are kept as far as pickling keeps them; for example, an order that an agent returns and also keeps in a
+  listed list is one object. An attribute that is not listed but refers to a listed object, such as a learning rate
+  scheduler that refers to the optimizer, keeps referring to the old object, so list such attributes together.
+  Keras models are saved and reloaded when they are pickled, so other values do not keep referring to them. For
+  example, an attribute that refers to the model's optimizer comes back as a separate optimizer without its state,
+  even if it is listed. List only the model and use its optimizer through ``model.optimizer``.
+- **Shared objects**: the objects of the simulation in the values are sent back as references to the objects in the
+  main process, not as copies. They are the simulator, the logger, the fundamentals, the markets, their order books
+  and the orders in the books, the agents (including the agent itself), the sessions, the events, the event hooks,
+  the random number generators of the simulator, the markets, the agents, the sessions and the events, and the
+  lists, dicts and sets that these objects except the agents hold as attributes. So a value can refer to the agent,
+  use markets as the keys of a dict, or keep the current session. An order is a reference only while it is in an
+  order book: an order that is waiting in a book is the object in the book, so the agent can look it up there by
+  ``is``. An order that is in no book when the agent is asked, for example because it has been fully executed,
+  canceled or has expired, comes back as a new copy after every call. The copy has the same values, but other agents
+  and unlisted attributes keep referring to the old object, so identify such orders by their ``market_id`` and
+  ``order_id``, not by ``is``. Other objects are copies too: an object shared with other agents, such as a model or
+  a dict that several agents use, is no longer shared, and which agents share a copy depends on how the agents are
+  split into tasks.
+- **Shared memory**: some libraries share memory between processes instead of copying it. For example, PyTorch
+  sends tensors on the CPU through shared memory, so the parameters of an unlisted model that are updated in place,
+  e.g., by training, can reach the agent in the main process, while other changes, such as the state of its
+  optimizer, are lost. Do not rely on this; list every attribute that ``submit_orders`` changes. The gradients
+  (``.grad``) of tensors are not sent between processes, so gradients accumulated across calls of
+  ``submit_orders`` are lost.
+- **Warning**: the runner warns with a ``UserWarning`` when ``submit_orders`` assigns or deletes an attribute of the
+  agent that is not listed, because the change is lost. The warning names the agent class and the attributes, and
+  it is shown at most once for each agent class and attribute per runner. Its message starts with
+  ``Changes to attributes not listed in synced_attributes are lost``, which does not change, so it can be filtered,
+  e.g., by ``warnings.filterwarnings("ignore", message="Changes to attributes not listed in synced_attributes")``.
+  Assigning a value equal to the old one is not reported if both are strings, numbers or tuples of them, such as a
+  constant assigned again or a price that did not change. Only assignments and deletions are detected; changes
+  made in place, such as appending to a list or training a model, are not. So no warning is shown for an unlisted
+  PyTorch model that is trained in place, even though its parameters can reach the main process through shared
+  memory while the state of its optimizer is lost (see **Shared memory**). Only the attributes in the agent's
+  ``__dict__`` are compared, so changes to unlisted attributes in ``__slots__`` are lost without a warning, and so
+  are changes to class attributes and module variables, which are never sent back. The listed names are read with
+  ``getattr`` and set with ``setattr``, so a property can be listed, but the runner warns about the attribute that
+  its setter assigns; list that attribute instead of the property. The built-in agents cause no warning.
+- **Pickling**: the listed attributes must be pickled with the agent; if ``__getstate__`` drops one of them, it is
+  deleted from the agent in the main process. The listed values must also be picklable when they are sent back; if
+  one is not, the simulation fails with a ``RuntimeError`` that names the agent class and its ``agent_id``.
+- **Checks**: the names must be a tuple or list of strings. They must not include ``"simulator"``, ``"logger"`` or
+  ``"prng"``, which the runner manages, or ``"__dict__"``, which holds all the attributes of the agent, so list the
+  attributes one by one. The runner checks them when it is set up and whenever it asks the agent, and raises a
+  ``ValueError`` naming the agent class if they are invalid.
 
 .. _config-parallel-jax:
 

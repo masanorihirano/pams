@@ -80,10 +80,18 @@ Subclasses of the parallel runners can customize the workers by overriding the f
   runner makes at most ``numParallel`` tasks of consecutive agents because each task copies the whole simulation.
   The tasks must keep all the agents in the given order, so that the results stay the same as
   :class:`pams.runners.SequentialRunner`; otherwise, the simulation fails with a ``ValueError``.
+- ``_receive_synced_attributes_from_worker(agent, attributes)`` (process runner only): how the attributes listed in
+  :attr:`pams.agents.Agent.synced_attributes` are set on the agent in the main process after ``submit_orders``.
+  ``attributes`` has the listed attributes that the copy of the agent in the worker process has. The objects of the
+  simulation in them, such as the agent, the markets and the orders in the order books, are already the objects in
+  the main process (see :ref:`config-synced-attributes`). The default sets the values on the agent and deletes the
+  listed attributes that are missing. It can be overridden, e.g., to move the values to another device.
 
 For example, the following runner starts its worker processes by ``spawn`` and loads a model once in each worker
 process. The agents use ``my_runner.MODEL`` in ``submit_orders`` instead of keeping the model as their attribute,
-so that the model is not copied in every task.
+so that the model is not copied in every task. This is only for a model that the agents do not change: a model
+that an agent trains in ``submit_orders`` must be its attribute and be listed in
+:attr:`pams.agents.Agent.synced_attributes` (see :ref:`config-synced-attributes`).
 
 .. code-block:: python
 
