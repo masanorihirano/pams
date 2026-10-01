@@ -20,7 +20,7 @@ from .logs.base import OrderLog
 from .order import Cancel
 from .order import Order
 from .order_book import OrderBook
-from .transaction_costs import TransactionCost
+from .transaction_fees import TransactionFee
 
 T = TypeVar("T")
 
@@ -28,22 +28,22 @@ T = TypeVar("T")
 class Market:
     """Market class.
 
-    If ``transaction_cost`` is set (see :class:`pams.TransactionCost`), the market charges transaction costs to the
-    buyer and the seller of each execution and records the net transaction costs that it collects in each time
-    step, which :func:`get_transaction_cost_revenues` and :func:`get_transaction_cost_revenue` return, and
-    :func:`get_cumulative_transaction_cost_revenue` returns their sum up to a time step. A logger can read them
+    If ``transaction_fee`` is set (see :class:`pams.TransactionFee`), the market charges transaction fees to the
+    buyer and the seller of each execution and records the net transaction fees that it collects in each time
+    step, which :func:`get_transaction_fee_revenues` and :func:`get_transaction_fee_revenue` return, and
+    :func:`get_cumulative_transaction_fee_revenue` returns their sum up to a time step. A logger can read them
     through ``log.market`` in :func:`pams.logs.Logger.process_market_step_end_log`, and an event can read them
     through ``market`` in :func:`pams.events.EventABC.hooked_after_step_for_market`, e.g.,
 
     .. code-block:: python
 
-        class TransactionCostRevenueLogger(Logger):
+        class TransactionFeeRevenueLogger(Logger):
             def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
                 market = log.market
                 print(
                     market.name,
-                    market.get_transaction_cost_revenue(),  # in this time step
-                    market.get_cumulative_transaction_cost_revenue(),  # up to this time step
+                    market.get_transaction_fee_revenue(),  # in this time step
+                    market.get_cumulative_transaction_fee_revenue(),  # up to this time step
                 )
 
     .. seealso::
@@ -86,14 +86,14 @@ class Market:
         self._fundamental_prices: List[Optional[float]] = []
         self._executed_volumes: List[int] = []
         self._executed_total_prices: List[float] = []
-        self._transaction_cost_revenues: List[float] = []
+        self._transaction_fee_revenues: List[float] = []
         self._n_buy_orders: List[int] = []
         self._n_sell_orders: List[int] = []
         self._next_order_id: int = 0
         self.simulator: "Simulator" = simulator  # type: ignore  # NOQA
         self.name: str = name
         self.outstanding_shares: Optional[int] = None
-        self.transaction_cost: Optional[TransactionCost] = None
+        self.transaction_fee: Optional[TransactionFee] = None
 
     def __repr__(self) -> str:
         """Return the string representation of the market."""
@@ -381,71 +381,71 @@ class Market:
             ),
         )
 
-    def get_transaction_cost_revenues(
+    def get_transaction_fee_revenues(
         self, times: Union[Iterable[int], None] = None
     ) -> List[float]:
-        """Get the transaction costs collected by this market in each time step.
+        """Get the transaction fees collected by this market in each time step.
 
-        The transaction cost revenue of a time step is the sum of the transaction costs charged to the buyers and
-        the sellers of the executions in that time step. Negative costs (rebates) reduce it, so it can be
-        negative. It is 0.0 if the market has no transaction cost.
+        The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and
+        the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be
+        negative. It is 0.0 if the market has no transaction fee.
 
         Args:
             times (Union[Iterable[int], None]): time steps.
 
         Returns:
-            List[float]: transaction cost revenues.
+            List[float]: transaction fee revenues.
 
         """
         return cast(
             List[float],
             self._extract_sequential_data_by_time(
-                times, cast(List[Optional[float]], self._transaction_cost_revenues)
+                times, cast(List[Optional[float]], self._transaction_fee_revenues)
             ),
         )
 
-    def get_transaction_cost_revenue(self, time: Union[int, None] = None) -> float:
-        """Get the transaction costs collected by this market in a time step.
+    def get_transaction_fee_revenue(self, time: Union[int, None] = None) -> float:
+        """Get the transaction fees collected by this market in a time step.
 
-        The transaction cost revenue of a time step is the sum of the transaction costs charged to the buyers and
-        the sellers of the executions in that time step. Negative costs (rebates) reduce it, so it can be
-        negative. It is 0.0 if the market has no transaction cost.
+        The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and
+        the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be
+        negative. It is 0.0 if the market has no transaction fee.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
-            float: transaction cost revenue.
+            float: transaction fee revenue.
 
         """
         return cast(
             float,
             self._extract_data_by_time(
-                time, cast(List[Optional[float]], self._transaction_cost_revenues)
+                time, cast(List[Optional[float]], self._transaction_fee_revenues)
             ),
         )
 
-    def get_cumulative_transaction_cost_revenue(
+    def get_cumulative_transaction_fee_revenue(
         self, time: Union[int, None] = None
     ) -> float:
-        """Get the transaction costs collected by this market from time step 0 to a time step.
+        """Get the transaction fees collected by this market from time step 0 to a time step.
 
-        This is the balance of the transaction costs of this market up to the time step, i.e., the sum of the
-        transaction cost revenues (see :func:`get_transaction_cost_revenues`) from time step 0 to ``time``.
-        Negative costs (rebates) reduce it, so it can be negative. It is 0.0 if the market has no transaction cost.
+        This is the balance of the transaction fees of this market up to the time step, i.e., the sum of the
+        transaction fee revenues (see :func:`get_transaction_fee_revenues`) from time step 0 to ``time``.
+        Negative fees (rebates) reduce it, so it can be negative. It is 0.0 if the market has no transaction fee.
 
         Args:
             time (Union[int, None]): time step.
 
         Returns:
-            float: cumulative transaction cost revenue.
+            float: cumulative transaction fee revenue.
 
         """
         if time is None:
             time = self.time
         if time > self.time:
             raise AssertionError("Cannot refer the future parameters")
-        return sum(self._transaction_cost_revenues[: max(time + 1, 0)], 0.0)
+        return sum(self._transaction_fee_revenues[: max(time + 1, 0)], 0.0)
 
     def get_n_buy_orders(self, times: Union[Iterable[int], None] = None) -> List[int]:
         """Get the number of buy orders.
@@ -537,8 +537,8 @@ class Market:
         self._executed_total_prices = self._executed_total_prices + [
             0 for _ in range(length - len(self._executed_total_prices))
         ]
-        self._transaction_cost_revenues = self._transaction_cost_revenues + [
-            0.0 for _ in range(length - len(self._transaction_cost_revenues))
+        self._transaction_fee_revenues = self._transaction_fee_revenues + [
+            0.0 for _ in range(length - len(self._transaction_fee_revenues))
         ]
         self._n_buy_orders = self._n_buy_orders + [
             0 for _ in range(length - len(self._n_buy_orders))
@@ -854,9 +854,9 @@ class Market:
     ) -> ExecutionLog:
         """Execute orders (internal method).
 
-        If ``transaction_cost`` is set, its ``compute_costs`` is called before the volume is subtracted from the
-        orders, the costs are recorded in the execution log, and their sum is added to the transaction cost revenue
-        of the current time step. Otherwise, the costs are 0.0.
+        If ``transaction_fee`` is set, its ``compute_fees`` is called before the volume is subtracted from the
+        orders, the fees are recorded in the execution log, and their sum is added to the transaction fee revenue
+        of the current time step. Otherwise, the fees are 0.0.
 
         Args:
             price (float): price.
@@ -883,12 +883,12 @@ class Market:
         if volume <= 0:
             raise AssertionError
 
-        transaction_costs: Tuple[float, float] = (0.0, 0.0)
-        if self.transaction_cost is not None:
-            transaction_costs = self.transaction_cost.compute_costs(
+        transaction_fees: Tuple[float, float] = (0.0, 0.0)
+        if self.transaction_fee is not None:
+            transaction_fees = self.transaction_fee.compute_fees(
                 price=price, volume=volume, buy_order=buy_order, sell_order=sell_order
             )
-        buy_transaction_cost, sell_transaction_cost = transaction_costs
+        buy_transaction_fee, sell_transaction_fee = transaction_fees
         log: ExecutionLog = ExecutionLog(
             market_id=self.market_id,
             time=self.time,
@@ -898,8 +898,8 @@ class Market:
             sell_order_id=cast(int, sell_order.order_id),
             price=price,
             volume=volume,
-            buy_transaction_cost=buy_transaction_cost,
-            sell_transaction_cost=sell_transaction_cost,
+            buy_transaction_fee=buy_transaction_fee,
+            sell_transaction_fee=sell_transaction_fee,
         )
 
         self.buy_order_book.change_order_volume(order=buy_order, delta=-volume)
@@ -908,8 +908,8 @@ class Market:
         self._last_executed_prices[self.time] = price
         self._executed_volumes[self.time] += volume
         self._executed_total_prices[self.time] += volume * price
-        self._transaction_cost_revenues[self.time] += (
-            buy_transaction_cost + sell_transaction_cost
+        self._transaction_fee_revenues[self.time] += (
+            buy_transaction_fee + sell_transaction_fee
         )
         self._update_market_price()
 

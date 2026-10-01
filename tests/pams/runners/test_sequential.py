@@ -20,8 +20,8 @@ from pams import LIMIT_ORDER
 from pams import Cancel
 from pams import Market
 from pams import Order
-from pams import ProportionalTransactionCost
-from pams import TransactionCost
+from pams import ProportionalTransactionFee
+from pams import TransactionFee
 from pams.agents import Agent
 from pams.agents import FCNAgent
 from pams.events import FundamentalPriceShock
@@ -35,10 +35,10 @@ from .dummy import DummyLogger2
 from .dummy import ExecutionCountLogger
 from .dummy import GivenOrdersAgent
 from .dummy import HighFrequencyGivenOrdersAgent
-from .dummy import MakerTakerTransactionCost
+from .dummy import MakerTakerTransactionFee
 from .dummy import RandomlyIdleFCNAgent
 from .dummy import SimulatorAccessingLogger
-from .dummy import TransactionCostRevenueLogger
+from .dummy import TransactionFeeRevenueLogger
 
 
 class TestSequentialRunner(TestRunner):
@@ -488,13 +488,13 @@ class TestSequentialRunner(TestRunner):
         assert len(runner.simulator.markets) == 0
 
     @pytest.mark.parametrize("has_key", [False, True])
-    def test_generate_markets_without_transaction_cost(self, has_key: bool) -> None:
+    def test_generate_markets_without_transaction_fee(self, has_key: bool) -> None:
         setting: Dict[str, Any] = {
             "simulation": {"markets": ["Market"]},
             "Market": {"class": "Market", "tickSize": 0.01, "marketPrice": 300.0},
         }
         if has_key:
-            setting["Market"]["transactionCost"] = None
+            setting["Market"]["transactionFee"] = None
         runner = self.test__init__(
             setting_mode="dict",
             logger=None,
@@ -503,46 +503,46 @@ class TestSequentialRunner(TestRunner):
         )
         runner._generate_markets(market_type_names=["Market"])
         market = runner.simulator.markets[0]
-        assert market.transaction_cost is None
+        assert market.transaction_fee is None
         assert runner._pending_setups == [
             (market.setup, {"settings": setting["Market"]})
         ]
 
     @pytest.mark.parametrize(
-        "cost_class, cost_settings, registered, expected_class",
+        "fee_class, fee_settings, registered, expected_class",
         [
             (
-                "ProportionalTransactionCost",
+                "ProportionalTransactionFee",
                 {"rate": 0.001},
                 False,
-                ProportionalTransactionCost,
+                ProportionalTransactionFee,
             ),
             (
-                ProportionalTransactionCost,
+                ProportionalTransactionFee,
                 {"rate": 0.001},
                 False,
-                ProportionalTransactionCost,
+                ProportionalTransactionFee,
             ),
             (
-                "MakerTakerTransactionCost",
+                "MakerTakerTransactionFee",
                 {"makerRate": -0.0001, "takerRate": 0.0003},
                 True,
-                MakerTakerTransactionCost,
+                MakerTakerTransactionFee,
             ),
             (
-                MakerTakerTransactionCost,
+                MakerTakerTransactionFee,
                 {"makerRate": -0.0001, "takerRate": 0.0003},
                 False,
-                MakerTakerTransactionCost,
+                MakerTakerTransactionFee,
             ),
         ],
     )
-    def test_generate_markets_with_transaction_cost(
+    def test_generate_markets_with_transaction_fee(
         self,
-        cost_class: Union[str, Type],
-        cost_settings: Dict[str, Any],
+        fee_class: Union[str, Type],
+        fee_settings: Dict[str, Any],
         registered: bool,
-        expected_class: Type[TransactionCost],
+        expected_class: Type[TransactionFee],
     ) -> None:
         setting: Dict[str, Any] = {
             "simulation": {"markets": ["Market"]},
@@ -550,7 +550,7 @@ class TestSequentialRunner(TestRunner):
                 "class": "Market",
                 "tickSize": 0.01,
                 "marketPrice": 300.0,
-                "transactionCost": {"class": cost_class, **cost_settings},
+                "transactionFee": {"class": fee_class, **fee_settings},
             },
         }
         runner = self.test__init__(
@@ -563,28 +563,28 @@ class TestSequentialRunner(TestRunner):
             runner.class_register(cls=expected_class)
         runner._generate_markets(market_type_names=["Market"])
         market = runner.simulator.markets[0]
-        transaction_cost = market.transaction_cost
-        assert isinstance(transaction_cost, expected_class)
-        assert transaction_cost.market is market
-        # "transactionCost" is left in the settings of the market, and the settings of
-        # the transaction cost do not include "class"
+        transaction_fee = market.transaction_fee
+        assert isinstance(transaction_fee, expected_class)
+        assert transaction_fee.market is market
+        # "transactionFee" is left in the settings of the market, and the settings of
+        # the transaction fee do not include "class"
         assert runner._pending_setups == [
             (market.setup, {"settings": setting["Market"]}),
-            (transaction_cost.setup, {"settings": cost_settings}),
+            (transaction_fee.setup, {"settings": fee_settings}),
         ]
         for func, kwargs in runner._pending_setups:
             func(**kwargs)
-        if isinstance(transaction_cost, ProportionalTransactionCost):
-            assert transaction_cost.rate == 0.001
+        if isinstance(transaction_fee, ProportionalTransactionFee):
+            assert transaction_fee.rate == 0.001
         else:
-            assert isinstance(transaction_cost, MakerTakerTransactionCost)
-            assert transaction_cost.maker_rate == -0.0001
-            assert transaction_cost.taker_rate == 0.0003
+            assert isinstance(transaction_fee, MakerTakerTransactionFee)
+            assert transaction_fee.maker_rate == -0.0001
+            assert transaction_fee.taker_rate == 0.0003
 
-    def test_generate_markets_transaction_cost_per_market(self) -> None:
-        setup_calls: List[Tuple[TransactionCost, Dict[str, Any], float]] = []
+    def test_generate_markets_transaction_fee_per_market(self) -> None:
+        setup_calls: List[Tuple[TransactionFee, Dict[str, Any], float]] = []
 
-        class RecordingTransactionCost(ProportionalTransactionCost):
+        class RecordingTransactionFee(ProportionalTransactionFee):
             def setup(
                 self, settings: Dict[str, Any], *args: Any, **kwargs: Any
             ) -> None:
@@ -593,14 +593,14 @@ class TestSequentialRunner(TestRunner):
                 )
                 super().setup(settings, *args, **kwargs)
 
-        cost_setting = {"class": RecordingTransactionCost, "rate": 0.001}
+        fee_setting = {"class": RecordingTransactionFee, "rate": 0.001}
         setting = {
             "simulation": {"markets": ["Market"]},
             "MarketBase": {
                 "class": "Market",
                 "tickSize": 0.01,
                 "marketPrice": 300.0,
-                "transactionCost": cost_setting,
+                "transactionFee": fee_setting,
             },
             "Market": {"extends": "MarketBase", "numMarkets": 2},
         }
@@ -610,98 +610,98 @@ class TestSequentialRunner(TestRunner):
         runner._generate_markets(market_type_names=["Market"])
         markets = runner.simulator.markets
         assert len(markets) == 2
-        costs = [market.transaction_cost for market in markets]
-        assert all(isinstance(cost, RecordingTransactionCost) for cost in costs)
-        assert costs[0] is not costs[1]
-        assert [cast(TransactionCost, cost).market for cost in costs] == markets
+        fees = [market.transaction_fee for market in markets]
+        assert all(isinstance(fee, RecordingTransactionFee) for fee in fees)
+        assert fees[0] is not fees[1]
+        assert [cast(TransactionFee, fee).market for fee in fees] == markets
         assert [func for func, _ in runner._pending_setups] == [
             markets[0].setup,
-            cast(TransactionCost, costs[0]).setup,
+            cast(TransactionFee, fees[0]).setup,
             markets[1].setup,
-            cast(TransactionCost, costs[1]).setup,
+            cast(TransactionFee, fees[1]).setup,
         ]
         for func, kwargs in runner._pending_setups:
             func(**kwargs)
-        # each transaction cost is set up once, after its market, without "class"
+        # each transaction fee is set up once, after its market, without "class"
         assert setup_calls == [
-            (costs[0], {"rate": 0.001}, 0.01),
-            (costs[1], {"rate": 0.001}, 0.01),
+            (fees[0], {"rate": 0.001}, 0.01),
+            (fees[1], {"rate": 0.001}, 0.01),
         ]
-        assert [cast(ProportionalTransactionCost, cost).rate for cost in costs] == [
+        assert [cast(ProportionalTransactionFee, fee).rate for fee in fees] == [
             0.001,
             0.001,
         ]
-        assert cost_setting == {"class": RecordingTransactionCost, "rate": 0.001}
+        assert fee_setting == {"class": RecordingTransactionFee, "rate": 0.001}
 
     @pytest.mark.parametrize(
-        "transaction_cost, error, match",
+        "transaction_fee, error, match",
         [
             (
                 0.001,
                 ValueError,
-                r"^Market\.transactionCost must be an object or null, "
+                r"^Market\.transactionFee must be an object or null, "
                 r"but 0\.001 is given$",
             ),
             (
                 True,
                 ValueError,
-                r"^Market\.transactionCost must be an object or null, "
+                r"^Market\.transactionFee must be an object or null, "
                 r"but True is given$",
             ),
             (
-                "ProportionalTransactionCost",
+                "ProportionalTransactionFee",
                 ValueError,
-                r"^Market\.transactionCost must be an object or null, "
-                r"but 'ProportionalTransactionCost' is given$",
+                r"^Market\.transactionFee must be an object or null, "
+                r"but 'ProportionalTransactionFee' is given$",
             ),
             (
-                [{"class": "ProportionalTransactionCost", "rate": 0.001}],
+                [{"class": "ProportionalTransactionFee", "rate": 0.001}],
                 ValueError,
-                r"^Market\.transactionCost must be an object or null, but \[",
+                r"^Market\.transactionFee must be an object or null, but \[",
             ),
             (
                 {"rate": 0.001},
                 ValueError,
-                r"^class is not defined for Market\.transactionCost$",
+                r"^class is not defined for Market\.transactionFee$",
             ),
             (
                 {"class": None, "rate": 0.001},
                 ValueError,
-                r"^class for Market\.transactionCost must be a class name \(str\) "
+                r"^class for Market\.transactionFee must be a class name \(str\) "
                 r"or a class, but None is given$",
             ),
             (
-                {"class": "UnknownTransactionCost", "rate": 0.001},
+                {"class": "UnknownTransactionFee", "rate": 0.001},
                 AttributeError,
-                r"^class for UnknownTransactionCost is found 0 times$",
+                r"^class for UnknownTransactionFee is found 0 times$",
             ),
             (
-                {"class": "MakerTakerTransactionCost"},
+                {"class": "MakerTakerTransactionFee"},
                 AttributeError,
-                r"^class for MakerTakerTransactionCost is found 0 times$",
+                r"^class for MakerTakerTransactionFee is found 0 times$",
             ),
             (
                 {"class": "Market"},
                 ValueError,
-                r"^transaction cost class for Market does not inherit "
-                r"TransactionCost class$",
+                r"^transaction fee class for Market does not inherit "
+                r"TransactionFee class$",
             ),
             (
                 {"class": FCNAgent},
                 ValueError,
-                r"^transaction cost class for Market does not inherit "
-                r"TransactionCost class$",
+                r"^transaction fee class for Market does not inherit "
+                r"TransactionFee class$",
             ),
             (
                 {"class": "LIMIT_ORDER"},
                 ValueError,
-                r"^transaction cost class for Market does not inherit "
-                r"TransactionCost class$",
+                r"^transaction fee class for Market does not inherit "
+                r"TransactionFee class$",
             ),
         ],
     )
-    def test_generate_markets_with_invalid_transaction_cost(
-        self, transaction_cost: Any, error: Type[Exception], match: str
+    def test_generate_markets_with_invalid_transaction_fee(
+        self, transaction_fee: Any, error: Type[Exception], match: str
     ) -> None:
         setting = {
             "simulation": {"markets": ["Market"]},
@@ -710,7 +710,7 @@ class TestSequentialRunner(TestRunner):
                 "numMarkets": 2,
                 "tickSize": 0.01,
                 "marketPrice": 300.0,
-                "transactionCost": transaction_cost,
+                "transactionFee": transaction_fee,
             },
         }
         runner = self.test__init__(
@@ -2171,10 +2171,10 @@ class TestSequentialRunner(TestRunner):
         )
 
     @staticmethod
-    def _transaction_cost_revenues_from_logs(
+    def _transaction_fee_revenues_from_logs(
         market: Market, execution_logs: List[ExecutionLog]
     ) -> List[float]:
-        """Return the sum of the costs in the execution logs of the market in each step.
+        """Return the sum of the fees in the execution logs of the market in each step.
 
         Args:
             market (Market): market.
@@ -2187,7 +2187,7 @@ class TestSequentialRunner(TestRunner):
         return [
             sum(
                 (
-                    log.buy_transaction_cost + log.sell_transaction_cost
+                    log.buy_transaction_fee + log.sell_transaction_fee
                     for log in execution_logs
                     if log.market_id == market.market_id and log.time == t
                 ),
@@ -2196,37 +2196,37 @@ class TestSequentialRunner(TestRunner):
             for t in range(market.get_time() + 1)
         ]
 
-    def _check_transaction_cost_revenues(
+    def _check_transaction_fee_revenues(
         self, runner: Runner, execution_logs: List[ExecutionLog]
     ) -> List[float]:
-        """Check the transaction cost revenues of the markets against the execution logs.
+        """Check the transaction fee revenues of the markets against the execution logs.
 
         Args:
             runner (Runner): runner after a run.
             execution_logs (List[ExecutionLog]): execution logs of the run.
 
         Returns:
-            List[float]: the cumulative transaction cost revenue of each market.
+            List[float]: the cumulative transaction fee revenue of each market.
 
         """
         balances: List[float] = []
         for market in runner.simulator.markets:
-            revenues = self._transaction_cost_revenues_from_logs(
+            revenues = self._transaction_fee_revenues_from_logs(
                 market=market, execution_logs=execution_logs
             )
-            assert market.get_transaction_cost_revenues() == revenues
-            balance = market.get_cumulative_transaction_cost_revenue()
+            assert market.get_transaction_fee_revenues() == revenues
+            balance = market.get_cumulative_transaction_fee_revenue()
             assert balance == sum(revenues, 0.0)
             balances.append(balance)
         return balances
 
-    def test_run_transaction_costs(self) -> None:
+    def test_run_transaction_fees(self) -> None:
         def run(
-            has_key: bool, transaction_cost: Optional[Dict[str, Any]] = None
+            has_key: bool, transaction_fee: Optional[Dict[str, Any]] = None
         ) -> Tuple[Runner, ExecutionCountLogger]:
             setting = copy.deepcopy(self.default_setting)
             if has_key:
-                setting["Market"]["transactionCost"] = transaction_cost
+                setting["Market"]["transactionFee"] = transaction_fee
             logger = ExecutionCountLogger()
             runner = self.test__init__(
                 setting_mode="dict",
@@ -2240,28 +2240,28 @@ class TestSequentialRunner(TestRunner):
 
         rate = 0.001
         base_runner, base_logger = run(has_key=False)
-        null_runner, null_logger = run(has_key=True, transaction_cost=None)
+        null_runner, null_logger = run(has_key=True, transaction_fee=None)
         zero_runner, zero_logger = run(
             has_key=True,
-            transaction_cost={"class": "ProportionalTransactionCost", "rate": 0.0},
+            transaction_fee={"class": "ProportionalTransactionFee", "rate": 0.0},
         )
-        cost_runner, cost_logger = run(
+        fee_runner, fee_logger = run(
             has_key=True,
-            transaction_cost={"class": "ProportionalTransactionCost", "rate": rate},
+            transaction_fee={"class": "ProportionalTransactionFee", "rate": rate},
         )
         assert len(base_logger.execution_logs) > 0
         for runner in [base_runner, null_runner]:
             for market in runner.simulator.markets:
-                assert market.transaction_cost is None
-        for runner, expected_rate in [(zero_runner, 0.0), (cost_runner, rate)]:
+                assert market.transaction_fee is None
+        for runner, expected_rate in [(zero_runner, 0.0), (fee_runner, rate)]:
             for market in runner.simulator.markets:
-                assert isinstance(market.transaction_cost, ProportionalTransactionCost)
-                assert market.transaction_cost.rate == expected_rate
+                assert isinstance(market.transaction_fee, ProportionalTransactionFee)
+                assert market.transaction_fee.rate == expected_rate
 
-        # The runner and the transaction costs draw no random numbers, and the built-in
-        # agents ignore their cash, so the costs do not change the prices, the
+        # The runner and the transaction fees draw no random numbers, and the built-in
+        # agents ignore their cash, so the fees do not change the prices, the
         # executions and the asset volumes.
-        for runner in [null_runner, zero_runner, cost_runner]:
+        for runner in [null_runner, zero_runner, fee_runner]:
             for base_market, market in zip(
                 base_runner.simulator.markets, runner.simulator.markets
             ):
@@ -2276,7 +2276,7 @@ class TestSequentialRunner(TestRunner):
         for logs in [
             null_logger.execution_logs,
             zero_logger.execution_logs,
-            cost_logger.execution_logs,
+            fee_logger.execution_logs,
         ]:
             assert [
                 (log.time, log.buy_agent_id, log.sell_agent_id, log.price, log.volume)
@@ -2286,21 +2286,21 @@ class TestSequentialRunner(TestRunner):
                 for log in base_logger.execution_logs
             ]
 
-        # Without costs, the cash is exactly the same.
+        # Without fees, the cash is exactly the same.
         for log in (
             base_logger.execution_logs
             + null_logger.execution_logs
             + zero_logger.execution_logs
         ):
-            assert log.buy_transaction_cost == 0.0
-            assert log.sell_transaction_cost == 0.0
+            assert log.buy_transaction_fee == 0.0
+            assert log.sell_transaction_fee == 0.0
         for runner in [null_runner, zero_runner]:
             assert [agent.cash_amount for agent in runner.simulator.agents] == [
                 agent.cash_amount for agent in base_runner.simulator.agents
             ]
         # The markets collect nothing.
         assert [
-            self._check_transaction_cost_revenues(runner, logger.execution_logs)
+            self._check_transaction_fee_revenues(runner, logger.execution_logs)
             for runner, logger in [
                 (base_runner, base_logger),
                 (null_runner, null_logger),
@@ -2308,81 +2308,81 @@ class TestSequentialRunner(TestRunner):
             ]
         ] == [[0.0]] * 3
 
-        # With costs, both sides pay the rate times the executed value.
+        # With fees, both sides pay the rate times the executed value.
         paid: Dict[int, float] = {}
-        for log in cost_logger.execution_logs:
+        for log in fee_logger.execution_logs:
             expected = rate * log.price * log.volume
-            assert log.buy_transaction_cost == expected
-            assert log.sell_transaction_cost == expected
+            assert log.buy_transaction_fee == expected
+            assert log.sell_transaction_fee == expected
             paid[log.buy_agent_id] = (
-                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_cost
+                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_fee
             )
             paid[log.sell_agent_id] = (
-                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_cost
+                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_fee
             )
         assert sum(paid.values()) > 0.0
         for base_agent, agent in zip(
-            base_runner.simulator.agents, cost_runner.simulator.agents
+            base_runner.simulator.agents, fee_runner.simulator.agents
         ):
             assert agent.cash_amount == pytest.approx(
                 base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
             )
         # the market collects what the agents paid
-        assert self._check_transaction_cost_revenues(
-            cost_runner, cost_logger.execution_logs
+        assert self._check_transaction_fee_revenues(
+            fee_runner, fee_logger.execution_logs
         ) == [pytest.approx(sum(paid.values()))]
 
-    def _check_run_user_transaction_cost(
+    def _check_run_user_transaction_fee(
         self,
         setting: Dict[str, Any],
         by_name: bool,
         runner_class: Optional[Type[SequentialRunner]] = None,
     ) -> List[Tuple[int, int, float, int, float, float]]:
-        """Run with and without MakerTakerTransactionCost and check the costs.
+        """Run with and without MakerTakerTransactionFee and check the fees.
 
         Returns:
             List[Tuple[int, int, float, int, float, float]]: the order IDs, the price, the
-            volume and the costs of the executions with the costs.
+            volume and the fees of the executions with the fees.
 
         """
         maker_rate = -0.0001
         taker_rate = 0.0003
         results: List[Tuple[Runner, ExecutionCountLogger]] = []
-        for transaction_cost in [
+        for transaction_fee in [
             None,
             {
-                "class": "MakerTakerTransactionCost"
+                "class": "MakerTakerTransactionFee"
                 if by_name
-                else MakerTakerTransactionCost,
+                else MakerTakerTransactionFee,
                 "makerRate": maker_rate,
                 "takerRate": taker_rate,
             },
         ]:
             run_setting = copy.deepcopy(setting)
-            run_setting["Market"]["transactionCost"] = transaction_cost
+            run_setting["Market"]["transactionFee"] = transaction_fee
             logger = ExecutionCountLogger()
             runner = (runner_class or self.runner_class)(
                 settings=run_setting, prng=random.Random(42), logger=logger
             )
             if by_name:
-                runner.class_register(cls=MakerTakerTransactionCost)
+                runner.class_register(cls=MakerTakerTransactionFee)
             runner._setup()
             runner._run()
             results.append((runner, logger))
         base_runner, base_logger = results[0]
-        cost_runner, cost_logger = results[1]
-        for market in cost_runner.simulator.markets:
-            assert isinstance(market.transaction_cost, MakerTakerTransactionCost)
+        fee_runner, fee_logger = results[1]
+        for market in fee_runner.simulator.markets:
+            assert isinstance(market.transaction_fee, MakerTakerTransactionFee)
         assert len(base_logger.execution_logs) > 0
         assert [
             (log.time, log.buy_order_id, log.sell_order_id, log.price, log.volume)
-            for log in cost_logger.execution_logs
+            for log in fee_logger.execution_logs
         ] == [
             (log.time, log.buy_order_id, log.sell_order_id, log.price, log.volume)
             for log in base_logger.execution_logs
         ]
         paid: Dict[int, float] = {}
-        for log in cost_logger.execution_logs:
+        for log in fee_logger.execution_logs:
             value = log.price * log.volume
             # order IDs increase with the arrival of orders in each market, so the
             # order with the smaller ID was placed first and is the maker
@@ -2390,29 +2390,27 @@ class TestSequentialRunner(TestRunner):
                 expected = (maker_rate * value, taker_rate * value)
             else:
                 expected = (taker_rate * value, maker_rate * value)
-            assert (log.buy_transaction_cost, log.sell_transaction_cost) == expected
+            assert (log.buy_transaction_fee, log.sell_transaction_fee) == expected
             paid[log.buy_agent_id] = (
-                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_cost
+                paid.get(log.buy_agent_id, 0.0) + log.buy_transaction_fee
             )
             paid[log.sell_agent_id] = (
-                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_cost
+                paid.get(log.sell_agent_id, 0.0) + log.sell_transaction_fee
             )
         for base_agent, agent in zip(
-            base_runner.simulator.agents, cost_runner.simulator.agents
+            base_runner.simulator.agents, fee_runner.simulator.agents
         ):
             assert agent.asset_volumes == base_agent.asset_volumes
             assert agent.cash_amount == pytest.approx(
                 base_agent.cash_amount - paid.get(agent.agent_id, 0.0)
             )
         assert set(
-            self._check_transaction_cost_revenues(
+            self._check_transaction_fee_revenues(
                 base_runner, base_logger.execution_logs
             )
         ) == {0.0}
         assert sum(
-            self._check_transaction_cost_revenues(
-                cost_runner, cost_logger.execution_logs
-            )
+            self._check_transaction_fee_revenues(fee_runner, fee_logger.execution_logs)
         ) == pytest.approx(sum(paid.values()))
         return [
             (
@@ -2420,31 +2418,31 @@ class TestSequentialRunner(TestRunner):
                 log.sell_order_id,
                 log.price,
                 log.volume,
-                log.buy_transaction_cost,
-                log.sell_transaction_cost,
+                log.buy_transaction_fee,
+                log.sell_transaction_fee,
             )
-            for log in cost_logger.execution_logs
+            for log in fee_logger.execution_logs
         ]
 
     @pytest.mark.parametrize("by_name", [True, False])
-    def test_run_user_transaction_cost(self, by_name: bool) -> None:
-        self._check_run_user_transaction_cost(
+    def test_run_user_transaction_fee(self, by_name: bool) -> None:
+        self._check_run_user_transaction_fee(
             setting=copy.deepcopy(self.default_setting), by_name=by_name
         )
 
-    def _transaction_cost_revenue_setting(
-        self, with_costs: bool, with_arbitrage_agents: bool = True
+    def _transaction_fee_revenue_setting(
+        self, with_fees: bool, with_arbitrage_agents: bool = True
     ) -> Dict[str, Any]:
         """Return the setting of two spot markets and an index market.
 
-        With the costs, SpotMarket-1 charges proportional costs, SpotMarket-2 charges no
-        costs, and IndexMarket-I gives the makers rebates that are larger than the costs of
+        With the fees, SpotMarket-1 charges proportional fees, SpotMarket-2 charges no
+        fees, and IndexMarket-I gives the makers rebates that are larger than the fees of
         the takers, so each execution in IndexMarket-I reduces its revenue. No orders are
         executed in the first session. Each group of FCN agents trades only in one market,
         and the arbitrage agents trade in all the markets.
 
         Args:
-            with_costs (bool): whether the markets charge transaction costs.
+            with_fees (bool): whether the markets charge transaction fees.
             with_arbitrage_agents (bool): whether the setting has the arbitrage agents.
 
         Returns:
@@ -2518,13 +2516,13 @@ class TestSequentialRunner(TestRunner):
                 "orderThresholdPrice": 1.0,
             },
         }
-        if with_costs:
-            setting["SpotMarket-1"]["transactionCost"] = {
-                "class": "ProportionalTransactionCost",
+        if with_fees:
+            setting["SpotMarket-1"]["transactionFee"] = {
+                "class": "ProportionalTransactionFee",
                 "rate": 0.001,
             }
-            setting["IndexMarket-I"]["transactionCost"] = {
-                "class": MakerTakerTransactionCost,
+            setting["IndexMarket-I"]["transactionFee"] = {
+                "class": MakerTakerTransactionFee,
                 "makerRate": -0.0005,
                 "takerRate": 0.0002,
             }
@@ -2532,16 +2530,16 @@ class TestSequentialRunner(TestRunner):
             simulation["agents"].remove("ArbitrageAgents")
         return setting
 
-    def _run_transaction_cost_revenues(
+    def _run_transaction_fee_revenues(
         self,
         runner_class: Type[SequentialRunner],
-        with_costs: bool,
+        with_fees: bool,
         with_arbitrage_agents: bool = True,
-    ) -> Tuple[Runner, TransactionCostRevenueLogger]:
-        logger = TransactionCostRevenueLogger()
+    ) -> Tuple[Runner, TransactionFeeRevenueLogger]:
+        logger = TransactionFeeRevenueLogger()
         runner = runner_class(
-            settings=self._transaction_cost_revenue_setting(
-                with_costs=with_costs, with_arbitrage_agents=with_arbitrage_agents
+            settings=self._transaction_fee_revenue_setting(
+                with_fees=with_fees, with_arbitrage_agents=with_arbitrage_agents
             ),
             prng=random.Random(42),
             logger=logger,
@@ -2550,15 +2548,15 @@ class TestSequentialRunner(TestRunner):
         runner._run()
         return runner, logger
 
-    def test_run_transaction_cost_revenues(self) -> None:
+    def test_run_transaction_fee_revenues(self) -> None:
         n_steps = 25
-        base_runner, base_logger = self._run_transaction_cost_revenues(
-            runner_class=self.runner_class, with_costs=False
+        base_runner, base_logger = self._run_transaction_fee_revenues(
+            runner_class=self.runner_class, with_fees=False
         )
-        cost_runner, cost_logger = self._run_transaction_cost_revenues(
-            runner_class=self.runner_class, with_costs=True
+        fee_runner, fee_logger = self._run_transaction_fee_revenues(
+            runner_class=self.runner_class, with_fees=True
         )
-        for runner, logger in [(base_runner, base_logger), (cost_runner, cost_logger)]:
+        for runner, logger in [(base_runner, base_logger), (fee_runner, fee_logger)]:
             markets = runner.simulator.markets
             assert [market.name for market in markets] == [
                 "SpotMarket-1",
@@ -2569,11 +2567,11 @@ class TestSequentialRunner(TestRunner):
                 # after the run, the time is one step after the last step
                 assert market.get_time() == n_steps
                 assert (
-                    len(market.get_transaction_cost_revenues())
+                    len(market.get_transaction_fee_revenues())
                     == len(market.get_executed_volumes())
                     == n_steps + 1
                 )
-                assert len(market._transaction_cost_revenues) == len(
+                assert len(market._transaction_fee_revenues) == len(
                     market._executed_volumes
                 )
                 logs = [
@@ -2583,11 +2581,11 @@ class TestSequentialRunner(TestRunner):
                 ]
                 assert len(logs) > 0
                 assert min(log.time for log in logs) >= 5
-            # the revenue of each step is the sum of the costs of its executions
-            self._check_transaction_cost_revenues(runner, logger.execution_logs)
+            # the revenue of each step is the sum of the fees of its executions
+            self._check_transaction_fee_revenues(runner, logger.execution_logs)
             # the logger reads the revenues of each market at the end of each step
             revenues = {
-                market.market_id: self._transaction_cost_revenues_from_logs(
+                market.market_id: self._transaction_fee_revenues_from_logs(
                     market=market, execution_logs=logger.execution_logs
                 )
                 for market in markets
@@ -2601,82 +2599,80 @@ class TestSequentialRunner(TestRunner):
                 assert revenue == revenues[market_id][t]
                 assert cumulative == sum(revenues[market_id][: t + 1], 0.0)
 
-        # the costs do not change the prices and the executions
+        # the fees do not change the prices and the executions
         for base_market, market in zip(
-            base_runner.simulator.markets, cost_runner.simulator.markets
+            base_runner.simulator.markets, fee_runner.simulator.markets
         ):
             assert market.get_market_prices() == base_market.get_market_prices()
             assert market.get_executed_volumes() == base_market.get_executed_volumes()
         assert [
             (log.market_id, log.time, log.buy_order_id, log.sell_order_id, log.volume)
-            for log in cost_logger.execution_logs
+            for log in fee_logger.execution_logs
         ] == [
             (log.market_id, log.time, log.buy_order_id, log.sell_order_id, log.volume)
             for log in base_logger.execution_logs
         ]
 
-        # without costs, the revenues are 0.0
+        # without fees, the revenues are 0.0
         for market in base_runner.simulator.markets:
-            assert market.get_transaction_cost_revenues() == [0.0] * (n_steps + 1)
-            assert market.get_cumulative_transaction_cost_revenue() == 0.0
-        spot_market_1, spot_market_2, index_market = cost_runner.simulator.markets
-        assert spot_market_2.get_transaction_cost_revenues() == [0.0] * (n_steps + 1)
+            assert market.get_transaction_fee_revenues() == [0.0] * (n_steps + 1)
+            assert market.get_cumulative_transaction_fee_revenue() == 0.0
+        spot_market_1, spot_market_2, index_market = fee_runner.simulator.markets
+        assert spot_market_2.get_transaction_fee_revenues() == [0.0] * (n_steps + 1)
         assert all(
-            revenue >= 0.0 for revenue in spot_market_1.get_transaction_cost_revenues()
+            revenue >= 0.0 for revenue in spot_market_1.get_transaction_fee_revenues()
         )
-        assert spot_market_1.get_cumulative_transaction_cost_revenue() > 0.0
-        # the rebates of the makers are larger than the costs of the takers
+        assert spot_market_1.get_cumulative_transaction_fee_revenue() > 0.0
+        # the rebates of the makers are larger than the fees of the takers
         assert all(
-            revenue <= 0.0 for revenue in index_market.get_transaction_cost_revenues()
+            revenue <= 0.0 for revenue in index_market.get_transaction_fee_revenues()
         )
-        assert index_market.get_cumulative_transaction_cost_revenue() < 0.0
+        assert index_market.get_cumulative_transaction_fee_revenue() < 0.0
 
-        # the markets collect what the agents lose to the costs
+        # the markets collect what the agents lose to the fees
         lost = sum(
             base_agent.cash_amount - agent.cash_amount
             for base_agent, agent in zip(
-                base_runner.simulator.agents, cost_runner.simulator.agents
+                base_runner.simulator.agents, fee_runner.simulator.agents
             )
         )
         assert sum(
-            market.get_cumulative_transaction_cost_revenue()
-            for market in cost_runner.simulator.markets
+            market.get_cumulative_transaction_fee_revenue()
+            for market in fee_runner.simulator.markets
         ) == pytest.approx(lost, abs=1e-6)
         for base_agent, agent in zip(
-            base_runner.simulator.agents, cost_runner.simulator.agents
+            base_runner.simulator.agents, fee_runner.simulator.agents
         ):
             assert agent.asset_volumes == base_agent.asset_volumes
 
-    def test_run_transaction_cost_revenues_per_market(self) -> None:
+    def test_run_transaction_fee_revenues_per_market(self) -> None:
         # without the arbitrage agents, each agent trades only in one market
-        base_runner, _ = self._run_transaction_cost_revenues(
-            runner_class=self.runner_class,
-            with_costs=False,
-            with_arbitrage_agents=False,
+        base_runner, _ = self._run_transaction_fee_revenues(
+            runner_class=self.runner_class, with_fees=False, with_arbitrage_agents=False
         )
-        cost_runner, cost_logger = self._run_transaction_cost_revenues(
-            runner_class=self.runner_class, with_costs=True, with_arbitrage_agents=False
+        fee_runner, fee_logger = self._run_transaction_fee_revenues(
+            runner_class=self.runner_class, with_fees=True, with_arbitrage_agents=False
         )
-        markets = cost_runner.simulator.markets
-        assert len(cost_runner.simulator.agents) == 60
-        assert {log.market_id for log in cost_logger.execution_logs} == {
+        markets = fee_runner.simulator.markets
+        assert len(fee_runner.simulator.agents) == 60
+        assert {log.market_id for log in fee_logger.execution_logs} == {
             market.market_id for market in markets
         }
-        balances = self._check_transaction_cost_revenues(
-            cost_runner, cost_logger.execution_logs
+        balances = self._check_transaction_fee_revenues(
+            fee_runner, fee_logger.execution_logs
         )
-        # the cash that the agents of each market lose to the costs
+        # the cash that the agents of each market lose to the fees
         lost: Dict[int, float] = {market.market_id: 0.0 for market in markets}
         for base_agent, agent in zip(
-            base_runner.simulator.agents, cost_runner.simulator.agents
+            base_runner.simulator.agents, fee_runner.simulator.agents
         ):
             (market_id,) = agent.asset_volumes
             lost[market_id] += base_agent.cash_amount - agent.cash_amount
         assert balances == pytest.approx(
             [lost[market.market_id] for market in markets], abs=1e-6
         )
-        # SpotMarket-1 charges costs, SpotMarket-2 charges none, and IndexMarket-I
-        # gives rebates that are larger than the costs
+        # SpotMarket-1 charges fees, SpotMarket-2 charges none, and IndexMarket-I
+        # gives rebates that are larger than the fees
         assert balances[0] > 0.0
         assert balances[1] == 0.0
         assert balances[2] < 0.0

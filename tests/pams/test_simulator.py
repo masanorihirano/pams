@@ -179,7 +179,7 @@ class TestSimulator:
         assert agent_buy.asset_volumes == {0: 102}
         assert agent_sell.asset_volumes == {0: 98}
 
-    def test_update_agents_for_execution_with_transaction_costs(self) -> None:
+    def test_update_agents_for_execution_with_transaction_fees(self) -> None:
         sim = Simulator(prng=random.Random(32))
         agent_buy = FCNAgent(
             agent_id=0, prng=random.Random(42), simulator=sim, name="buy_agent"
@@ -203,8 +203,8 @@ class TestSimulator:
                 sell_order_id=111,
                 price=90.0,
                 volume=2,
-                buy_transaction_cost=1.5,
-                sell_transaction_cost=0.5,
+                buy_transaction_fee=1.5,
+                sell_transaction_fee=0.5,
             ),
             ExecutionLog(
                 market_id=0,
@@ -215,8 +215,8 @@ class TestSimulator:
                 sell_order_id=113,
                 price=100.0,
                 volume=1,
-                buy_transaction_cost=-0.25,
-                sell_transaction_cost=0.75,
+                buy_transaction_fee=-0.25,
+                sell_transaction_fee=0.75,
             ),
         ]
         sim._update_agents_for_execution(execution_logs=execution_logs)

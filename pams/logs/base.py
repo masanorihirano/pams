@@ -175,9 +175,9 @@ class ExecutionLog(Log):
 
     This log is usually generated when an order is executed on markets.
 
-    ``buy_transaction_cost`` and ``sell_transaction_cost`` are the transaction costs charged to the buyer and the
-    seller (0.0 if the market has no transaction cost). The market adds both to the transaction costs that it
-    collects in the time step (see :func:`pams.Market.get_transaction_cost_revenues`).
+    ``buy_transaction_fee`` and ``sell_transaction_fee`` are the transaction fees charged to the buyer and the
+    seller (0.0 if the market has no transaction fee). The market adds both to the transaction fees that it
+    collects in the time step (see :func:`pams.Market.get_transaction_fee_revenues`).
     """
 
     def __init__(
@@ -190,8 +190,8 @@ class ExecutionLog(Log):
         sell_order_id: int,
         price: float,
         volume: int,
-        buy_transaction_cost: float = 0.0,
-        sell_transaction_cost: float = 0.0,
+        buy_transaction_fee: float = 0.0,
+        sell_transaction_fee: float = 0.0,
     ):
         """Initialize.
 
@@ -204,8 +204,8 @@ class ExecutionLog(Log):
             sell_order_id (int): sell order ID.
             price (float): executed price.
             volume (int): executed volume.
-            buy_transaction_cost (float): transaction cost charged to the buyer (default 0.0).
-            sell_transaction_cost (float): transaction cost charged to the seller (default 0.0).
+            buy_transaction_fee (float): transaction fee charged to the buyer (default 0.0).
+            sell_transaction_fee (float): transaction fee charged to the seller (default 0.0).
 
         """
         self.market_id: int = market_id
@@ -216,8 +216,8 @@ class ExecutionLog(Log):
         self.sell_order_id: int = sell_order_id
         self.price: float = price
         self.volume: int = volume
-        self.buy_transaction_cost: float = buy_transaction_cost
-        self.sell_transaction_cost: float = sell_transaction_cost
+        self.buy_transaction_fee: float = buy_transaction_fee
+        self.sell_transaction_fee: float = sell_transaction_fee
         # TODO: Type validation
 
 

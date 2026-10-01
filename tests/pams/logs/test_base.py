@@ -215,10 +215,10 @@ class TestExecutionLog:
         assert log.sell_order_id == 4
         assert log.price == 101.1
         assert log.volume == 2
-        assert log.buy_transaction_cost == 0.0
-        assert log.sell_transaction_cost == 0.0
+        assert log.buy_transaction_fee == 0.0
+        assert log.sell_transaction_fee == 0.0
 
-    def test___init___with_transaction_costs(self) -> None:
+    def test___init___with_transaction_fees(self) -> None:
         log = ExecutionLog(
             market_id=2,
             time=20,
@@ -228,13 +228,13 @@ class TestExecutionLog:
             sell_order_id=4,
             price=101.1,
             volume=2,
-            buy_transaction_cost=0.5,
-            sell_transaction_cost=-0.25,
+            buy_transaction_fee=0.5,
+            sell_transaction_fee=-0.25,
         )
         assert log.price == 101.1
         assert log.volume == 2
-        assert log.buy_transaction_cost == 0.5
-        assert log.sell_transaction_cost == -0.25
+        assert log.buy_transaction_fee == 0.5
+        assert log.sell_transaction_fee == -0.25
 
 
 class TestSimulationBeginLog:

@@ -28,7 +28,7 @@ from pams.logs import SimulationEndLog
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
-from pams.transaction_costs import TransactionCost
+from pams.transaction_fees import TransactionFee
 
 WAIT_TIME = 0.2  # seconds
 
@@ -105,8 +105,8 @@ class ExecutionCountLogger(Logger):
         self.execution_logs.append(log)
 
 
-class TransactionCostRevenueLogger(ExecutionCountLogger):
-    """Logger that reads the transaction cost revenues of the markets at the end of each step."""
+class TransactionFeeRevenueLogger(ExecutionCountLogger):
+    """Logger that reads the transaction fee revenues of the markets at the end of each step."""
 
     def __init__(self) -> None:
         """Initialize the records."""
@@ -115,14 +115,14 @@ class TransactionCostRevenueLogger(ExecutionCountLogger):
         self.revenues: List[Tuple[int, int, float, float]] = []
 
     def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
-        """Record the transaction cost revenues of the market in this step."""
+        """Record the transaction fee revenues of the market in this step."""
         market = log.market
         self.revenues.append(
             (
                 market.market_id,
                 market.get_time(),
-                market.get_transaction_cost_revenue(),
-                market.get_cumulative_transaction_cost_revenue(),
+                market.get_transaction_fee_revenue(),
+                market.get_cumulative_transaction_fee_revenue(),
             )
         )
 
@@ -206,8 +206,8 @@ class RaisingAgent(Agent):
         raise RuntimeError("error in submit_orders")
 
 
-class MakerTakerTransactionCost(TransactionCost):
-    """Transaction cost with a maker rate and a taker rate.
+class MakerTakerTransactionFee(TransactionFee):
+    """Transaction fee with a maker rate and a taker rate.
 
     The order placed first is the maker, and the other is the taker. Order IDs increase with the
     arrival of orders in each market, so they break the tie between orders placed at the same time.
@@ -225,17 +225,17 @@ class MakerTakerTransactionCost(TransactionCost):
         self.maker_rate = float(settings["makerRate"])
         self.taker_rate = float(settings["takerRate"])
 
-    def compute_costs(
+    def compute_fees(
         self, price: float, volume: int, buy_order: Order, sell_order: Order
     ) -> Tuple[float, float]:
         value = price * volume
-        maker_cost = self.maker_rate * value
-        taker_cost = self.taker_rate * value
+        maker_fee = self.maker_rate * value
+        taker_fee = self.taker_rate * value
         buy_arrival = (cast(int, buy_order.placed_at), cast(int, buy_order.order_id))
         sell_arrival = (cast(int, sell_order.placed_at), cast(int, sell_order.order_id))
         if buy_arrival < sell_arrival:
-            return maker_cost, taker_cost
-        return taker_cost, maker_cost
+            return maker_fee, taker_fee
+        return taker_fee, maker_fee
 
 
 class GivenOrdersAgent(Agent):
