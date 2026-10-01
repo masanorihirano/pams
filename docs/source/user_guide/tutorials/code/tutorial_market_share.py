@@ -208,7 +208,7 @@ def share_of_b(runner: SequentialRunner, window: int = 100) -> List[float]:
     end: int = start + session.iteration_steps
     shares: List[float] = []
     for time in range(start, end, window):
-        steps = range(time, time + window)
+        steps = range(time, min(time + window, end))
         volume_a: int = sum(market_a.get_executed_volumes(times=steps))
         volume_b: int = sum(market_b.get_executed_volumes(times=steps))
         shares.append(volume_b / max(volume_a + volume_b, 1))
