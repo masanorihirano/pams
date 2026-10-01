@@ -1005,10 +1005,13 @@ class MultiThreadAgentParallelRunner(SequentialRunner):
                 # every task contains all the agents, and ProcessPoolExecutor pickles the tasks
                 # on a background thread, possibly after other tasks are finished. Therefore, no
                 # agent is updated until all the tasks of the batch are finished and so pickled.
-                done, _ = wait(futures, return_when=FIRST_EXCEPTION)
-                for future in futures:
-                    if future in done and future.exception() is not None:
-                        future.result()  # raises the error of the task
+                # A single task is not waited for here because future.result() below waits for
+                # it and raises its error in the same way, and wait() would slow down every step.
+                if len(futures) > 1:
+                    done, _ = wait(futures, return_when=FIRST_EXCEPTION)
+                    for future in futures:
+                        if future in done and future.exception() is not None:
+                            future.result()  # raises the error of the task
                 # all the results are loaded and warned about before any agent is updated, so
                 # that no agent is updated if one of them fails. The objects of the simulation
                 # are looked up in the same table for all the results of the batch. The table
