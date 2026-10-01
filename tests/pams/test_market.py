@@ -3,9 +3,12 @@ import math
 import random
 import time
 import warnings
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import cast
 from unittest import mock
 
 import pytest
@@ -16,6 +19,8 @@ from pams import Cancel
 from pams import Market
 from pams import Order
 from pams import OrderBook
+from pams import ProportionalTransactionFee
+from pams import TransactionFee
 from pams.logs.base import ExecutionLog
 from pams.logs.base import ExpirationLog
 from pams.logs.base import Logger
@@ -39,6 +44,7 @@ class TestMarket:
         assert m._fundamental_prices == [1.0] + [None for _ in range(m.chunk_size - 1)]
         assert m._executed_volumes == [0 for _ in range(m.chunk_size)]
         assert m._executed_total_prices == [0.0 for _ in range(m.chunk_size)]
+        assert m._transaction_fee_revenues == [0.0 for _ in range(m.chunk_size)]
         assert m._n_buy_orders == [0 for _ in range(m.chunk_size)]
         assert m._n_sell_orders == [0 for _ in range(m.chunk_size)]
         assert m.get_market_price() == 1.0
@@ -51,6 +57,9 @@ class TestMarket:
         assert m.get_executed_volume() == 0
         assert m.get_executed_total_prices() == [0]
         assert m.get_executed_total_price() == 0
+        assert m.get_transaction_fee_revenues() == [0.0]
+        assert m.get_transaction_fee_revenue() == 0.0
+        assert m.get_cumulative_transaction_fee_revenue() == 0.0
         assert m.get_n_buy_orders() == [0]
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0]
@@ -75,6 +84,12 @@ class TestMarket:
             m.get_executed_total_prices(range(2))
         with pytest.raises(AssertionError):
             m.get_executed_total_price(1)
+        with pytest.raises(AssertionError):
+            m.get_transaction_fee_revenues(range(2))
+        with pytest.raises(AssertionError):
+            m.get_transaction_fee_revenue(1)
+        with pytest.raises(AssertionError):
+            m.get_cumulative_transaction_fee_revenue(1)
         with pytest.raises(AssertionError):
             m.get_n_buy_orders(range(2))
         with pytest.raises(AssertionError):
@@ -115,6 +130,7 @@ class TestMarket:
         assert m._executed_total_prices == [
             1.0 if i == 1 else 0 for i in range(m.chunk_size)
         ]
+        assert m._transaction_fee_revenues == [0.0 for _ in range(m.chunk_size)]
         assert m._n_buy_orders == [1 if i == 0 else 0 for i in range(m.chunk_size)]
         assert m._n_sell_orders == [1 if i == 1 else 0 for i in range(m.chunk_size)]
         assert m.get_market_price() == 1.0
@@ -127,6 +143,9 @@ class TestMarket:
         assert m.get_executed_volume() == 0
         assert m.get_executed_total_prices() == [0, 1.0, 0]
         assert m.get_executed_total_price() == 0
+        assert m.get_transaction_fee_revenues() == [0.0, 0.0, 0.0]
+        assert m.get_transaction_fee_revenue() == 0.0
+        assert m.get_cumulative_transaction_fee_revenue() == 0.0
         assert m.get_n_buy_orders() == [1, 0, 0]
         assert m.get_n_buy_order() == 0
         assert m.get_n_sell_orders() == [0, 1, 0]
@@ -1051,6 +1070,338 @@ class TestMarket:
             log_ for log_ in logger.pending_logs if isinstance(log_, ExecutionLog)
         ]
         assert execution_logs == [log]
+
+    def test_execute_orders_without_transaction_fee(self) -> None:
+        market = self.base_class(
+            market_id=0,
+            prng=random.Random(42),
+            logger=Logger(),
+            simulator=Simulator(prng=random.Random(42)),
+            name="test",
+        )
+        # the runner, not the market, creates the transaction fee from "transactionFee"
+        market.setup(
+            settings={
+                "tickSize": 0.001,
+                "marketPrice": 10.0,
+                "transactionFee": {"class": "ProportionalTransactionFee", "rate": 0.1},
+            }
+        )
+        assert market.transaction_fee is None
+        market._update_time(10.0)
+        market._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=5, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(buy_order)
+        with mock.patch.object(
+            ProportionalTransactionFee, "compute_fees"
+        ) as compute_fees:
+            logs = market._execution()
+        compute_fees.assert_not_called()
+        assert len(logs) == 1
+        assert (logs[0].price, logs[0].volume) == (10.0, 2)
+        assert logs[0].buy_transaction_fee == 0.0
+        assert logs[0].sell_transaction_fee == 0.0
+        assert isinstance(logs[0].buy_transaction_fee, float)
+        assert isinstance(logs[0].sell_transaction_fee, float)
+        assert market.get_transaction_fee_revenues() == [0.0]
+        assert market.get_cumulative_transaction_fee_revenue() == 0.0
+        assert isinstance(market.get_transaction_fee_revenue(), float)
+
+    @pytest.mark.parametrize("rate", [0.0, 0.002])
+    def test_execute_orders_proportional_transaction_fee(self, rate: float) -> None:
+        market = self._make_running_market()
+        transaction_fee = ProportionalTransactionFee(market=market)
+        transaction_fee.setup(settings={"rate": rate})
+        market.transaction_fee = transaction_fee
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=5, price=10
+        )
+        market._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(buy_order)
+        logs = market._execution()
+        assert len(logs) == 1
+        assert (logs[0].price, logs[0].volume) == (10.0, 2)
+        assert logs[0].buy_transaction_fee == rate * 10.0 * 2
+        assert logs[0].sell_transaction_fee == rate * 10.0 * 2
+        # the market collects the fees of both sides
+        assert market.get_transaction_fee_revenue() == 2 * rate * 10.0 * 2
+        assert market.get_transaction_fee_revenues() == [2 * rate * 10.0 * 2]
+        logger = market.logger
+        assert logger is not None
+        assert [
+            log for log in logger.pending_logs if isinstance(log, ExecutionLog)
+        ] == (logs)
+
+    def test_execute_orders_transaction_fee_timing(self) -> None:
+        market = self._make_running_market()
+        calls: List[Dict[str, Any]] = []
+
+        class RecordingTransactionFee(TransactionFee):
+            def compute_fees(
+                self, price: float, volume: int, buy_order: Order, sell_order: Order
+            ) -> Tuple[float, float]:
+                calls.append(
+                    {
+                        "args": (price, volume, buy_order, sell_order),
+                        "volumes": (buy_order.volume, sell_order.volume),
+                        "buy_book": list(self.market.buy_order_book.priority_queue),
+                        "sell_book": list(self.market.sell_order_book.priority_queue),
+                        "executed_volume": self.market.get_executed_volume(),
+                        "revenue": self.market.get_transaction_fee_revenue(),
+                        "time": self.market.get_time(),
+                    }
+                )
+                return 0.5 * len(calls), -0.25 * len(calls)
+
+        market.transaction_fee = RecordingTransactionFee(market=market)
+        sell_order1 = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=9
+        )
+        market._add_order(sell_order1)
+        sell_order2 = Order(
+            agent_id=1, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=1, price=10
+        )
+        market._add_order(sell_order2)
+        buy_order = Order(
+            agent_id=2, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        market._add_order(buy_order)
+        logs = market._execution()
+        # both pairs are executed at one price, and the fees are computed pair by pair
+        assert [call["args"] for call in calls] == [
+            (10.0, 1, buy_order, sell_order1),
+            (10.0, 1, buy_order, sell_order2),
+        ]
+        # the first pair is not executed yet
+        assert calls[0]["volumes"] == (2, 1)
+        assert calls[0]["buy_book"] == [buy_order]
+        assert sorted(calls[0]["sell_book"], key=lambda order: order.order_id) == [
+            sell_order1,
+            sell_order2,
+        ]
+        assert calls[0]["executed_volume"] == 0
+        assert calls[0]["revenue"] == 0.0
+        # the first pair is executed, but the second one is not
+        assert calls[1]["volumes"] == (1, 1)
+        assert calls[1]["buy_book"] == [buy_order]
+        assert calls[1]["sell_book"] == [sell_order2]
+        assert calls[1]["executed_volume"] == 1
+        assert calls[1]["revenue"] == 0.25
+        assert [call["time"] for call in calls] == [market.get_time()] * 2
+        assert [
+            (log.buy_transaction_fee, log.sell_transaction_fee) for log in logs
+        ] == [(0.5, -0.25), (1.0, -0.5)]
+        assert market.get_transaction_fee_revenue() == 0.75
+        assert len(market.buy_order_book) == 0
+        assert len(market.sell_order_book) == 0
+
+    @pytest.mark.parametrize("same_time", [True, False])
+    @pytest.mark.parametrize("buy_first", [True, False])
+    def test_execute_orders_maker_taker_transaction_fee(
+        self, buy_first: bool, same_time: bool
+    ) -> None:
+        calls: List[Tuple[float, int, Order, Order]] = []
+
+        class MakerTakerTransactionFee(TransactionFee):
+            def compute_fees(
+                self, price: float, volume: int, buy_order: Order, sell_order: Order
+            ) -> Tuple[float, float]:
+                calls.append((price, volume, buy_order, sell_order))
+                value = price * volume
+                maker_fee = -0.0001 * value  # rebate
+                taker_fee = 0.0003 * value
+                # the order placed first is the maker. Order IDs break the tie.
+                buy_arrival = (
+                    cast(int, buy_order.placed_at),
+                    cast(int, buy_order.order_id),
+                )
+                sell_arrival = (
+                    cast(int, sell_order.placed_at),
+                    cast(int, sell_order.order_id),
+                )
+                if buy_arrival < sell_arrival:
+                    return maker_fee, taker_fee
+                return taker_fee, maker_fee
+
+        market = self._make_running_market()
+        market.transaction_fee = MakerTakerTransactionFee(market=market)
+        sell_order = Order(
+            agent_id=0, market_id=0, is_buy=False, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        buy_order = Order(
+            agent_id=1, market_id=0, is_buy=True, kind=LIMIT_ORDER, volume=2, price=10
+        )
+        first_order, second_order = (
+            (buy_order, sell_order) if buy_first else (sell_order, buy_order)
+        )
+        market._add_order(first_order)
+        if not same_time:
+            market._update_time(10.0)
+        market._add_order(second_order)
+        assert (first_order.placed_at == second_order.placed_at) == same_time
+        logs = market._execution()
+        assert len(logs) == 1
+        assert calls == [(10.0, 2, buy_order, sell_order)]
+        # the maker gets a rebate of 0.002 and the taker pays 0.006
+        maker_fee, taker_fee = -0.002, 0.006
+        if buy_first:
+            assert logs[0].buy_transaction_fee == pytest.approx(maker_fee)
+            assert logs[0].sell_transaction_fee == pytest.approx(taker_fee)
+        else:
+            assert logs[0].buy_transaction_fee == pytest.approx(taker_fee)
+            assert logs[0].sell_transaction_fee == pytest.approx(maker_fee)
+
+    def test_transaction_fee_revenues(self) -> None:
+        queued_fees: List[Tuple[float, float]] = [
+            (1.5, 0.5),
+            (0.25, -1.0),
+            (-2.0, -0.5),
+        ]
+
+        class QueuedTransactionFee(TransactionFee):
+            def compute_fees(
+                self, price: float, volume: int, buy_order: Order, sell_order: Order
+            ) -> Tuple[float, float]:
+                return queued_fees.pop(0)
+
+        market = self._make_running_market()
+        market.transaction_fee = QueuedTransactionFee(market=market)
+        logs: List[ExecutionLog] = []
+        # time step 0: two executions
+        for agent_id, price in [(0, 9), (1, 10)]:
+            market._add_order(
+                Order(
+                    agent_id=agent_id,
+                    market_id=0,
+                    is_buy=False,
+                    kind=LIMIT_ORDER,
+                    volume=1,
+                    price=price,
+                )
+            )
+        market._add_order(
+            Order(
+                agent_id=2,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=2,
+                price=10,
+            )
+        )
+        logs += market._execution()
+        assert len(logs) == 2
+        assert market.get_transaction_fee_revenue() == 1.25
+        # time step 1: no execution
+        market._update_time(10.0)
+        assert market.get_transaction_fee_revenue() == 0.0
+        # time step 2: one execution with rebates on both sides
+        market._update_time(10.0)
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=3,
+                price=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=1,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=3,
+                price=10,
+            )
+        )
+        logs += market._execution()
+        assert len(logs) == 3
+        assert not queued_fees
+
+        assert market.get_transaction_fee_revenues() == [1.25, 0.0, -2.5]
+        assert market.get_transaction_fee_revenues(times=[2, 0]) == [-2.5, 1.25]
+        assert market.get_transaction_fee_revenues(times=range(2)) == [1.25, 0.0]
+        assert market.get_transaction_fee_revenue() == -2.5
+        assert market.get_transaction_fee_revenue(time=0) == 1.25
+        assert market.get_transaction_fee_revenue(time=1) == 0.0
+        assert market.get_cumulative_transaction_fee_revenue() == -1.25
+        assert market.get_cumulative_transaction_fee_revenue(time=0) == 1.25
+        assert market.get_cumulative_transaction_fee_revenue(time=1) == 1.25
+        assert market.get_cumulative_transaction_fee_revenue(time=2) == -1.25
+        assert all(
+            isinstance(revenue, float)
+            for revenue in market.get_transaction_fee_revenues()
+        )
+        assert isinstance(market.get_cumulative_transaction_fee_revenue(), float)
+        # the revenue is the sum of the fees in the execution logs
+        for t in range(3):
+            assert market.get_transaction_fee_revenue(time=t) == sum(
+                log.buy_transaction_fee + log.sell_transaction_fee
+                for log in logs
+                if log.time == t
+            )
+        assert market.get_cumulative_transaction_fee_revenue() == sum(
+            log.buy_transaction_fee + log.sell_transaction_fee for log in logs
+        )
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_transaction_fee_revenues(times=range(4))
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_transaction_fee_revenue(time=3)
+        with pytest.raises(AssertionError, match="Cannot refer the future"):
+            market.get_cumulative_transaction_fee_revenue(time=3)
+
+    @pytest.mark.parametrize("time_", [3, 99, 100, 250])
+    def test_transaction_fee_revenues_after_set_time(self, time_: int) -> None:
+        market = self._make_running_market()
+        transaction_fee = ProportionalTransactionFee(market=market)
+        transaction_fee.setup(settings={"rate": 0.01})
+        market.transaction_fee = transaction_fee
+        market._add_order(
+            Order(
+                agent_id=0,
+                market_id=0,
+                is_buy=False,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=10,
+            )
+        )
+        market._add_order(
+            Order(
+                agent_id=1,
+                market_id=0,
+                is_buy=True,
+                kind=LIMIT_ORDER,
+                volume=1,
+                price=10,
+            )
+        )
+        market._execution()
+        # e.g., a new session sets the time
+        market._set_time(time=time_, next_fundamental_price=10.0)
+        assert len(market._transaction_fee_revenues) == len(market._executed_volumes)
+        assert len(market._transaction_fee_revenues) == len(market._mid_prices)
+        assert len(market._transaction_fee_revenues) > time_
+        revenues = market.get_transaction_fee_revenues()
+        assert len(revenues) == len(market.get_executed_volumes()) == time_ + 1
+        assert revenues == [pytest.approx(0.2)] + [0.0] * time_
+        assert market.get_cumulative_transaction_fee_revenue() == pytest.approx(0.2)
+        market._update_time(10.0)
+        assert len(market._transaction_fee_revenues) == len(market._executed_volumes)
+        assert market.get_transaction_fee_revenue() == 0.0
+        assert len(market.get_transaction_fee_revenues()) == time_ + 2
 
     def _make_running_market(self) -> Market:
         market = self.base_class(
