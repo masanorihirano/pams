@@ -1,0 +1,331 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:4
+msgid "Running a simulation"
+msgstr "シミュレーションの実行"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:6
+msgid ""
+"This tutorial runs a simulation from Python, prints and saves the market "
+"prices, reads the results from the simulator after the run, and plots "
+"them. The complete script is :download:`tutorial_first_simulation.py "
+"<code/tutorial_first_simulation.py>`. It needs `matplotlib "
+"<https://matplotlib.org/>`_ for the plot, which is not installed with "
+"PAMS (``pip install matplotlib``)."
+msgstr ""
+"このチュートリアルでは、Pythonからシミュレーションを実行し、市場価格を出力して保存し、実行後にシミュレーターから結果を読み出して、それをプロットします。完全なスクリプトは"
+" :download:`tutorial_first_simulation.py "
+"<code/tutorial_first_simulation.py>` です。プロットには `matplotlib "
+"<https://matplotlib.org/>`_ が必要ですが、これはPAMSと一緒にはインストールされません（``pip install "
+"matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:14
+msgid "The configuration"
+msgstr "設定"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:16
+msgid ""
+"A simulation is described by a configuration: its markets, its agents and"
+" its sessions. This tutorial uses the *Minimal* configuration of :ref"
+":`config-quickstart`, written as a Python dict:"
+msgstr ""
+"シミュレーションは、市場、エージェント、セッションを定める設定によって記述されます。このチュートリアルでは、:ref:`config-"
+"quickstart` の *最小構成* をPythonのdictとして記述したものを使います："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:24
+msgid ""
+"It creates one market and 100 :class:`~pams.agents.FCNAgent` agents. The "
+"``warmup`` session (steps 0 to 99) only fills the order book, and the "
+"``main`` session (steps 100 to 599) also executes the orders. Every key "
+"is explained in :ref:`config`."
+msgstr ""
+"この設定は、1つの市場と100体の :class:`~pams.agents.FCNAgent` エージェントを作成します。``warmup`` "
+"セッション（ステップ0から99）では板を埋めるだけで、``main`` "
+"セッション（ステップ100から599）では注文の約定も行います。各キーの説明は :ref:`config` にあります。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:29
+msgid ""
+"The runners accept the configuration as a dict, as the path of a JSON "
+"file, or as an open JSON file, so the same configuration saved as "
+"``config.json`` can be run with "
+"``SequentialRunner(settings=\"config.json\", ...)``."
+msgstr ""
+"ランナーは、設定をdict、JSONファイルのパス、または開いたJSONファイルとして受け取ります。そのため、同じ設定を "
+"``config.json`` として保存すれば、``SequentialRunner(settings=\"config.json\", "
+"...)`` で実行できます。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:34
+msgid "Running it"
+msgstr "実行"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:36
+msgid ""
+":class:`~pams.runners.SequentialRunner` builds the simulation from the "
+"configuration and runs it when ``main()`` is called:"
+msgstr ""
+":class:`~pams.runners.SequentialRunner` は設定からシミュレーションを構築し、``main()`` "
+"が呼ばれるとそれを実行します："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:43
+msgid ""
+"``prng`` is the random number generator of the whole simulation. The "
+"simulator and every market, agent, session and event get their own "
+"generator seeded from it, so a run is fully determined by the seed: the "
+"same seed gives the same prices. Without ``prng``, the runner uses "
+"``random.Random()``, and every run is different."
+msgstr ""
+"``prng`` "
+"はシミュレーション全体の乱数生成器です。シミュレーターと、すべての市場、エージェント、セッション、イベントは、これから生成したシードで初期化された各自の乱数生成器を持つため、実行はシードによって完全に決まります：同じシードからは同じ価格が得られます。``prng``"
+" を指定しない場合、ランナーは ``random.Random()`` を使うため、実行のたびに結果が変わります。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:46
+msgid ""
+"``logger`` receives the logs of the simulation. "
+":class:`~pams.logs.MarketStepPrintLogger` prints one line per market at "
+"the end of every step. A runner has at most one logger."
+msgstr ""
+"``logger`` はシミュレーションのログを受け取ります。:class:`~pams.logs.MarketStepPrintLogger` "
+"は、各ステップの終わりに市場ごとに1行を出力します。ランナーが持てるロガーは1つまでです。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:49
+msgid "``print_prices(seed=42)`` prints:"
+msgstr "``print_prices(seed=42)`` は次のように出力します："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:66
+msgid ""
+"The columns are the session ID (the position of the session in "
+"``sessions``: ``0`` for ``warmup``), the step, the market ID, the market "
+"name, the market price and the fundamental price. The market price stays "
+"at 300 while orders are not executed, and starts to move at step 100. The"
+" fundamental price stays at 300 because the market has no "
+"``fundamentalVolatility`` (see :ref:`config-markets`). The last two "
+"lines, printed by ``main()``, are the time taken to build and to run the "
+"simulation, in seconds. They change from run to run."
+msgstr ""
+"各列は、セッションID（``sessions`` におけるセッションの位置。``warmup`` は "
+"``0``）、ステップ、市場ID、市場名、市場価格、ファンダメンタル価格です。注文が約定しない間、市場価格は300のままで、ステップ100から動き始めます。市場に"
+" ``fundamentalVolatility`` がないため、ファンダメンタル価格は300のままです（:ref:`config-"
+"markets` を参照）。``main()`` "
+"が出力する最後の2行は、シミュレーションの構築と実行にかかった時間（秒）です。これらは実行ごとに変わります。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:74
+msgid "You will also see this warning:"
+msgstr "次の警告も表示されます："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:80
+msgid ""
+"It is normal: FCN agents compute prices that are not multiples of "
+"``tickSize``, and the market rounds them (buy orders down, sell orders "
+"up)."
+msgstr ""
+"これは正常です：FCNエージェントは ``tickSize`` "
+"の倍数でない価格を計算し、市場がそれを丸めます（買い注文は切り下げ、売り注文は切り上げ）。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:85
+msgid "Saving the prices"
+msgstr "価格の保存"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:87
+msgid ""
+"To use the prices in Python instead of printing them, pass a "
+":class:`~pams.logs.MarketStepSaver`:"
+msgstr "価格を出力する代わりにPythonで使うには、:class:`~pams.logs.MarketStepSaver` を渡します："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:93
+msgid ""
+"After the run, ``saver.market_step_logs`` is a list with one dict per "
+"market and step, in the order of the steps:"
+msgstr "実行後、``saver.market_step_logs`` は、市場とステップごとに1つのdictを、ステップの順に並べたリストになります："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:101
+msgid ""
+"To record other data, such as every trade, write your own logger (see "
+":doc:`custom_logger`)."
+msgstr "すべての取引など、その他のデータを記録するには、独自のロガーを作成します（:doc:`custom_logger` を参照）。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:105
+msgid "Reading the results"
+msgstr "結果の読み出し"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:107
+msgid ""
+"After ``main()`` has returned, ``runner.simulator`` still holds every "
+"market, agent and session, and the markets keep the history of their "
+"prices and volumes:"
+msgstr ""
+"``main()`` が戻った後も、``runner.simulator`` "
+"はすべての市場、エージェント、セッションを保持しており、市場は価格と出来高の履歴を保持しています："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:114
+msgid "``print(summarize(runner))`` prints:"
+msgstr "``print(summarize(runner))`` は次のように出力します："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:120
+msgid ""
+"The shares change hands but their total does not change: the 100 agents "
+"started with 50 shares each."
+msgstr "株式は持ち主を変えますが、その合計は変わりません：100体のエージェントは、それぞれ50株を持って開始しました。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:122
+msgid "The simulator finds objects by name or ID:"
+msgstr "シミュレーターは、名前またはIDでオブジェクトを検索できます："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:124
+msgid ""
+"``name2market``, ``name2agent`` and ``name2session`` by instance name "
+"(``\"Market\"``, ``\"FCNAgents-0\"``, ``\"main\"``), and ``id2market`` "
+"and ``id2agent`` by ID;"
+msgstr ""
+"``name2market``、``name2agent``、``name2session`` "
+"はインスタンス名（``\"Market\"``、``\"FCNAgents-0\"``、``\"main\"``）で、``id2market`` "
+"と ``id2agent`` はIDで検索します。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:126
+msgid ""
+"``agents_group_name2agent`` gives the agents of a group "
+"(``\"FCNAgents\"``);"
+msgstr "``agents_group_name2agent`` は、グループ（``\"FCNAgents\"``）のエージェントを返します。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:127
+msgid "``markets``, ``agents`` and ``sessions`` list all of them."
+msgstr "``markets``、``agents``、``sessions`` は、それらすべてのリストです。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:129
+msgid ""
+"The history methods of :class:`~pams.Market` take the steps to read in "
+"``times``. Without ``times`` they return every step up to the current "
+"time of the market, which is 600 after this run (one step after the last "
+"one), so use each session's ``session_start_time`` and "
+"``iteration_steps`` to select it, as above. Useful methods include:"
+msgstr ""
+":class:`~pams.Market` の履歴メソッドは、読み出すステップを ``times`` で受け取ります。``times`` "
+"を指定しない場合は、市場の現在時刻までのすべてのステップを返します。この実行の後では、現在時刻は600（最後のステップの1つ後）です。そのため、上の例のように、各セッションの"
+" ``session_start_time`` と ``iteration_steps`` "
+"を使ってセッションを選択してください。主なメソッドは次のとおりです："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:138
+msgid "Method"
+msgstr "メソッド"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:139
+msgid "Returns"
+msgstr "戻り値"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:140
+msgid "``get_market_prices(times)``, ``get_fundamental_prices(times)``"
+msgstr "``get_market_prices(times)``、``get_fundamental_prices(times)``"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:141
+msgid "Market prices and fundamental prices."
+msgstr "市場価格とファンダメンタル価格。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:142
+msgid "``get_executed_volumes(times)``, ``get_executed_total_prices(times)``"
+msgstr "``get_executed_volumes(times)``、``get_executed_total_prices(times)``"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:143
+msgid "Traded volume, and the sum of price times volume, of each step."
+msgstr "各ステップの出来高と、価格×数量の合計。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:144
+msgid "``get_last_executed_prices(times)``, ``get_mid_prices(times)``"
+msgstr "``get_last_executed_prices(times)``、``get_mid_prices(times)``"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:145
+msgid ""
+"Price of the last execution and mid price at each step. They can be "
+"``None``: before the first execution, and when one side of the order book"
+" is empty."
+msgstr "各ステップにおける直近の約定価格と仲値。最初の約定の前や、板の片側が空のときは ``None`` になることがあります。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:147
+msgid "``get_vwap(time)``"
+msgstr "``get_vwap(time)``"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:148
+msgid ""
+"Volume-weighted average price from step 0 to ``time`` (NaN if nothing was"
+" traded)."
+msgstr "ステップ0から ``time`` までの出来高加重平均価格（何も取引されていなければNaN）。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:149
+msgid "``get_best_buy_price()``, ``get_best_sell_price()``"
+msgstr "``get_best_buy_price()``、``get_best_sell_price()``"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:150
+msgid "Best prices in the order book now (``None`` if that side is empty)."
+msgstr "現在の板の最良価格（その側が空なら ``None``）。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:152
+msgid ""
+"The methods ending in ``s`` also have a form for one step, such as "
+"``get_market_price(time)``, where ``time`` defaults to the current step. "
+"Asking for a step after the current one raises ``AssertionError: Cannot "
+"refer the future parameters``. An agent's holdings are given by "
+"``get_cash_amount()`` and ``get_asset_volume(market_id)``."
+msgstr ""
+"名前が ``s`` で終わるメソッドには、``get_market_price(time)`` のような1ステップ用の形もあり、``time`` "
+"のデフォルトは現在のステップです。現在より後のステップを求めると ``AssertionError: Cannot refer the "
+"future parameters`` が発生します。エージェントの保有資産は ``get_cash_amount()`` と "
+"``get_asset_volume(market_id)`` で得られます。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:159
+msgid "Plotting"
+msgstr "プロット"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:161
+msgid "The saved prices can be plotted with matplotlib:"
+msgstr "保存した価格はmatplotlibでプロットできます："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:167
+msgid ""
+"``plot_prices(saver, path=\"prices.png\")`` keeps the ``main`` session "
+"(session ID 1) and writes:"
+msgstr ""
+"``plot_prices(saver, path=\"prices.png\")`` は ``main`` セッション（セッションID "
+"1）を取り出し、次の画像を書き出します："
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:169
+msgid ""
+"Market price moving around the constant fundamental price of 300 from "
+"step 100 to step 599"
+msgstr "ステップ100から599まで、一定のファンダメンタル価格300の周りを動く市場価格"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:174
+msgid "Running the script"
+msgstr "スクリプトの実行"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:176
+msgid ""
+"Running the complete script with ``python tutorial_first_simulation.py`` "
+"does all of the above with seed 42 and writes ``prices.png`` to the "
+"current directory."
+msgstr ""
+"完全なスクリプトを ``python tutorial_first_simulation.py`` "
+"で実行すると、シード42で以上のすべてを行い、``prices.png`` をカレントディレクトリに書き出します。"
+
+#: ../../source/user_guide/tutorials/first_simulation.rst:179
+msgid ""
+"Next, :doc:`custom_agent` adds your own trading strategy to this "
+"simulation."
+msgstr "次の :doc:`custom_agent` では、このシミュレーションに独自の取引戦略を追加します。"
+

@@ -1,0 +1,405 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/market_share.rst:4
+msgid "Two markets competing for volume"
+msgstr "出来高を奪い合う2つの市場"
+
+#: ../../source/user_guide/tutorials/market_share.rst:6
+msgid ""
+"When one stock is traded on two exchanges, traders tend to send their "
+"orders where most of the trading already happens, so a new exchange with "
+"a small share of the volume has a hard time taking it from the old one. "
+"This tutorial asks what helps the smaller market: a smaller tick size "
+"than its rival, or a market maker that always quotes in it. It follows "
+"the market-share tutorial of Plham (`MarketShareMain "
+"<https://plham.github.io/tutorial/MarketShareMain>`__ and its use cases "
+"on the `tick size "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases01>`__ and on "
+"the `market maker "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases02>`__), which "
+"is based on the studies listed at the end of this page. The complete "
+"script is :download:`tutorial_market_share.py "
+"<code/tutorial_market_share.py>`. It needs `matplotlib "
+"<https://matplotlib.org/>`_ for the plots, which is not installed with "
+"PAMS (``pip install matplotlib``)."
+msgstr ""
+"1つの銘柄が2つの取引所で取引されるとき、トレーダーは取引の大半がすでに行われている方に注文を出しがちなので、出来高のシェアが小さい新しい取引所が、古い取引所から出来高を奪うのは困難です。このチュートリアルでは、小さい方の市場の助けになるのは何かを考えます：相手より小さいティックサイズか、それとも常にその市場で気配を出すマーケットメイカーか、です。Plhamの市場シェアのチュートリアル（`MarketShareMain"
+" <https://plham.github.io/tutorial/MarketShareMain>`__ と、`ティックサイズ "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases01>`__ および "
+"`マーケットメイカー "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases02>`__ "
+"についてのユースケース）に沿っており、Plhamのチュートリアルはこのページの最後に挙げる研究に基づいています。完全なスクリプトは "
+":download:`tutorial_market_share.py <code/tutorial_market_share.py>` "
+"です。プロットには `matplotlib <https://matplotlib.org/>`_ "
+"が必要ですが、これはPAMSと一緒にはインストールされません（``pip install matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:20
+msgid "The model"
+msgstr "モデル"
+
+#: ../../source/user_guide/tutorials/market_share.rst:22
+#, python-brace-format
+msgid ""
+"Two markets, ``Market-A`` and ``Market-B``, trade the same stock. The "
+"traders are :class:`~pams.agents.MarketShareFCNAgent` agents: FCN agents "
+"(Chiarella and Iori, 2002) that can trade in both markets but send each "
+"order to only one of them. The market is drawn at random, with a weight "
+"equal to the volume executed in that market in the current step and the "
+"``timeWindowSize`` steps before it (plus :math:`10^{-10}`). A market that"
+" trades more therefore receives more orders, and trades even more."
+msgstr ""
+"2つの市場 ``Market-A`` と ``Market-B`` が同じ銘柄を取引します。トレーダーは "
+":class:`~pams.agents.MarketShareFCNAgent` "
+"エージェントです。これは両方の市場で取引できるものの、各注文はどちらか一方の市場にだけ出すFCNエージェント（Chiarella and "
+"Iori, 2002）です。市場はランダムに選ばれ、その重みは、その市場で現在のステップとその前の ``timeWindowSize`` "
+"ステップに約定した出来高（に :math:`10^{-10}` "
+"を加えたもの）です。そのため、多く取引される市場ほど多くの注文を受け取り、さらに多く取引されます。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:28
+msgid ""
+"At the start, neither market has traded. The script uses the market class"
+" of ``samples/market_share``, which sets the volume of step 0 from the "
+"key ``tradeVolume`` (see :ref:`tutorial-custom-event` for how to write a "
+"market):"
+msgstr ""
+"開始時点では、どちらの市場もまだ取引していません。スクリプトは ``samples/market_share`` "
+"の市場クラスを使います。このクラスは、ステップ0の出来高をキー ``tradeVolume`` から設定します（市場の作成方法は :ref"
+":`tutorial-custom-event` を参照）："
+
+#: ../../source/user_guide/tutorials/market_share.rst:36
+#, python-format
+msgid ""
+"``Market-A`` starts with a volume of 90 and ``Market-B`` with 10, so at "
+"first about 90% of the orders go to ``Market-A``. The volume of step 0 "
+"counts only while it is in an agent's window, that is for its first 100 "
+"to 200 steps. After that, a market that has no execution in the window "
+"gets almost no orders while the other market trades, and it cannot "
+"recover."
+msgstr ""
+"``Market-A`` は出来高90、``Market-B`` は出来高10から始まるので、最初は注文の約90%が ``Market-A`` "
+"に向かいます。ステップ0の出来高は、エージェントのウィンドウに入っている間、つまり最初の100から200ステップの間だけ数えられます。その後は、ウィンドウ内に約定がない市場は、もう一方の市場が取引している間はほとんど注文を受け取れず、回復できません。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:41
+msgid ""
+"The result is the share of ``Market-B``: the volume executed in "
+"``Market-B`` divided by the volume executed in both markets, in each "
+"window of 100 steps of the second session."
+msgstr ""
+"結果は ``Market-B`` のシェアで、2番目のセッションの100ステップごとのウィンドウにおいて、``Market-B`` "
+"で約定した出来高を両方の市場で約定した出来高で割ったものです。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:46
+msgid "A smaller tick size"
+msgstr "より小さいティックサイズ"
+
+#: ../../source/user_guide/tutorials/market_share.rst:48
+msgid ""
+"The first configuration is ``samples/market_share/config.json`` without "
+"its comments. ``Market-A`` has a tick size of 10 and ``Market-B`` a tick "
+"size of 1:"
+msgstr ""
+"1つ目の設定は、``samples/market_share/config.json`` からコメントを除いたものです。``Market-A`` "
+"のティックサイズは10、``Market-B`` のティックサイズは1です："
+
+#: ../../source/user_guide/tutorials/market_share.rst:56
+msgid ""
+"The sample writes ``maxHifreqOrders``, the old name of "
+"``maxHighFrequencyOrders`` (see :ref:`config-sessions`), and the script "
+"uses the new name. The key has no effect here, as there is no high-"
+"frequency agent. The script registers the market class, runs the "
+"simulation and computes the share of ``Market-B``:"
+msgstr ""
+"サンプルは ``maxHighFrequencyOrders`` の旧名である ``maxHifreqOrders`` を使っていますが（:ref"
+":`config-sessions` "
+"を参照）、スクリプトは新しい名前を使います。高頻度エージェントがいないので、このキーはここでは効果がありません。スクリプトは市場クラスを登録し、シミュレーションを実行して、``Market-B``"
+" のシェアを計算します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:65
+msgid ""
+"The market rounds the price of each order to its tick size, down for a "
+"buy order and up for a sell order. With a tick size of 10, an agent that "
+"would buy at 305 bids 300, and one that would sell at 303 asks 310, so "
+"the orders in ``Market-A`` cross less often than in ``Market-B``. Running"
+" the script first prints the share of ``Market-B`` with seed 42, with a "
+"tick size of 10 and of 2 in ``Market-A``:"
+msgstr ""
+"市場は各注文の価格をティックサイズに丸めます。買い注文は切り下げ、売り注文は切り上げです。ティックサイズが10の場合、305で買おうとするエージェントは300で買い注文を出し、303で売ろうとするエージェントは310で売り注文を出すので、``Market-A``"
+" の注文は ``Market-B`` より約定しにくくなります。スクリプトを実行すると、まず ``Market-A`` "
+"のティックサイズが10の場合と2の場合について、シード42での ``Market-B`` のシェアを出力します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:85
+msgid ""
+"Top: prices of the two markets with a tick size of 10 in Market-A. The "
+"price of Market-A is 300, then\n"
+"310 from step 470, and then stops changing, while the price of Market-B "
+"moves around the fundamental\n"
+"price of 300. Bottom: share of Market-B in each window of 100 steps. With"
+" a tick size of 10 it rises from\n"
+"about 0.05 to 1 between steps 500 and 1000. With a tick size of 2 it "
+"falls to 0 at step 700."
+msgstr "上段：Market-Aのティックサイズが10の場合の2つの市場の価格。Market-Aの価格は300で、ステップ470から310になり、その後は変化しません。一方、Market-Bの価格はファンダメンタル価格300の周りを動きます。下段：100ステップごとのウィンドウにおけるMarket-Bのシェア。ティックサイズが10の場合、ステップ500から1000の間に約0.05から1まで上がります。ティックサイズが2の場合、ステップ700で0に下がります。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:91
+#, python-format
+msgid ""
+"With a tick size of 10, ``Market-B`` keeps about 5% of the volume until "
+"step 499, then takes all of it: after step 834, ``Market-A`` has no "
+"trade, and its price stays at 310, one of the only two prices at which it"
+" traded (300 and 310). With a tick size of 2 and the same seed, the "
+"opposite happens: ``Market-B`` has no trade after step 510."
+msgstr ""
+"ティックサイズが10の場合、``Market-B`` "
+"はステップ499まで出来高の約5%を保ち、その後すべてを奪います：ステップ834以降、``Market-A`` "
+"には取引がなく、その価格は、取引された2つだけの価格（300と310）のうちの310のままです。ティックサイズが2で同じシードの場合は逆のことが起こります：ステップ510以降、``Market-B``"
+" には取引がありません。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:95
+msgid ""
+"One seed shows one path. The script repeats the runs with seeds 42 to 51,"
+" with a tick size of 10, 5 and 2 in ``Market-A`` and a second session of "
+"1000 steps:"
+msgstr ""
+"1つのシードが示すのは1つの経路です。スクリプトは、シード42から51で、``Market-A`` "
+"のティックサイズを10、5、2とし、2番目のセッションを1000ステップとして実行を繰り返します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:103
+msgid ""
+"It then prints, for each tick size, the share of ``Market-B`` in the last"
+" window (steps 1000 to 1099) of each seed, their mean, and the number of "
+"seeds in which ``Market-B`` has more than half of the volume:"
+msgstr ""
+"続いて、ティックサイズごとに、各シードの最後のウィンドウ（ステップ1000から1099）における ``Market-B`` "
+"のシェア、その平均、そして ``Market-B`` が出来高の半分より多くを占めたシードの数を出力します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:113
+#, python-format
+msgid ""
+"The larger the tick size of ``Market-A``, the more often ``Market-B`` "
+"takes the volume: in 3 of 10 runs with a tick size of 10, in 1 with 5 and"
+" in none with 2. But the smaller tick size is not enough to win: in most "
+"runs, ``Market-A`` keeps almost all the volume, because the orders follow"
+" the volume and ``Market-A`` starts with 90% of it. A single run can also"
+" go against the average: with seed 51, ``Market-B`` has 0.64 of the "
+"volume with a tick size of 5 but only 0.15 with 10, since a different "
+"tick size changes the whole path of the run."
+msgstr ""
+"``Market-A`` のティックサイズが大きいほど、``Market-B`` "
+"が出来高を奪うことが多くなります：ティックサイズ10では10回中3回、5では1回、2では0回です。しかし、ティックサイズが小さいだけでは勝つには足りません：ほとんどの実行で"
+" ``Market-A`` が出来高のほぼすべてを保ちます。注文は出来高に従い、``Market-A`` "
+"は出来高の90%から始まるからです。1回の実行が平均に反することもあります：シード51では、``Market-B`` "
+"はティックサイズ5で出来高の0.64を占めますが、10では0.15だけです。ティックサイズが異なると、実行の経路全体が変わるからです。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:121
+msgid "A market maker"
+msgstr "マーケットメイカー"
+
+#: ../../source/user_guide/tutorials/market_share.rst:123
+msgid ""
+"The second configuration is ``samples/market_share/config-mm.json``. Both"
+" markets have a tick size of 0.00001, so the tick size plays no role, and"
+" a ``MarketMakerAgent`` trades in ``Market-B`` only:"
+msgstr ""
+"2つ目の設定は ``samples/market_share/config-mm.json`` "
+"です。両方の市場のティックサイズは0.00001なのでティックサイズは影響せず、``MarketMakerAgent`` が "
+"``Market-B`` でのみ取引します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:131
+msgid ""
+"The market maker is a high-frequency agent: after the order of the normal"
+" agent, in every step of both sessions (``maxHighFrequencyOrders`` is 1, "
+"and so is its default), it places a buy order and a sell order of one "
+"share around the middle :math:`c` of the best buy and sell prices of "
+"``Market-B``, its only tradable market. With the spread :math:`s` "
+"(``netInterestSpread``) and the fundamental price :math:`P^f = 300`, it "
+"buys at :math:`c - P^f s / 2` and sells at :math:`c + P^f s / 2`. Its "
+"orders expire after ``orderTimeLength`` = 2 steps. The details are in "
+":ref:`config-agents`."
+msgstr ""
+"マーケットメイカーは高頻度エージェントです：両方のセッションの各ステップで、通常のエージェントの注文の後に（``maxHighFrequencyOrders``"
+" は1で、デフォルトも1です）、唯一の取引可能な市場である ``Market-B`` の最良買い価格と最良売り価格の仲値 :math:`c` "
+"の周りに、1株の買い注文と1株の売り注文を出します。スプレッド（``netInterestSpread``）を "
+":math:`s`、ファンダメンタル価格を :math:`P^f = 300` とすると、:math:`c - P^f s / 2` "
+"で買い、:math:`c + P^f s / 2` で売ります。注文は ``orderTimeLength`` = 2ステップで失効します。詳細は"
+" :ref:`config-agents` を参照してください。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:138
+msgid ""
+"The script runs seeds 42 to 51 without the market maker and with a spread"
+" of 0.02, 0.01 and 0.0001, with a second session of 500 steps. It changes"
+" the configuration with this function:"
+msgstr "スクリプトは、2番目のセッションを500ステップとして、シード42から51で、マーケットメイカーなしの場合と、スプレッドが0.02、0.01、0.0001の場合を実行します。設定は次の関数で変更します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:145
+msgid "It prints the share of ``Market-B`` in the last window (steps 500 to 599):"
+msgstr "最後のウィンドウ（ステップ500から599）における ``Market-B`` のシェアを出力します："
+
+#: ../../source/user_guide/tutorials/market_share.rst:155
+msgid ""
+"Share of Market-B in each window of 100 steps, averaged over the 10 "
+"seeds. Without the market maker it\n"
+"stays near 0.1. With the market maker it rises in every case, to about "
+"0.41 with a spread of 0.02, 0.56\n"
+"with 0.01 and 0.65 with 0.0001."
+msgstr "100ステップごとのウィンドウにおけるMarket-Bのシェアの、10個のシードでの平均。マーケットメイカーなしでは0.1付近にとどまります。マーケットメイカーがあるとどの場合も上がり、スプレッド0.02で約0.41、0.01で約0.56、0.0001で約0.65になります。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:160
+#, python-format
+msgid ""
+"Without the market maker, ``Market-B`` keeps about its initial 10% on "
+"average and wins in no run. With the market maker, its share rises in "
+"every run but one, and the more so the smaller the spread: the market "
+"maker's orders are close to the middle price, so an order sent to "
+"``Market-B`` is more likely to find a counterpart and be executed, and "
+"the volume draws more orders. Note that the share counts all the volume "
+"of ``Market-B``, including the trades of the market maker."
+msgstr ""
+"マーケットメイカーなしでは、``Market-B`` "
+"は平均で最初の約10%を保つだけで、勝つ実行はありません。マーケットメイカーがあると、1回を除くすべての実行でシェアが上がり、スプレッドが小さいほど大きく上がります：マーケットメイカーの注文は仲値に近いので、``Market-B``"
+" に送られた注文は相手を見つけて約定しやすくなり、その出来高がさらに注文を引き寄せます。なお、シェアはマーケットメイカーの取引を含む "
+"``Market-B`` のすべての出来高を数えています。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:166
+msgid ""
+"Seed 42 is the exception: with every spread, ``Market-B`` has no trade at"
+" all in the second session. The few orders sent to it early do not meet "
+"the market maker's orders, its weight falls to almost zero when the "
+"volume of step 0 leaves the windows, and no agent chooses it again."
+msgstr ""
+"シード42は例外です：どのスプレッドでも、2番目のセッションで ``Market-B`` "
+"の取引はまったくありません。初期に送られた少数の注文はマーケットメイカーの注文と約定せず、ステップ0の出来高がウィンドウから外れると重みはほぼ0に下がり、それ以降どのエージェントも"
+" ``Market-B`` を選びません。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:172
+msgid "Differences from Plham"
+msgstr "Plhamとの違い"
+
+#: ../../source/user_guide/tutorials/market_share.rst:174
+msgid ""
+"Plham writes the volume of each step and computes the share of "
+"``Market-B`` over the past 100 steps with an R script. Here, the script "
+"computes it in Python, in consecutive windows of 100 steps."
+msgstr ""
+"Plhamは各ステップの出来高を書き出し、Rのスクリプトで過去100ステップにおける ``Market-B`` "
+"のシェアを計算します。ここでは、スクリプトがPythonで、連続する100ステップのウィンドウごとに計算します。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:176
+msgid ""
+"The tick size use case of Plham uses a tick size of 5 in ``Market-A`` "
+"(``config-01.json``) and shows one run in which ``Market-B`` takes all "
+"the volume around step 1000, and a slower rise with a tick size of 2. The"
+" PAMS sample uses 10. Over ten seeds, PAMS finds the same direction, but "
+"``Market-B`` wins only in 1 of 10 runs with a tick size of 5."
+msgstr ""
+"Plhamのティックサイズのユースケースは ``Market-A`` "
+"のティックサイズに5を使い（``config-01.json``）、``Market-B`` "
+"がステップ1000付近で出来高のすべてを奪う1回の実行と、ティックサイズ2でのより遅い上昇を示しています。PAMSのサンプルは10を使います。10個のシードで、PAMSでも同じ傾向が見られますが、ティックサイズ5で"
+" ``Market-B`` が勝つのは10回中1回だけです。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:180
+msgid ""
+"The market maker use case of Plham shows the prices of one run with a "
+"spread of 0.02, and the share of ``Market-B`` in one run each with 0.01 "
+"and 0.0001, in which the smaller spread lets ``Market-B`` take the volume"
+" faster. PAMS finds the same order over ten seeds, with one seed (42) in "
+"which ``Market-B`` does not gain."
+msgstr ""
+"Plhamのマーケットメイカーのユースケースは、スプレッドが0.02の1回の実行の価格と、0.01と0.0001でそれぞれ1回ずつ実行したときの "
+"``Market-B`` のシェアを示しており、スプレッドが小さい方が ``Market-B`` "
+"は速く出来高を奪います。PAMSでも10個のシードで同じ順序が見られますが、``Market-B`` "
+"のシェアが増えないシードが1つ（42）あります。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:183
+#, python-brace-format
+msgid ""
+"The agents count the volume of a market differently when they choose "
+"where to send an order. :class:`~pams.agents.MarketShareFCNAgent` sums "
+"the executed volume of the steps :math:`t - \\tau` to :math:`t`, the "
+"current step included, and adds :math:`10^{-10}` to each weight. The "
+"agent of the Plham sample sums the steps :math:`t - \\tau` to :math:`t - "
+"1` and adds nothing. Here :math:`t` is the current step and :math:`\\tau`"
+" is ``timeWindowSize``, or :math:`t` when it is smaller."
+msgstr ""
+"注文を出す市場を選ぶときの、市場の出来高の数え方が異なります。:class:`~pams.agents.MarketShareFCNAgent` "
+"は、ステップ :math:`t - \\tau` から :math:`t` まで（現在のステップを含む）に約定した出来高を合計し、各重みに "
+":math:`10^{-10}` を加えます。Plhamのサンプルのエージェントは、ステップ :math:`t - \\tau` から "
+":math:`t - 1` までを合計し、何も加えません。ここで :math:`t` は現在のステップで、:math:`\\tau` は "
+"``timeWindowSize`` と :math:`t` の小さい方です。"
+
+#: ../../source/user_guide/tutorials/market_share.rst:191
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/market_share.rst:193
+msgid ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+msgstr ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+
+#: ../../source/user_guide/tutorials/market_share.rst:195
+msgid ""
+"水田孝信, 早川聡, 和泉潔, 吉村忍 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013). "
+"人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係性分析. JPXワーキング・ペーパー, Vol. 2, "
+"日本取引所グループ."
+msgstr ""
+"水田孝信, 早川聡, 和泉潔, 吉村忍 (Mizuta, Hayakawa, Izumi and Yoshimura) (2013). "
+"人工市場シミュレーションを用いた取引市場間におけるティックサイズと取引量の関係性分析. JPXワーキング・ペーパー, Vol. 2, "
+"日本取引所グループ."
+
+#: ../../source/user_guide/tutorials/market_share.rst:198
+msgid ""
+"草田裕紀, 水田孝信, 早川聡, 和泉潔, 吉村忍 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura)"
+" (2014). 人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析. 人工知能学会全国大会論文集, JSAI2014,"
+" 3L3-OS-26a-2. https://doi.org/10.11517/pjsai.JSAI2014.0_3L3OS26a2"
+msgstr ""
+"草田裕紀, 水田孝信, 早川聡, 和泉潔, 吉村忍 (Kusada, Mizuta, Hayakawa, Izumi and Yoshimura)"
+" (2014). 人工市場を用いたマーケットメーカーのスプレッドが市場出来高に与える影響の分析. 人工知能学会全国大会論文集, JSAI2014,"
+" 3L3-OS-26a-2. https://doi.org/10.11517/pjsai.JSAI2014.0_3L3OS26a2"
+
+#: ../../source/user_guide/tutorials/market_share.rst:201
+msgid ""
+"草田裕紀, 水田孝信, 早川聡, 和泉潔 (Kusada, Mizuta, Hayakawa and Izumi) (2015). "
+"保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析. 人工知能学会論文誌, 30(5), "
+"675–682. https://doi.org/10.1527/tjsai.30_675"
+msgstr ""
+"草田裕紀, 水田孝信, 早川聡, 和泉潔 (Kusada, Mizuta, Hayakawa and Izumi) (2015). "
+"保有資産を考慮したマーケットメイク戦略が取引所間競争に与える影響:人工市場アプローチによる分析. 人工知能学会論文誌, 30(5), "
+"675–682. https://doi.org/10.1527/tjsai.30_675"
+
+#: ../../source/user_guide/tutorials/market_share.rst:204
+msgid ""
+"Plham: `MarketShareMain "
+"<https://plham.github.io/tutorial/MarketShareMain>`__, "
+"`MarketShareMain_UseCases01 "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases01>`__ and "
+"`MarketShareMain_UseCases02 "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases02>`__."
+msgstr ""
+"Plham：`MarketShareMain "
+"<https://plham.github.io/tutorial/MarketShareMain>`__、`MarketShareMain_UseCases01"
+" "
+"<https://plham.github.io/tutorial/MarketShareMain_UseCases01>`__、`MarketShareMain_UseCases02"
+" <https://plham.github.io/tutorial/MarketShareMain_UseCases02>`__。"
+

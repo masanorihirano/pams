@@ -1,0 +1,346 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:4
+msgid "Fundamentalists, chartists and noise traders"
+msgstr "ファンダメンタリスト、チャーティスト、ノイズトレーダー"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:6
+msgid ""
+"This tutorial follows the Plham tutorial of the same model (`CI2002Main "
+"<https://plham.github.io/tutorial/CI2002Main>`__ and its `use cases "
+"<https://plham.github.io/tutorial/CI2002Main_UseCases>`__), which is "
+"based on Chiarella and Iori (2002). It runs one market with 100 FCN "
+"agents and asks two questions: what happens to the market price when the "
+"agents follow the fundamental price more, and what happens when they "
+"follow the trend more? The complete script is "
+":download:`tutorial_ci2002.py <code/tutorial_ci2002.py>`. It needs "
+"`matplotlib <https://matplotlib.org/>`_ for the plot, which is not "
+"installed with PAMS (``pip install matplotlib``)."
+msgstr ""
+"このチュートリアルは、同じモデルを扱うPlhamのチュートリアル（`CI2002Main "
+"<https://plham.github.io/tutorial/CI2002Main>`__ とその `ユースケース "
+"<https://plham.github.io/tutorial/CI2002Main_UseCases>`__）に沿っています。このモデルはChiarella"
+" and "
+"Iori（2002）に基づいています。100体のFCNエージェントがいる1つの市場を動かし、2つの問いを考えます。エージェントがファンダメンタル価格により強く従うと市場価格はどうなるか、そしてトレンドにより強く従うとどうなるか、です。完全なスクリプトは"
+" :download:`tutorial_ci2002.py <code/tutorial_ci2002.py>` です。プロットには "
+"`matplotlib <https://matplotlib.org/>`_ "
+"が必要ですが、これはPAMSと一緒にはインストールされません（``pip install matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:17
+msgid "The model"
+msgstr "モデル"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:19
+msgid ""
+"Each :class:`~pams.agents.FCNAgent` mixes three ways to predict the "
+"price. The **fundamental** term expects the market price :math:`P_t` to "
+"move back to the fundamental price :math:`P^f_t`. The **chart** term "
+"expects the recent trend to go on. The **noise** term is a random guess. "
+"The agent weights the three terms with :math:`w_F`, :math:`w_C` and "
+":math:`w_N` and computes an expected return (slightly simplified here; "
+"the exact formula is in the FCNAgent section of :ref:`config-agents`)"
+msgstr ""
+"各 :class:`~pams.agents.FCNAgent` は、価格を予想する3つの方法を組み合わせます。**ファンダメンタル** "
+"成分は、市場価格 :math:`P_t` がファンダメンタル価格 :math:`P^f_t` に戻ると予想します。**チャート** "
+"成分は、最近のトレンドが続くと予想します。**ノイズ** 成分はランダムな予想です。エージェントは3つの成分を "
+":math:`w_F`、:math:`w_C`、:math:`w_N` "
+"で重み付けし、期待リターンを次のように計算します（ここでは少し簡略化しています。正確な式は :ref:`config-agents` "
+"のFCNAgentの節にあります）。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:25
+msgid ""
+"\\hat{r} = \\frac{1}{w_F + w_C + w_N}\n"
+"\\left(\n"
+"w_F \\frac{1}{\\tau_r} \\ln\\frac{P^f_t}{P_t}\n"
+"+ w_C \\frac{1}{\\tau} \\ln\\frac{P_t}{P_{t-\\tau}}\n"
+"+ w_N \\sigma_N \\varepsilon\n"
+"\\right),\n"
+"\\qquad \\varepsilon \\sim \\mathcal{N}(0, 1),"
+msgstr ""
+"\\hat{r} = \\frac{1}{w_F + w_C + w_N}\n"
+"\\left(\n"
+"w_F \\frac{1}{\\tau_r} \\ln\\frac{P^f_t}{P_t}\n"
+"+ w_C \\frac{1}{\\tau} \\ln\\frac{P_t}{P_{t-\\tau}}\n"
+"+ w_N \\sigma_N \\varepsilon\n"
+"\\right),\n"
+"\\qquad \\varepsilon \\sim \\mathcal{N}(0, 1),"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:35
+#, python-brace-format
+msgid ""
+"where :math:`\\tau` is ``timeWindowSize``, :math:`\\tau_r` is "
+"``meanReversionTime`` and :math:`\\sigma_N` is ``noiseScale``. If the "
+"expected price :math:`P_t \\exp(\\hat{r} \\tau)` is above the market "
+"price, the agent places a buy order below the expected price. If it is "
+"below, the agent places a sell order above it. ``orderMargin`` sets how "
+"far from the expected price the order is placed."
+msgstr ""
+"ここで :math:`\\tau` は ``timeWindowSize``、:math:`\\tau_r` は "
+"``meanReversionTime``、:math:`\\sigma_N` は ``noiseScale`` です。期待価格 "
+":math:`P_t \\exp(\\hat{r} \\tau)` "
+"が市場価格より高ければ、エージェントは期待価格より低い価格で買い注文を出します。低ければ、期待価格より高い価格で売り注文を出します。注文価格を期待価格からどれだけ離すかは"
+" ``orderMargin`` で決まります。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:41
+msgid ""
+"Each agent draws its own weights when the simulation is set up (see :ref"
+":`config-jsonrandom`). A group with a larger mean ``fundamentalWeight`` "
+"behaves more like fundamentalists, and a group with a larger mean "
+"``chartWeight`` behaves more like chartists."
+msgstr ""
+"各エージェントの重みは、シミュレーションの設定時にエージェントごとに乱数で決まります（:ref:`config-jsonrandom` "
+"を参照）。``fundamentalWeight`` の平均が大きいグループほどファンダメンタリストに近く、``chartWeight`` "
+"の平均が大きいグループほどチャーティストに近い振る舞いをします。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:47
+msgid "The configuration"
+msgstr "設定"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:49
+msgid "The script uses the configuration of ``samples/CI2002`` as a Python dict:"
+msgstr "スクリプトでは、``samples/CI2002`` の設定をPythonのdictとして使います："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:56
+msgid ""
+"It is the *Minimal* configuration of :ref:`config-quickstart`, which "
+":doc:`first_simulation` also uses, with three differences:"
+msgstr ""
+"これは :doc:`first_simulation` でも使った :ref:`config-quickstart` の *最小構成* "
+"とほぼ同じで、違いは次の3点です："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:59
+msgid ""
+"``meanReversionTime`` sets :math:`\\tau_r`, the time scale of the "
+"fundamental term. Each agent gets a value from 50 to 99 steps. Without "
+"it, :math:`\\tau_r` is the agent's ``timeWindowSize`` (100 to 199 steps)."
+msgstr ""
+"``meanReversionTime`` は、ファンダメンタル成分の時間スケール :math:`\\tau_r` "
+"を決めます。各エージェントは50から99ステップの値を持ちます。これがない場合、:math:`\\tau_r` はそのエージェントの "
+"``timeWindowSize`` （100から199ステップ）になります。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:61
+msgid ""
+"The sessions are named ``0`` and ``1``, as in Plham, instead of "
+"``warmup`` and ``main``."
+msgstr "セッションの名前は、``warmup`` と ``main`` ではなく、Plhamと同じく ``0`` と ``1`` です。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:62
+msgid ""
+"``highFrequencySubmitRate`` of the first session has no effect: 1.0 is "
+"the default, and there are no high-frequency agents."
+msgstr ""
+"最初のセッションの ``highFrequencySubmitRate`` "
+"には効果がありません。1.0はデフォルト値であり、高頻度エージェントもいないためです。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:65
+#, python-brace-format
+msgid ""
+"``chartWeight`` is ``{\"expon\": [0.0]}``, which is always 0. The agents "
+"of the sample are fundamentalists and noise traders only."
+msgstr ""
+"``chartWeight`` は常に0となる ``{\"expon\": [0.0]}`` "
+"です。つまりサンプルのエージェントは、ファンダメンタリストとノイズトレーダーの性質だけを持ちます。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:70
+msgid "The three cases"
+msgstr "3つのケース"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:72
+msgid "Each case changes some keys of the ``FCNAgents`` block:"
+msgstr "各ケースは ``FCNAgents`` ブロックのいくつかのキーを変更します："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:79
+msgid "``baseline`` is the sample itself."
+msgstr "``baseline`` はサンプルそのものです。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:80
+msgid "``more fundamental`` doubles the mean fundamental weight, from 1.0 to 2.0."
+msgstr "``more fundamental`` は、ファンダメンタル成分の重みの平均を1.0から2.0へと2倍にします。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:81
+msgid "``more chart`` gives the agents a chart weight with mean 0.5."
+msgstr "``more chart`` は、エージェントに平均0.5のチャート成分の重みを与えます。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:85
+msgid "Running the cases"
+msgstr "ケースの実行"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:87
+msgid ""
+"``make_config`` copies the configuration and changes the ``FCNAgents`` "
+"block, so ``CONFIG`` itself stays the same. ``run_simulation`` runs one "
+"case with one seed:"
+msgstr ""
+"``make_config`` は設定をコピーしてから ``FCNAgents`` ブロックを変更するため、``CONFIG`` "
+"そのものは変わりません。``run_simulation`` は1つのケースを1つのシードで実行します："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:95
+msgid ""
+"The script measures how the market price moves around the fundamental "
+"price in the main session (steps 100 to 599):"
+msgstr "スクリプトは、メインのセッション（ステップ100から599）で、市場価格がファンダメンタル価格の周りをどう動くかを測ります："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:102
+msgid ""
+"``std`` and ``max`` show how far the market price goes from the "
+"fundamental price."
+msgstr "``std`` と ``max`` は、市場価格がファンダメンタル価格からどれだけ離れるかを示します。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:103
+msgid ""
+"``crosses`` counts how many times the market price passes the fundamental"
+" price. Fewer crosses mean that the price stays on one side for longer, "
+"that is, longer trends."
+msgstr ""
+"``crosses`` "
+"は、市場価格がファンダメンタル価格をまたいだ回数です。この回数が少ないほど、価格は長く同じ側にとどまります。つまりトレンドが長く続きます。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:105
+msgid "``volume`` is the number of shares traded."
+msgstr "``volume`` は出来高（取引された株数）です。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:107
+msgid ""
+"``main()`` runs the three cases with the ten seeds 42 to 51. It prints "
+"the results of seed 42 and the mean over the ten seeds, and plots seed "
+"42."
+msgstr ""
+"``main()`` "
+"は、3つのケースをシード42から51の10個のシードで実行します。シード42の結果と10個のシードでの平均を出力し、シード42をプロットします。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:112
+msgid "Results"
+msgstr "結果"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:114
+msgid "``python tutorial_ci2002.py`` prints the two tables:"
+msgstr "``python tutorial_ci2002.py`` は2つの表を出力します："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:129
+msgid ""
+"and saves ``ci2002_weights.png``, the market price of seed 42 in the "
+"three cases:"
+msgstr "また、3つのケースでのシード42の市場価格を ``ci2002_weights.png`` に保存します："
+
+#: ../../source/user_guide/tutorials/ci2002.rst:131
+msgid ""
+"Three panels, one per case, of the market price moving around the "
+"constant fundamental price of 300\n"
+"from step 100 to step 599"
+msgstr "ケースごとに1つずつ並んだ3つのパネル。ステップ100から599まで、一定のファンダメンタル価格300の周りを動く市場価格"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:135
+msgid ""
+"Use the mean over the seeds to compare the cases. With seed 42 alone, "
+"``more chart`` has a smaller ``std`` than ``more fundamental``, but not "
+"on average."
+msgstr ""
+"ケースの比較には、シードについての平均を使ってください。シード42だけを見ると ``more chart`` の ``std`` は ``more"
+" fundamental`` より小さいですが、平均ではそうなりません。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:138
+msgid "More fundamentalists"
+msgstr "ファンダメンタリストを増やした場合"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:139
+msgid ""
+"The market price stays closer to the fundamental price: ``std`` falls "
+"from 6.46 to 4.75 and ``max`` from 14.65 to 10.90. The agents pull the "
+"price back to 300 more strongly, so the price makes only small moves "
+"around it. This is the answer of the Plham tutorial too."
+msgstr ""
+"市場価格はファンダメンタル価格の近くにとどまります。``std`` は6.46から4.75に、``max`` "
+"は14.65から10.90に下がります。エージェントが価格を300へ引き戻す力が強くなるため、価格はその周りで小さく動くだけになります。これはPlhamのチュートリアルの答えとも一致します。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:143
+msgid "More chartists"
+msgstr "チャーティストを増やした場合"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:144
+msgid ""
+"``crosses`` falls from 79.6 to 50.3: once the price has moved away from "
+"the fundamental price, it stays on that side for longer, because the "
+"chart term expects the trend to go on. Plham also finds longer trends. In"
+" this setup, however, ``std`` does not grow: it falls from 6.46 to 5.22. "
+"A possible reason is in the formula: the weights are divided by their "
+"sum, so a chart weight also makes the noise term smaller."
+msgstr ""
+"``crosses`` "
+"は79.6から50.3に減ります。チャート成分はトレンドが続くと予想するため、価格はいったんファンダメンタル価格から離れると、長くその側にとどまります。Plhamでもトレンドが長くなるという結果です。ただし、この設定では"
+" ``std`` "
+"は大きくならず、6.46から5.22に下がります。考えられる理由は式にあります。重みはその合計で割られるため、チャート成分の重みを加えるとノイズ成分も小さくなります。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:150
+msgid ""
+"In both cases, fewer shares are traded. Try other values, for example a "
+"larger ``chartWeight`` or a smaller ``noiseWeight``, and compare the "
+"tables."
+msgstr ""
+"どちらのケースでも出来高は減ります。例えば ``chartWeight`` を大きくしたり ``noiseWeight`` "
+"を小さくしたりして、他の値でも表を比べてみてください。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:155
+msgid "Differences from Plham"
+msgstr "Plhamとの違い"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:157
+msgid ""
+"PAMS and Plham use different random number generators, so the same "
+"configuration and seed give different prices."
+msgstr "PAMSとPlhamは異なる乱数生成器を使うため、同じ設定とシードでも価格は異なります。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:159
+msgid ""
+"The configuration on the Plham tutorial page has no "
+"``meanReversionTime``, so its agents use their ``timeWindowSize`` (100 to"
+" 199 steps) as :math:`\\tau_r`. The PAMS sample, like the sample of the "
+"current Plham, sets :math:`\\tau_r` to 50 to 99 steps. For the same gap "
+"between the market price and the fundamental price, the fundamental term "
+"is then about twice as large, so the pull toward the fundamental price is"
+" stronger than in the Plham tutorial."
+msgstr ""
+"Plhamのチュートリアルのページにある設定には ``meanReversionTime`` がないため、そのエージェントは "
+"``timeWindowSize`` （100から199ステップ）を :math:`\\tau_r` "
+"として使います。PAMSのサンプルは、現在のPlhamのサンプルと同じく、:math:`\\tau_r` "
+"を50から99ステップにします。そのため、市場価格とファンダメンタル価格の差が同じなら、ファンダメンタル成分は約2倍になり、ファンダメンタル価格へ引き戻す力はPlhamのチュートリアルより強くなります。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:164
+msgid ""
+"The Plham tutorial answers its questions with plots of the prices. This "
+"tutorial also measures how the market price moves around the fundamental "
+"price, and averages the numbers over ten seeds."
+msgstr "Plhamのチュートリアルは価格のプロットで問いに答えます。このチュートリアルでは、市場価格がファンダメンタル価格の周りをどう動くかも測り、その数値を10個のシードで平均します。"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:169
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/ci2002.rst:171
+msgid ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+msgstr ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+

@@ -1,0 +1,468 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:4
+msgid "Trading halts"
+msgstr "売買停止"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:6
+msgid ""
+"A trading halt, or circuit breaker, stops the trading of a market for a "
+"while when its price has moved too far. This tutorial follows the Plham "
+"tutorials `TradingHaltMain "
+"<https://plham.github.io/tutorial/TradingHaltMain>`__ and "
+"`TradingHaltMain_UseCases "
+"<https://plham.github.io/tutorial/TradingHaltMain_UseCases>`__: the "
+"fundamental price falls by 10%, and the market follows it with and "
+"without halts, with longer halts, and with a lower threshold. The "
+"complete script is :download:`tutorial_trading_halt.py "
+"<code/tutorial_trading_halt.py>`. It needs `matplotlib "
+"<https://matplotlib.org/>`_ for the plot, which is not installed with "
+"PAMS (``pip install matplotlib``)."
+msgstr ""
+"売買停止（サーキットブレーカー）は、市場の価格が大きく動きすぎたときに、その市場の取引をしばらく止めます。このチュートリアルは、Plhamのチュートリアル"
+" `TradingHaltMain <https://plham.github.io/tutorial/TradingHaltMain>`__ と"
+" `TradingHaltMain_UseCases "
+"<https://plham.github.io/tutorial/TradingHaltMain_UseCases>`__ "
+"に沿っています：ファンダメンタル価格が10%下落し、市場は売買停止なし、売買停止あり、より長い売買停止、より低い閾値のそれぞれでこれに追随します。完全なスクリプトは"
+" :download:`tutorial_trading_halt.py <code/tutorial_trading_halt.py>` "
+"です。プロットには `matplotlib <https://matplotlib.org/>`_ "
+"が必要ですが、これはPAMSと一緒にはインストールされません（``pip install matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:16
+msgid "The model"
+msgstr "モデル"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:18
+msgid ""
+"The market has 100 :class:`~pams.agents.FCNAgent` agents, which expect a "
+"future price from the gap to the fundamental price, the recent trend and "
+"noise, and place orders around this price. At step 100, "
+":class:`~pams.events.FundamentalPriceShock` lowers the fundamental price "
+"from 300 to 270. The agents then sell, and the market price falls towards"
+" 270."
+msgstr ""
+"市場には100体の :class:`~pams.agents.FCNAgent` "
+"エージェントがいます。各エージェントは、ファンダメンタル価格との乖離、直近のトレンド、ノイズから将来の価格を予想し、その価格の周りに注文を出します。ステップ100で、:class:`~pams.events.FundamentalPriceShock`"
+" がファンダメンタル価格を300から270に下げます。するとエージェントは売り、市場価格は270に向かって下がります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:23
+msgid ""
+":class:`~pams.events.TradingHaltRule` checks the market price :math:`P` "
+"after every trade. Let :math:`P_0` be the market price at step 0, "
+":math:`r` the rate ``triggerChangeRate`` and :math:`n` the number of "
+"halts so far. If"
+msgstr ""
+":class:`~pams.events.TradingHaltRule` は、約定のたびに市場価格 :math:`P` "
+"を調べます。ステップ0の市場価格を :math:`P_0`、率 ``triggerChangeRate`` を "
+":math:`r`、それまでの売買停止の回数を :math:`n` とします。次の式が成り立つと、"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:26
+msgid "|P - P_0| \\geq P_0 \\, r \\, (n + 1),"
+msgstr "|P - P_0| \\geq P_0 \\, r \\, (n + 1),"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:30
+msgid ""
+"the rule halts all its target markets. While a market is halted, it still"
+" accepts orders and cancels, but it executes nothing, so its price does "
+"not change. A halt that starts at step :math:`s` lasts until the end of "
+"step :math:`s + L`, where :math:`L` is ``haltingTimeLength``, and the "
+"market trades again from step :math:`s + L + 1`."
+msgstr ""
+"ルールは対象のすべての市場で売買を停止します。売買停止中の市場は、注文や取消を受け付けますが、何も約定しないため、価格は変わりません。:math:`L`"
+" を ``haltingTimeLength`` とすると、ステップ :math:`s` に始まった売買停止はステップ :math:`s + L`"
+" の終わりまで続き、市場はステップ :math:`s + L + 1` から再び取引を行います。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:34
+msgid ""
+"Here :math:`P_0 = 300`. With :math:`r = 0.05`, the first halt comes when "
+"the price has moved by 5% (to 285 or 315), the second by 10% (270 or "
+"330), and so on."
+msgstr ""
+"ここでは :math:`P_0 = 300` です。:math:`r = 0.05` "
+"では、1回目の売買停止は価格が5%動いたとき（285または315）、2回目は10%動いたとき（270または330）に起こり、以下同様です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:37
+msgid ""
+"The Plham tutorial asks three questions: what the halts do after the "
+"shock, what longer halts do, and what a lower threshold does."
+msgstr "Plhamのチュートリアルは3つの問いを立てています：ショックの後に売買停止が何をするか、より長い売買停止が何をするか、そしてより低い閾値が何をするかです。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:42
+msgid "The configuration"
+msgstr "設定"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:44
+msgid ""
+"The configuration is ``samples/trading_halt/config.json`` of the "
+"repository without its ``MEMO`` keys, written as a Python dict:"
+msgstr ""
+"設定は、リポジトリの ``samples/trading_halt/config.json`` から ``MEMO`` "
+"キーを除き、Pythonのdictとして書いたものです："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:52
+msgid ""
+"The first session (steps 0 to 99) only fills the order book. The second "
+"session (steps 100 to 599) also executes the orders and lists both events"
+" in its ``events``."
+msgstr ""
+"最初のセッション（ステップ0から99）は板を埋めるだけです。2番目のセッション（ステップ100から599）では注文の約定も行い、その "
+"``events`` に両方のイベントを列挙しています。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:54
+msgid ""
+"``triggerTime`` counts from the start of the session that lists the "
+"event, so the shock comes at step 100."
+msgstr "``triggerTime`` はイベントを列挙したセッションの開始から数えるため、ショックはステップ100に起こります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:55
+msgid ""
+"The mean fundamental weight is 1.0 and the mean chart weight is 0 (see "
+":ref:`config-jsonrandom`), so the agents are pulled towards the "
+"fundamental price, and there are no trend followers."
+msgstr ""
+"ファンダメンタル成分の重みの平均は1.0、チャート成分の重みの平均は0なので（:ref:`config-jsonrandom` "
+"を参照）、エージェントはファンダメンタル価格に引き寄せられ、トレンド追随型のエージェントはいません。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:58
+msgid "Every key is explained in :ref:`config-events` and :ref:`config-agents`."
+msgstr "各キーの説明は :ref:`config-events` と :ref:`config-agents` にあります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:60
+msgid ""
+"The script compares four cases. They change the threshold, the length of "
+"a halt and whether the rule is on:"
+msgstr "スクリプトは4つのケースを比較します。これらのケースでは、閾値、売買停止の長さ、ルールを有効にするかどうかを変えます："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:69
+msgid "Running it"
+msgstr "実行"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:71
+msgid ""
+"``run_simulation`` changes these values in a copy of the configuration, "
+"and the length of the second session:"
+msgstr "``run_simulation`` は、設定のコピーについてこれらの値と、2番目のセッションの長さを変更します："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:77
+msgid ""
+"A rule with ``\"enabled\": False`` does nothing. It still draws its "
+"random numbers, so a run with the rule off is the same as the run with "
+"the rule on until the first halt."
+msgstr ""
+"``\"enabled\": False`` "
+"のルールは何もしません。それでも乱数は引くため、ルールを無効にした実行は、最初の売買停止まで、ルールを有効にした実行と同じになります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:80
+msgid ""
+"The rule counts its halts in ``activation_count``, but it does not keep "
+"the steps of the halts. A logger (see :doc:`custom_logger`) records them:"
+" at the end of each step, ``market.is_running`` is ``False`` while the "
+"market is halted."
+msgstr ""
+"ルールは売買停止の回数を ``activation_count`` "
+"に数えますが、売買停止したステップは記録しません。そこでロガー（:doc:`custom_logger` "
+"を参照）がそれを記録します：各ステップの終わりに、売買停止中の市場では ``market.is_running`` が ``False`` "
+"になります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:89
+msgid ""
+"``halt_starts`` finds the first step of each halt in these steps. A halt "
+"covers :math:`L + 1` step ends, so a halted step after them belongs to a "
+"new halt:"
+msgstr ""
+"``halt_starts`` は、これらのステップから各売買停止の最初のステップを見つけます。1回の売買停止は :math:`L + 1` "
+"個のステップの終わりにわたるため、それより後の売買停止中のステップは新しい売買停止に属します："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:96
+msgid ""
+"``halt_stats`` sums up a run: the number of halts, the number of halted "
+"steps, the first step of each halt, the lowest and the last market prices"
+" of the second session, and the number of shares traded in it. A disabled"
+" event is not added to ``simulator.name2event``, so a run without the "
+"rule has no halts:"
+msgstr ""
+"``halt_stats`` "
+"は1回の実行を集計します：売買停止の回数、売買停止中のステップ数、各売買停止の最初のステップ、2番目のセッションにおける市場価格の最安値と最終値、そしてその間に取引された株数です。無効なイベントは"
+" ``simulator.name2event`` に追加されないため、ルールのない実行では売買停止は0回になります："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:106
+msgid "Halts after the shock"
+msgstr "ショック後の売買停止"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:108
+msgid "The script first runs the four cases with seed 42. It prints:"
+msgstr "スクリプトはまず、シード42で4つのケースを実行します。出力は次のとおりです："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:118
+msgid "The figure shows the prices of the four cases, with the halts shaded:"
+msgstr "図は4つのケースの価格を示しており、売買停止の期間は網掛けになっています："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:120
+msgid ""
+"Four panels of the market price after the fundamental price falls from "
+"300 to 270 at step 100. With\n"
+"halts, the price stays flat in the shaded halts. Without halts, it moves "
+"between 260 and 290. With the\n"
+"2% threshold, the market is halted almost all the time and the price "
+"falls in steps."
+msgstr "ステップ100でファンダメンタル価格が300から270に下がった後の市場価格を示す4つのパネル。売買停止ありでは、網掛けの売買停止期間中は価格が横ばいになります。売買停止なしでは、価格は260から290の間を動きます。2%の閾値では、市場はほとんどの時間売買停止中で、価格は階段状に下がります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:125
+msgid "With halts of 100 steps at 5% (the first row and the first panel):"
+msgstr "5%で100ステップの売買停止の場合（1行目と最初のパネル）："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:127
+msgid ""
+"The price falls after the shock. At step 127, a trade at 283.71, 5.4% "
+"below 300, starts the first halt."
+msgstr "ショックの後、価格は下がります。ステップ127で、300より5.4%低い283.71での約定が、1回目の売買停止を引き起こします。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:128
+msgid ""
+"The market trades again from step 228. The orders placed during the halt "
+"trade at once: 27 shares change hands in this step, and the price moves "
+"to 278.64."
+msgstr "市場はステップ228から再び取引を行います。売買停止中に出された注文はすぐに約定します：このステップで27株が約定し、価格は278.64に動きます。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:130
+msgid ""
+"At step 275, a trade at 269.95, 10.0% below 300, starts the second halt. "
+"After it, 24 shares trade at once at step 376. A third halt would need a "
+"fall of 15%, to 255, which does not happen."
+msgstr "ステップ275で、300より10.0%低い269.95での約定が、2回目の売買停止を引き起こします。その後、ステップ376で24株がすぐに約定します。3回目の売買停止には255までの15%の下落が必要ですが、これは起こりません。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:132
+msgid ""
+"The market is halted at the end of 202 of the 500 steps: two halts of 101"
+" steps."
+msgstr "市場は500ステップのうち202ステップの終わりで売買停止中です：101ステップの売買停止が2回です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:134
+msgid ""
+"Without halts (the second row), the run is the same until step 127. The "
+"price then falls below the new fundamental price, to 259.92 at step 213, "
+"and ends at 279.38. In this run the halts hardly change the lowest price "
+"(260.91 against 259.92). The runs with other seeds below show a clearer "
+"difference."
+msgstr "売買停止なし（2行目）の場合、実行はステップ127まで同じです。その後、価格は新しいファンダメンタル価格を下回ってステップ213で259.92になり、279.38で終わります。この実行では、売買停止は最安値をほとんど変えません（259.92に対して260.91）。後に示す他のシードでの実行では、よりはっきりした違いが見られます。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:140
+msgid "Longer halts"
+msgstr "より長い売買停止"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:142
+msgid ""
+"The Plham tutorial then makes the halts 200 steps long. The effect of a "
+"halt should depend on its length compared with the time windows of the "
+"agents, which are between 100 and 200 steps, so 200 steps is longer than "
+"any of them. In PAMS, an FCN agent's order also stays in the book for as "
+"many steps as its time window, so no order placed before a halt of 200 "
+"steps is left when the market trades again."
+msgstr "Plhamのチュートリアルは、次に売買停止を200ステップにします。売買停止の効果は、その長さがエージェントの時間窓と比べてどうかによるはずです。時間窓は100から200ステップの間なので、200ステップはそのどれよりも長くなります。PAMSでも、FCNエージェントの注文はその時間窓と同じステップ数だけ板に残るため、200ステップの売買停止の前に出された注文は、市場が再び取引を行うときには残っていません。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:147
+msgid ""
+"With 200 steps (the third row and panel), the halts start at steps 127 "
+"and 379, and the market is halted in 402 of the 500 steps. The lowest "
+"price is 266.82, closer to 270 than in the first two cases, but only 148 "
+"shares trade, against 215 without halts."
+msgstr "200ステップの場合（3行目と3番目のパネル）、売買停止はステップ127と379に始まり、市場は500ステップのうち402ステップで売買停止中です。最安値は266.82で、最初の2つのケースより270に近くなりますが、取引されるのは148株だけで、売買停止なしでは215株です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:153
+msgid "A lower threshold"
+msgstr "より低い閾値"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:155
+msgid ""
+"Last, the Plham tutorial lowers the threshold. The shock is 10%, so with "
+"a threshold of 2% the rule can halt the market several times while the "
+"price follows the shock. With 2% (the last row and panel), the halts come"
+" at moves of 2%, 4%, 6%, 8% and 10%, and the market halts five times, at "
+"steps 111, 212, 313, 414 and 528."
+msgstr "最後に、Plhamのチュートリアルは閾値を下げます。ショックは10%なので、閾値が2%であれば、価格がショックに追随する間にルールは市場の売買を何度か停止できます。2%の場合（最後の行と最後のパネル）、売買停止は2%、4%、6%、8%、10%の変動で起こり、市場はステップ111、212、313、414、528の5回売買停止します。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:159
+msgid ""
+"The halts at steps 212, 313 and 414 start in the step in which the market"
+" trades again, for two reasons:"
+msgstr "ステップ212、313、414の売買停止が、市場が再び取引を行うステップに始まるのには、2つの理由があります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:161
+msgid ""
+"At step 212, the orders placed during the first halt trade at once. This "
+"jump moves the price from 291.28 (2.9% below 300) to 281.33 (6.2% below),"
+" past the threshold of 4%."
+msgstr "ステップ212では、最初の売買停止中に出された注文がすぐに約定します。このジャンプで、価格は291.28（300より2.9%低い）から281.33（6.2%低い）に動き、4%の閾値を超えます。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:163
+msgid ""
+"At steps 313 and 414, the price is already past the next threshold when "
+"the market trades again: 281.33 is past 6%, and 275.48, the price from "
+"step 313, is past 8%. The trades of these steps do not bring the price "
+"back, so the market halts again at once."
+msgstr "ステップ313と414では、市場が再び取引を行うときには、価格はすでに次の閾値を超えています。281.33は6%を超えており、ステップ313からの価格である275.48は8%を超えています。これらのステップの取引では価格が戻らないため、市場はすぐにまた売買停止になります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:167
+msgid ""
+"The market is halted at the end of 476 of the 500 steps, and the price "
+"falls in steps. The last halt lasts until the end of the run, so the last"
+" price is also the lowest, 268.97."
+msgstr "市場は500ステップのうち476ステップの終わりで売買停止中で、価格は階段状に下がります。最後の売買停止は実行の終わりまで続くため、最終値は最安値でもあり、268.97です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:172
+msgid "Over ten seeds"
+msgstr "10個のシードでの比較"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:174
+msgid ""
+"The script repeats the four cases for the seeds 42 to 51 and prints the "
+"means:"
+msgstr "スクリプトは4つのケースをシード42から51で繰り返し、平均を出力します："
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:184
+msgid "Every seed has two halts at 5% and five at 2%."
+msgstr "どのシードでも、5%では売買停止が2回、2%では5回です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:185
+msgid ""
+"On average, the halts raise the lowest price: the mean lowest price is "
+"251.19 without halts, 258.79 with halts of 100 steps, 265.61 with halts "
+"of 200 steps and 268.90 with the 2% threshold."
+msgstr "平均すると、売買停止は最安値を引き上げます：最安値の平均は、売買停止なしで251.19、100ステップの売買停止で258.79、200ステップの売買停止で265.61、2%の閾値で268.90です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:187
+msgid ""
+"The halts do not bring the last price closer to the new fundamental price"
+" of 270: the mean last price is 265.60 with halts of 100 steps, against "
+"268.07 without halts."
+msgstr "売買停止によって、最終値が新しいファンダメンタル価格である270に近づくわけではありません：最終値の平均は、100ステップの売買停止で265.60、売買停止なしで268.07です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:189
+msgid ""
+"The difference between the first two cases comes mostly from two seeds. "
+"Without halts, the lowest price is 229.1 for seed 46 and 221.1 for seed "
+"47. For the other eight seeds, it is between 255 and 260, close to the "
+"lowest prices with halts of 100 steps (255 to 262)."
+msgstr "最初の2つのケースの違いは、主に2つのシードによるものです。売買停止なしの場合、最安値はシード46で229.1、シード47で221.1です。他の8個のシードでは255から260の間で、100ステップの売買停止での最安値（255から262）に近い値です。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:192
+#, python-format
+msgid ""
+"The halts cost trading time. The market is halted in about 40%, 80% and "
+"94% of the second session in the three cases with halts, and fewer shares"
+" trade."
+msgstr "売買停止には取引時間という代償があります。売買停止ありの3つのケースでは、市場は2番目のセッションのそれぞれ約40%、80%、94%で売買停止中であり、取引される株数も少なくなります。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:194
+msgid ""
+"A halted market cannot trade, so it cannot fall either. With the 2% "
+"threshold, the price is frozen most of the time, and its lowest price "
+"says little about how the market would move."
+msgstr "売買停止中の市場は取引できないため、下落することもできません。2%の閾値では、価格はほとんどの時間止まっており、その最安値は市場がどう動くかをほとんど示しません。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:199
+msgid "Running the script"
+msgstr "スクリプトの実行"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:201
+msgid ""
+"Running the complete script with ``python tutorial_trading_halt.py`` "
+"prints the two tables above and writes ``trading_halt_prices.png`` to the"
+" current directory. It runs 44 simulations of 600 steps."
+msgstr ""
+"完全なスクリプトを ``python tutorial_trading_halt.py`` "
+"で実行すると、上の2つの表を出力し、カレントディレクトリに ``trading_halt_prices.png`` "
+"を書き出します。600ステップのシミュレーションを44回実行します。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:204
+msgid ""
+"A price limit keeps the market open and moves the order prices instead: "
+"see :ref:`tutorial-price-limit`."
+msgstr "値幅制限は、市場を開いたまま、代わりに注文の価格を動かします：:ref:`tutorial-price-limit` を参照してください。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:208
+msgid "Differences from Plham"
+msgstr "Plhamとの違い"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:210
+msgid ""
+"Plham takes the reference price from a reference market. PAMS compares "
+"each market with its own price at step 0, which never changes, and "
+"ignores the ``referenceMarket`` key of older configurations with a "
+"warning."
+msgstr ""
+"Plhamは基準価格を参照市場から取ります。PAMSは各市場を、それ自身のステップ0の価格（この価格は変わりません）と比べ、古い設定にある "
+"``referenceMarket`` キーは警告を出したうえで無視します。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:212
+msgid ""
+"The numbers above are from PAMS with the seeds 42 to 51, and they do not "
+"match the figures of the Plham tutorial."
+msgstr "上の数値はシード42から51でのPAMSの結果で、Plhamのチュートリアルの図とは一致しません。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:217
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:219
+msgid ""
+"清水季子, 村永淳 (Shimizu and Muranaga) (1999). "
+"取引停止措置が市場機能に及ぼす影響：人為的シャットダウンを備えた市場の挙動に関するシミュレーション分析. IMES Discussion "
+"Paper Series 99-J-1, Institute for Monetary and Economic Studies, Bank of"
+" Japan."
+msgstr ""
+"清水季子, 村永淳 (Shimizu and Muranaga) (1999). "
+"取引停止措置が市場機能に及ぼす影響：人為的シャットダウンを備えた市場の挙動に関するシミュレーション分析. IMES Discussion "
+"Paper Series 99-J-1, 日本銀行金融研究所."
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:222
+msgid ""
+"小林重人, 橋本敬 (Kobayashi and Hashimoto) (2006). サーキットブレーカー制度の有効性とその限界 "
+"～人工市場シミュレーションによる検討～. MPSシンポジウム2006, 情報処理学会シンポジウムシリーズ, Vol. 2006, No. 10, "
+"29–36. Cited by the Plham tutorial."
+msgstr ""
+"小林重人, 橋本敬 (Kobayashi and Hashimoto) (2006). サーキットブレーカー制度の有効性とその限界 "
+"～人工市場シミュレーションによる検討～. MPSシンポジウム2006, 情報処理学会シンポジウムシリーズ, Vol. 2006, No. 10, "
+"29–36. Plhamのチュートリアルで引用されています。"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:225
+msgid ""
+"Kobayashi, S. and Hashimoto, T. (2011). Benefits and limits of circuit "
+"breaker: institutional design using artificial futures market. "
+"*Evolutionary and Institutional Economics Review*, 7(2), 355–372. "
+"https://doi.org/10.14441/eier.7.355"
+msgstr ""
+"Kobayashi, S. and Hashimoto, T. (2011). Benefits and limits of circuit "
+"breaker: institutional design using artificial futures market. "
+"*Evolutionary and Institutional Economics Review*, 7(2), 355–372. "
+"https://doi.org/10.14441/eier.7.355"
+
+#: ../../source/user_guide/tutorials/trading_halt.rst:228
+msgid ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. The FCN agents come from this model."
+msgstr ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. FCNエージェントはこのモデルに由来します。"
+
