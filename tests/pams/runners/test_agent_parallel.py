@@ -263,6 +263,46 @@ class TestMultiThreadAgentParallelRunner(TestSequentialRunner):
             agent_class=agent_class,
         )
 
+    def test_transaction_fee_revenues_same_as_sequential(self) -> None:
+        sequential_runner, sequential_logger = self._run_transaction_fee_revenues(
+            runner_class=SequentialRunner, with_fees=True
+        )
+        parallel_runner, parallel_logger = self._run_transaction_fee_revenues(
+            runner_class=self.runner_class, with_fees=True
+        )
+        assert isinstance(parallel_runner, self.runner_class)
+        sequential_markets = sequential_runner.simulator.markets
+        parallel_markets = parallel_runner.simulator.markets
+        assert len(parallel_markets) == len(sequential_markets) == 3
+        for sequential_market, parallel_market in zip(
+            sequential_markets, parallel_markets
+        ):
+            assert parallel_market.name == sequential_market.name
+            assert parallel_market.get_time() == sequential_market.get_time()
+            assert (
+                parallel_market.get_transaction_fee_revenues()
+                == sequential_market.get_transaction_fee_revenues()
+            )
+            assert (
+                parallel_market.get_cumulative_transaction_fee_revenue()
+                == sequential_market.get_cumulative_transaction_fee_revenue()
+            )
+        assert any(
+            market.get_cumulative_transaction_fee_revenue() != 0.0
+            for market in parallel_markets
+        )
+        assert parallel_logger.revenues == sequential_logger.revenues
+        assert [
+            (log.market_id, log.buy_transaction_fee, log.sell_transaction_fee)
+            for log in parallel_logger.execution_logs
+        ] == [
+            (log.market_id, log.buy_transaction_fee, log.sell_transaction_fee)
+            for log in sequential_logger.execution_logs
+        ]
+        assert [agent.cash_amount for agent in parallel_runner.simulator.agents] == [
+            agent.cash_amount for agent in sequential_runner.simulator.agents
+        ]
+
     def test_collect_orders_from_normal_agents_asks_same_agents(self) -> None:
         setting = copy.deepcopy(self.default_setting)
         setting["FCNAgents"]["class"] = "IdleEvenIDFCNAgent"
@@ -860,6 +900,20 @@ class TestMultiProcessAgentParallelRunner(TestMultiThreadAgentParallelRunner):
         setting = copy.deepcopy(self.default_setting)
         setting["simulation"]["startMethod"] = "spawn"
         self._run_with_worker_initializer(setting=setting, monkeypatch=monkeypatch)
+
+    @pytest.mark.parametrize("by_name", [True, False])
+    def test_run_user_transaction_fee_spawn(self, by_name: bool) -> None:
+        # the transaction fees are pickled with the markets, so a user class must be
+        # importable on the spawned workers
+        setting = copy.deepcopy(self.default_setting)
+        setting["simulation"]["startMethod"] = "spawn"
+        parallel_results = self._check_run_user_transaction_fee(
+            setting=setting, by_name=by_name
+        )
+        sequential_results = self._check_run_user_transaction_fee(
+            setting=setting, by_name=by_name, runner_class=SequentialRunner
+        )
+        assert parallel_results == sequential_results
 
     def test_split_agents_into_chunks(self) -> None:
         runner = self.test__init__(

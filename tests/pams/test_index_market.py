@@ -2,8 +2,11 @@ import random
 
 import pytest
 
+from pams import LIMIT_ORDER
 from pams import IndexMarket
 from pams import Market
+from pams import Order
+from pams import ProportionalTransactionFee
 from pams import Simulator
 
 
@@ -172,3 +175,41 @@ class TestIndexMarket:
         assert not im.is_all_markets_running()
         m2._is_running = True
         assert im.is_all_markets_running()
+
+    def test_execution_with_transaction_fee(self) -> None:
+        sim = Simulator(prng=random.Random(32))
+        m1 = Market(market_id=0, prng=random.Random(42), simulator=sim, name="market")
+        m1.setup(
+            settings={"tickSize": 0.001, "outstandingShares": 100, "marketPrice": 300.0}
+        )
+        sim._add_market(market=m1)
+        im = IndexMarket(market_id=1, prng=random.Random(32), simulator=sim, name="im")
+        im.setup(
+            settings={"tickSize": 0.001, "marketPrice": 300.0, "markets": ["market"]}
+        )
+        assert im.transaction_fee is None
+        transaction_fee = ProportionalTransactionFee(market=im)
+        transaction_fee.setup(settings={"rate": 0.0005})
+        im.transaction_fee = transaction_fee
+        im._update_time(next_fundamental_price=300.0)
+        im._is_running = True
+        sell_order = Order(
+            agent_id=0, market_id=1, is_buy=False, kind=LIMIT_ORDER, volume=3, price=300
+        )
+        im._add_order(sell_order)
+        buy_order = Order(
+            agent_id=1, market_id=1, is_buy=True, kind=LIMIT_ORDER, volume=2, price=301
+        )
+        im._add_order(buy_order)
+        logs = im._execution()
+        assert len(logs) == 1
+        assert (logs[0].price, logs[0].volume) == (300.0, 2)
+        assert logs[0].buy_transaction_fee == 0.0005 * 300.0 * 2
+        assert logs[0].sell_transaction_fee == 0.0005 * 300.0 * 2
+        # the transaction fee of the index market does not apply to its components
+        assert m1.transaction_fee is None
+        # the index market collects the fees, and its components collect nothing
+        assert im.get_transaction_fee_revenues() == [0.0005 * 300.0 * 2 * 2]
+        assert im.get_cumulative_transaction_fee_revenue() == 0.0005 * 300.0 * 2 * 2
+        m1._update_time(next_fundamental_price=300.0)
+        assert m1.get_transaction_fee_revenues() == [0.0]

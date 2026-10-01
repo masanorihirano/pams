@@ -6,7 +6,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
+from typing import cast
 
 from pams import LIMIT_ORDER
 from pams import Simulator
@@ -26,6 +28,7 @@ from pams.logs import SimulationEndLog
 from pams.market import Market
 from pams.order import Cancel
 from pams.order import Order
+from pams.transaction_fees import TransactionFee
 
 WAIT_TIME = 0.2  # seconds
 
@@ -100,6 +103,28 @@ class ExecutionCountLogger(Logger):
 
     def process_execution_log(self, log: ExecutionLog) -> None:
         self.execution_logs.append(log)
+
+
+class TransactionFeeRevenueLogger(ExecutionCountLogger):
+    """Logger that reads the transaction fee revenues of the markets at the end of each step."""
+
+    def __init__(self) -> None:
+        """Initialize the records."""
+        super().__init__()
+        # (market ID, time, revenue of the time step, cumulative revenue)
+        self.revenues: List[Tuple[int, int, float, float]] = []
+
+    def process_market_step_end_log(self, log: MarketStepEndLog) -> None:
+        """Record the transaction fee revenues of the market in this step."""
+        market = log.market
+        self.revenues.append(
+            (
+                market.market_id,
+                market.get_time(),
+                market.get_transaction_fee_revenue(),
+                market.get_cumulative_transaction_fee_revenue(),
+            )
+        )
 
 
 class SimulatorAccessingLogger(Logger):
@@ -179,6 +204,38 @@ class RaisingAgent(Agent):
 
     def submit_orders(self, markets: List[Market]) -> List[Union[Order, Cancel]]:
         raise RuntimeError("error in submit_orders")
+
+
+class MakerTakerTransactionFee(TransactionFee):
+    """Transaction fee with a maker rate and a taker rate.
+
+    The order placed first is the maker, and the other is the taker. Order IDs increase with the
+    arrival of orders in each market, so they break the tie between orders placed at the same time.
+    This class is defined here so that it can be pickled with the markets and used on worker
+    processes.
+    """
+
+    def __init__(self, market: Market) -> None:
+        """Initialize the rates."""
+        super().__init__(market=market)
+        self.maker_rate: float = 0.0
+        self.taker_rate: float = 0.0
+
+    def setup(self, settings: Dict[str, Any], *args: Any, **kwargs: Any) -> None:
+        self.maker_rate = float(settings["makerRate"])
+        self.taker_rate = float(settings["takerRate"])
+
+    def compute_fees(
+        self, price: float, volume: int, buy_order: Order, sell_order: Order
+    ) -> Tuple[float, float]:
+        value = price * volume
+        maker_fee = self.maker_rate * value
+        taker_fee = self.taker_rate * value
+        buy_arrival = (cast(int, buy_order.placed_at), cast(int, buy_order.order_id))
+        sell_arrival = (cast(int, sell_order.placed_at), cast(int, sell_order.order_id))
+        if buy_arrival < sell_arrival:
+            return maker_fee, taker_fee
+        return taker_fee, maker_fee
 
 
 class GivenOrdersAgent(Agent):

@@ -1,0 +1,224 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-30 12:05+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/reference/generated/transaction_fees/pams.TransactionFee.rst:7
+msgid "TransactionFee"
+msgstr "TransactionFee"
+
+#: of pams.transaction_fees.TransactionFee:1
+msgid "Transaction fee base class (ABC class)."
+msgstr "取引手数料の基底クラス（ABCクラス）。"
+
+#: of pams.transaction_fees.TransactionFee:3
+msgid ""
+"It defines the transaction fees that the buyer and the seller pay at each"
+" execution in a market. All transaction fees should inherit this class "
+"and implement :func:`compute_fees`."
+msgstr ""
+"市場の各約定において買い手と売り手が支払う取引手数料を定義します。すべての取引手数料はこのクラスを継承し、:func:`compute_fees`"
+" を実装する必要があります。"
+
+#: of pams.transaction_fees.TransactionFee:6
+#, python-brace-format
+msgid ""
+"A transaction fee is set by the \"transactionFee\" setting of a market "
+"group in the config, e.g., ``{\"class\": \"ProportionalTransactionFee\", "
+"\"rate\": 0.001}``. The runner creates one instance for each market of "
+"the group and sets it to ``market.transaction_fee``. Then, it calls "
+":func:`setup` with the setting without \"class\", right after the setup "
+"of the market. Without the setting, ``market.transaction_fee`` is None "
+"and no fees are charged."
+msgstr ""
+"取引手数料は、設定ファイルの市場グループの \"transactionFee\" 設定で指定します（例：``{\"class\": "
+"\"ProportionalTransactionFee\", \"rate\": "
+"0.001}``）。ランナーはグループの市場ごとにインスタンスを1つ作成し、``market.transaction_fee`` "
+"に設定します。そして市場のセットアップの直後に、\"class\" を除いた設定を渡して :func:`setup` "
+"を呼び出します。この設定がない場合、``market.transaction_fee`` は None で、手数料はかかりません。"
+
+#: of pams.transaction_fees.TransactionFee:12
+msgid ""
+"Because an instance is bound to its market, :func:`compute_fees` only "
+"receives the execution: the price, the volume and the two orders. "
+"Everything else can be read through ``self.market``, e.g., the order "
+"books (``self.market.buy_order_book`` and "
+"``self.market.sell_order_book``), the prices, the time "
+"(``self.market.get_time()``), the simulator (``self.market.simulator``), "
+"the agents (``self.market.simulator.id2agent``) and the other markets "
+"(``self.market.simulator.markets``). An instance can also keep its own "
+"state, e.g., the cumulative volume of each agent for tiered fees."
+msgstr ""
+"インスタンスは市場に結び付いているため、:func:`compute_fees` "
+"が受け取るのは約定の情報、つまり価格、数量、2つの注文だけです。それ以外の情報はすべて ``self.market`` "
+"から参照できます。例えば、板（``self.market.buy_order_book`` と "
+"``self.market.sell_order_book``）、価格、時刻（``self.market.get_time()``）、シミュレーター（``self.market.simulator``）、エージェント（``self.market.simulator.id2agent``）、他の市場（``self.market.simulator.markets``）です。インスタンスは独自の状態を持つこともできます（例：段階的な手数料のための、各エージェントの累積取引数量）。"
+
+#: of pams.transaction_fees.TransactionFee:19
+msgid ""
+"The market calls :func:`compute_fees` once for each execution and records"
+" the fees in :class:`pams.logs.ExecutionLog` as ``buy_transaction_fee`` "
+"and ``sell_transaction_fee``. The simulator subtracts them from the cash "
+"of the buyer and the seller. No agent receives them. Instead, the market "
+"adds both fees to the transaction fees that it collects in the time step,"
+" which :func:`pams.Market.get_transaction_fee_revenues` returns for each "
+"time step and :func:`pams.Market.get_cumulative_transaction_fee_revenue` "
+"returns as the balance up to a time step. Negative fees (rebates) reduce "
+"them."
+msgstr ""
+"市場は約定ごとに :func:`compute_fees` を1回呼び出し、手数料を "
+":class:`pams.logs.ExecutionLog` に ``buy_transaction_fee`` と "
+"``sell_transaction_fee`` "
+"として記録します。シミュレーターはそれらを買い手と売り手の現金から差し引きます。手数料を受け取るエージェントはいません。代わりに、市場は両方の手数料を、そのステップで徴収する取引手数料に加算します。ステップごとの値は"
+" :func:`pams.Market.get_transaction_fee_revenues` が、あるステップまでの収支は "
+":func:`pams.Market.get_cumulative_transaction_fee_revenue` "
+"が返します。負の手数料（リベート）はこれらを減らします。"
+
+#: of pams.transaction_fees.TransactionFee:27
+msgid ""
+"When the market executes orders, which the runner asks it to do after "
+"each order or cancel while the market is running, it first matches the "
+"best buy and sell orders as long as their prices cross and determines one"
+" execution price for all the matched pairs. Then, it executes the pairs "
+"one by one in the order in which they were matched, and "
+":func:`compute_fees` is called for each pair before the volume of the "
+"pair is subtracted from its orders. At that moment:"
+msgstr ""
+"市場が注文を約定させるとき（ランナーは、市場が稼働している間、注文や取消のたびに市場に約定を行わせます）、市場はまず、価格が交差している限り最良の買い注文と売り注文をマッチングし、マッチングしたすべての組に1つの約定価格を決めます。次に、マッチングした順に組を1つずつ約定させ、各組について、その数量が注文から差し引かれる前に"
+" :func:`compute_fees` が呼び出されます。その時点では："
+
+#: of pams.transaction_fees.TransactionFee:33
+msgid ""
+"the two orders of the pair and the orders of the later pairs are still in"
+" the order books, and their volumes still include this pair and the later"
+" pairs (only the earlier pairs are subtracted), so the order books can "
+"still be crossed;"
+msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
+
+#: of pams.transaction_fees.TransactionFee:36
+msgid ""
+"the earlier pairs of the same matching are already executed: their "
+"volumes are subtracted from their orders, the fully executed orders are "
+"removed from the order books, and the executed prices and volumes and the"
+" transaction fee revenue of the market include them;"
+msgstr "同じマッチングの前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引手数料収入にもそれらが含まれています。"
+
+#: of pams.transaction_fees.TransactionFee:39
+msgid ""
+"the cash and the asset volumes of the agents do not include any pair of "
+"the matching yet, because the simulator updates them after all the pairs "
+"are executed."
+msgstr "エージェントの現金と保有株式数には、まだこのマッチングのどの組も反映されていません。シミュレーターはすべての組が約定した後にそれらを更新するためです。"
+
+#: of pams.transaction_fees.TransactionFee:42
+msgid ""
+"Creating and setting up transaction fees does not draw random numbers "
+"from the pseudo random number generators of the runner or of the markets,"
+" and the built-in transaction fees draw none. Therefore, for the same "
+"seed, the prices and the executions are exactly the same with and without"
+" transaction fees, as long as the agents do not look at their cash (the "
+"built-in agents do not). If a transaction fee needs random numbers, "
+"create its own ``random.Random`` in :func:`setup`."
+msgstr ""
+"取引手数料の作成とセットアップでは、ランナーや市場の疑似乱数生成器から乱数を引きません。組み込みの取引手数料も乱数を引きません。そのため、エージェントが自身の現金を参照しない限り（組み込みのエージェントは参照しません）、同じシードであれば、価格と約定は取引手数料の有無にかかわらず完全に同じになります。取引手数料で乱数が必要な場合は、:func:`setup`"
+" で独自の ``random.Random`` を作成してください。"
+
+#: of pams.transaction_fees.TransactionFee:49
+msgid ":class:`pams.transaction_fees.ProportionalTransactionFee`"
+msgstr ":class:`pams.transaction_fees.ProportionalTransactionFee`"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:1
+msgid "Compute the transaction fees of an execution."
+msgstr "約定の取引手数料を計算します。"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:3
+msgid ""
+"This is called by the market for each execution, before the executed "
+"volume is subtracted from the orders (see :class:`TransactionFee` for the"
+" state of the market at that moment). You must implement this."
+msgstr ""
+"市場は約定ごとに、約定数量が注文から差し引かれる前にこのメソッドを呼び出します（その時点の市場の状態については "
+":class:`TransactionFee` を参照）。このメソッドは必ず実装する必要があります。"
+
+#: ../../source/reference/generated/transaction_fees/pams.TransactionFee.rst
+msgid "Parameters"
+msgstr "パラメータ"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:7
+msgid "executed price."
+msgstr "約定価格。"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:10
+msgid "executed volume."
+msgstr "約定数量。"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:13
+msgid "buy order. Its volume still includes the executed volume."
+msgstr "買い注文。その数量にはまだ約定数量が含まれています。"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:16
+msgid "sell order. Its volume still includes the executed volume."
+msgstr "売り注文。その数量にはまだ約定数量が含まれています。"
+
+#: ../../source/reference/generated/transaction_fees/pams.TransactionFee.rst
+msgid "Returns"
+msgstr "戻り値"
+
+#: of pams.transaction_fees.TransactionFee.compute_fees:19
+msgid ""
+"transaction fees of the buyer and of the seller, which must be finite "
+"numbers. Negative fees are rebates, which are added to the cash."
+msgstr "買い手と売り手の取引手数料。いずれも有限の数値でなければなりません。負の手数料はリベートであり、現金に加算されます。"
+
+#: ../../source/reference/generated/transaction_fees/pams.TransactionFee.rst
+msgid "Return type"
+msgstr "戻り値の型"
+
+#: of pams.transaction_fees.TransactionFee.setup:1
+msgid "Transaction fee setup. Usually be called from runner automatically."
+msgstr "取引手数料のセットアップ。通常はランナーから自動的に呼び出されます。"
+
+#: of pams.transaction_fees.TransactionFee.setup:3
+msgid ""
+"It is called right after the setup of the market. By default, it does "
+"nothing."
+msgstr "市場のセットアップの直後に呼び出されます。デフォルトでは何もしません。"
+
+#: of pams.transaction_fees.TransactionFee.setup:6
+msgid ""
+"transaction fee configuration, i.e., the \"transactionFee\" setting of "
+"the market without \"class\". Usually, automatically set from json config"
+" of simulator."
+msgstr ""
+"取引手数料の設定、つまり市場の \"transactionFee\" 設定から \"class\" "
+"を除いたもの。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。"
+
+#: of pams.transaction_fees.TransactionFee.setup:11
+#: pams.transaction_fees.TransactionFee.setup:13
+msgid "not used."
+msgstr "未使用。"
+
+#: of pams.transaction_fees.TransactionFee.setup:15
+msgid ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
+msgstr ":sphinx_autodoc_typehints_type:`\\:py\\:obj\\:\\`None\\``"
+
+#: of pams.transaction_fees.TransactionFee.setup:16
+msgid "None"
+msgstr "None"
+
