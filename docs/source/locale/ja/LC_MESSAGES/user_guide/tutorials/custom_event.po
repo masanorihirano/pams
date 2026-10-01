@@ -1,0 +1,319 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:4
+msgid "Writing an event or a market"
+msgstr "イベントや市場の作成"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:6
+msgid ""
+"Events change the simulation while it runs: the built-in events shock the"
+" fundamental price, limit order prices, halt trading or inject erroneous "
+"orders (see :ref:`config-events`). This tutorial writes an event that "
+"moves the fundamental price at random at regular intervals, like news, "
+"and then shows how to extend the market itself. The complete script is "
+":download:`tutorial_custom_event.py <code/tutorial_custom_event.py>`."
+msgstr ""
+"イベントは、実行中のシミュレーションを変化させます：組み込みのイベントは、ファンダメンタル価格にショックを与える、注文価格を制限する、売買を停止する、誤った注文を投入するといったことを行います（:ref"
+":`config-events` "
+"を参照）。このチュートリアルでは、ニュースのように一定間隔でファンダメンタル価格をランダムに動かすイベントを作成し、その後、市場自体を拡張する方法を示します。完全なスクリプトは"
+" :download:`tutorial_custom_event.py <code/tutorial_custom_event.py>` です。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:14
+msgid "How the runner uses an event"
+msgstr "ランナーによるイベントの扱い"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:16
+msgid ""
+"An event is attached to a session by listing the name of its block in the"
+" session's ``events``. For each name listed, the runner:"
+msgstr ""
+"イベントは、そのブロックの名前をセッションの ``events`` "
+"に列挙することでセッションに割り当てられます。ランナーは、列挙された各名前について次のことを行います："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:19
+msgid ""
+"creates the event. Its ``name`` is the name of the block, its ``session``"
+" is the session that lists it, and it has its own random number generator"
+" ``prng`` and the ``simulator``;"
+msgstr ""
+"イベントを作成します。その ``name`` はブロックの名前、``session`` "
+"はイベントを列挙したセッションで、イベントは各自の乱数生成器 ``prng`` と ``simulator`` を持ちます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:21
+msgid ""
+"calls ``setup(settings)`` with the block (after ``extends`` is resolved),"
+" after all the markets and agents are set up;"
+msgstr ""
+"すべての市場とエージェントのセットアップが終わった後、ブロック（``extends`` を解決した後のもの）を渡して "
+"``setup(settings)`` を呼び出します。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:23
+msgid ""
+"calls ``hook_registration()`` right after ``setup``. It returns a list of"
+" :class:`~pams.events.EventHook` that tell the simulator which methods of"
+" the event to call, and when."
+msgstr ""
+"``setup`` の直後に ``hook_registration()`` を呼び出します。これは "
+":class:`~pams.events.EventHook` のリストを返し、イベントのどのメソッドをいつ呼び出すかをシミュレーターに伝えます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:26
+msgid ""
+"Each hook has a ``hook_type`` and ``is_before``, which select the method "
+"that is called:"
+msgstr "各フックは ``hook_type`` と ``is_before`` を持ち、これらによって呼び出されるメソッドが決まります："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:32
+msgid "``hook_type``"
+msgstr "``hook_type``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:33
+msgid "``is_before=True``"
+msgstr "``is_before=True``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:34
+msgid "``is_before=False``"
+msgstr "``is_before=False``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:35
+msgid "``\"order\"``"
+msgstr "``\"order\"``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:36
+msgid ""
+"``hooked_before_order(simulator, order)``, before a market receives an "
+"order. The event can change the :class:`~pams.Order` here."
+msgstr ""
+"``hooked_before_order(simulator, order)``：市場が注文を受け取る前。イベントはここで "
+":class:`~pams.Order` を変更できます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:38
+msgid ""
+"``hooked_after_order(simulator, order_log)``, after a market has received"
+" an order."
+msgstr "``hooked_after_order(simulator, order_log)``：市場が注文を受け取った後。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:39
+msgid "``\"cancel\"``"
+msgstr "``\"cancel\"``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:40
+msgid "``hooked_before_cancel(simulator, cancel)``"
+msgstr "``hooked_before_cancel(simulator, cancel)``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:41
+msgid "``hooked_after_cancel(simulator, cancel_log)``"
+msgstr "``hooked_after_cancel(simulator, cancel_log)``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:42
+msgid "``\"execution\"``"
+msgstr "``\"execution\"``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:43
+msgid "Not allowed."
+msgstr "使用できません。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:44
+msgid ""
+"``hooked_after_execution(simulator, execution_log)``, after each "
+"execution."
+msgstr "``hooked_after_execution(simulator, execution_log)``：各約定の後。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:45
+msgid "``\"session\"``"
+msgstr "``\"session\"``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:46
+msgid ""
+"``hooked_before_session(simulator, session)``, before the first step of a"
+" session."
+msgstr "``hooked_before_session(simulator, session)``：セッションの最初のステップの前。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:47
+msgid ""
+"``hooked_after_session(simulator, session)``, after the last step of a "
+"session."
+msgstr "``hooked_after_session(simulator, session)``：セッションの最後のステップの後。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:48
+msgid "``\"market\"``"
+msgstr "``\"market\"``"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:49
+msgid ""
+"``hooked_before_step_for_market(simulator, market)``, before the agents "
+"are asked for orders in a step."
+msgstr ""
+"``hooked_before_step_for_market(simulator, "
+"market)``：ステップ内でエージェントに注文を問い合わせる前。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:50
+msgid "``hooked_after_step_for_market(simulator, market)``, at the end of a step."
+msgstr "``hooked_after_step_for_market(simulator, market)``：ステップの終わり。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:52
+msgid ""
+"The hook's ``time`` is the list of steps at which it is active. For a "
+"session hook, this is the first step of the session (before) or its last "
+"step (after). The steps are counted from the start of the simulation, not"
+" from the start of the session. With ``time=None`` (the default), the "
+"hook is active at every step of **every** session, not only in the "
+"session that lists the event."
+msgstr ""
+"フックの ``time`` "
+"は、フックが有効になるステップのリストです。セッションのフックでは、セッションの最初のステップ（前）または最後のステップ（後）です。ステップはセッションの開始からではなく、シミュレーションの開始から数えます。``time=None``"
+" （デフォルト）の場合、フックはイベントを列挙したセッションだけでなく、**すべての** セッションのすべてのステップで有効になります。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:58
+msgid ""
+"A ``\"market\"`` hook also accepts ``specific_instance`` (one "
+":class:`~pams.Market`) or ``specific_class`` (a market class) to be "
+"called only for these markets. Without them, it is called for every "
+"market."
+msgstr ""
+"``\"market\"`` フックでは、``specific_instance`` （1つの :class:`~pams.Market`）または"
+" ``specific_class`` "
+"（市場クラス）を指定して、それらの市場に対してだけ呼び出されるようにすることもできます。指定しない場合は、すべての市場に対して呼び出されます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:63
+msgid "The event"
+msgstr "イベント"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:65
+#, python-brace-format
+msgid ""
+"``NewsShock`` multiplies the fundamental price of its ``target`` market "
+"by :math:`e^{x}` every ``interval`` steps of its session, where :math:`x`"
+" is drawn from a normal distribution with mean 0 and standard deviation "
+"``jumpScale``:"
+msgstr ""
+"``NewsShock`` は、セッション中の ``interval`` ステップごとに、``target`` 市場のファンダメンタル価格を "
+":math:`e^{x}` 倍します。ここで :math:`x` は、平均0、標準偏差 ``jumpScale`` の正規分布から生成されます："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:74
+msgid ""
+"``setup`` checks and reads the keys of its block. The markets already "
+"exist, so it can look up its target with ``self.simulator.name2market``."
+msgstr ""
+"``setup`` はブロックのキーを確認して読み込みます。市場はすでに存在するため、``self.simulator.name2market``"
+" で対象の市場を検索できます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:76
+msgid ""
+"``hook_registration`` uses ``self.session`` to keep its hooks in its own "
+"session: the news hook is active at the steps ``start + interval``, "
+"``start + 2 * interval``, ... before the end of the session, and only for"
+" the target market. The session hook is active at the last step of the "
+"session. With ``time=None``, the session hook would also be called after "
+"the ``warmup`` session."
+msgstr ""
+"``hook_registration`` は、``self.session`` "
+"を使ってフックを自身のセッション内に限定します：ニュースのフックは、セッションの終わりより前のステップ ``start + "
+"interval``、``start + 2 * interval``、... "
+"で、対象の市場に対してだけ有効になります。セッションのフックは、セッションの最後のステップで有効になります。``time=None`` "
+"とすると、セッションのフックは ``warmup`` セッションの後にも呼び出されてしまいます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:80
+msgid ""
+"``change_fundamental_price`` changes the fundamental price of the current"
+" step, before the agents are asked for orders. The change is permanent: "
+"the fundamental price stays at the new level, or continues its random "
+"walk from it when the market has a ``fundamentalVolatility``."
+msgstr ""
+"``change_fundamental_price`` "
+"は、エージェントに注文を問い合わせる前に、現在のステップのファンダメンタル価格を変更します。この変化は恒久的です：ファンダメンタル価格は新しい水準にとどまるか、市場に"
+" ``fundamentalVolatility`` がある場合はその水準からランダムウォークを続けます。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:83
+msgid ""
+"The event draws its random numbers from ``self.prng``, so the simulation "
+"stays determined by its seed."
+msgstr "イベントは乱数を ``self.prng`` から生成するため、シミュレーションはシードによって決まったままです。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:87
+msgid "Using the event"
+msgstr "イベントの使用"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:89
+msgid ""
+"The ``main`` session lists the event, and the block gives its class and "
+"its parameters. The rest is the configuration of :doc:`first_simulation`:"
+msgstr ""
+"``main`` セッションがイベントを列挙し、ブロックでそのクラスとパラメータを指定します。それ以外は "
+":doc:`first_simulation` の設定と同じです："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:97
+msgid ""
+"As with agents, register the class with the runner before calling "
+"``main()``:"
+msgstr "エージェントと同様に、``main()`` を呼ぶ前にクラスをランナーに登録します："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:104
+msgid ""
+"After the run, ``runner.simulator.name2event[\"News\"]`` is the event. "
+"Running the complete script prints the summary of the event at the end of"
+" ``main``, the two time lines of ``main()``, then the fundamental price "
+"before and after each news:"
+msgstr ""
+"実行後、``runner.simulator.name2event[\"News\"]`` "
+"がこのイベントです。完全なスクリプトを実行すると、``main`` の終わりにイベントの概要を、次に ``main()`` "
+"の2行の時間を出力し、その後、各ニュースの前後のファンダメンタル価格を出力します："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:123
+msgid "The ``main`` session starts at step 100, so the first news is at step 150."
+msgstr "``main`` セッションはステップ100から始まるため、最初のニュースはステップ150です。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:127
+msgid "Writing a market"
+msgstr "市場の作成"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:129
+msgid ""
+"Markets are extended in the same way: inherit from :class:`~pams.Market`,"
+" call ``super().setup`` and read your own keys from the block. "
+"``samples/market_share`` uses this market:"
+msgstr ""
+"市場も同じように拡張します：:class:`~pams.Market` を継承し、``super().setup`` "
+"を呼び出して、ブロックから独自のキーを読み込みます。``samples/market_share`` は次の市場を使います："
+
+#: ../../source/user_guide/tutorials/custom_event.rst:136
+msgid ""
+"It sets the traded volume of step 0 from the key ``tradeVolume``. In this"
+" sample, :class:`~pams.agents.MarketShareFCNAgent` chooses the market of "
+"each order at random, weighted by the volume traded in each market since "
+"``timeWindowSize`` steps ago, so ``tradeVolume`` sets the initial market "
+"shares. The sample registers the class with "
+"``runner.class_register(cls=ExtendedMarket)``, and its configuration uses"
+" ``\"class\": \"ExtendedMarket\"`` in the market blocks."
+msgstr ""
+"この市場は、キー ``tradeVolume`` "
+"からステップ0の出来高を設定します。このサンプルでは、:class:`~pams.agents.MarketShareFCNAgent` "
+"が各注文の市場を、``timeWindowSize`` "
+"ステップ前以降に各市場で取引された出来高で重み付けしてランダムに選ぶため、``tradeVolume`` が初期の市場シェアを決めます。サンプルは"
+" ``runner.class_register(cls=ExtendedMarket)`` "
+"でクラスを登録し、その設定ファイルでは市場のブロックに ``\"class\": \"ExtendedMarket\"`` を指定しています。"
+
+#: ../../source/user_guide/tutorials/custom_event.rst:142
+msgid ""
+"Next, :doc:`custom_logger` records the results of a simulation in your "
+"own format."
+msgstr "次の :doc:`custom_logger` では、シミュレーションの結果を独自の形式で記録します。"
+

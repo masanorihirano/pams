@@ -1,0 +1,391 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:4
+msgid "Writing an agent"
+msgstr "エージェントの作成"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:6
+msgid ""
+"This tutorial writes two agents and adds them to the simulation of "
+":doc:`first_simulation`:"
+msgstr "このチュートリアルでは、2つのエージェントを作成し、:doc:`first_simulation` のシミュレーションに追加します："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:8
+msgid ""
+"``MovingAverageAgent``, a new strategy written from "
+":class:`~pams.agents.Agent`;"
+msgstr "``MovingAverageAgent``：:class:`~pams.agents.Agent` から作成する新しい戦略。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:9
+msgid "``ContrarianFCNAgent``, a small change to :class:`~pams.agents.FCNAgent`."
+msgstr "``ContrarianFCNAgent``：:class:`~pams.agents.FCNAgent` に小さな変更を加えたもの。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:11
+msgid ""
+"The complete script is :download:`tutorial_custom_agent.py "
+"<code/tutorial_custom_agent.py>`."
+msgstr ""
+"完全なスクリプトは :download:`tutorial_custom_agent.py "
+"<code/tutorial_custom_agent.py>` です。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:15
+msgid "How the runner uses an agent"
+msgstr "ランナーによるエージェントの扱い"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:17
+msgid "For each agent of the configuration, the runner:"
+msgstr "ランナーは、設定の各エージェントについて次のことを行います："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:19
+msgid ""
+"creates the agent with an ``agent_id``, a ``name`` (such as "
+"``\"MovingAverageAgents-0\"``), the ``simulator``, the ``logger``, and "
+"its own random number generator ``prng``. You rarely need to change "
+"``__init__``;"
+msgstr ""
+"``agent_id``、``name`` （``\"MovingAverageAgents-0\"`` "
+"など）、``simulator``、``logger``、および各自の乱数生成器 ``prng`` "
+"を与えてエージェントを作成します。``__init__`` を変更する必要はほとんどありません。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:22
+msgid ""
+"calls ``setup(settings, accessible_markets_ids)`` once, after all the "
+"markets and agents are created. ``settings`` is the agent's block of the "
+"configuration, after ``extends`` is resolved and without ``numAgents``, "
+"``from``, ``to`` and ``prefix``. All the agents of a group receive the "
+"same dict, so read it but do not change it. ``accessible_markets_ids`` "
+"are the IDs of the markets in the groups listed in the block's "
+"``markets``;"
+msgstr ""
+"すべての市場とエージェントが作成された後に、``setup(settings, accessible_markets_ids)`` "
+"を1回呼び出します。``settings`` は設定におけるそのエージェントのブロックで、``extends`` を解決した後の内容から "
+"``numAgents``、``from``、``to``、``prefix`` "
+"を除いたものです。グループのすべてのエージェントが同じdictを受け取るため、読み取るだけにして変更しないでください。``accessible_markets_ids``"
+" は、ブロックの ``markets`` に列挙されたグループに属する市場のIDです。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:27
+msgid ""
+"calls ``submit_orders(markets)`` in some of the steps. The agent returns "
+"the orders it wants to place or cancel, possibly none;"
+msgstr ""
+"いくつかのステップで ``submit_orders(markets)`` "
+"を呼び出します。エージェントは、出したい注文や取り消したい注文を返します（何も返さなくても構いません）。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:29
+msgid ""
+"calls ``submitted_order``, ``canceled_order`` and ``executed_order`` when"
+" a market has accepted one of its orders, has accepted one of its cancel "
+"orders, or has executed one of its orders."
+msgstr ""
+"市場がそのエージェントの注文を受け付けたとき、取消注文を受け付けたとき、注文を約定させたときに、それぞれ "
+"``submitted_order``、``canceled_order``、``executed_order`` を呼び出します。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:32
+msgid ""
+"In each step, the runner asks the agents in a random order until "
+"``maxNormalOrders`` of them (``1`` by default, see :ref:`config-"
+"sessions`) have returned at least one order. An agent that returns no "
+"order does not count, and the runner asks the next one. So, in a "
+"simulation with many agents, each agent places orders only in a few "
+"steps."
+msgstr ""
+"各ステップで、ランナーはランダムな順序でエージェントに問い合わせ、1つ以上の注文を返したエージェントの数が ``maxNormalOrders``"
+" （デフォルトは ``1``。:ref:`config-sessions` "
+"を参照）に達するまで続けます。注文を返さなかったエージェントは数に含まれず、ランナーは次のエージェントに問い合わせます。そのため、多数のエージェントがいるシミュレーションでは、各エージェントが注文を出すのは一部のステップだけです。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:37
+msgid ""
+"An agent must inherit from :class:`~pams.agents.Agent` and implement "
+"``submit_orders``. The callbacks do nothing by default."
+msgstr ""
+"エージェントは :class:`~pams.agents.Agent` を継承し、``submit_orders`` "
+"を実装する必要があります。コールバックはデフォルトでは何もしません。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:42
+msgid "Reading the parameters"
+msgstr "パラメータの読み込み"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:44
+msgid ""
+"``MovingAverageAgent`` compares the market price with the average price "
+"of the last ``windowSize`` steps. It reads its parameters in ``setup``:"
+msgstr ""
+"``MovingAverageAgent`` は、市場価格を直近 ``windowSize`` ステップの平均価格と比較します。パラメータは "
+"``setup`` で読み込みます："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:53
+msgid ""
+"``super().setup(...)`` reads ``cashAmount`` and ``assetVolume``, which "
+"every agent requires, and gives the agent its cash and its shares in each"
+" accessible market."
+msgstr ""
+"``super().setup(...)`` は、すべてのエージェントに必須の ``cashAmount`` と ``assetVolume`` "
+"を読み込み、エージェントに現金と、取引可能な各市場の株式を与えます。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:55
+msgid ""
+"Any other key of the block can be read from ``settings``. "
+":class:`~pams.utils.JsonRandom` accepts the same notation as the built-in"
+" agents, such as ``[10, 30]`` for a uniform random value (see :ref"
+":`config-jsonrandom`), and returns a float. ``int()`` truncates it, so "
+"``[10, 30]`` gives windows from 10 to 29."
+msgstr ""
+"ブロックのその他のキーは ``settings`` から読み込めます。:class:`~pams.utils.JsonRandom` "
+"は、一様乱数を表す ``[10, 30]`` など、組み込みエージェントと同じ記法を受け付け（:ref:`config-jsonrandom` "
+"を参照）、浮動小数点数を返します。``int()`` は小数部分を切り捨てるため、``[10, 30]`` "
+"からは10から29までの窓幅が得られます。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:59
+msgid ""
+"Declare the attributes of the agent in the class body and set them in "
+"``setup``."
+msgstr "エージェントの属性はクラス本体で宣言し、``setup`` で値を設定してください。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:60
+msgid ""
+"Use ``self.prng`` for every random choice of the agent, so that the "
+"simulation stays determined by its seed."
+msgstr "シミュレーションがシードによって決まるように、エージェントのランダムな選択にはすべて ``self.prng`` を使ってください。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:64
+msgid "Placing orders"
+msgstr "注文を出す"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:66
+msgid ""
+"``submit_orders`` receives every market of the simulation and returns a "
+"list of orders:"
+msgstr "``submit_orders`` はシミュレーションのすべての市場を受け取り、注文のリストを返します："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:74
+msgid "Skip the markets the agent cannot trade, with ``is_market_accessible``."
+msgstr "エージェントが取引できない市場は、``is_market_accessible`` で判定してスキップします。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:75
+msgid ""
+"Only the current step and the steps before it can be read: "
+"``market.get_market_price()`` is the price now, and "
+"``get_market_prices(times=...)`` gives the prices of the earlier steps."
+msgstr ""
+"読み出せるのは現在のステップとそれ以前のステップだけです：``market.get_market_price()`` "
+"は現在の価格で、``get_market_prices(times=...)`` はそれ以前のステップの価格を返します。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:77
+msgid ""
+"Every order needs ``agent_id=self.agent_id``: an order with another "
+"agent's ID raises ``ValueError: spoofing order is not allowed. please "
+"check agent_id in order``."
+msgstr ""
+"すべての注文に ``agent_id=self.agent_id`` が必要です：他のエージェントのIDを持つ注文は ``ValueError: "
+"spoofing order is not allowed. please check agent_id in order`` を発生させます。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:79
+msgid ""
+"A :obj:`~pams.LIMIT_ORDER` needs a ``price``, and a "
+":obj:`~pams.MARKET_ORDER` must not have one (``price=None``). ``volume`` "
+"must be positive."
+msgstr ""
+":obj:`~pams.LIMIT_ORDER` には ``price`` が必要で、:obj:`~pams.MARKET_ORDER` "
+"には価格を指定してはいけません（``price=None``）。``volume`` は正の値でなければなりません。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:81
+msgid ""
+"Round limit prices to the tick size with ``convert_to_tick_level`` and "
+"``convert_to_price``. Otherwise the market rounds them for you (buy "
+"orders down, sell orders up) with a warning."
+msgstr ""
+"指値は ``convert_to_tick_level`` と ``convert_to_price`` "
+"でティックサイズに丸めてください。そうしないと、市場が警告を出して丸めます（買い注文は切り下げ、売り注文は切り上げ）。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:83
+msgid ""
+"Without ``ttl``, an order stays in the order book until it is executed or"
+" canceled. With ``ttl=n``, it is removed once more than ``n`` steps have "
+"passed since it was placed."
+msgstr ""
+"``ttl`` がない注文は、約定するか取り消されるまで板に残ります。``ttl=n`` の場合、注文を出してから ``n`` "
+"ステップより多く経過すると板から削除されます。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:85
+msgid ""
+"To cancel an order, return ``Cancel(order=...)`` with the "
+":class:`~pams.Order` you submitted earlier. The market reduces "
+"``order.volume`` as the order is executed, so an order without ``ttl`` is"
+" still in the order book while its ``volume`` is positive. An order "
+"removed because of its ``ttl`` keeps its ``volume``. Canceling an order "
+"that is not in the order book any more is not an error."
+msgstr ""
+"注文を取り消すには、以前に出した :class:`~pams.Order` を指定した ``Cancel(order=...)`` "
+"を返します。市場は注文が約定するにつれて ``order.volume`` を減らすため、``ttl`` のない注文は、``volume`` "
+"が正である間は板に残っています。``ttl`` によって削除された注文の ``volume`` "
+"はそのまま残ります。すでに板にない注文を取り消してもエラーにはなりません。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:89
+msgid ""
+"Create a new :class:`~pams.Order` for every order: submitting the same "
+"object again raises ``ValueError: the order is already submitted``."
+msgstr ""
+"注文ごとに新しい :class:`~pams.Order` を作成してください：同じオブジェクトを再び出すと ``ValueError: the "
+"order is already submitted`` が発生します。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:91
+msgid ""
+"The orders of one agent are processed in the order of the list, so the "
+"cancel above is processed before the new order."
+msgstr "1つのエージェントの注文はリストの順に処理されるため、上の取消注文は新しい注文より先に処理されます。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:93
+msgid ""
+"The market does not check cash or shares: an agent can buy without cash "
+"and sell shares it does not have. Add such checks to ``submit_orders`` if"
+" your model needs them."
+msgstr ""
+"市場は現金や株式を確認しません：エージェントは現金がなくても買うことができ、保有していない株式も売ることができます。モデルに必要であれば、そのような確認を"
+" ``submit_orders`` に追加してください。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:98
+msgid "Following the results"
+msgstr "結果の追跡"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:100
+msgid "The callbacks tell the agent what happened to its orders:"
+msgstr "コールバックは、注文がどうなったかをエージェントに知らせます："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:108
+msgid ""
+"``executed_order`` is called for both the buyer and the seller of an "
+"execution, after their cash and shares are updated. There is no callback "
+"for an order that expires because of its ``ttl``."
+msgstr ""
+"``executed_order`` は、約定の買い手と売り手の両方について、現金と株式が更新された後に呼び出されます。``ttl`` "
+"によって失効した注文に対するコールバックはありません。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:113
+msgid "Changing an existing agent"
+msgstr "既存のエージェントの変更"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:115
+msgid ""
+"To change a built-in agent, inherit from it and override only what "
+"differs. :class:`~pams.agents.FCNAgent` combines a fundamental, a chart "
+"and a noise term. Its chart term follows the past trend when "
+"``is_chart_following`` is ``True``, which is the default. "
+"``ContrarianFCNAgent`` reverses it:"
+msgstr ""
+"組み込みエージェントを変更するには、それを継承し、異なる部分だけをオーバーライドします。:class:`~pams.agents.FCNAgent`"
+" は、ファンダメンタリスト、チャーティスト、ノイズの各成分を組み合わせます。チャーティスト成分は、``is_chart_following`` が"
+" ``True`` （デフォルト）のとき過去のトレンドに追随します。``ContrarianFCNAgent`` はこれを反転させます："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:126
+msgid "Using the agents"
+msgstr "エージェントの使用"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:128
+msgid ""
+"The configuration adds a group of each new agent to the one of "
+":doc:`first_simulation`:"
+msgstr "設定では、:doc:`first_simulation` の設定に、新しいエージェントのグループを1つずつ追加します："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:135
+msgid ""
+"``ContrarianAgents`` copies the block of ``FCNAgents`` with ``extends``, "
+"then changes its class, its number of agents and its ``chartWeight`` (the"
+" chart term does nothing when its weight is 0). ``MovingAverageAgents`` "
+"gives the keys that ``Agent.setup`` requires, and the keys that "
+"``MovingAverageAgent`` reads."
+msgstr ""
+"``ContrarianAgents`` は ``extends`` で ``FCNAgents`` "
+"のブロックをコピーし、クラス、エージェント数、``chartWeight`` "
+"を変更します（重みが0のとき、チャーティスト成分は何もしません）。``MovingAverageAgents`` "
+"は、``Agent.setup`` が必要とするキーと、``MovingAverageAgent`` が読み込むキーを指定します。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:140
+msgid ""
+"Register the new classes with the runner before calling ``main()``. The "
+"``class`` of a block is the name of the registered class:"
+msgstr "``main()`` を呼ぶ前に、新しいクラスをランナーに登録します。ブロックの ``class`` には登録したクラスの名前を指定します："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:148
+msgid ""
+"``report(run_simulation(seed=42))`` prints the two time lines of "
+"``main()``, then:"
+msgstr "``report(run_simulation(seed=42))`` は、``main()`` の2行の時間を出力した後、次のように出力します："
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:163
+msgid ""
+"The moving average agents place no order in ``warmup``: the market price "
+"does not move while orders are not executed, so it equals its average. In"
+" ``main``, only one agent places orders in each step, as explained above,"
+" and the agents share these steps with the 120 FCN agents. To make them "
+"trade more, raise ``maxNormalOrders`` in the sessions, or add more of "
+"them."
+msgstr ""
+"移動平均エージェントは ``warmup`` "
+"では注文を出しません：注文が約定しない間は市場価格が動かないため、市場価格がその平均と等しくなるからです。``main`` "
+"では、上で説明したとおり各ステップで注文を出すエージェントは1つだけで、移動平均エージェントはこれらのステップを120体のFCNエージェントと分け合います。より多く取引させるには、セッションの"
+" ``maxNormalOrders`` を大きくするか、移動平均エージェントを増やしてください。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:168
+msgid ""
+"Class names must be unique: do not name your class like a built-in class,"
+" such as ``FCNAgent``. :ref:`config-user-classes` gives more details."
+msgstr ""
+"クラス名は一意でなければなりません：``FCNAgent`` のような組み込みクラスと同じ名前をクラスに付けないでください。詳しくは :ref"
+":`config-user-classes` を参照してください。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:173
+msgid "Notes"
+msgstr "補足"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:175
+msgid ""
+"An agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is a"
+" high-frequency agent. The runner asks high-frequency agents after the "
+"orders of each normal agent, as set by ``maxHighFrequencyOrders`` and "
+"``highFrequencySubmitRate`` (see :ref:`config-sessions`)."
+msgstr ""
+":class:`~pams.agents.HighFrequencyAgent` "
+"を継承したエージェントは高頻度エージェントです。ランナーは、``maxHighFrequencyOrders`` と "
+"``highFrequencySubmitRate`` の設定に従い、各通常エージェントの注文の後に高頻度エージェントに問い合わせます（:ref"
+":`config-sessions` を参照）。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:178
+msgid ""
+"``MovingAverageAgent`` keeps its last orders in an attribute set in "
+"``submit_orders``. This works with "
+":class:`~pams.runners.SequentialRunner` and the thread runner, but not "
+"with the process runner, which loses such changes (see :ref:`config-"
+"parallel`)."
+msgstr ""
+"``MovingAverageAgent`` は、``submit_orders`` で設定する属性に直前の注文を保持します。これは "
+":class:`~pams.runners.SequentialRunner` "
+"とスレッドランナーでは動作しますが、そのような変更が失われるプロセスランナーでは動作しません（:ref:`config-parallel` "
+"を参照）。"
+
+#: ../../source/user_guide/tutorials/custom_agent.rst:182
+msgid ""
+"Next, :doc:`custom_event` changes the market during the simulation, and "
+":doc:`custom_logger` records the trades."
+msgstr ""
+"次の :doc:`custom_event` ではシミュレーション中に市場を変化させ、:doc:`custom_logger` "
+"では取引を記録します。"
+

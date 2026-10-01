@@ -1,12 +1,12 @@
 PROJECT_NAME := pams
-RUN := poetry run
+RUN := uv run
 
 .PHONY: check
 check: test lint mypy
 
 .PHONY: install
 install:
-	@poetry install
+	@uv sync
 
 .PHONY: test
 test: pytest doctest
@@ -56,11 +56,11 @@ format-isort:
 
 .PHONY: publish
 publish:
-	@poetry publish --build
+	@uv build --clear && uv publish
 
 .PHONY: test-publish
 test-publish:
-	@poetry publish --build -r testpypi
+	@uv build --clear && uv publish --publish-url https://test.pypi.org/legacy/
 
 .PHONY: doc-intl
 doc-intl:

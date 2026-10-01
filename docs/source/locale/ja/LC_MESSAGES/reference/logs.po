@@ -54,8 +54,10 @@ msgstr "取消タイプのログクラス。"
 #: ../../source/reference/logs.rst:18:<autosummary>:1
 msgid ""
 ":py:obj:`logs.ExecutionLog <pams.logs.ExecutionLog>`\\ \\(market\\_id\\, "
-"time\\, ...\\)"
+"time\\, ...\\[\\, ...\\]\\)"
 msgstr ""
+":py:obj:`logs.ExecutionLog <pams.logs.ExecutionLog>`\\ \\(market\\_id\\, "
+"time\\, ...\\[\\, ...\\]\\)"
 
 #: ../../source/reference/logs.rst:18:<autosummary>:1
 msgid "Execution type log class."

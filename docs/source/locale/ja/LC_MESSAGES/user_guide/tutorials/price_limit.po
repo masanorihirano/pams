@@ -1,0 +1,381 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:4
+msgid "Price limits"
+msgstr "値幅制限"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:6
+msgid ""
+"A price limit keeps the prices of orders within a band around a reference"
+" price. This tutorial follows the Plham tutorials `PriceLimitMain "
+"<https://plham.github.io/tutorial/PriceLimitMain>`__ and "
+"`PriceLimitMain_UseCases "
+"<https://plham.github.io/tutorial/PriceLimitMain_UseCases>`__: it runs "
+"the same market with and without a price limit, measures how long the "
+"price stays at a limit, and checks whether trend-following agents make "
+"these stays longer. The complete script is "
+":download:`tutorial_price_limit.py <code/tutorial_price_limit.py>`. It "
+"needs `matplotlib <https://matplotlib.org/>`_ for the plot, which is not "
+"installed with PAMS (``pip install matplotlib``)."
+msgstr ""
+"値幅制限は、注文の価格を基準価格の周りの価格帯の中に収めます。このチュートリアルは、Plhamのチュートリアル `PriceLimitMain "
+"<https://plham.github.io/tutorial/PriceLimitMain>`__ と "
+"`PriceLimitMain_UseCases "
+"<https://plham.github.io/tutorial/PriceLimitMain_UseCases>`__ "
+"に沿っています：同じ市場を値幅制限ありとなしで実行し、価格が制限値に張り付く期間を測り、トレンド追随型のエージェントがこの期間を長くするかどうかを確かめます。完全なスクリプトは"
+" :download:`tutorial_price_limit.py <code/tutorial_price_limit.py>` "
+"です。プロットには `matplotlib <https://matplotlib.org/>`_ "
+"が必要ですが、これはPAMSと一緒にはインストールされません（``pip install matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:17
+msgid "The model"
+msgstr "モデル"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:19
+msgid ""
+"The market has 100 :class:`~pams.agents.FCNAgent` agents. Each agent "
+"expects a future price from a weighted mix of three terms: the gap to the"
+" fundamental price, the recent trend (the chart term) and noise. It "
+"places a buy order below its expected price if this price is above the "
+"market price, and a sell order above it otherwise."
+msgstr ""
+"市場には100体の :class:`~pams.agents.FCNAgent` "
+"エージェントがいます。各エージェントは、ファンダメンタル価格との乖離、直近のトレンド（チャート成分）、ノイズという3つの成分を重み付けして組み合わせ、将来の価格を予想します。この予想価格が市場価格より高ければ予想価格より低い価格で買い注文を出し、そうでなければ予想価格より高い価格で売り注文を出します。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:23
+msgid ""
+":class:`~pams.events.PriceLimitRule` checks the price of every limit "
+"order before the market receives it. Let :math:`P_0` be the market price "
+"at step 0 and :math:`r` the rate ``triggerChangeRate``. An order priced "
+"at :math:`P_0 (1 + r)` or above gets the price :math:`P_0 (1 + r)`, and "
+"an order priced at :math:`P_0 (1 - r)` or below gets the price :math:`P_0"
+" (1 - r)`. Market orders are not changed. Here :math:`P_0 = 300` and "
+":math:`r = 0.05`. The agents of this tutorial place only limit orders, so"
+" all their orders are priced between 285 and 315, and so are all the "
+"trades."
+msgstr ""
+":class:`~pams.events.PriceLimitRule` "
+"は、市場が指値注文を受け取る前に、すべての指値注文の価格を調べます。ステップ0における市場価格を :math:`P_0`、率 "
+"``triggerChangeRate`` を :math:`r` とします。価格が :math:`P_0 (1 + r)` 以上の注文は価格が "
+":math:`P_0 (1 + r)` に、価格が :math:`P_0 (1 - r)` 以下の注文は価格が :math:`P_0 (1 - "
+"r)` になります。成行注文は変更されません。ここでは :math:`P_0 = 300`、:math:`r = 0.05` "
+"です。このチュートリアルのエージェントは指値注文しか出さないため、その注文の価格はすべて285から315の間にあり、約定もすべてこの範囲で起こります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:30
+msgid ""
+"Once the price reaches a limit, it tends to stay there. When many agents "
+"expect a price above 315, their buy orders above 315 all become buy "
+"orders at 315, and so do the sell orders above 315. They trade with each "
+"other at exactly 315 until the agents change their minds. Trend followers"
+" keep expecting the price to go on in the same direction, so they should "
+"keep the price at the limit longer."
+msgstr "価格は一度制限値に達すると、そこに張り付きやすくなります。多くのエージェントが315より高い価格を予想すると、315より高い買い注文はすべて315の買い注文になり、315より高い売り注文も同じく315になります。これらの注文は、エージェントが考えを変えるまで、ちょうど315で互いに約定します。トレンド追随型のエージェントは価格が同じ方向に動き続けると予想し続けるため、価格をより長く制限値に張り付かせるはずです。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:37
+msgid "The configuration"
+msgstr "設定"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:39
+msgid ""
+"The configuration is ``samples/price_limit/config.json`` of the "
+"repository, written as a Python dict:"
+msgstr "設定は、リポジトリの ``samples/price_limit/config.json`` をPythonのdictとして書いたものです："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:46
+msgid ""
+"The first session (steps 0 to 99) only fills the order book. The second "
+"session (steps 100 to 599) also executes the orders and lists the rule in"
+" its ``events``."
+msgstr ""
+"最初のセッション（ステップ0から99）は板を埋めるだけです。2番目のセッション（ステップ100から599）では注文の約定も行い、その "
+"``events`` にルールを列挙しています。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:48
+#, python-brace-format
+msgid ""
+"``{\"expon\": [0.2]}`` draws the weight of each agent from an exponential"
+" distribution with mean 0.2 (see :ref:`config-jsonrandom`). With a "
+"fundamental weight of 0.2, a chart weight of 0 and a noise weight of 1.0,"
+" the agents mostly follow noise."
+msgstr ""
+"``{\"expon\": [0.2]}`` は、各エージェントの重みを平均0.2の指数分布から抽出します（:ref:`config-"
+"jsonrandom` "
+"を参照）。ファンダメンタル成分の重みが0.2、チャート成分の重みが0、ノイズ成分の重みが1.0なので、エージェントは主にノイズに従います。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:51
+msgid ""
+"The market has no ``fundamentalVolatility``, so the fundamental price "
+"stays at 300."
+msgstr "市場には ``fundamentalVolatility`` がないため、ファンダメンタル価格は300のまま変わりません。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:53
+msgid "Every key is explained in :ref:`config-events` and :ref:`config-agents`."
+msgstr "各キーの説明は :ref:`config-events` と :ref:`config-agents` にあります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:57
+msgid "Running it"
+msgstr "実行"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:59
+msgid ""
+"``run_simulation`` changes three values of a copy of the configuration: "
+"whether the rule is on, the mean chart weight of the agents, and the "
+"length of the second session:"
+msgstr ""
+"``run_simulation`` "
+"は、設定のコピーについて、ルールを有効にするかどうか、エージェントのチャート成分の重みの平均、2番目のセッションの長さという3つの値を変更します："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:66
+msgid ""
+"A rule with ``\"enabled\": False`` does nothing. It still draws its "
+"random numbers, so a run with the rule off is the same as the run with "
+"the rule on until the rule changes its first order."
+msgstr ""
+"``\"enabled\": False`` "
+"のルールは何もしません。それでも乱数は引くため、ルールを無効にした実行は、ルールが最初の注文を変更するまで、ルールを有効にした実行と同じになります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:69
+msgid ""
+"``limit_stats`` reads the prices of the second session and counts the "
+"steps at each limit:"
+msgstr "``limit_stats`` は2番目のセッションの価格を読み取り、各制限値にあるステップ数を数えます："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:75
+msgid ""
+"A price counts as at a limit when it is within the tick size (0.00001) of"
+" it. Without the rule, prices beyond the limits also count."
+msgstr "価格は、制限値からティックサイズ（0.00001）以内にあるとき、制限値にあるとみなします。ルールがない場合は、制限値を超えた価格も数えます。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:77
+msgid ""
+"``longest`` is the longest run of consecutive steps at a limit. A step "
+"without trades keeps the last price, so it counts too."
+msgstr ""
+"``longest`` "
+"は、価格が連続して制限値にあるステップ数の最大値です。約定のないステップでは直前の価格が引き継がれるため、そのステップも数えます。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:79
+msgid ""
+"``activation_count`` of the rule is the number of orders whose price it "
+"changed. The rule is active from step 0 whichever session lists it, so "
+"this count includes the orders of the first session."
+msgstr ""
+"ルールの ``activation_count`` "
+"は、ルールが価格を変更した注文の数です。ルールはどのセッションに列挙されていてもステップ0から有効なので、この数には最初のセッションの注文も含まれます。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:81
+msgid ""
+"A disabled event is not added to ``simulator.name2event``, so the count "
+"is 0 without the rule."
+msgstr "無効なイベントは ``simulator.name2event`` に追加されないため、ルールがない場合、この数は0になります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:85
+msgid "How long the price stays at a limit"
+msgstr "価格が制限値に張り付く期間"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:87
+msgid ""
+"The script first runs three cases with seed 42: the rule on, the rule "
+"off, and the rule on with a mean chart weight of 1.0. It prints:"
+msgstr "スクリプトはまず、シード42で3つのケースを実行します：ルールあり、ルールなし、そしてチャート成分の重みの平均を1.0にしたルールありです。出力は次のとおりです："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:97
+msgid ""
+"Without the rule, the price moves between 245.47 and 401.56. It is at or "
+"above 315 in 102 of the 500 steps, and at or below 285 in 50 steps. With "
+"the rule, the price never leaves the band: it is at 315 in 99 steps and "
+"at 285 in 34 steps, and the rule changed the prices of 296 orders."
+msgstr "ルールがない場合、価格は245.47から401.56の間を動きます。500ステップのうち102ステップで315以上、50ステップで285以下になります。ルールがある場合、価格は価格帯から出ません：315にあるのが99ステップ、285にあるのが34ステップで、ルールは296件の注文の価格を変更しました。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:101
+msgid ""
+"The limit does not make extreme prices rarer: the price is at a limit in "
+"133 steps, against 152 steps at or beyond one without the rule. It only "
+"cuts off the extreme values. In this run the price does not stay at one "
+"limit for long either. It arrives at a limit 32 times (21 times at 315 "
+"and 11 times at 285), and its longest stay is 20 steps."
+msgstr "値幅制限によって極端な価格が少なくなるわけではありません：価格が制限値にあるのは133ステップで、ルールがない場合に制限値またはその外側にあったのは152ステップです。制限は極端な値を切り取るだけです。また、この実行では価格が一方の制限値に長く張り付くこともありません。価格は32回（315に21回、285に11回）制限値に到達し、最長の張り付き期間は20ステップです。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:106
+msgid ""
+"The upper panel of the figure shows these two runs. Their prices are the "
+"same until step 147, when the price first reaches a limit:"
+msgstr "図の上段はこの2つの実行を示しています。両者の価格は、価格が初めて制限値に達するステップ147まで同じです："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:109
+msgid ""
+"Upper panel: without the limit the price reaches 400 near step 360 and "
+"falls to 245 near step 530, while\n"
+"with the limit it stays between the dashed lines at 285 and 315. Lower "
+"panel: with a chart weight of 1.0\n"
+"the price moves more slowly and stays at or near 285 from about step 500 "
+"to the end."
+msgstr "上段：制限がない場合、価格はステップ360付近で400に達し、ステップ530付近で245まで下がります。制限がある場合、価格は285と315の破線の間にとどまります。下段：チャート成分の重みが1.0の場合、価格はよりゆっくり動き、ステップ500付近から最後まで285またはその近くにとどまります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:116
+msgid "Stronger trend followers"
+msgstr "より強いトレンド追随"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:118
+msgid ""
+"The third case raises the mean chart weight from 0 to 1.0. An agent "
+"divides its expected return by the sum of its three weights, so a larger "
+"chart weight also makes the noise count less. In the lower panel of the "
+"figure, the price moves more slowly. It reaches 315 at step 352 and stays"
+" there until step 361, then comes back to 315 twice, the last time at "
+"step 376. It reaches 285 at step 502, and the last 54 steps are all at "
+"285: the run ends while the price is still at the limit."
+msgstr "3つ目のケースでは、チャート成分の重みの平均を0から1.0に上げます。エージェントは予想リターンを3つの重みの合計で割るため、チャート成分の重みを大きくすると、ノイズの影響も小さくなります。図の下段では、価格はよりゆっくり動きます。ステップ352で315に達してステップ361までとどまり、その後2回315に戻ります。最後に戻るのはステップ376です。ステップ502で285に達し、最後の54ステップはすべて285です：価格が制限値に張り付いたまま実行が終わります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:124
+msgid ""
+"One run is not enough to compare the cases, so the script repeats the "
+"runs with the rule on for the seeds 42 to 51 and the mean chart weights "
+"0, 0.5 and 1.0. It prints the means over the 10 seeds, then the longest "
+"stay of each seed:"
+msgstr "1回の実行ではケースを比較するのに十分でないため、スクリプトはルールありの実行を、シード42から51とチャート成分の重みの平均0、0.5、1.0で繰り返します。10個のシードでの平均を出力し、続いて各シードの最長の張り付き期間を出力します："
+
+#: ../../source/user_guide/tutorials/price_limit.rst:139
+msgid ""
+"With stronger trend followers, the longest stay is longer on average: "
+"35.2 steps with a chart weight of 1.0 against 16.4 steps without trend "
+"followers. This is the effect the Plham tutorial describes."
+msgstr "トレンド追随型のエージェントが強いほど、最長の張り付き期間は平均して長くなります：チャート成分の重みが1.0では35.2ステップで、トレンド追随型のエージェントがいない場合の16.4ステップより長くなります。これはPlhamのチュートリアルが述べている効果です。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:141
+msgid ""
+"The effect varies a lot from seed to seed. With a chart weight of 1.0, "
+"six of the ten seeds have a longest stay of 16 steps or fewer, which is "
+"common without trend followers too. The mean comes mostly from the seeds "
+"45 (94 steps) and 46 (80 steps)."
+msgstr "この効果はシードによって大きく異なります。チャート成分の重みが1.0の場合、10個のシードのうち6個では最長の張り付き期間が16ステップ以下で、これはトレンド追随型のエージェントがいない場合にもよく見られる値です。平均を押し上げているのは主にシード45（94ステップ）とシード46（80ステップ）です。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:144
+msgid ""
+"Three of the stays (seeds 42, 46 and 48) last until the end of the run, "
+"so a longer run could make them longer. The Plham tutorial suggests about"
+" 5000 steps if the price does not reach a limit within 500 steps. The "
+"runs here keep the 500 steps of the configuration."
+msgstr "張り付きのうち3つ（シード42、46、48）は実行の終わりまで続いているため、実行を長くすればさらに長くなる可能性があります。Plhamのチュートリアルは、500ステップ以内に価格が制限値に達しない場合、5000ステップ程度にすることを勧めています。ここでの実行は、設定の500ステップのままです。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:147
+msgid ""
+"The price spends fewer steps at a limit in total with trend followers "
+"(93.2 against 131.7), but in longer stays."
+msgstr "トレンド追随型のエージェントがいると、価格が制限値にあるステップ数の合計は少なくなります（131.7に対して93.2）が、1回ごとの張り付きは長くなります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:150
+msgid ""
+"The script does not run the case without the limit and with a chart "
+"weight of 1.0. With such strong trend followers and nothing to stop them,"
+" the price runs away: for seed 42 the run stops with an "
+"``OverflowError``, and for the seeds 43 and 44 the price falls to "
+"0.00001, the tick size."
+msgstr ""
+"スクリプトは、制限なしでチャート成分の重みを1.0にしたケースは実行しません。これほど強いトレンド追随型のエージェントがいて、それを止めるものがないと、価格は発散します：シード42では実行が"
+" ``OverflowError`` で停止し、シード43と44では価格がティックサイズである0.00001まで下がります。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:156
+msgid "Running the script"
+msgstr "スクリプトの実行"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:158
+msgid ""
+"Running the complete script with ``python tutorial_price_limit.py`` "
+"prints the two tables above and writes ``price_limit_prices.png`` to the "
+"current directory. It runs 33 simulations of 600 steps."
+msgstr ""
+"完全なスクリプトを ``python tutorial_price_limit.py`` "
+"で実行すると、上の2つの表を出力し、カレントディレクトリに ``price_limit_prices.png`` "
+"を書き出します。600ステップのシミュレーションを33回実行します。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:161
+msgid ""
+"A trading halt stops the trading for a while instead of moving the order "
+"prices: see :ref:`tutorial-trading-halt`."
+msgstr "売買停止は、注文の価格を動かす代わりに、しばらくの間取引を止めます：:ref:`tutorial-trading-halt` を参照してください。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:166
+msgid "Differences from Plham"
+msgstr "Plhamとの違い"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:168
+msgid ""
+"Plham's tutorial limits the prices in two places: its agents keep their "
+"own orders inside the band, and the market enforces the band too. PAMS "
+"has only the market side. The :class:`~pams.agents.FCNAgent` agents do "
+"not know about the limit, and :class:`~pams.events.PriceLimitRule` moves "
+"their orders."
+msgstr ""
+"Plhamのチュートリアルは価格を2か所で制限します：エージェントが自分の注文を価格帯の中に収め、市場も価格帯を強制します。PAMSにあるのは市場側だけです。:class:`~pams.agents.FCNAgent`"
+" エージェントは制限を知らず、:class:`~pams.events.PriceLimitRule` がその注文を動かします。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:171
+msgid ""
+"Plham takes the reference price from a reference market. PAMS compares "
+"each market with its own price at step 0, which never changes, and "
+"ignores the ``referenceMarket`` key of older configurations with a "
+"warning."
+msgstr ""
+"Plhamは基準価格を参照市場から取ります。PAMSは各市場を、それ自身のステップ0の価格（この価格は変わりません）と比べ、古い設定にある "
+"``referenceMarket`` キーは警告を出したうえで無視します。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:173
+msgid ""
+"The numbers above are from PAMS with the seeds 42 to 51, and they do not "
+"match the figures of the Plham tutorial. In its first run, the price "
+"stays at the upper limit for a while from near step 200, then at the "
+"lower limit from near step 400. The runs here do not show this pattern: "
+"the price reaches the limits many more times, and without trend followers"
+" the longest stay in the ten seeds is 43 steps."
+msgstr "上の数値はシード42から51でのPAMSの結果で、Plhamのチュートリアルの図とは一致しません。Plhamの最初の実行では、価格はステップ200付近からしばらく上限に張り付き、その後ステップ400付近から下限に張り付きます。ここでの実行ではこのパターンは見られません：価格が制限値に達する回数はずっと多く、トレンド追随型のエージェントがいない場合、10個のシードでの最長の張り付き期間は43ステップです。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:180
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:182
+msgid ""
+"水田孝信, 和泉潔, 八木勲, 吉村忍 (Mizuta, Izumi, Yagi and Yoshimura) (2013). "
+"人工市場を用いた値幅制限・空売り規制・アップティックルールの検証と最適な制度の設計. *IEEJ Transactions on "
+"Electronics, Information and Systems*, 133(9), 1694–1700. "
+"`doi:10.1541/ieejeiss.133.1694 "
+"<https://doi.org/10.1541/ieejeiss.133.1694>`__. The Plham tutorial lists "
+"a 2009 version of this study."
+msgstr ""
+"水田孝信, 和泉潔, 八木勲, 吉村忍 (Mizuta, Izumi, Yagi and Yoshimura) (2013). "
+"人工市場を用いた値幅制限・空売り規制・アップティックルールの検証と最適な制度の設計. *IEEJ Transactions on "
+"Electronics, Information and Systems*, 133(9), 1694–1700. "
+"`doi:10.1541/ieejeiss.133.1694 "
+"<https://doi.org/10.1541/ieejeiss.133.1694>`__. "
+"Plhamのチュートリアルには、この研究の2009年版が挙げられています。"
+
+#: ../../source/user_guide/tutorials/price_limit.rst:187
+msgid ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. The FCN agents come from this model."
+msgstr ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. FCNエージェントはこのモデルに由来します。"
+

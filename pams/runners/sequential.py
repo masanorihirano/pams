@@ -30,6 +30,7 @@ from ..order import Cancel
 from ..order import Order
 from ..session import Session
 from ..simulator import Simulator
+from ..transaction_fees import TransactionFee
 from ..utils.class_finder import find_class
 from ..utils.json_extends import json_extends
 from .base import Runner
@@ -125,6 +126,11 @@ class SequentialRunner(Runner):
             prefix = name + ("-" if n_entities > 1 else "")
         if "class" not in group_settings:
             raise ValueError(f"class is not defined for {name}")
+        if not isinstance(group_settings["class"], (str, type)):
+            raise ValueError(
+                f"class for {name} must be a class name (str) or a class, "
+                f"but {group_settings['class']!r} is given"
+            )
         group_class: Type = find_class(
             name=group_settings["class"], optional_class_list=self.registered_classes
         )
@@ -136,8 +142,51 @@ class SequentialRunner(Runner):
             group_class,
         )
 
+    def _parse_transaction_fee(
+        self, name: str, market_settings: Dict
+    ) -> Tuple[Optional[Type[TransactionFee]], Dict]:
+        """Parse the transaction fee setting of a market group (internal method).
+
+        Args:
+            name (str): name of the market group in the config.
+            market_settings (Dict): the extended settings of the market group.
+
+        Returns:
+            Tuple[Optional[Type[TransactionFee]], Dict]: the transaction fee class, or None if
+            "transactionFee" is absent or null, and its settings without "class".
+
+        """
+        fee_settings: Any = market_settings.get("transactionFee")
+        if fee_settings is None:
+            return None, {}
+        if not isinstance(fee_settings, dict):
+            raise ValueError(
+                f"{name}.transactionFee must be an object or null, but {fee_settings!r} is given"
+            )
+        if "class" not in fee_settings:
+            raise ValueError(f"class is not defined for {name}.transactionFee")
+        if not isinstance(fee_settings["class"], (str, type)):
+            raise ValueError(
+                f"class for {name}.transactionFee must be a class name (str) or a class, "
+                f"but {fee_settings['class']!r} is given"
+            )
+        fee_class: Type = find_class(
+            name=fee_settings["class"], optional_class_list=self.registered_classes
+        )
+        if not isinstance(fee_class, type) or not issubclass(fee_class, TransactionFee):
+            raise ValueError(
+                f"transaction fee class for {name} does not inherit TransactionFee class"
+            )
+        return fee_class, {
+            key: value for key, value in fee_settings.items() if key != "class"
+        }
+
     def _generate_markets(self, market_type_names: List[str]) -> None:
         """Generate markets (internal method).
+
+        If a market group has "transactionFee", an instance of its class is created for each market
+        of the group and set to ``market.transaction_fee``. Its setup is called right after the setup
+        of the market.
 
         Args:
             market_type_names (List[str]): name list of market type.
@@ -151,7 +200,9 @@ class SequentialRunner(Runner):
             market_settings, ids, numbered, prefix, market_class = self._parse_group(
                 name=name, count_key="numMarkets"
             )
-            if not issubclass(market_class, Market):
+            if not isinstance(market_class, type) or not issubclass(
+                market_class, Market
+            ):
                 raise ValueError(
                     f"market class for {name} does not inherit Market class"
                 )
@@ -169,6 +220,9 @@ class SequentialRunner(Runner):
             fundamental_volatility: float = 0.0
             if "fundamentalVolatility" in market_settings:
                 fundamental_volatility = float(market_settings["fundamentalVolatility"])
+            fee_class, fee_settings = self._parse_transaction_fee(
+                name=name, market_settings=market_settings
+            )
 
             for i in ids:
                 market = market_class(
@@ -190,6 +244,12 @@ class SequentialRunner(Runner):
                 self._pending_setups.append(
                     (market.setup, {"settings": market_settings})
                 )
+                if fee_class is not None:
+                    transaction_fee = fee_class(market=market)
+                    market.transaction_fee = transaction_fee
+                    self._pending_setups.append(
+                        (transaction_fee.setup, {"settings": fee_settings})
+                    )
 
     def _generate_agents(self, agent_type_names: List[str]) -> None:
         """Generate agents (internal method).
@@ -206,7 +266,7 @@ class SequentialRunner(Runner):
             agent_settings, ids, numbered, prefix, agent_class = self._parse_group(
                 name=name, count_key="numAgents"
             )
-            if not issubclass(agent_class, Agent):
+            if not isinstance(agent_class, type) or not issubclass(agent_class, Agent):
                 raise ValueError(f"agent class for {name} does not inherit Agent class")
             if "markets" not in agent_settings:
                 raise ValueError(f"markets is required in {name}")
@@ -317,11 +377,21 @@ class SequentialRunner(Runner):
                     )
                     if "class" not in event_setting:
                         raise ValueError(f"class is required in {event_name}")
-                    event_class_name = event_setting["class"]
+                    if not isinstance(event_setting["class"], (str, type)):
+                        raise ValueError(
+                            f"class for {event_name} must be a class name (str) "
+                            f"or a class, but {event_setting['class']!r} is given"
+                        )
                     event_class: Type[EventABC] = find_class(
-                        name=event_class_name,
+                        name=event_setting["class"],
                         optional_class_list=self.registered_classes,
                     )
+                    if not isinstance(event_class, type) or not issubclass(
+                        event_class, EventABC
+                    ):
+                        raise ValueError(
+                            f"event class for {event_name} does not inherit EventABC class"
+                        )
                     event = event_class(
                         event_id=i_event,
                         prng=random.Random(self._prng.randint(0, 2**31)),
@@ -379,6 +449,115 @@ class SequentialRunner(Runner):
 
         _ = [func(**kwargs) for func, kwargs in self._pending_setups]
 
+    def _get_placed_order_to_cancel(self, cancel: Cancel) -> Optional[Order]:
+        """Get the order placed in the order book that a cancel order refers to (internal method).
+
+        Order books find the order to cancel by equality, and :func:`pams.order.Order.__eq__` does not compare
+        agent IDs. Therefore, the returned order can be another object than ``cancel.order`` and can have
+        another agent ID.
+
+        Args:
+            cancel (Cancel): cancel order.
+
+        Returns:
+            Order, Optional: the order equal to ``cancel.order`` in the buy or sell order book of its market, or
+            None if the market does not exist or the order is not in the order book, e.g., because it has already
+            been executed or canceled, or has expired.
+
+        """
+        market: Optional[Market] = self.simulator.id2market.get(cancel.market_id)
+        if market is None:
+            return None
+        order_book = (
+            market.buy_order_book if cancel.order.is_buy else market.sell_order_book
+        )
+        return next(
+            (order for order in order_book.priority_queue if order == cancel.order),
+            None,
+        )
+
+    def _check_submitted_orders(
+        self, agent: Agent, orders: List[Union[Order, Cancel]]
+    ) -> None:
+        """Check the orders submitted by an agent (internal method).
+
+        Every order has to be submitted by the agent itself and be for an existing market that the agent can
+        access. For a cancel order, the order to be canceled is checked, and the order that it cancels in the
+        order book has to be placed by the agent itself (see ``_check_cancel_ownership``). Orders created by
+        events are not checked because they are not submitted by agents.
+
+        Args:
+            agent (Agent): agent that submitted the orders.
+            orders (List[Union[Order, Cancel]]): orders submitted by the agent.
+
+        Returns:
+            None
+
+        """
+        if sum(order.agent_id != agent.agent_id for order in orders) > 0:
+            raise ValueError(
+                "spoofing order is not allowed. please check agent_id in order"
+            )
+        for order in orders:
+            order_kind: str = "cancel order" if isinstance(order, Cancel) else "order"
+            if order.market_id not in self.simulator.id2market:
+                raise ValueError(
+                    f"{order_kind} for a nonexistent market is not allowed. "
+                    f"{agent.name} submitted it for market_id {order.market_id}. "
+                    "please check market_id in order"
+                )
+            if not agent.is_market_accessible(market_id=order.market_id):
+                market: Market = self.simulator.id2market[order.market_id]
+                # the markets setting of agents takes the group names of markets
+                market_groups = self.simulator.markets_group_name2market
+                market_group_name: str = next(
+                    (name for name, group in market_groups.items() if market in group),
+                    market.name,
+                )
+                agent_groups = self.simulator.agents_group_name2agent
+                agent_group_name: str = next(
+                    (name for name, group in agent_groups.items() if agent in group),
+                    agent.name,
+                )
+                raise ValueError(
+                    f"{order_kind} for an inaccessible market is not allowed. "
+                    f"{agent.name} cannot access {market.name}. "
+                    f"please add {market_group_name} to markets of {agent_group_name} "
+                    "or check market_id in order"
+                )
+            if isinstance(order, Cancel):
+                self._check_cancel_ownership(agent=agent, cancel=order)
+
+    def _check_cancel_ownership(self, agent: Agent, cancel: Cancel) -> None:
+        """Check that a cancel order does not cancel an order of another agent (internal method).
+
+        The order in a cancel order has the agent ID of the agent, but the order in the order book equal to it
+        (see ``_get_placed_order_to_cancel``) may not. This is checked when the cancel order is submitted
+        (``_check_submitted_orders``) and again just before it is processed (``_process_order``), because the
+        order that it cancels can be placed in between, e.g., by another agent in the same step.
+
+        Args:
+            agent (Agent): agent that submitted the cancel order.
+            cancel (Cancel): cancel order.
+
+        Returns:
+            None
+
+        """
+        placed_order: Optional[Order] = self._get_placed_order_to_cancel(cancel=cancel)
+        if placed_order is None or placed_order.agent_id == agent.agent_id:
+            return
+        owner: Optional[Agent] = self.simulator.id2agent.get(placed_order.agent_id)
+        owner_name: str = (
+            owner.name if owner is not None else f"agent_id {placed_order.agent_id}"
+        )
+        raise ValueError(
+            "cancel order for an order of another agent is not allowed. "
+            f"{agent.name} tried to cancel order_id {placed_order.order_id} "
+            f"in {self.simulator.id2market[cancel.market_id].name}, "
+            f"which {owner_name} placed. please check order in cancel order"
+        )
+
     def _collect_orders_from_normal_agents(
         self, session: Session
     ) -> List[List[Union[Order, Cancel]]]:
@@ -404,10 +583,7 @@ class SequentialRunner(Runner):
             if len(orders) > 0:
                 if not session.with_order_placement:
                     raise AssertionError("currently order is not accepted")
-                if sum(order.agent_id != agent.agent_id for order in orders) > 0:
-                    raise ValueError(
-                        "spoofing order is not allowed. please check agent_id in order"
-                    )
+                self._check_submitted_orders(agent=agent, orders=orders)
                 all_orders.append(orders)
                 # TODO: currently the original impl is used
                 # n_orders += len(orders)
@@ -436,9 +612,12 @@ class SequentialRunner(Runner):
             agent.submitted_order(log=log)
             self.simulator._trigger_event_after_order(order_log=log)
         elif isinstance(order, Cancel):
+            agent = self.simulator.id2agent[order.order.agent_id]
+            # the order that the cancel order cancels may have been placed after the cancel order
+            # was submitted, e.g., by another agent in the same step
+            self._check_cancel_ownership(agent=agent, cancel=order)
             self.simulator._trigger_event_before_cancel(cancel=order)
             log_: CancelLog = market._cancel_order(cancel=order)
-            agent = self.simulator.id2agent[order.order.agent_id]
             agent.canceled_order(log=log_)
             self.simulator._trigger_event_after_cancel(cancel_log=log_)
         else:
@@ -484,10 +663,7 @@ class SequentialRunner(Runner):
                 continue
             if not session.with_order_placement:
                 raise AssertionError("currently order is not accepted")
-            if sum(order.agent_id != agent.agent_id for order in high_freq_orders) > 0:
-                raise ValueError(
-                    "spoofing order is not allowed. please check agent_id in order"
-                )
+            self._check_submitted_orders(agent=agent, orders=high_freq_orders)
             all_orders.append(high_freq_orders)
             # TODO: currently the original impl is used
             n_high_freq_orders += 1

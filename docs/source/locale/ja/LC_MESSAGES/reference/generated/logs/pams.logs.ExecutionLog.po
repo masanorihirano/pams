@@ -31,3 +31,16 @@ msgstr "約定タイプのログクラス。"
 msgid "This log is usually generated when an order is executed on markets."
 msgstr "このログは通常、市場で注文が約定したときに生成されます。"
 
+#: of pams.logs.base.ExecutionLog:5
+msgid ""
+"``buy_transaction_fee`` and ``sell_transaction_fee`` are the transaction "
+"fees charged to the buyer and the seller (0.0 if the market has no "
+"transaction fee). The market adds both to the transaction fees that it "
+"collects in the time step (see "
+":func:`pams.Market.get_transaction_fee_revenues`)."
+msgstr ""
+"``buy_transaction_fee`` と ``sell_transaction_fee`` "
+"は、買い手と売り手に課される取引手数料です（市場に取引手数料がない場合は "
+"0.0）。市場は両方を、そのステップで徴収する取引手数料に加算します（:func:`pams.Market.get_transaction_fee_revenues`"
+" を参照）。"
+

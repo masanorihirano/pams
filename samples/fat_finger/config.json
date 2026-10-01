@@ -23,7 +23,7 @@
 		"class": "OrderMistakeShock",
 		"target": "Market",
 		"triggerTime": 100,       "MEMO": "At the 100th step of the session 2",
-		"priceChangeRate": -0.05, "MEMO": "Sign: negative for down; positive for up; zero for no change",
+		"priceChangeRate": -0.05, "MEMO": "Sign: negative for down; positive for up; zero for a sell at the market price",
 		"orderVolume": 10000,     "MEMO": "Very much",
 		"orderTimeLength": 10000, "MEMO": "Very long",
 		"enabled": true

@@ -1,0 +1,338 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, Masanori HIRANO
+# This file is distributed under the same license as the pams package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pams \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-28 21:32+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:4
+msgid "A fat-finger order"
+msgstr "誤発注（ファットフィンガー）"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:6
+msgid ""
+"A fat-finger error is an order typed by mistake, with a wrong price or a "
+"much larger volume than intended. This tutorial places one very large "
+"sell order below the market price in the simulation of "
+":doc:`first_simulation`, records the order book around it, and asks how "
+"long the market takes to recover and how the answer depends on the size "
+"of the mistake. It follows the fat-finger tutorial of Plham "
+"(`FatFingerMain <https://plham.github.io/tutorial/FatFingerMain>`__ and "
+"its `use cases "
+"<https://plham.github.io/tutorial/FatFingerMain_UseCases>`__). The "
+"complete script is :download:`tutorial_fat_finger.py "
+"<code/tutorial_fat_finger.py>`. It needs `matplotlib "
+"<https://matplotlib.org/>`_ for the plots, which is not installed with "
+"PAMS (``pip install matplotlib``)."
+msgstr ""
+"ファットフィンガー（誤発注）とは、誤った価格や、意図よりはるかに大きな数量で誤って入力された注文のことです。このチュートリアルでは、:doc:`first_simulation`"
+" "
+"のシミュレーションで市場価格より低い非常に大きな売り注文を1つ出し、その前後の板を記録して、市場が回復するまでにどれだけかかるか、そしてそれが誤発注の大きさによってどう変わるかを調べます。Plhamの誤発注のチュートリアル（`FatFingerMain"
+" <https://plham.github.io/tutorial/FatFingerMain>`__ とその `ユースケース "
+"<https://plham.github.io/tutorial/FatFingerMain_UseCases>`__）に沿っています。完全なスクリプトは"
+" :download:`tutorial_fat_finger.py <code/tutorial_fat_finger.py>` "
+"です。プロットには `matplotlib <https://matplotlib.org/>`_ "
+"が必要ですが、これはPAMSと一緒にはインストールされません（``pip install matplotlib``）。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:18
+msgid "The model"
+msgstr "モデル"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:20
+msgid ""
+"The market and the 100 :class:`~pams.agents.FCNAgent` agents are those of"
+" :doc:`first_simulation`. Each agent expects a price from a fundamental "
+"term and a noise term (the FCN model of Chiarella and Iori, 2002, with "
+"the chart weight set to 0), and in each step one of them places a limit "
+"order of one share around its expected price. The fundamental price stays"
+" at 300."
+msgstr ""
+"市場と100体の :class:`~pams.agents.FCNAgent` エージェントは :doc:`first_simulation` "
+"と同じです。各エージェントはファンダメンタル成分とノイズ成分から価格を予想し（Chiarella and Iori, 2002 "
+"のFCNモデルで、チャート成分の重みを0としたもの）、各ステップでそのうちの1体が、予想価格の近くに1株の指値注文を出します。ファンダメンタル価格は300のままです。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:25
+msgid ""
+"The mistake is the built-in :class:`~pams.events.OrderMistakeShock` "
+"event. At its trigger step, it takes the first order that reaches the "
+"target market and replaces it with a limit order of ``orderVolume`` "
+"shares at :math:`P (1 + r)`, where :math:`P` is the current market price "
+"and :math:`r` is ``priceChangeRate``. A negative :math:`r` gives a sell "
+"order, a positive one a buy order. The agent that sent the original order"
+" owns the mistaken one, and the order stays in the book for "
+"``orderTimeLength`` steps unless it is executed."
+msgstr ""
+"誤発注には、組み込みのイベント :class:`~pams.events.OrderMistakeShock` "
+"を使います。このイベントは、発動するステップで対象の市場に最初に届いた注文を取り出し、:math:`P (1 + r)` の価格で "
+"``orderVolume`` 株の指値注文に置き換えます。ここで :math:`P` は現在の市場価格、:math:`r` は "
+"``priceChangeRate`` です。:math:`r` "
+"が負なら売り注文、正なら買い注文になります。誤発注は元の注文を出したエージェントのものとなり、約定しない限り "
+"``orderTimeLength`` ステップの間、板に残ります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:33
+msgid "The configuration"
+msgstr "設定"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:35
+msgid ""
+"The configuration is that of ``samples/fat_finger`` without its comments."
+" The second session (``\"sessionName\": 1``) lists the event, and the "
+"event block sets a sell order of 10000 shares at 5% below the market "
+"price, with a lifetime of 10000 steps:"
+msgstr ""
+"設定は、``samples/fat_finger`` の設定からコメントを除いたものです。2番目のセッション（``\"sessionName\":"
+" "
+"1``）がイベントを列挙し、イベントのブロックは、市場価格より5%低い価格で10000株の売り注文を、有効期間10000ステップで出すように設定しています："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:44
+msgid ""
+"``triggerTime`` is counted from the start of the session, which is step "
+"100, so the mistake happens at step 200. All the keys are described in "
+":ref:`config-events`. Apart from the event, this is the configuration of "
+":doc:`first_simulation` with other session names and an "
+"``outstandingShares`` key, which do not change the run. The script also "
+"runs it without the mistake by setting ``enabled`` to ``False``: the "
+"event then registers no hooks and is not added to the simulator, and the "
+"market prices are exactly those of :doc:`first_simulation` with the same "
+"seed."
+msgstr ""
+"``triggerTime`` はセッションの開始（ステップ100）から数えるので、誤発注はステップ200で起こります。すべてのキーについては "
+":ref:`config-events` を参照してください。イベント以外は、セッション名が異なることと "
+"``outstandingShares`` キーがあることを除けば :doc:`first_simulation` "
+"の設定と同じで、これらの違いは実行結果を変えません。スクリプトは ``enabled`` を ``False`` "
+"にして、誤発注なしでも実行します。このときイベントはフックを登録せず、シミュレータにも追加されないため、市場価格は、同じシードの "
+":doc:`first_simulation` の市場価格とまったく同じになります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:53
+msgid "Recording the order book"
+msgstr "板の記録"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:55
+msgid ""
+"The default logger does not keep the order book, so the script uses its "
+"own logger (see :doc:`custom_logger`). It keeps every order and every "
+"execution, and the volume at each price of both sides of the book at the "
+"end of each step:"
+msgstr ""
+"デフォルトのロガーは板を保存しないため、スクリプトは独自のロガーを使います（:doc:`custom_logger` "
+"を参照）。このロガーは、すべての注文とすべての約定、そして各ステップの終わりにおける板の両側の、各価格の数量を保存します："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:64
+msgid ""
+"The market rounds the price of an order to its tick size before it logs "
+"the order, so the prices in the order logs are those of the book. The "
+"books are dicts from a price to the volume of the orders at that price; "
+"the key ``None`` would collect market orders, which the FCN agents do not"
+" place."
+msgstr ""
+"市場は注文をログに記録する前に注文価格をティックサイズに丸めるので、注文ログの価格は板の価格と一致します。板は、価格からその価格にある注文の数量への辞書です。キー"
+" ``None`` は成行注文を集めるためのものですが、FCNエージェントは成行注文を出しません。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:68
+msgid ""
+"Two small functions find the mistaken order and count the part of it that"
+" is still in the book:"
+msgstr "2つの小さな関数で、誤発注を見つけ、そのうちまだ板に残っている部分を数えます："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:75
+msgid ""
+"Only one order is placed per step (``maxNormalOrders`` is 1), so the "
+"order logged at the trigger step is the mistaken one. Running the script "
+"with seed 42 first prints the mistaken order, then the market price, the "
+"best prices, the volume on each side of the book and what is left of the "
+"mistaken order at the end of a few steps:"
+msgstr ""
+"各ステップで出される注文は1つだけ（``maxNormalOrders`` "
+"が1）なので、発動ステップで記録された注文が誤発注です。シード42でスクリプトを実行すると、まず誤発注を出力し、続いていくつかのステップの終わりにおける市場価格、最良買い価格と最良売り価格、板の各側の数量、誤発注の残りを出力します："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:90
+msgid ""
+"The market price at step 199 is 294.687, so the mistaken order sells at "
+":math:`294.687 \\times 0.95 = 279.953`. At step 200 it meets every buy "
+"order at or above that price: 18 shares are executed, and the buy side of"
+" the book falls from 28 to 10 shares. The best buy price drops from "
+"290.590 to 277.361. All 18 shares trade at one price, 279.963: PAMS "
+"executes all the volume matched in one step at a single price, set by the"
+" last pair of orders matched, which here is the lowest of these buy "
+"orders."
+msgstr ""
+"ステップ199の市場価格は294.687なので、誤発注は :math:`294.687 \\times 0.95 = 279.953` "
+"で売ります。ステップ200で、誤発注はこの価格以上のすべての買い注文と約定します：18株が約定し、買い板は28株から10株に減ります。最良買い価格は290.590から277.361に下がります。18株はすべて279.963という1つの価格で取引されます：PAMSは1ステップでマッチしたすべての数量を、最後にマッチした注文の組で決まる単一の価格で約定させ、ここではそれがこれらの買い注文のうち最も低いものです。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:96
+msgid ""
+"The other 9982 shares stay in the book as a *wall*. From then on, any buy"
+" order at or above 279.953 is executed against the wall at the wall's "
+"price, 279.953, so the market price can no longer rise above it; it only "
+"falls below it when a sell order meets a lower buy order, as at step 400."
+" By step 599, the buyers have taken 207 of the 10000 shares."
+msgstr ""
+"残りの9982株は *壁* "
+"として板に残ります。それ以降、279.953以上の買い注文はすべて、壁の価格である279.953で壁と約定するので、市場価格はこれより上には上がれません。市場価格がこれより下がるのは、ステップ400のように、売り注文がより低い買い注文と約定するときだけです。ステップ599までに、買い手は10000株のうち207株を買い取っています。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:103
+msgid "The price after the mistake"
+msgstr "誤発注後の価格"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:105
+msgid ""
+"The script also runs the same seed without the mistake, and with a "
+"mistaken order of only 100 shares, and compares the market prices of "
+"steps 201 to 599 and the volume traded in them:"
+msgstr "スクリプトは同じシードで、誤発注なしの場合と、誤発注が100株だけの場合も実行し、ステップ201から599の市場価格とその間の出来高を比較します："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:115
+msgid ""
+"Market prices of the three runs from step 100 to step 599. All three "
+"follow the same path until step\n"
+"200. The run with 10000 shares then stays at or below the dashed line of "
+"the mistaken order near 280,\n"
+"the run with 100 shares climbs back to about 300 after step 350, and the "
+"run without the mistake\n"
+"stays around the fundamental price of 300."
+msgstr "ステップ100から599までの、3つの実行の市場価格。3つともステップ200までは同じ経路をたどります。その後、10000株の実行は280付近にある誤発注の破線以下にとどまり、100株の実行はステップ350以降に約300まで戻り、誤発注なしの実行はファンダメンタル価格300の周りにとどまります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:121
+msgid ""
+"With 10000 shares, the price never exceeds the price of the mistaken "
+"order from step 201 on, and ends the run 7% below the fundamental price. "
+"The FCN agents expect the price to return to 300 and send many buy "
+"orders, which is why more shares are traded than without the mistake, but"
+" one share at a time they cannot absorb the wall: at about one share "
+"every two steps, the 9793 shares left would last about 19000 more steps, "
+"longer than the order's lifetime. With 100 shares, the wall is used up at"
+" step 347 and the price returns to the level of the run without the "
+"mistake."
+msgstr "10000株の場合、価格はステップ201以降、誤発注の価格を一度も超えず、実行の終わりにはファンダメンタル価格より7%低くなります。FCNエージェントは価格が300に戻ると予想して多くの買い注文を出すので、誤発注なしの場合より多くの株が取引されますが、1株ずつでは壁を吸収できません：約2ステップに1株のペースでは、残りの9793株がなくなるまでにさらに約19000ステップかかり、これは注文の有効期間より長くなります。100株の場合、壁はステップ347で使い切られ、価格は誤発注なしの実行と同じ水準に戻ります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:130
+msgid "How large must the mistake be?"
+msgstr "どれだけ大きな誤発注なら影響が残るか"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:132
+msgid ""
+"One run is one path. The script repeats the runs with seeds 42 to 51, "
+"with mistaken orders of 10000, 100 and 10 shares and without the mistake,"
+" and records the step at which the mistaken order is used up and the mean"
+" market price of steps 500 to 599:"
+msgstr "1回の実行は1つの経路にすぎません。スクリプトは、シード42から51で、10000株、100株、10株の誤発注と、誤発注なしの実行を繰り返し、誤発注が使い切られたステップと、ステップ500から599の平均市場価格を記録します："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:149
+msgid ""
+"The 10000-share order is never used up, and the mean price of steps 500 "
+"to 599 is about 6% below the fundamental price. An order of 100 shares is"
+" used up in every run, on average about 240 steps after the mistake, and "
+"the mean price of steps 500 to 599 is only 3.5 lower than without the "
+"mistake. An order of 10 shares is used up about 6 steps after the mistake"
+" on average, and leaves no trace in the late prices. The size of the "
+"mistake, compared with the flow of buy orders that can absorb it, decides"
+" whether the market recovers within the run."
+msgstr "10000株の注文は一度も使い切られず、ステップ500から599の平均価格はファンダメンタル価格より約6%低くなります。100株の注文はすべての実行で、平均で誤発注の約240ステップ後に使い切られ、ステップ500から599の平均価格は誤発注なしの場合より3.5低いだけです。10株の注文は平均で誤発注の約6ステップ後に使い切られ、後半の価格には痕跡を残しません。誤発注の大きさが、それを吸収できる買い注文の流れと比べてどれだけかによって、実行の間に市場が回復するかどうかが決まります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:157
+msgid "The order book"
+msgstr "板"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:159
+msgid ""
+"The recorded books show the wall directly. Each dot is a price with at "
+"least one order at the end of a step:"
+msgstr "記録した板には壁が直接表れます。各点は、ステップの終わりに少なくとも1つの注文がある価格です："
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:161
+msgid ""
+"Prices of the buy and sell orders in the book from step 150 to step 350. "
+"Until step 200 the buy orders\n"
+"lie between about 270 and 303. At step 200 the buy orders above 280 "
+"disappear, and a line of sell\n"
+"orders at 280 appears and stays until step 350, with all later buy orders"
+" below it."
+msgstr "ステップ150から350までの、板にある買い注文と売り注文の価格。ステップ200までは、買い注文は約270から303の間にあります。ステップ200で280より上の買い注文が消え、280に売り注文の線が現れてステップ350まで続き、その後の買い注文はすべてその下にあります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:166
+msgid ""
+"Before step 200, buy orders sit up to about 303. At step 200, those above"
+" 279.953 disappear, and the mistaken order forms a line of sell orders at"
+" 279.953 that stays for the rest of the run. The sell orders placed above"
+" it are never reached, and new buy orders pile up below it."
+msgstr "ステップ200より前には、買い注文は約303まであります。ステップ200で279.953より上の買い注文が消え、誤発注が279.953に売り注文の線を作り、それが実行の最後まで残ります。その上に置かれた売り注文には価格が届かず、新しい買い注文はその下に積み上がります。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:172
+msgid "Differences from Plham"
+msgstr "Plhamとの違い"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:174
+msgid ""
+"In Plham, the configuration names an agent group (``\"agent\"``), and the"
+" first agent of that group places the mistaken order in addition to the "
+"orders of the step. In PAMS, the ``agent`` key is ignored with a warning,"
+" and the event replaces the first order that reaches the market at the "
+"trigger step, so the owner is whichever agent placed that order (here "
+"``FCNAgents-28``)."
+msgstr ""
+"Plhamでは、設定でエージェントのグループを指定し（``\"agent\"``）、そのグループの最初のエージェントが、そのステップの注文に加えて誤発注を出します。PAMSでは"
+" ``agent`` "
+"キーは警告とともに無視され、イベントは発動ステップで市場に最初に届いた注文を置き換えるので、誤発注の持ち主はその注文を出したエージェントになります（ここでは"
+" ``FCNAgents-28``）。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:178
+msgid ""
+"In the run shown by Plham, the market price falls to about 285 at the "
+"mistake. Here it falls to 279.953, 5% below the market price of step 199,"
+" which was already below the fundamental price."
+msgstr "Plhamが示す実行では、誤発注の時点で市場価格は約285まで下がります。ここでは、ステップ199の市場価格より5%低い279.953まで下がります。ステップ199の市場価格は、すでにファンダメンタル価格より低くなっていました。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:180
+msgid ""
+"PAMS does not check that an agent owns the shares it sells: "
+"``FCNAgents-28`` started with 50 shares and ends the run holding -155."
+msgstr ""
+"PAMSは、エージェントが売る株を保有しているかどうかを確認しません：``FCNAgents-28`` "
+"は50株から始まり、実行の終わりには-155株を保有しています。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:182
+msgid ""
+"Plham writes the whole order book in its output (``OrderBook#dump``) and "
+"plots it with an R script. Here, a logger keeps the volume at each price "
+"of the book, and matplotlib draws it."
+msgstr "Plhamは板全体を出力に書き出し（``OrderBook#dump``）、Rのスクリプトでプロットします。ここでは、ロガーが板の各価格の数量を保存し、matplotlibで描画します。"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:187
+msgid "References"
+msgstr "参考文献"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:189
+msgid ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+msgstr ""
+"Chiarella, C. and Iori, G. (2002). A simulation analysis of the "
+"microstructure of double auction markets. *Quantitative Finance*, 2(5), "
+"346–353. https://doi.org/10.1088/1469-7688/2/5/303"
+
+#: ../../source/user_guide/tutorials/fat_finger.rst:191
+msgid ""
+"Plham: `FatFingerMain <https://plham.github.io/tutorial/FatFingerMain>`__"
+" and `FatFingerMain_UseCases "
+"<https://plham.github.io/tutorial/FatFingerMain_UseCases>`__. Plham cites"
+" no paper for this case."
+msgstr ""
+"Plham：`FatFingerMain <https://plham.github.io/tutorial/FatFingerMain>`__ "
+"と `FatFingerMain_UseCases "
+"<https://plham.github.io/tutorial/FatFingerMain_UseCases>`__。Plhamはこのケースについて論文を挙げていません。"
+

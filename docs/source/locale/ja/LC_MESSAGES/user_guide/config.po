@@ -566,11 +566,55 @@ msgstr ""
 "エージェント並列ランナーのワーカー数です（デフォルト：CPU数から1を引いた値、ただし最小1）。:class:`~pams.runners.SequentialRunner`"
 " では無視されます。:ref:`config-parallel` を参照してください。"
 
+#: ../../source/user_guide/config.rst:295
+msgid "``startMethod`` |optional|"
+msgstr "``startMethod`` |optional|"
+
 #: ../../source/user_guide/config.rst:296
+msgid "``\"spawn\"``, ``\"fork\"`` or ``\"forkserver\"``"
+msgstr "``\"spawn\"``、``\"fork\"`` または ``\"forkserver\"``"
+
+#: ../../source/user_guide/config.rst:297
 msgid ""
-"Other keys in ``simulation`` are ignored. In particular, events are not "
-"listed here but in each session."
-msgstr "``simulation`` 内のその他のキーは無視されます。特に、イベントはここではなく各セッションに列挙します。"
+"How :class:`~pams.runners.MultiProcessAgentParallelRunner` starts its worker"
+" processes (default: the platform's default). Only the start methods "
+"available on the platform are accepted: Windows has only ``\"spawn\"``. "
+"Ignored by the other runners. See :ref:`config-parallel`."
+msgstr ""
+":class:`~pams.runners.MultiProcessAgentParallelRunner` "
+"がワーカープロセスを起動する開始方式です（デフォルト：プラットフォームのデフォルト）。そのプラットフォームで利用できる開始方式のみ指定できます。Windows"
+" で利用できるのは ``\"spawn\"`` のみです。その他のランナーでは無視されます。:ref:`config-parallel` "
+"を参照してください。"
+
+#: ../../source/user_guide/config.rst:300
+msgid "``torchNumThreads`` |optional|"
+msgstr "``torchNumThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:302
+msgid ""
+"Number of threads of PyTorch on each worker process of "
+":class:`~pams.runners.TorchAgentParallelRunner` (default: the number of "
+"threads of PyTorch on the main process divided by the smaller of "
+"``numParallel`` and the largest ``maxNormalOrders`` of the sessions, at "
+"least 1). Ignored by the other runners. See :doc:`platform`."
+msgstr ""
+":class:`~pams.runners.TorchAgentParallelRunner` "
+"の各ワーカープロセスでPyTorchが使うスレッド数です（デフォルト：メインプロセスでのPyTorchのスレッド数を、``numParallel`` "
+"とセッションの ``maxNormalOrders`` "
+"の最大値のうち小さい方で割った値、ただし最小1）。その他のランナーでは無視されます。:doc:`platform` を参照してください。"
+
+#: ../../source/user_guide/config.rst:301
+msgid ""
+"Other keys in ``simulation`` are ignored, except the keys that "
+":class:`~pams.runners.JaxAgentParallelRunner` and "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` read (see :ref:`config-"
+"parallel-jax` and :ref:`config-parallel-tensorflow`). In particular, events "
+"are not listed here but in each session."
+msgstr ""
+"``simulation`` 内のその他のキーは、:class:`~pams.runners.JaxAgentParallelRunner` と "
+":class:`~pams.runners.TensorFlowAgentParallelRunner` が読み込むキー（:ref:`config-"
+"parallel-jax` と :ref:`config-parallel-tensorflow` "
+"を参照）を除いて無視されます。特に、イベントはここではなく各セッションに列挙します。"
 
 #: ../../source/user_guide/config.rst:304
 msgid ""
@@ -597,8 +641,7 @@ msgstr ""
 msgid "``sessionName`` |required|"
 msgstr ""
 
-#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:419
-#: ../../source/user_guide/config.rst:435
+#: ../../source/user_guide/config.rst:329 ../../source/user_guide/config.rst:435
 msgid "string"
 msgstr "文字列"
 
@@ -862,16 +905,20 @@ msgstr "市場ブロックとエージェントブロックには、使用する
 msgid "``class`` |required|"
 msgstr ""
 
+#: ../../source/user_guide/config.rst:419
+msgid "string or class"
+msgstr "文字列またはクラス"
+
 #: ../../source/user_guide/config.rst:420
 msgid ""
 "Class name, e.g. ``\"Market\"`` or ``\"FCNAgent\"``. Use the plain class "
 "name (case-sensitive), not a dotted path. Built-in classes are found "
-"automatically; your own classes must be registered (see :ref:`config-user-"
-"classes`)."
+"automatically; your own classes must be registered, or set as the class "
+"itself in a Python dict config (see :ref:`config-user-classes`)."
 msgstr ""
 "``\"Market\"`` や ``\"FCNAgent\"`` "
-"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録する必要があります（:ref"
-":`config-user-classes` を参照）。"
+"などのクラス名です。ドット区切りのパスではなく、単純なクラス名（大文字と小文字を区別）を指定してください。組み込みクラスは自動的に検出されますが、ユーザー定義クラスは登録するか、Python"
+" の dict による設定ではクラスそのものを指定する必要があります（:ref:`config-user-classes` を参照）。"
 
 #: ../../source/user_guide/config.rst:423
 msgid "``extends`` |optional|"
@@ -1192,6 +1239,28 @@ msgstr ""
 "発行済株式数です。``IndexMarket`` "
 "を構成する市場では必須で、インデックスにおけるその市場の重みとなります。JSONの整数でなければなりません。デフォルトでは設定されていません。"
 
+#: ../../source/user_guide/config.rst:570
+#: ../../source/user_guide/config.rst:639
+msgid "``transactionFee`` |optional|"
+msgstr "``transactionFee`` |optional|"
+
+#: ../../source/user_guide/config.rst:563
+#: ../../source/user_guide/config.rst:632
+msgid "object or null"
+msgstr "オブジェクトまたは null"
+
+#: ../../source/user_guide/config.rst:572
+#, python-brace-format, python-format
+msgid ""
+"Transaction fees charged to the buyer and the seller of each execution, "
+"e.g. ``{\"class\": \"ProportionalTransactionFee\", \"rate\": 0.001}`` for"
+" 0.1% of the executed value (see :ref:`config-transaction-fees`). "
+"Default: no fees."
+msgstr ""
+"各約定において買い手と売り手に課される取引手数料です（例：約定金額の 0.1% なら ``{\"class\": "
+"\"ProportionalTransactionFee\", \"rate\": 0.001}``。:ref:`config-"
+"transaction-fees` を参照）。デフォルトでは手数料はかかりません。"
+
 #: ../../source/user_guide/config.rst:558
 msgid ""
 "If only one of ``marketPrice`` and ``fundamentalPrice`` is given, both "
@@ -1307,6 +1376,11 @@ msgstr "少なくとも一方が必須です。これらはインデックスの
 msgid "Only needed when this index is itself a component of another index."
 msgstr "このインデックス自体が別のインデックスの構成市場である場合にのみ必要です。"
 
+#: ../../source/user_guide/config.rst:633
+msgid ""
+"As for ``Market``. Applies to executions in the index's own order book."
+msgstr "``Market`` と同じです。インデックス自身の板での約定に適用されます。"
+
 #: ../../source/user_guide/config.rst:621
 msgid "``requires`` |deprecated|"
 msgstr ""
@@ -1340,6 +1414,263 @@ msgstr ""
 "ここで :math:`S_i` は構成市場 :math:`i` の ``outstandingShares`` です。``IndexMarket`` の"
 " ``fundamentalDrift`` と ``fundamentalVolatility`` "
 "は無視されます。開始時に人為的な乖離が生じないよう、インデックスの ``marketPrice`` を構成市場の価格の加重平均に設定してください。"
+
+#: ../../source/user_guide/config.rst:659
+msgid "Transaction fees"
+msgstr "取引手数料"
+
+#: ../../source/user_guide/config.rst:661
+msgid ""
+"The ``transactionFee`` key of a market block (``Market``, ``IndexMarket``"
+" or your own market class) sets the transaction fees of its markets. Its "
+"value is ``null`` or an object whose ``class`` is a "
+":class:`~pams.TransactionFee` class; the other keys of the object are the"
+" settings of that class. Without the key, or with ``null``, no fees are "
+"charged."
+msgstr ""
+"市場のブロック（``Market``、``IndexMarket``、または独自の市場クラス）の ``transactionFee`` "
+"キーは、そのブロックの市場の取引手数料を設定します。値は ``null``、または ``class`` に "
+":class:`~pams.TransactionFee` "
+"のクラスを指定したオブジェクトで、オブジェクトのその他のキーはそのクラスの設定になります。キーがない場合や ``null`` "
+"の場合、手数料はかかりません。"
+
+#: ../../source/user_guide/config.rst:673
+msgid ""
+"The runner creates one instance of the class for each market of the block"
+" and sets it to ``market.transaction_fee`` (``None`` without fees). Right"
+" after the setup of the market, it calls ``setup`` of the instance with "
+"the object without ``class``. Like any object value, the object is "
+"inherited through ``extends`` as a whole."
+msgstr ""
+"ランナーはブロックの市場ごとにクラスのインスタンスを1つ作成し、``market.transaction_fee`` "
+"に設定します（手数料がない場合は ``None``）。そして市場のセットアップの直後に、``class`` "
+"を除いたオブジェクトを渡してインスタンスの ``setup`` を呼び出します。他のオブジェクト値と同様に、このオブジェクトは "
+"``extends`` によって丸ごと継承されます。"
+
+#: ../../source/user_guide/config.rst:678
+msgid "The built-in :class:`~pams.ProportionalTransactionFee` has one key:"
+msgstr "組み込みの :class:`~pams.ProportionalTransactionFee` のキーは1つです："
+
+#: ../../source/user_guide/config.rst:678
+msgid "``rate`` |required|"
+msgstr "``rate`` |required|"
+
+#: ../../source/user_guide/config.rst:679
+msgid "number in [0, 1)"
+msgstr "[0, 1) の範囲の数値"
+
+#: ../../source/user_guide/config.rst:689
+msgid ""
+"Fee paid by both the buyer and the seller, as a fraction of the executed "
+"value (price × volume), e.g. ``0.001`` for 0.1%."
+msgstr "買い手と売り手の双方が支払う手数料で、約定金額（価格 × 数量）に対する割合です（例：0.1% なら ``0.001``）。"
+
+#: ../../source/user_guide/config.rst:692
+msgid ""
+"When volume :math:`V` is executed at price :math:`P`, the buyer pays "
+":math:`(1 + c) P V` and the seller receives :math:`(1 - c) P V`, where "
+":math:`c` is ``rate``. No agent receives the fees: they are subtracted "
+"from the agents' cash, and the market records them as its revenue (see "
+"below). Each :class:`~pams.logs.ExecutionLog` records them as "
+"``buy_transaction_fee`` and ``sell_transaction_fee`` (``0.0`` without "
+"fees)."
+msgstr ""
+"数量 :math:`V` が価格 :math:`P` で約定すると、買い手は :math:`(1 + c) P V` を支払い、売り手は "
+":math:`(1 - c) P V` を受け取ります。ここで :math:`c` は ``rate`` "
+"です。手数料を受け取るエージェントはおらず、手数料はエージェントの現金から差し引かれ、市場がその収入として記録します（後述）。各 "
+":class:`~pams.logs.ExecutionLog` は手数料を ``buy_transaction_fee`` と "
+"``sell_transaction_fee`` として記録します（手数料がない場合は ``0.0``）。"
+
+#: ../../source/user_guide/config.rst:698
+msgid ""
+"Transaction fees draw no random numbers, and the built-in agents do not "
+"look at their cash (see :ref:`config-agents`), so for the same seed the "
+"prices and executions are the same with and without fees. Only the "
+"agents' cash, the fees in the execution logs and the revenues of the "
+"markets differ."
+msgstr ""
+"取引手数料は乱数を使わず、組み込みのエージェントは自身の現金を参照しない（:ref:`config-agents` "
+"を参照）ため、同じシードであれば、価格と約定は手数料の有無にかかわらず同じになります。異なるのはエージェントの現金、約定ログの手数料、市場の収入だけです。"
+
+#: ../../source/user_guide/config.rst:702
+msgid ""
+"Each market records the transaction fees that it collects in each step: "
+"the sum of ``buy_transaction_fee`` and ``sell_transaction_fee`` of its "
+"executions in the step. Negative fees (rebates) reduce it, so it can be "
+"negative, and it is ``0.0`` without fees. Three methods of "
+":class:`~pams.Market` read it:"
+msgstr ""
+"各市場は、各ステップで徴収した取引手数料、つまりそのステップにおける自身の約定の ``buy_transaction_fee`` と "
+"``sell_transaction_fee`` "
+"の合計を記録します。負の手数料（リベート）はこれを減らすため、負になることもあり、手数料がない場合は ``0.0`` "
+"です。:class:`~pams.Market` の3つのメソッドでこれを読み取れます："
+
+#: ../../source/user_guide/config.rst:706
+msgid ""
+":meth:`~pams.Market.get_transaction_fee_revenues` returns the revenue of "
+"each step in ``times`` (by default, every step from 0 to the current "
+"step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_fee_revenues` は、``times`` "
+"の各ステップの収入を返します（デフォルトでは、0から現在のステップまでのすべてのステップ）。"
+
+#: ../../source/user_guide/config.rst:708
+msgid ""
+":meth:`~pams.Market.get_transaction_fee_revenue` returns the revenue of "
+"the step ``time`` (by default, the current step);"
+msgstr ""
+":meth:`~pams.Market.get_transaction_fee_revenue` は、ステップ ``time`` "
+"の収入を返します（デフォルトでは現在のステップ）。"
+
+#: ../../source/user_guide/config.rst:710
+msgid ""
+":meth:`~pams.Market.get_cumulative_transaction_fee_revenue` returns the "
+"balance of the market, i.e. the sum of the revenues from step 0 to the "
+"step ``time`` (by default, the current step)."
+msgstr ""
+":meth:`~pams.Market.get_cumulative_transaction_fee_revenue` "
+"は、市場の収支、つまりステップ0からステップ ``time`` までの収入の合計を返します（デフォルトでは現在のステップまで）。"
+
+#: ../../source/user_guide/config.rst:713
+msgid ""
+"The revenues of all the markets add up to the cash that the agents lose "
+"to the fees. After a run, the time of the markets is one step past the "
+"last step, and the revenue of that step is ``0.0``. The built-in loggers "
+"do not output the revenues, but a logger can read them through "
+"``log.market`` in ``process_market_step_end_log``, and an event through "
+"``market`` in ``hooked_after_step_for_market``:"
+msgstr ""
+"すべての市場の収入の合計は、エージェントが手数料によって失う現金に等しくなります。実行後、市場の時刻は最後のステップの1つ後になり、そのステップの収入は"
+" ``0.0`` です。組み込みのロガーは収入を出力しませんが、ロガーは ``process_market_step_end_log`` の "
+"``log.market`` を通じて、イベントは ``hooked_after_step_for_market`` の ``market`` "
+"を通じて収入を読み取れます："
+
+#: ../../source/user_guide/config.rst
+msgid "Writing your own transaction fee"
+msgstr "独自の取引手数料の作成"
+
+#: ../../source/user_guide/config.rst:744
+msgid ""
+"For other fee schedules, e.g. different rates for makers and takers, "
+"fixed fees or tiered fees, subclass :class:`~pams.TransactionFee` and "
+"implement ``compute_fees``. It returns the fees of the buyer and the "
+"seller of one execution; negative fees are rebates, which are added to "
+"the cash. Read your keys in ``setup``, which does nothing by default. "
+"This example charges ``makerRate`` to the order placed first (the maker) "
+"and ``takerRate`` to the other order (the taker):"
+msgstr ""
+"メイカーとテイカーで料率を変える場合や固定手数料、段階的な手数料など、別の手数料体系を用いるには、:class:`~pams.TransactionFee`"
+" のサブクラスを作成して ``compute_fees`` "
+"を実装してください。このメソッドは、1回の約定における買い手と売り手の手数料を返します。負の手数料はリベートであり、現金に加算されます。独自のキーは"
+" ``setup`` で読み込みます。``setup`` はデフォルトでは何もしません。次の例では、先に出された注文（メイカー）に "
+"``makerRate`` を、もう一方の注文（テイカー）に ``takerRate`` を課します："
+
+#: ../../source/user_guide/config.rst:731
+msgid ""
+"As for the other :ref:`user-defined classes <config-user-classes>`, "
+"register the class and give its name as ``class``, or, in a Python dict "
+"config, give the class itself. With the process runner, define it in a "
+"``.py`` file and keep its instances picklable (see :ref:`config-"
+"parallel`)."
+msgstr ""
+"他の :ref:`ユーザー定義クラス <config-user-classes>` と同様に、クラスを登録してその名前を ``class`` "
+"に指定するか、Python の dict による設定ではクラスそのものを指定します。プロセスランナーを使う場合は、クラスを ``.py`` "
+"ファイルで定義し、そのインスタンスを pickle 可能にしてください（:ref:`config-parallel` を参照）。"
+
+#: ../../source/user_guide/config.rst:734
+msgid ""
+"``placed_at`` is the time at which an order was added to the order book, "
+"and order IDs increase in the order in which the orders arrive at each "
+"market. Orders placed in the same step have the same ``placed_at``, so "
+"the order ID tells which came first. Usually the maker is the order that "
+"was waiting in the order book and the taker is the incoming order. After "
+"a session without order execution or a trading halt, however, both orders"
+" may have been waiting in the book, and both may be market orders; the "
+"example then treats the order placed first as the maker."
+msgstr ""
+"``placed_at`` は注文が板に追加された時刻で、注文IDは各市場に注文が到着した順に増加します。同じステップに出された注文は "
+"``placed_at`` "
+"が同じになるため、どちらが先かは注文IDで判断します。通常、メイカーは板で待っていた注文で、テイカーは新たに到着した注文です。ただし、注文を約定させないセッションや売買停止の後では、両方の注文が板で待っていたことがあり、両方が成行注文であることもあります。その場合、この例では先に出された注文をメイカーとして扱います。"
+
+#: ../../source/user_guide/config.rst:790
+msgid ""
+"``compute_fees`` receives only the execution: the executed ``price`` and "
+"``volume``, and the buy and sell :class:`~pams.Order`, whose ``volume`` "
+"still includes the executed volume. The orders are passed because they "
+"carry what the execution log lacks, such as ``placed_at`` and ``kind``. "
+"As each instance belongs to one market, everything else can be read "
+"through ``self.market``: the order books (``self.market.buy_order_book`` "
+"and ``self.market.sell_order_book``), the prices, the time "
+"(``self.market.get_time()``), and through ``self.market.simulator`` the "
+"agents (``self.market.simulator.id2agent``) and the other markets "
+"(``self.market.simulator.markets``). An instance can also keep its own "
+"state, e.g. the volume that each agent has traded for tiered fees."
+msgstr ""
+"``compute_fees`` が受け取るのは約定の情報だけです。約定した ``price`` と "
+"``volume``、そして買い注文と売り注文の :class:`~pams.Order` で、注文の ``volume`` "
+"にはまだ約定数量が含まれています。注文が渡されるのは、``placed_at`` や ``kind`` "
+"など、約定ログにない情報を持っているためです。各インスタンスは1つの市場に属しているため、それ以外の情報はすべて ``self.market`` "
+"から参照できます。板（``self.market.buy_order_book`` と "
+"``self.market.sell_order_book``）、価格、時刻（``self.market.get_time()``）、そして "
+"``self.market.simulator`` "
+"を通じてエージェント（``self.market.simulator.id2agent``）や他の市場（``self.market.simulator.markets``）を参照できます。インスタンスは独自の状態を持つこともできます（例：段階的な手数料のための、各エージェントの取引数量）。"
+
+#: ../../source/user_guide/config.rst:750
+msgid ""
+"When ``setup`` runs, its market is set up, but the markets created after "
+"it, the agents, the sessions and the events are not yet. If the class "
+"needs random numbers, create its own ``random.Random`` in ``setup``: "
+"drawing from the generators of the runner or of the markets would change "
+"the simulation."
+msgstr ""
+"``setup`` "
+"が実行される時点で、その市場のセットアップは済んでいますが、後に作成される市場、エージェント、セッション、イベントのセットアップはまだです。クラスで乱数が必要な場合は、``setup``"
+" で独自の ``random.Random`` "
+"を作成してください。ランナーや市場の乱数生成器から乱数を引くと、シミュレーションが変わってしまいます。"
+
+#: ../../source/user_guide/config.rst
+msgid "When ``compute_fees`` is called"
+msgstr "``compute_fees`` が呼び出されるタイミング"
+
+#: ../../source/user_guide/config.rst:806
+msgid ""
+"While a session executes orders and the market is not halted, the market "
+"executes orders after each order or cancel. It first matches the best buy"
+" and sell orders, pair by pair, as long as their prices cross, and all "
+"the matched pairs get one execution price (see \"How the market price is "
+"determined\" above). Then it executes the pairs one by one in the order "
+"in which they were matched, and calls ``compute_fees`` once for each "
+"pair, before the executed volume is subtracted from the orders. At that "
+"moment:"
+msgstr ""
+"セッションが注文を約定させていて、市場が停止していない間、市場は注文や取消のたびに注文を約定させます。まず、最良の買い注文と売り注文を、価格が交差している限り1組ずつマッチングし、マッチングしたすべての組に1つの約定価格を決めます（上記の「市場価格の決まり方」を参照）。次に、マッチングした順に組を1つずつ約定させ、各組について、約定数量が注文から差し引かれる前に"
+" ``compute_fees`` を1回呼び出します。その時点では："
+
+#: ../../source/user_guide/config.rst:764
+msgid ""
+"the two orders of the pair and the orders of the later pairs are still in"
+" the order books, and their volumes still include this pair and the later"
+" pairs (only the earlier pairs are subtracted), so the order books can "
+"still be crossed;"
+msgstr "その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。"
+
+#: ../../source/user_guide/config.rst:815
+msgid ""
+"the earlier pairs are already executed: their volumes are subtracted from"
+" their orders, the fully executed orders are removed from the order "
+"books, and the executed prices and volumes and the transaction fee "
+"revenue of the market include them;"
+msgstr "前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引手数料収入にもそれらが含まれています。"
+
+#: ../../source/user_guide/config.rst:767
+msgid ""
+"the agents' cash and asset volumes include none of the pairs yet. The "
+"simulator updates them after all the pairs are executed. Only then are "
+"``executed_order`` of the agents and the events hooked after executions "
+"called for each execution."
+msgstr ""
+"エージェントの現金と保有株式数には、まだどの組も反映されていません。シミュレーターはすべての組が約定した後にそれらを更新します。その後で初めて、約定ごとにエージェントの"
+" ``executed_order`` と、約定後にフックされたイベントが呼び出されます。"
 
 #: ../../source/user_guide/config.rst:638
 msgid "Correlated fundamental prices"
@@ -1770,16 +2101,42 @@ msgid ""
 "integer."
 msgstr "注文の有効期間（TTL）をステップ数で指定します。デフォルトは ``1`` です。JSONの整数で指定する必要があります。"
 
-#: ../../source/user_guide/config.rst:834
+#: ../../source/user_guide/config.rst:839
 msgid ""
-"``markets`` must include the index market group **and** the groups of all "
-"its component markets. Otherwise the component orders are still sent, and "
-"the simulation stops with a ``KeyError`` (a market ID) when the first one is"
-" executed."
+"The agent trades only the index markets whose groups are in ``markets``. "
+"It skips any other ``IndexMarket`` without an error, whether or not "
+"``markets`` includes its component markets, and it warns about this only "
+"if ``markets`` includes no ``IndexMarket`` at all (see below)."
 msgstr ""
-"``markets`` には、インデックス市場の市場グループ **および** "
-"そのすべての構成市場の市場グループを含める必要があります。含めない場合でも構成市場への注文は送信され、そのうち最初の注文が約定した時点でシミュレーションが"
-" ``KeyError`` （市場ID）で停止します。"
+"エージェントが取引するのは、市場グループが ``markets`` に含まれているインデックス市場だけです。それ以外の "
+"``IndexMarket`` は、``markets`` "
+"にその構成市場が含まれているかどうかにかかわらず、エラーを出さずにスキップします。これについて警告を出すのは、``markets`` に "
+"``IndexMarket`` が1つも含まれていない場合だけです（下記参照）。"
+
+#: ../../source/user_guide/config.rst:842
+msgid ""
+"For each index market that it trades, ``markets`` must also include the "
+"groups of all its component markets. Unlike plham, the component markets "
+"are not added automatically; the agent warns at setup about each such "
+"index market with missing components. The simulation still runs normally "
+"until the agent finds an arbitrage opportunity in that index market. Then"
+" it submits orders for the component markets, and the simulation stops "
+"with a ``ValueError`` (``order for an inaccessible market is not "
+"allowed``). If no such opportunity comes, the simulation ends without the"
+" error."
+msgstr ""
+"取引するインデックス市場ごとに、``markets`` "
+"にはそのすべての構成市場の市場グループも含める必要があります。plhamとは異なり、構成市場は自動的には追加されません。構成市場が欠けているそのようなインデックス市場があると、エージェントはセットアップ時にインデックス市場ごとに警告を出します。それでも、エージェントがそのインデックス市場で裁定機会を見つけるまでは、シミュレーションは通常どおり進みます。裁定機会を見つけると、エージェントは構成市場への注文を出し、シミュレーションは"
+" ``ValueError`` （``order for an inaccessible market is not "
+"allowed``）で停止します。そのような機会が訪れなければ、シミュレーションはエラーなく終了します。"
+
+#: ../../source/user_guide/config.rst:839
+msgid ""
+"If ``markets`` includes no ``IndexMarket``, the agent never places an order,"
+" and it warns about this at setup."
+msgstr ""
+"``markets`` に ``IndexMarket`` "
+"が1つも含まれていない場合、エージェントは注文を一切出さず、セットアップ時にその旨の警告を出します。"
 
 #: ../../source/user_guide/config.rst:837
 msgid "All component markets must have the same ``outstandingShares``."
@@ -1817,11 +2174,11 @@ msgstr "市場のインスタンス名"
 #: ../../source/user_guide/config.rst:856
 msgid ""
 "The market to quote in. It must also be one of the agent's tradable markets;"
-" otherwise the simulation stops with a ``KeyError`` (a market ID) when its "
-"first order is executed."
+" otherwise the simulation stops with a ``ValueError`` when the agent first "
+"submits orders."
 msgstr ""
-"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合は最初の注文が約定した時点でシミュレーションが "
-"``KeyError`` （市場ID）で停止します。"
+"気配を提示する市場です。エージェントが取引可能な市場の1つでもある必要があり、そうでない場合はエージェントが最初に注文を出した時点でシミュレーションが "
+"``ValueError`` で停止します。"
 
 #: ../../source/user_guide/config.rst:858
 msgid "``netInterestSpread`` |required| |jsonrandom|"
@@ -2149,17 +2506,21 @@ msgid ""
 "reaches the target market at exactly this step, nothing happens."
 msgstr "セッション開始から数えた、誤発注が発生するステップです。ちょうどこのステップに対象市場へ注文が1つも届かなかった場合は、何も起こりません。"
 
-#: ../../source/user_guide/config.rst:1049
+#: ../../source/user_guide/config.rst:1061
 msgid ""
-"Rate :math:`r` relative to the current market price. Must be written as a "
-"float. ``0.0`` does not mean \"no mistake\": it places a sell at :math:`P`."
+"Rate :math:`r` relative to the current market price, a finite number greater"
+" than ``-1.0``. Must be written as a float. ``0.0`` does not mean \"no "
+"mistake\": it places a sell at :math:`P`. If :math:`P (1 + r)`, or :math:`P "
+"(1 + r)` divided by the tick size, overflows to infinity, the simulation "
+"stops with an error at the trigger step."
 msgstr ""
-"現在の市場価格に対する変化率 :math:`r` です。浮動小数点数で記述する必要があります。``0.0`` "
-"は「誤発注なし」を意味せず、:math:`P` での売り注文になります。"
+"現在の市場価格に対する変化率 :math:`r` で、``-1.0`` より大きい有限の値です。浮動小数点数で記述する必要があります。``0.0`` "
+"は「誤発注なし」を意味せず、:math:`P` での売り注文になります。:math:`P (1 + r)`、または :math:`P (1 + r)` "
+"をティックサイズで割った値がオーバーフローして無限大になる場合、トリガーとなるステップでシミュレーションがエラーで停止します。"
 
 #: ../../source/user_guide/config.rst:1053
-msgid "Volume of the mistaken order."
-msgstr "誤発注された注文の数量です。"
+msgid "Volume of the mistaken order, greater than 0."
+msgstr "誤発注された注文の数量で、0より大きい値です。"
 
 #: ../../source/user_guide/config.rst:1054
 msgid "``orderTimeLength`` |required|"
@@ -2283,6 +2644,25 @@ msgstr ""
 
 #: ../../source/user_guide/config.rst:1150
 msgid ""
+"When the config is a Python dict, you can instead set the class itself as "
+"the value of ``class``. Such a class is used as is, so it needs no "
+"``class_register`` and its name does not have to be unique:"
+msgstr ""
+"設定が Python の dict の場合は、名前の代わりにクラスそのものを ``class`` "
+"の値に指定することもできます。このクラスはそのまま使われるため、``class_register`` "
+"は不要で、名前が一意である必要もありません："
+
+#: ../../source/user_guide/config.rst:1162
+msgid ""
+"This works only with a Python dict, because a JSON file cannot hold a class."
+" A class set in a block is inherited through ``extends`` like any other "
+"value."
+msgstr ""
+"JSON ファイルはクラスを保持できないため、これは Python の dict でのみ使えます。ブロックに指定したクラスは、他の値と同じように "
+"``extends`` で継承されます。"
+
+#: ../../source/user_guide/config.rst:1165
+msgid ""
 "The block (after ``extends`` is resolved, without ``numAgents`` / "
 "``numMarkets``, ``from``, ``to`` and ``prefix``) is passed to "
 "``setup(settings=...)``, so any extra key you add is available there. To "
@@ -2299,24 +2679,28 @@ msgstr ""
 ":class:`~pams.utils.JsonRandom` を参照）。戻り値は常に float なので、整数パラメータには自分で ``int()``"
 " を適用してください。"
 
-#: ../../source/user_guide/config.rst:1155
+#: ../../source/user_guide/config.rst:1170
 msgid ""
-"Class names must be unique: a class with the same name as a built-in class "
-"(e.g. your own ``FCNAgent``) is ambiguous and fails. Register each class "
-"only once."
+"Class names given as strings must be unique: a class with the same name as "
+"a built-in class (e.g. your own ``FCNAgent``) is ambiguous and fails. "
+"Register each class only once."
 msgstr ""
-"クラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
+"文字列で指定するクラス名は一意でなければなりません：組み込みクラスと同じ名前のクラス（例：独自の "
 "``FCNAgent``）は曖昧となりエラーになります。各クラスは一度だけ登録してください。"
 
-#: ../../source/user_guide/config.rst:1157
+#: ../../source/user_guide/config.rst:1368
 msgid ""
-"Agent classes must inherit from :class:`~pams.agents.Agent` and market "
-"classes from :class:`~pams.Market`. An agent that inherits from "
-":class:`~pams.agents.HighFrequencyAgent` is scheduled as a high-frequency "
-"agent."
+"Agent classes must inherit from :class:`~pams.agents.Agent`, market "
+"classes from :class:`~pams.Market`, event classes from "
+":class:`~pams.events.EventABC` and transaction fee classes from "
+":class:`~pams.TransactionFee` (see :ref:`config-transaction-fees`). An "
+"agent that inherits from :class:`~pams.agents.HighFrequencyAgent` is "
+"scheduled as a high-frequency agent."
 msgstr ""
 "エージェントクラスは :class:`~pams.agents.Agent` を、市場クラスは :class:`~pams.Market` "
-"を継承する必要があります。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
+"を、イベントクラスは :class:`~pams.events.EventABC` を、取引手数料クラスは "
+":class:`~pams.TransactionFee` を継承する必要があります（:ref:`config-transaction-fees`"
+" を参照）。エージェントが :class:`~pams.agents.HighFrequencyAgent` "
 "を継承している場合、高頻度エージェントとしてスケジュールされます。"
 
 #: ../../source/user_guide/config.rst:1159
@@ -2341,30 +2725,35 @@ msgstr ""
 "（いずれも実験的機能）は同じ設定ファイルを読み込み、同じシードであれば :class:`~pams.runners.SequentialRunner` "
 "と同じ結果になります。これらは通常エージェントの ``submit_orders`` を並列に呼び出し、それ以外はすべて逐次的に処理します。"
 
-#: ../../source/user_guide/config.rst:1171
+#: ../../source/user_guide/config.rst:1176
 msgid ""
 "**Speed**: because of Python's GIL, the thread runner only helps when "
 "``submit_orders`` waits for I/O (for example a call to an external model); "
 "it does not speed up the built-in agents. The process runner is much slower,"
-" because the agent and the markets are copied to a worker process at every "
-"call. See also :doc:`platform`."
+" because the whole simulation is copied to the worker processes in every "
+"step (see below). See also :doc:`platform`."
 msgstr ""
 "**速度**：Python の GIL のため、スレッドランナーが効果を持つのは ``submit_orders`` が I/O "
-"を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、呼び出しのたびにエージェントと市場がワーカープロセスにコピーされるため、はるかに低速です。あわせて"
+"を待つ場合（例えば外部モデルの呼び出し）のみで、組み込みエージェントは高速化されません。プロセスランナーは、ステップごとにシミュレーション全体がワーカープロセスにコピーされるため（後述）、はるかに低速です。あわせて"
 " :doc:`platform` も参照してください。"
 
-#: ../../source/user_guide/config.rst:1175
+#: ../../source/user_guide/config.rst:1203
 msgid ""
 "**User-defined agents** must not change shared objects (markets, other "
 "agents, the logger) in ``submit_orders``. With the process runner, changes "
-"an agent makes to its own attributes in ``submit_orders`` are lost; update "
-"such state in callbacks like ``executed_order``, which run in the main "
-"process."
+"an agent makes to its own attributes in ``submit_orders`` are lost, or only "
+"partly kept, unless the attributes are listed in "
+":attr:`~pams.agents.Agent.synced_attributes` (see :ref:`config-synced-"
+"attributes`), and the runner warns about the attributes that are assigned or"
+" deleted without being listed; update other state in callbacks like "
+"``executed_order``, which run in the main process."
 msgstr ""
 "**ユーザー定義エージェント** は ``submit_orders`` "
 "内で共有オブジェクト（市場、他のエージェント、ロガー）を変更してはいけません。プロセスランナーでは、エージェントが ``submit_orders`` "
-"内で自身の属性に加えた変更は失われます。このような状態は、メインプロセスで実行される ``executed_order`` "
-"などのコールバックで更新してください。"
+"内で自身の属性に加えた変更は、その属性を :attr:`~pams.agents.Agent.synced_attributes` "
+"に列挙しない限り、失われるか一部しか保たれません（:ref:`config-synced-attributes` "
+"を参照）。また、列挙されていない属性への代入や削除については、ランナーが警告を出します。その他の状態は、メインプロセスで実行される "
+"``executed_order`` などのコールバックで更新してください。"
 
 #: ../../source/user_guide/config.rst:1179
 msgid ""
@@ -2405,19 +2794,441 @@ msgstr ""
 "では必須です。これがないと実行が失敗するかハングします）。また、ワーカープロセスがインポートできるよう、ユーザー定義クラスはノートブックや対話型セッションではなく"
 " ``.py`` ファイル内で定義してください。"
 
-#: ../../source/user_guide/config.rst:1192
+#: ../../source/user_guide/config.rst:1197
 msgid ""
-"The process runner pickles the agent and the markets at every call, together"
-" with everything they refer to (the simulator, the other agents, the events "
-"and the logger). User-defined agents, markets, events and loggers must "
-"therefore be picklable: for example, a logger that keeps an open file fails "
-"with ``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data"
-" in memory and write the file after the run."
+"``simulation.startMethod`` sets how the process runner starts its worker "
+"processes: ``\"spawn\"`` (the default on Windows and macOS), ``\"fork\"`` "
+"(the default on Linux up to Python 3.13) or ``\"forkserver\"`` (the default "
+"on Linux from Python 3.14). Only the values that "
+":func:`multiprocessing.get_all_start_methods` returns on the platform are "
+"accepted; any other value is an error. Without the key, the platform's "
+"default is used, unless a subclass of the runner sets another default. Use "
+"``\"spawn\"`` when agents use a library that does not work in a forked "
+"process, such as PyTorch with CUDA, TensorFlow or JAX. The start method does"
+" not change the simulation results."
 msgstr ""
-"プロセスランナーは呼び出しのたびに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、ロガー）とともに "
-"pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、ロガーは pickle "
+"``simulation.startMethod`` は、プロセスランナーがワーカープロセスを起動する開始方式を設定します：``\"spawn\"`` "
+"（Windows と macOS でのデフォルト）、``\"fork\"`` （Python 3.13 までの Linux "
+"でのデフォルト）、``\"forkserver\"`` （Python 3.14 以降の Linux "
+"でのデフォルト）のいずれかです。そのプラットフォームで :func:`multiprocessing.get_all_start_methods` "
+"が返す値のみ指定でき、それ以外の値はエラーになります。このキーがない場合は、ランナーのサブクラスが別のデフォルトを設定していない限り、プラットフォームのデフォルトが使われます。fork"
+" されたプロセスでは動作しないライブラリ（CUDA を使う PyTorch、TensorFlow、JAX など）をエージェントが使う場合は "
+"``\"spawn\"`` を使ってください。開始方式によってシミュレーション結果は変わりません。"
+
+#: ../../source/user_guide/config.rst:1412
+msgid ""
+"The process runner pickles the agents and the markets for each task, "
+"together with everything they refer to (the simulator, the other agents, "
+"the events, the transaction fees and the logger). User-defined agents, "
+"markets, events, transaction fees and loggers must therefore be "
+"picklable: for example, a logger that keeps an open file fails with "
+"``TypeError: cannot pickle '_io.TextIOWrapper' object``. Keep such data "
+"in memory and write the file after the run."
+msgstr ""
+"プロセスランナーはタスクごとに、エージェントと市場を、それらが参照するすべてのもの（シミュレータ、他のエージェント、イベント、取引手数料、ロガー）とともに"
+" pickle 化します。そのため、ユーザー定義のエージェント、市場、イベント、取引手数料、ロガーは pickle "
 "可能でなければなりません。例えば、ファイルを開いたまま保持するロガーは ``TypeError: cannot pickle "
 "'_io.TextIOWrapper' object`` で失敗します。このようなデータはメモリ上に保持し、実行後にファイルへ書き出してください。"
+
+#: ../../source/user_guide/config.rst:1234
+msgid ""
+"Because of these references, each task copies the whole simulation. The copy"
+" is about 4 KB per agent, mostly the state of each agent's random number "
+"generator (about 4 MB for 1000 agents), and it takes tens of milliseconds, "
+"much longer than ``submit_orders`` of the built-in agents. To limit this "
+"cost, the agents asked at the same time are split into at most "
+"``numParallel`` tasks. An object held by an agent, such as a neural network "
+"model, is copied in every task, even in the tasks of other agents. Exclude "
+"such an object from pickling (for example with ``__getstate__``), and if it "
+"is read-only, load it once per worker process instead (see :doc:`platform`)."
+" Both ways are only for objects that the agents do not change; an object "
+"that an agent changes in ``submit_orders`` must be listed in "
+":attr:`~pams.agents.Agent.synced_attributes` instead. Use an object loaded "
+"per worker process where it is kept, for example in a module variable as in "
+":doc:`platform`, or put it back on the agent in ``__setstate__``, which runs"
+" when the agent is copied to the worker process. Do not assign it to the "
+"agent in ``submit_orders``: the runner warns that the change is lost, and "
+"listing it to avoid the warning would send the object back after every call."
+msgstr ""
+"このような参照があるため、各タスクではシミュレーション全体がコピーされます。コピーの大きさはエージェント 1 個あたり約 4 KB（1000 "
+"個のエージェントで約 4 MB）で、その大部分は各エージェントの乱数生成器の状態です。コピーには数十ミリ秒かかり、組み込みエージェントの "
+"``submit_orders`` よりはるかに長い時間がかかります。このコストを抑えるため、同時に注文の提出を求められるエージェントは最大 "
+"``numParallel`` "
+"個のタスクに分けられます。ニューラルネットワークのモデルなど、エージェントが保持するオブジェクトは、他のエージェントのタスクも含めてすべてのタスクでコピーされます。このようなオブジェクトは"
+" pickle 化の対象から除外し（例えば ``__getstate__`` を使います）、読み取り専用であれば、代わりにワーカープロセスごとに 1 "
+"回だけ読み込んでください（:doc:`platform` "
+"を参照）。どちらの方法も、エージェントが変更しないオブジェクトのためだけのものです。エージェントが ``submit_orders`` "
+"内で変更するオブジェクトは、代わりに :attr:`~pams.agents.Agent.synced_attributes` "
+"に列挙する必要があります。ワーカープロセスごとに読み込んだオブジェクトは、それが保持されている場所（例えば、:doc:`platform` "
+"の例のようなモジュール変数）から使うか、エージェントがワーカープロセスにコピーされるときに実行される ``__setstate__`` "
+"でエージェントに戻してください。``submit_orders`` "
+"内でそれをエージェントに代入しないでください。ランナーはその変更が失われると警告し、警告を避けるためにそれを列挙すると、呼び出しのたびにそのオブジェクトが送り返されます。"
+
+#: ../../source/user_guide/config.rst:1239
+msgid "Agents that change their own attributes"
+msgstr "自身の属性を変更するエージェント"
+
+#: ../../source/user_guide/config.rst:1241
+msgid ""
+"The process runner calls ``submit_orders`` on a copy of the agent in a "
+"worker process. An agent that changes its own attributes there, for example "
+"to train a neural network, must list them in "
+":attr:`~pams.agents.Agent.synced_attributes`. After each call, even one that"
+" returns no orders, the runner sets the listed attributes of the copy on the"
+" agent in the main process, or deletes those that the copy does not have. "
+"The thread runner and :class:`~pams.runners.SequentialRunner` call "
+"``submit_orders`` on the agents themselves and do not use this attribute. "
+"For example, with PyTorch:"
+msgstr ""
+"プロセスランナーは、ワーカープロセス上のエージェントのコピーに対して ``submit_orders`` "
+"を呼び出します。そこで自身の属性を変更するエージェント、例えばニューラルネットワークを学習させるエージェントは、それらの属性を "
+":attr:`~pams.agents.Agent.synced_attributes` "
+"に列挙する必要があります。ランナーは各呼び出しの後、注文を返さなかった場合も含めて、コピーの列挙された属性をメインプロセスのエージェントに設定し、コピーが持たない属性は削除します。スレッドランナーと"
+" :class:`~pams.runners.SequentialRunner` はエージェント自体に対して ``submit_orders`` "
+"を呼び出し、この属性を使いません。例えば、PyTorch を使う場合は以下のようになります："
+
+#: ../../source/user_guide/config.rst:1284
+msgid "Keep the following in mind:"
+msgstr "以下の点に注意してください："
+
+#: ../../source/user_guide/config.rst:1297
+msgid ""
+"**Cost**: the listed values are pickled and sent back after every call of "
+"``submit_orders``, in addition to the copies of the whole simulation "
+"described above. For a large model, this can take longer than the training. "
+"If an agent of a task lists attributes, the results of all the agents of the"
+" task are pickled in a way that finds the objects of the simulation among "
+"them (see **Shared objects**). This adds a fixed cost to each task, which "
+"grows with the numbers of agents and of orders in the order books (less than"
+" 1 ms for 1000 agents, small next to the copy of the simulation), and "
+"pickling lists, dicts and other objects with many elements takes about five "
+"to eight times as long as usual. Arrays such as NumPy arrays take about as "
+"long as usual, because their data is pickled as a whole."
+msgstr ""
+"**コスト**：列挙された値は、前述のシミュレーション全体のコピーに加えて、``submit_orders`` の呼び出しのたびに pickle "
+"化されて送り返されます。大きなモデルでは、これに学習よりも長い時間がかかることがあります。タスクのいずれかのエージェントが属性を列挙している場合、そのタスクのすべてのエージェントの結果は、その中からシミュレーションのオブジェクトを見つける方法で"
+" pickle 化されます（**共有オブジェクト** "
+"を参照）。これにより、各タスクに一定のコストが加わり、このコストはエージェントの数と板にある注文の数とともに増えます（1000 個のエージェントで 1 "
+"ms 未満で、シミュレーションのコピーに比べれば小さいものです）。また、リスト、辞書など、多くの要素を持つオブジェクトの pickle 化には、通常の約"
+" 5 倍から 8 倍の時間がかかります。NumPy の配列などの配列は、データがまとめて pickle 化されるため、通常とほぼ同じ時間で済みます。"
+
+#: ../../source/user_guide/config.rst:1288
+msgid ""
+"**Parallelism**: still at most ``maxNormalOrders`` agents are asked at the "
+"same time."
+msgstr "**並列度**：この場合も、同時に注文の提出を求められるエージェントは最大 ``maxNormalOrders`` 個です。"
+
+#: ../../source/user_guide/config.rst:1289
+msgid ""
+"**Random numbers**: use ``self.prng`` or generators seeded from it, such as "
+"``generator`` above. The global generators of libraries (e.g., the one that "
+"``DataLoader(shuffle=True)`` uses without ``generator``) differ between the "
+"worker processes, so the results would depend on the worker and differ from "
+":class:`~pams.runners.SequentialRunner`."
+msgstr ""
+"**乱数**：``self.prng`` か、上の ``generator`` "
+"のようにそれからシードを与えた生成器を使ってください。ライブラリのグローバルな生成器（例えば、``generator`` を指定しない "
+"``DataLoader(shuffle=True)`` "
+"が使うもの）はワーカープロセスごとに異なるため、結果がワーカーに依存し、:class:`~pams.runners.SequentialRunner` "
+"と異なってしまいます。"
+
+#: ../../source/user_guide/config.rst:1293
+msgid ""
+"**Devices**: keep the listed tensors, including the state of the optimizer, "
+"on the CPU when ``submit_orders`` returns, because CUDA tensors cannot be "
+"sent between processes on Windows. If you train on a GPU, move the model and"
+" the state of the optimizer back to the CPU before every return, e.g., in a "
+"``finally`` block."
+msgstr ""
+"**デバイス**：Windows ではプロセス間で CUDA のテンソルを送れないため、``submit_orders`` "
+"から戻る時点で、列挙したテンソルはオプティマイザーの状態も含めて CPU 上に置いてください。GPU で学習させる場合は、例えば ``finally``"
+" ブロックで、戻る前に毎回モデルとオプティマイザーの状態を CPU に戻してください。"
+
+#: ../../source/user_guide/config.rst:1305
+msgid ""
+"**References**: the listed values and the orders of all the agents of a task"
+" are pickled together, so references among them are kept as far as pickling "
+"keeps them; for example, an order that an agent returns and also keeps in a "
+"listed list is one object. An attribute that is not listed but refers to a "
+"listed object, such as a learning rate scheduler that refers to the "
+"optimizer, keeps referring to the old object, so list such attributes "
+"together. Keras models are saved and reloaded when they are pickled, so "
+"other values do not keep referring to them. For example, an attribute that "
+"refers to the model's optimizer comes back as a separate optimizer without "
+"its state, even if it is listed. List only the model and use its optimizer "
+"through ``model.optimizer``."
+msgstr ""
+"**参照**：1 つのタスクのすべてのエージェントの列挙された値と注文はまとめて pickle 化されるため、それらの間の参照は、pickle "
+"化で保たれる範囲で保たれます。例えば、エージェントが返し、かつ列挙されたリスト型の属性にも入れている注文は 1 "
+"つのオブジェクトになります。列挙されていない属性が列挙されたオブジェクトを参照している場合（例えば、オプティマイザーを参照する学習率スケジューラー）、その属性は古いオブジェクトを参照し続けるため、このような属性はまとめて列挙してください。Keras"
+" のモデルは pickle "
+"化の際に保存して再読み込みされるため、他の値はそのモデルを参照し続けません。例えば、モデルのオプティマイザーを参照する属性は、列挙していても、状態を持たない別のオプティマイザーとして戻ってきます。モデルだけを列挙し、オプティマイザーは"
+" ``model.optimizer`` を通じて使ってください。"
+
+#: ../../source/user_guide/config.rst:1312
+msgid ""
+"**Shared objects**: the objects of the simulation in the values are sent "
+"back as references to the objects in the main process, not as copies. They "
+"are the simulator, the logger, the fundamentals, the markets, their order "
+"books and the orders in the books, the agents (including the agent itself), "
+"the sessions, the events, the event hooks, the random number generators of "
+"the simulator, the markets, the agents, the sessions and the events, and the"
+" lists, dicts and sets that these objects except the agents hold as "
+"attributes. So a value can refer to the agent, use markets as the keys of a "
+"dict, or keep the current session. An order is a reference only while it is "
+"in an order book: an order that is waiting in a book is the object in the "
+"book, so the agent can look it up there by ``is``. An order that is in no "
+"book when the agent is asked, for example because it has been fully "
+"executed, canceled or has expired, comes back as a new copy after every "
+"call. The copy has the same values, but other agents and unlisted attributes"
+" keep referring to the old object, so identify such orders by their "
+"``market_id`` and ``order_id``, not by ``is``. Other objects are copies too:"
+" an object shared with other agents, such as a model or a dict that several "
+"agents use, is no longer shared, and which agents share a copy depends on "
+"how the agents are split into tasks."
+msgstr ""
+"**共有オブジェクト**：値に含まれるシミュレーションのオブジェクトは、コピーではなく、メインプロセスのオブジェクトへの参照として送り返されます。これらは、シミュレーター、ロガー、ファンダメンタルズ、市場、市場の板と板にある注文、エージェント（そのエージェント自身を含む）、セッション、イベント、イベントフック、乱数生成器（シミュレーター、市場、エージェント、セッション、イベントが持つもの）、およびエージェントを除くこれらのオブジェクトが属性として保持するリスト、辞書、集合です。そのため、値からそのエージェントを参照したり、市場を辞書のキーに使ったり、現在のセッションを保持したりできます。注文が参照になるのは、板にある間だけです。板で待機している注文は板にあるオブジェクトそのものなので、エージェントは板の中から"
+" ``is`` "
+"でその注文を探せます。エージェントに注文の提出を求めた時点でどの板にもない注文（例えば、全量が約定した注文、取り消された注文、失効した注文）は、呼び出しのたびに新しいコピーとして戻ってきます。コピーの値は同じですが、他のエージェントや列挙されていない属性は古いオブジェクトを参照し続けるため、このような注文は"
+" ``is`` ではなく ``market_id`` と ``order_id`` "
+"で識別してください。その他のオブジェクトもコピーです。複数のエージェントが使うモデルや辞書など、他のエージェントと共有しているオブジェクトはもう共有されなくなり、どのエージェントがコピーを共有するかはエージェントがどのようにタスクに分けられるかに依存します。"
+
+#: ../../source/user_guide/config.rst:1306
+msgid ""
+"**Shared memory**: some libraries share memory between processes instead of "
+"copying it. For example, PyTorch sends tensors on the CPU through shared "
+"memory, so the parameters of an unlisted model that are updated in place, "
+"e.g., by training, can reach the agent in the main process, while other "
+"changes, such as the state of its optimizer, are lost. Do not rely on this; "
+"list every attribute that ``submit_orders`` changes. The gradients "
+"(``.grad``) of tensors are not sent between processes, so gradients "
+"accumulated across calls of ``submit_orders`` are lost."
+msgstr ""
+"**共有メモリ**：一部のライブラリは、メモリをコピーせずにプロセス間で共有します。例えば、PyTorch は CPU "
+"上のテンソルを共有メモリを通じて送るため、列挙されていないモデルのパラメータを学習などによってインプレースで更新すると、その値はメインプロセスのエージェントに届くことがありますが、オプティマイザーの状態などのその他の変更は失われます。これに頼らず、``submit_orders``"
+" が変更する属性はすべて列挙してください。テンソルの勾配（``.grad``）はプロセス間で送られないため、``submit_orders`` "
+"の複数回の呼び出しにわたって蓄積した勾配は失われます。"
+
+#: ../../source/user_guide/config.rst:1339
+msgid ""
+"**Warning**: the runner warns with a ``UserWarning`` when ``submit_orders`` "
+"assigns or deletes an attribute of the agent that is not listed, because the"
+" change is lost. The warning names the agent class and the attributes, and "
+"it is shown at most once for each agent class and attribute per runner. Its "
+"message starts with ``Changes to attributes not listed in synced_attributes "
+"are lost``, which does not change, so it can be filtered, e.g., by "
+"``warnings.filterwarnings(\"ignore\", message=\"Changes to attributes not "
+"listed in synced_attributes\")``. Assigning a value equal to the old one is "
+"not reported if both are strings, numbers or tuples of them, such as a "
+"constant assigned again or a price that did not change. Only assignments and"
+" deletions are detected; changes made in place, such as appending to a list "
+"or training a model, are not. So no warning is shown for an unlisted PyTorch"
+" model that is trained in place, even though its parameters can reach the "
+"main process through shared memory while the state of its optimizer is lost "
+"(see **Shared memory**). Only the attributes in the agent's ``__dict__`` are"
+" compared, so changes to unlisted attributes in ``__slots__`` are lost "
+"without a warning, and so are changes to class attributes and module "
+"variables, which are never sent back. The listed names are read with "
+"``getattr`` and set with ``setattr``, so a property can be listed, but the "
+"runner warns about the attribute that its setter assigns; list that "
+"attribute instead of the property. The built-in agents cause no warning."
+msgstr ""
+"**警告**：``submit_orders`` "
+"がエージェントの列挙されていない属性に代入するか、その属性を削除すると、その変更は失われるため、ランナーは ``UserWarning`` "
+"で警告します。警告にはエージェントのクラスと属性の名前が示され、ランナーごとに、エージェントのクラスと属性の組につき最大 1 "
+"回だけ表示されます。警告のメッセージは ``Changes to attributes not listed in synced_attributes "
+"are lost`` で始まり、この部分は変わらないため、例えば ``warnings.filterwarnings(\"ignore\", "
+"message=\"Changes to attributes not listed in synced_attributes\")`` "
+"で警告を除外できます。古い値と等しい値の代入は、どちらも文字列、数値、またはそれらのタプルであれば報告されません。例えば、定数を再び代入した場合や、変わらなかった価格を代入した場合です。検出されるのは代入と削除だけで、リストへの追加やモデルの学習のようなインプレースの変更は検出されません。そのため、列挙されていない"
+" PyTorch "
+"のモデルをインプレースで学習させても警告は表示されませんが、そのパラメータは共有メモリを通じてメインプロセスに届くことがある一方で、オプティマイザーの状態は失われます（**共有メモリ**"
+" を参照）。比較されるのはエージェントの ``__dict__`` にある属性だけなので、``__slots__`` "
+"にある列挙されていない属性の変更は警告なしに失われます。クラス属性やモジュール変数の変更も同様で、これらが送り返されることはありません。列挙された名前は"
+" ``getattr`` で読み取られ、``setattr`` "
+"で設定されるため、プロパティも列挙できますが、ランナーはそのセッターが代入する属性について警告します。プロパティではなく、その属性を列挙してください。組み込みエージェントでは警告は表示されません。"
+
+#: ../../source/user_guide/config.rst:1353
+msgid ""
+"**Pickling**: the listed attributes must be pickled with the agent; if "
+"``__getstate__`` drops one of them, it is deleted from the agent in the main"
+" process. The listed values must also be picklable when they are sent back; "
+"if one is not, the simulation fails with a ``RuntimeError`` that names the "
+"agent class and its ``agent_id``."
+msgstr ""
+"**pickle 化**：列挙した属性はエージェントとともに pickle 化される必要があります。``__getstate__`` "
+"がそのいずれかを除外すると、その属性はメインプロセスのエージェントから削除されます。列挙した値は、送り返されるときにも pickle "
+"化できる必要があります。pickle 化できない値があると、エージェントのクラスとその ``agent_id`` を示す "
+"``RuntimeError`` でシミュレーションが失敗します。"
+
+#: ../../source/user_guide/config.rst:1342
+msgid ""
+"**Checks**: the names must be a tuple or list of strings. They must not "
+"include ``\"simulator\"``, ``\"logger\"`` or ``\"prng\"``, which the runner "
+"manages, or ``\"__dict__\"``, which holds all the attributes of the agent, "
+"so list the attributes one by one. The runner checks them when it is set up "
+"and whenever it asks the agent, and raises a ``ValueError`` naming the agent"
+" class if they are invalid."
+msgstr ""
+"**検査**：名前は文字列のタプルまたはリストでなければなりません。また、名前には、ランナーが管理する "
+"``\"simulator\"``、``\"logger\"``、``\"prng\"`` や、エージェントのすべての属性を保持する "
+"``\"__dict__\"`` を含めてはいけません。属性は 1 "
+"つずつ列挙してください。ランナーはセットアップ時と、エージェントに注文の提出を求めるたびに名前を検査し、不正な場合はエージェントのクラス名を含む "
+"``ValueError`` を送出します。"
+
+#: ../../source/user_guide/config.rst:1219
+msgid "JAX/Flax runner"
+msgstr "JAX/Flax ランナー"
+
+#: ../../source/user_guide/config.rst:1244
+msgid ""
+":class:`~pams.runners.JaxAgentParallelRunner` (experimental) is the process "
+"runner for agents that use JAX in ``submit_orders``, for example Flax "
+"models. JAX is not installed with PAMS: install it yourself, in the same "
+"command as PAMS so that pip chooses versions that work with PAMS (for "
+"example ``pip install pams jax flax``). The runner starts its worker "
+"processes by ``\"spawn\"`` unless ``simulation.startMethod`` is set. Each "
+"worker process configures JAX once, before it runs any task, with these keys"
+" in ``simulation``, which the other runners ignore:"
+msgstr ""
+":class:`~pams.runners.JaxAgentParallelRunner` （実験的）は、``submit_orders`` で JAX"
+" を使うエージェント（例えば Flax のモデル）のためのプロセスランナーです。JAX は PAMS と一緒にはインストールされないため、pip が "
+"PAMS で動作するバージョンを選ぶように、PAMS と同じコマンドで各自インストールしてください（例えば ``pip install pams jax"
+" flax``）。このランナーは、``simulation.startMethod`` が設定されていない限り、``\"spawn\"`` "
+"でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで JAX "
+"を設定します。これらのキーは他のランナーでは無視されます："
+
+#: ../../source/user_guide/config.rst:1234
+msgid "``jaxPlatforms`` |optional|"
+msgstr "``jaxPlatforms`` |optional|"
+
+#: ../../source/user_guide/config.rst:1236
+msgid ""
+"The platforms that JAX uses on the worker processes, such as ``\"cpu\"`` or "
+"``\"cuda\"`` (``jax_platforms`` of JAX). Default: ``JAX_PLATFORMS`` in the "
+"environment if it is set; otherwise JAX chooses."
+msgstr ""
+"ワーカープロセスで JAX が使うプラットフォームです。例えば ``\"cpu\"`` や ``\"cuda\"`` です（JAX の "
+"``jax_platforms``）。デフォルト：環境変数 ``JAX_PLATFORMS`` が設定されていればその値、設定されていなければ JAX "
+"が選択します。"
+
+#: ../../source/user_guide/config.rst:1238
+msgid "``jaxPreallocate`` |optional|"
+msgstr "``jaxPreallocate`` |optional|"
+
+#: ../../source/user_guide/config.rst:1240
+#, python-format
+msgid ""
+"Whether JAX preallocates GPU memory on each worker process "
+"(``XLA_PYTHON_CLIENT_PREALLOCATE``). Default: "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` in the environment if it is set; otherwise"
+" ``false``, so that the worker processes can share a GPU (by default, JAX "
+"preallocates 75% of it)."
+msgstr ""
+"各ワーカープロセスで JAX が GPU "
+"メモリを事前確保するかどうかです（``XLA_PYTHON_CLIENT_PREALLOCATE``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_PREALLOCATE`` が設定されていればその値、設定されていなければ "
+"``false``。ワーカープロセスが GPU を共有できるようにするためです（JAX はデフォルトで GPU メモリの 75% を事前確保します）。"
+
+#: ../../source/user_guide/config.rst:1243
+msgid "``jaxMemoryFraction`` |optional|"
+msgstr "``jaxMemoryFraction`` |optional|"
+
+#: ../../source/user_guide/config.rst:1244
+msgid "number in (0, 1]"
+msgstr "(0, 1] の数値"
+
+#: ../../source/user_guide/config.rst:1245
+msgid ""
+"The fraction of GPU memory that JAX can use on each worker process "
+"(``XLA_PYTHON_CLIENT_MEM_FRACTION``). Default: "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` (or ``XLA_CLIENT_MEM_FRACTION``) in the "
+"environment if it is set; otherwise the default of JAX (0.75)."
+msgstr ""
+"各ワーカープロセスで JAX が使える GPU "
+"メモリの割合です（``XLA_PYTHON_CLIENT_MEM_FRACTION``）。デフォルト：環境変数 "
+"``XLA_PYTHON_CLIENT_MEM_FRACTION`` （または "
+"``XLA_CLIENT_MEM_FRACTION``）が設定されていればその値、設定されていなければ JAX のデフォルト（0.75）。"
+
+#: ../../source/user_guide/config.rst:1249
+msgid ""
+"These keys do not configure JAX on the main process. See :doc:`platform` for"
+" how to write agents for this runner."
+msgstr "これらのキーはメインプロセスの JAX を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` を参照してください。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "TensorFlow runner"
+msgstr "TensorFlow ランナー"
+
+#: ../../source/user_guide/config.rst:1283
+msgid ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` (experimental) is the "
+"process runner for agents that use TensorFlow in ``submit_orders``, for "
+"example Keras models. TensorFlow is not installed with PAMS: install it "
+"yourself (for example ``pip install tensorflow``, or ``pip install "
+"tensorflow-cpu`` for the CPU-only build). The runner starts its worker "
+"processes by ``\"spawn\"`` unless ``simulation.startMethod`` is set. Each "
+"worker process configures TensorFlow once, before it runs any task, with "
+"these keys in ``simulation``, which the other runners ignore:"
+msgstr ""
+":class:`~pams.runners.TensorFlowAgentParallelRunner` "
+"（実験的機能）は、``submit_orders`` で TensorFlow を使うエージェント（例えば Keras "
+"のモデル）のためのプロセスランナーです。TensorFlow は PAMS と一緒にはインストールされないため、各自でインストールしてください（例えば "
+"``pip install tensorflow``、CPU 専用版であれば ``pip install tensorflow-"
+"cpu``）。このランナーは、``simulation.startMethod`` が設定されていない限り、``\"spawn\"`` "
+"でワーカープロセスを起動します。各ワーカープロセスは、タスクを実行する前に一度だけ、``simulation`` の以下のキーで TensorFlow "
+"を設定します。これらのキーは他のランナーでは無視されます："
+
+#: ../../source/user_guide/config.rst:1296
+msgid "``tensorflowIntraOpThreads`` |optional|"
+msgstr "``tensorflowIntraOpThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:1298
+msgid ""
+"The number of threads that TensorFlow uses to run one operation, such as a "
+"matrix multiplication, on each worker process. Default: the number of CPUs "
+"divided by the smaller of ``numParallel`` and ``maxNormalOrders`` (at least "
+"1), so that the worker processes running at the same time do not use more "
+"threads than the CPUs in total. The results of large operations can depend "
+"on this number, so set it explicitly for reproducible results (see "
+":doc:`platform`)."
+msgstr ""
+"各ワーカープロセスで、TensorFlow が 1 つの演算（例えば行列積）の実行に使うスレッド数です。デフォルト：CPU 数を "
+"``numParallel`` と ``maxNormalOrders`` の小さい方で割った値（最小 1）。同時に動くワーカープロセス全体で CPU "
+"数より多くのスレッドを使わないようにするためです。大きな演算の結果はこの値によって変わることがあるため、結果を再現できるようにするには明示的に設定してください（:doc:`platform`"
+" を参照）。"
+
+#: ../../source/user_guide/config.rst:1303
+msgid "``tensorflowInterOpThreads`` |optional|"
+msgstr "``tensorflowInterOpThreads`` |optional|"
+
+#: ../../source/user_guide/config.rst:1305
+msgid ""
+"The number of threads that TensorFlow uses to run independent operations at "
+"the same time on each worker process. Default: ``1``."
+msgstr "各ワーカープロセスで、TensorFlow が互いに独立した演算を同時に実行するために使うスレッド数です。デフォルト：``1``。"
+
+#: ../../source/user_guide/config.rst:1307
+msgid "``tensorflowGpuMemoryGrowth`` |optional|"
+msgstr "``tensorflowGpuMemoryGrowth`` |optional|"
+
+#: ../../source/user_guide/config.rst:1309
+msgid ""
+"Whether memory growth is enabled for all the visible GPUs on each worker "
+"process. Default: ``true``, so that the worker processes can share a GPU (by"
+" default, TensorFlow allocates almost all the memory of a GPU to the first "
+"process that uses it)."
+msgstr ""
+"各ワーカープロセスで、認識されているすべての GPU のメモリ増加（memory "
+"growth）を有効にするかどうかです。デフォルト：``true``。ワーカープロセスが GPU を共有できるようにするためです（TensorFlow "
+"はデフォルトで、GPU のメモリのほぼすべてを最初に使ったプロセスに割り当てます）。"
+
+#: ../../source/user_guide/config.rst:1313
+msgid ""
+"These keys do not configure TensorFlow on the main process. See "
+":doc:`platform` for how to write agents for this runner."
+msgstr ""
+"これらのキーはメインプロセスの TensorFlow を設定しません。このランナー向けのエージェントの書き方は :doc:`platform` "
+"を参照してください。"
 
 #: ../../source/user_guide/config.rst:1204
 msgid "Silent pitfalls"
@@ -2539,6 +3350,35 @@ msgid ""
 "it once."
 msgstr "同じ名前のクラスが2つある（例：組み込みクラスと同じ名前を付けた独自クラス）か、同じクラスが2回登録されています。クラス名を変更するか、1回だけ登録してください。"
 
+#: ../../source/user_guide/config.rst:1541
+msgid ""
+"``market class for X does not inherit Market class`` (the same for agent,"
+" event and transaction fee classes)"
+msgstr ""
+"``market class for X does not inherit Market class`` "
+"（エージェントクラス、イベントクラス、取引手数料クラスも同様）"
+
+#: ../../source/user_guide/config.rst:1543
+msgid ""
+"The ``class`` of block ``X`` is of the wrong kind, e.g. an agent class in"
+" a market block, or a class that does not inherit "
+":class:`~pams.TransactionFee` in ``X.transactionFee``."
+msgstr ""
+"ブロック ``X`` の ``class`` の種類が誤っています（例：市場のブロックにエージェントクラスを指定している、または "
+"``X.transactionFee`` に :class:`~pams.TransactionFee` を継承していないクラスを指定している）。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``class for X must be a class name (str) or a class, but Y is given``"
+msgstr "``class for X must be a class name (str) or a class, but Y is given``"
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"The value ``Y`` of ``class`` in block ``X`` of a Python dict config is "
+"neither a string nor a class, e.g. ``None``."
+msgstr ""
+"Python の dict による設定で、ブロック ``X`` の ``class`` の値 ``Y`` "
+"が文字列でもクラスでもありません（例：``None``）。"
+
 #: ../../source/user_guide/config.rst:1240
 msgid "``X setting is missing in config``"
 msgstr ""
@@ -2597,20 +3437,46 @@ msgstr ""
 "が、市場のインスタンス名になっていません。グループ名ではなくインスタンス名（``Market-0``）を使ってください。"
 
 #: ../../source/user_guide/config.rst:1254
-msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
-msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+msgid "``order for an inaccessible market is not allowed``"
+msgstr "``order for an inaccessible market is not allowed``"
 
 #: ../../source/user_guide/config.rst:1255
 msgid ""
-"A market was used that the agent cannot trade: a ``MarketMakerAgent`` whose "
-"``targetMarket`` is not in its ``markets``, or an ``ArbitrageAgent`` whose "
-"``markets`` lack the component markets. A ``FundamentalPriceShock`` whose "
-"``target`` is an ``IndexMarket`` fails the same way."
+"An agent submitted an order for a market that it cannot trade: a "
+"``MarketMakerAgent`` whose ``targetMarket`` is not in its ``markets``, or an "
+"``ArbitrageAgent`` whose ``markets`` lack the component markets. Add the "
+"market group named in the message to the agent's ``markets``."
 msgstr ""
-"エージェントが取引できない市場が使われています： ``targetMarket`` が自身の ``markets`` に含まれていない "
+"エージェントが取引できない市場に注文を出しました： ``targetMarket`` が自身の ``markets`` に含まれていない "
 "``MarketMakerAgent`` や、``markets`` に構成市場が含まれていない ``ArbitrageAgent`` "
-"がこれに当たります。``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
-"も同様に失敗します。"
+"がこれに当たります。メッセージに示された市場グループをエージェントの ``markets`` に追加してください。"
+
+#: ../../source/user_guide/config.rst:1305
+msgid "``cancel order for an order of another agent is not allowed``"
+msgstr "``cancel order for an order of another agent is not allowed``"
+
+#: ../../source/user_guide/config.rst:1306
+msgid ""
+"A user-defined agent submitted a ``Cancel`` of an order that has its own "
+"``agent_id`` but the same ``order_id``, price, time step, side and kind "
+"as an order that another agent placed. Cancel only the orders that the "
+"agent itself placed."
+msgstr ""
+"ユーザー定義のエージェントが、自身の ``agent_id`` "
+"を持ちながら、``order_id``、価格、注文が出されたステップ、売買の別、注文の種類が他のエージェントの出した注文と同じである注文の "
+"``Cancel`` を出しました。エージェント自身が出した注文だけを取り消してください。"
+
+#: ../../source/user_guide/config.rst:1258
+msgid "``KeyError`` with a number, e.g. ``KeyError: 0``, while the simulation runs"
+msgstr "シミュレーション実行中に発生する、数値を伴う ``KeyError`` （``KeyError: 0`` など）"
+
+#: ../../source/user_guide/config.rst:1259
+msgid ""
+"A ``FundamentalPriceShock`` whose ``target`` is an ``IndexMarket``. Shock its"
+" component markets instead."
+msgstr ""
+"``target`` が ``IndexMarket`` である ``FundamentalPriceShock`` "
+"です。代わりにその構成市場にショックを与えてください。"
 
 #: ../../source/user_guide/config.rst:1258
 msgid "``market name X is duplicate`` / ``agent name X is duplicate``"
@@ -2685,6 +3551,34 @@ msgid ""
 "An agent submitted a price that is not a multiple of ``tickSize``; it was "
 "rounded. This is normal for FCN agents."
 msgstr "エージェントが ``tickSize`` の倍数でない価格を提出したため、価格が丸められました。FCNエージェントでは通常のことです。"
+
+#: ../../source/user_guide/config.rst:1278
+msgid ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` (warning)"
+msgstr ""
+"``ArbitrageAgent X can access the index market Y but not its component "
+"markets Z`` （警告）"
+
+#: ../../source/user_guide/config.rst:1279
+msgid ""
+"Add the groups of the markets ``Z`` to ``markets`` of the agent. Otherwise "
+"its orders to them fail while the simulation runs."
+msgstr ""
+"市場 ``Z`` の市場グループをエージェントの ``markets`` "
+"に追加してください。追加しない場合、それらの市場への注文はシミュレーション実行中に失敗します。"
+
+#: ../../source/user_guide/config.rst:1281
+msgid "``ArbitrageAgent X cannot access any index market`` (warning)"
+msgstr "``ArbitrageAgent X cannot access any index market`` （警告）"
+
+#: ../../source/user_guide/config.rst:1282
+msgid ""
+"The agent never places an order. Add an ``IndexMarket`` group and the groups"
+" of its component markets to its ``markets``."
+msgstr ""
+"このエージェントは注文を一切出しません。``IndexMarket`` "
+"の市場グループとその構成市場の市場グループを、エージェントの ``markets`` に追加してください。"
 
 #: ../../source/user_guide/config.rst:1275
 msgid "``AssertionError`` while the simulation runs"

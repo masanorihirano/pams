@@ -68,18 +68,49 @@ msgstr ""
 "ワーカー数は設定ファイルの ``simulation.numParallel`` "
 "で設定できます。デフォルトはCPU数から1を引いた値（ただし最小1）です。"
 
-#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:24
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:23
+msgid ""
+"Subclasses can customize the workers by overriding the following internal "
+"methods:"
+msgstr "サブクラスは、以下の内部メソッドをオーバーライドすることでワーカーをカスタマイズできます："
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:25
+msgid "``_create_executor``: creates the executor."
+msgstr "``_create_executor``：エグゼキューターを作成します。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:26
+msgid ""
+"``_get_worker_initializer`` and ``_get_worker_initargs``: a function called "
+"once on each worker before it runs any task, and its arguments."
+msgstr ""
+"``_get_worker_initializer`` と "
+"``_get_worker_initargs``：各ワーカーがタスクを実行する前に一度だけ呼び出される関数と、その引数です。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:28
+msgid ""
+"``_split_agents_into_chunks``: splits the agents asked in parallel into the "
+"tasks of the executor."
+msgstr "``_split_agents_into_chunks``：並列に問い合わせるエージェントを、エグゼキューターのタスクに分割します。"
+
+#: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:32
 msgid ""
 ":func:`pams.agents.Agent.submit_orders` is called on worker threads "
 "concurrently. The built-in agents only read markets and use their own pseudo"
 " random number generators, which is thread-safe in this runner because the "
 "main thread waits for all the workers before handling orders. User-defined "
 "agents must not modify shared objects such as markets, the simulator, the "
-"logger, or other agents in :func:`pams.agents.Agent.submit_orders`."
+"logger, or other agents in :func:`pams.agents.Agent.submit_orders`. "
+":func:`pams.agents.Agent.submit_orders` is called on the agents themselves, "
+"not on copies, so their changes to their own attributes are kept, and "
+":attr:`pams.agents.Agent.synced_attributes` is not used."
 msgstr ""
 ":func:`pams.agents.Agent.submit_orders` "
 "はワーカースレッド上で並行して呼び出されます。組み込みエージェントは、市場の読み取りと各自の疑似乱数生成器の使用しか行いません。メインスレッドは注文を処理する前にすべてのワーカーの終了を待つため、このランナーではこれらの操作はスレッドセーフです。ユーザー定義エージェントは、:func:`pams.agents.Agent.submit_orders`"
-" の中で市場、シミュレーター、ロガー、他のエージェントなどの共有オブジェクトを変更してはいけません。"
+" "
+"の中で市場、シミュレーター、ロガー、他のエージェントなどの共有オブジェクトを変更してはいけません。:func:`pams.agents.Agent.submit_orders`"
+" "
+"はコピーではなくエージェント自体に対して呼び出されるため、エージェントが自身の属性に加えた変更は保持され、:attr:`pams.agents.Agent.synced_attributes`"
+" は使われません。"
 
 #: of pams.runners.agent_parallel.MultiThreadAgentParallelRunner:31
 msgid ""
