@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Runner" href="../../reference/runners.html"><link rel="prev" title="Tutorials" href="index.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Running a simulation" href="first_simulation.html"><link rel="prev" title="Tutorials" href="index.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>Outline - pams documentation</title>
@@ -200,6 +200,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../config.html">JSON configuration</a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Outline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="first_simulation.html">Running a simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_agent.html">Writing an agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_event.html">Writing an event or a market</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_logger.html">Writing a logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci2002.html">Fundamentalists, chartists and noise traders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="price_limit.html">Price limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="trading_halt.html">Trading halts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fat_finger.html">A fat-finger order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shock_transfer.html">Shock transfer between markets through arbitrage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="market_share.html">Two markets competing for volume</a></li>
 </ul>
 </li>
 </ul>
@@ -339,7 +349,33 @@ For some convenience, we make some parameters and methods are public starting wi
 However, if you should access them is always depending on what you want to do.
 Therefore, some accessible parameters and methods could not be appropriate to be used correspondence to the actual markets.</p></li>
 </ul>
-<p>TBD…</p>
+</section>
+<section id="the-tutorials">
+<h2>The tutorials<a class="headerlink" href="#the-tutorials" title="Link to this heading">¶</a></h2>
+<p>The first four tutorials start from the same small simulation, one market and 100 FCN agents:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="first_simulation.html"><span class="doc">Running a simulation</span></a>: run a simulation from Python, save and read its results, and plot the prices.</p></li>
+<li><p><a class="reference internal" href="custom_agent.html"><span class="doc">Writing an agent</span></a>: write your own agent, and change a built-in one.</p></li>
+<li><p><a class="reference internal" href="custom_event.html"><span class="doc">Writing an event or a market</span></a>: write an event that changes the simulation while it runs, and extend a market.</p></li>
+<li><p><a class="reference internal" href="custom_logger.html"><span class="doc">Writing a logger</span></a>: write a logger that records the results in your own format.</p></li>
+</ul>
+<p>The next tutorials follow the tutorials of <a class="reference external" href="https://plham.github.io/">Plham</a>, the artificial market simulator
+whose concept PAMS inherits, and run their research cases with PAMS. Each page links to the Plham tutorial it
+follows, cites the papers of the case, and says where the results of PAMS differ:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="ci2002.html"><span class="doc">Fundamentalists, chartists and noise traders</span></a>: how fundamentalist, chartist and noise components shape the price.</p></li>
+<li><p><a class="reference internal" href="price_limit.html"><span class="doc">Price limits</span></a>: a price limit, and how long the price stays at it.</p></li>
+<li><p><a class="reference internal" href="trading_halt.html"><span class="doc">Trading halts</span></a>: trading halts after a fall of the fundamental price.</p></li>
+<li><p><a class="reference internal" href="fat_finger.html"><span class="doc">A fat-finger order</span></a>: a large sell order placed by mistake, and the order book after it.</p></li>
+<li><p><a class="reference internal" href="shock_transfer.html"><span class="doc">Shock transfer between markets through arbitrage</span></a>: a shock that spreads from one stock to another through an index and arbitrage agents.</p></li>
+<li><p><a class="reference internal" href="market_share.html"><span class="doc">Two markets competing for volume</span></a>: two markets competing for volume, with a smaller tick size or a market maker.</p></li>
+</ul>
+<p>Plham also has tutorials on a dark pool, on options and on parallel runs of many assets. PAMS has no dark pool
+market and no options, so these cases have no tutorial here; to run PAMS in parallel, see <a class="reference internal" href="../config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a>.
+The Plham tutorials on setting up a project and on the JSON format correspond to the first four tutorials and to
+<a class="reference internal" href="../config.html#config"><span class="std std-ref">JSON configuration</span></a>.</p>
+<p>Each tutorial comes with a complete script that you can download and run. Every key of the configuration is
+explained in <a class="reference internal" href="../config.html#config"><span class="std std-ref">JSON configuration</span></a>.</p>
 </section>
 </section>
 
@@ -348,12 +384,12 @@ Therefore, some accessible parameters and methods could not be appropriate to be
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../../reference/runners.html">
+          <a class="next-page" href="first_simulation.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Runner</div>
+                <div class="title">Running a simulation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -400,6 +436,7 @@ Therefore, some accessible parameters and methods could not be appropriate to be
             <ul>
 <li><a class="reference internal" href="#">Outline</a><ul>
 <li><a class="reference internal" href="#guideline">Guideline</a></li>
+<li><a class="reference internal" href="#the-tutorials">The tutorials</a></li>
 </ul>
 </li>
 </ul>

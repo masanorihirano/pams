@@ -1,0 +1,772 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Writing an event or a market" href="custom_event.html"><link rel="prev" title="Running a simulation" href="first_simulation.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>Writing an agent - pams documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">pams  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">pams  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../preface.html">Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../about.html">About this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../install.html">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../platform.html">Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config.html">JSON configuration</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="outline.html">Outline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="first_simulation.html">Running a simulation</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Writing an agent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_event.html">Writing an event or a market</a></li>
+<li class="toctree-l3"><a class="reference internal" href="custom_logger.html">Writing a logger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ci2002.html">Fundamentalists, chartists and noise traders</a></li>
+<li class="toctree-l3"><a class="reference internal" href="price_limit.html">Price limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="trading_halt.html">Trading halts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fat_finger.html">A fat-finger order</a></li>
+<li class="toctree-l3"><a class="reference internal" href="shock_transfer.html">Shock transfer between markets through arbitrage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="market_share.html">Two markets competing for volume</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/runners.html">Runner</a><input aria-label="Toggle navigation of Runner" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html">TorchAgentParallelRunner</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/simulator/pams.Simulator.html">Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/sessions.html">Session</a><input aria-label="Toggle navigation of Session" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/session/pams.Session.html">Session</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/markets.html">Market</a><input aria-label="Toggle navigation of Market" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/market/pams.IndexMarket.html">IndexMarket</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/fundamentals.html">Fundamentals</a><input aria-label="Toggle navigation of Fundamentals" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/orders.html">Order</a><input aria-label="Toggle navigation of Order" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/events.html">Events</a><input aria-label="Toggle navigation of Events" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.EventABC.html">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/logs.html">Logs</a><input aria-label="Toggle navigation of Logs" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/loggers.html">Logger</a><input aria-label="Toggle navigation of Logger" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/agents.html">Agents</a><input aria-label="Toggle navigation of Agents" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/utils.html">Utils</a><input aria-label="Toggle navigation of Utils" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../_sources/user_guide/tutorials/custom_agent.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="writing-an-agent">
+<span id="tutorial-custom-agent"></span><h1>Writing an agent<a class="headerlink" href="#writing-an-agent" title="Link to this heading">¶</a></h1>
+<p>This tutorial writes two agents and adds them to the simulation of <a class="reference internal" href="first_simulation.html"><span class="doc">Running a simulation</span></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MovingAverageAgent</span></code>, a new strategy written from <a class="reference internal" href="../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ContrarianFCNAgent</span></code>, a small change to <a class="reference internal" href="../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FCNAgent</span></code></a>.</p></li>
+</ul>
+<p>The complete script is <a class="reference download internal" download="" href="../../_downloads/0bbe834b94f007671ab6ad94c9d5dc76/tutorial_custom_agent.py"><code class="xref download docutils literal notranslate"><span class="pre">tutorial_custom_agent.py</span></code></a>.</p>
+<section id="how-the-runner-uses-an-agent">
+<h2>How the runner uses an agent<a class="headerlink" href="#how-the-runner-uses-an-agent" title="Link to this heading">¶</a></h2>
+<p>For each agent of the configuration, the runner:</p>
+<ol class="arabic simple">
+<li><p>creates the agent with an <code class="docutils literal notranslate"><span class="pre">agent_id</span></code>, a <code class="docutils literal notranslate"><span class="pre">name</span></code> (such as <code class="docutils literal notranslate"><span class="pre">&quot;MovingAverageAgents-0&quot;</span></code>), the
+<code class="docutils literal notranslate"><span class="pre">simulator</span></code>, the <code class="docutils literal notranslate"><span class="pre">logger</span></code>, and its own random number generator <code class="docutils literal notranslate"><span class="pre">prng</span></code>. You rarely need to change
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code>;</p></li>
+<li><p>calls <code class="docutils literal notranslate"><span class="pre">setup(settings,</span> <span class="pre">accessible_markets_ids)</span></code> once, after all the markets and agents are created.
+<code class="docutils literal notranslate"><span class="pre">settings</span></code> is the agent’s block of the configuration, after <code class="docutils literal notranslate"><span class="pre">extends</span></code> is resolved and without
+<code class="docutils literal notranslate"><span class="pre">numAgents</span></code>, <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code> and <code class="docutils literal notranslate"><span class="pre">prefix</span></code>. All the agents of a group receive the same dict, so read it
+but do not change it. <code class="docutils literal notranslate"><span class="pre">accessible_markets_ids</span></code> are the IDs of the markets in the groups listed in the
+block’s <code class="docutils literal notranslate"><span class="pre">markets</span></code>;</p></li>
+<li><p>calls <code class="docutils literal notranslate"><span class="pre">submit_orders(markets)</span></code> in some of the steps. The agent returns the orders it wants to place or
+cancel, possibly none;</p></li>
+<li><p>calls <code class="docutils literal notranslate"><span class="pre">submitted_order</span></code>, <code class="docutils literal notranslate"><span class="pre">canceled_order</span></code> and <code class="docutils literal notranslate"><span class="pre">executed_order</span></code> when a market has accepted one of its
+orders, has accepted one of its cancel orders, or has executed one of its orders.</p></li>
+</ol>
+<p>In each step, the runner asks the agents in a random order until <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> of them (<code class="docutils literal notranslate"><span class="pre">1</span></code> by default,
+see <a class="reference internal" href="../config.html#config-sessions"><span class="std std-ref">Sessions</span></a>) have returned at least one order. An agent that returns no order does not count, and
+the runner asks the next one. So, in a simulation with many agents, each agent places orders only in a few
+steps.</p>
+<p>An agent must inherit from <a class="reference internal" href="../../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a> and implement <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>. The callbacks do nothing
+by default.</p>
+</section>
+<section id="reading-the-parameters">
+<h2>Reading the parameters<a class="headerlink" href="#reading-the-parameters" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MovingAverageAgent</span></code> compares the market price with the average price of the last <code class="docutils literal notranslate"><span class="pre">windowSize</span></code> steps.
+It reads its parameters in <code class="docutils literal notranslate"><span class="pre">setup</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">order_volume</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">last_orders</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Order</span><span class="p">]</span>  <span class="c1"># market ID -&gt; last order placed</span>
+<span class="n">n_submitted</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">n_canceled</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">trades</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>  <span class="c1"># (step, price, +volume or -volume)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">accessible_markets_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Read the parameters of the agent from its block of the config.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings (Dict[str, Any]): the agent's block of the config. It must include</span>
+<span class="sd">            "windowSize" and can include "orderVolume" (default: 1).</span>
+<span class="sd">        accessible_markets_ids (List[int]): IDs of the markets the agent can trade.</span>
+<span class="sd">        *args: not used.</span>
+<span class="sd">        **kwargs: not used.</span>
+
+<span class="sd">    """</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="o">=</span><span class="n">accessible_markets_ids</span><span class="p">)</span>
+    <span class="n">json_random</span> <span class="o">=</span> <span class="n">JsonRandom</span><span class="p">(</span><span class="n">prng</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s2">"windowSize"</span><span class="p">]))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">order_volume</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">json_random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"orderVolume"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">last_orders</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">n_submitted</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">n_canceled</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">trades</span> <span class="o">=</span> <span class="p">[]</span>
+
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">super().setup(...)</span></code> reads <code class="docutils literal notranslate"><span class="pre">cashAmount</span></code> and <code class="docutils literal notranslate"><span class="pre">assetVolume</span></code>, which every agent requires, and gives the agent
+its cash and its shares in each accessible market.</p></li>
+<li><p>Any other key of the block can be read from <code class="docutils literal notranslate"><span class="pre">settings</span></code>. <a class="reference internal" href="../../reference/generated/utils/pams.utils.JsonRandom.html#pams.utils.JsonRandom" title="pams.utils.JsonRandom"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonRandom</span></code></a> accepts the same
+notation as the built-in agents, such as <code class="docutils literal notranslate"><span class="pre">[10,</span> <span class="pre">30]</span></code> for a uniform random value (see
+<a class="reference internal" href="../config.html#config-jsonrandom"><span class="std std-ref">Random parameters (JsonRandom)</span></a>), and returns a float. <code class="docutils literal notranslate"><span class="pre">int()</span></code> truncates it, so <code class="docutils literal notranslate"><span class="pre">[10,</span> <span class="pre">30]</span></code> gives windows from 10
+to 29.</p></li>
+<li><p>Declare the attributes of the agent in the class body and set them in <code class="docutils literal notranslate"><span class="pre">setup</span></code>.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">self.prng</span></code> for every random choice of the agent, so that the simulation stays determined by its seed.</p></li>
+</ul>
+</section>
+<section id="placing-orders">
+<h2>Placing orders<a class="headerlink" href="#placing-orders" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> receives every market of the simulation and returns a list of orders:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">submit_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">markets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Market</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""Decide the orders of this step.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        markets (List[Market]): all the markets of the simulation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[Union[Order, Cancel]]: the orders and cancel orders to submit.</span>
+
+<span class="sd">    """</span>
+    <span class="n">orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="n">Cancel</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_market_accessible</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">last_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_orders</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">last_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">last_order</span><span class="o">.</span><span class="n">volume</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># not fully executed: without ttl, it is still in the order book</span>
+            <span class="n">orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Cancel</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">last_order</span><span class="p">))</span>
+        <span class="n">past_prices</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_prices</span><span class="p">(</span>
+            <span class="n">times</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">moving_average</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">past_prices</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">past_prices</span><span class="p">)</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">get_market_price</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">price</span> <span class="o">&gt;</span> <span class="n">moving_average</span><span class="p">:</span>
+            <span class="n">is_buy</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">price</span> <span class="o">&lt;</span> <span class="n">moving_average</span><span class="p">:</span>
+            <span class="n">is_buy</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">tick_level</span> <span class="o">=</span> <span class="n">market</span><span class="o">.</span><span class="n">convert_to_tick_level</span><span class="p">(</span><span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span> <span class="n">is_buy</span><span class="o">=</span><span class="n">is_buy</span><span class="p">)</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">Order</span><span class="p">(</span>
+            <span class="n">agent_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span><span class="p">,</span>
+            <span class="n">market_id</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
+            <span class="n">is_buy</span><span class="o">=</span><span class="n">is_buy</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="n">LIMIT_ORDER</span><span class="p">,</span>
+            <span class="n">volume</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order_volume</span><span class="p">,</span>
+            <span class="n">price</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">convert_to_price</span><span class="p">(</span><span class="n">tick_level</span><span class="o">=</span><span class="n">tick_level</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_orders</span><span class="p">[</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">order</span>
+    <span class="k">return</span> <span class="n">orders</span>
+
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Skip the markets the agent cannot trade, with <code class="docutils literal notranslate"><span class="pre">is_market_accessible</span></code>.</p></li>
+<li><p>Only the current step and the steps before it can be read: <code class="docutils literal notranslate"><span class="pre">market.get_market_price()</span></code> is the price now,
+and <code class="docutils literal notranslate"><span class="pre">get_market_prices(times=...)</span></code> gives the prices of the earlier steps.</p></li>
+<li><p>Every order needs <code class="docutils literal notranslate"><span class="pre">agent_id=self.agent_id</span></code>: an order with another agent’s ID raises
+<code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">spoofing</span> <span class="pre">order</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">allowed.</span> <span class="pre">please</span> <span class="pre">check</span> <span class="pre">agent_id</span> <span class="pre">in</span> <span class="pre">order</span></code>.</p></li>
+<li><p>A <a class="reference internal" href="../../reference/generated/order/pams.LIMIT_ORDER.html#pams.LIMIT_ORDER" title="pams.LIMIT_ORDER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LIMIT_ORDER</span></code></a> needs a <code class="docutils literal notranslate"><span class="pre">price</span></code>, and a <a class="reference internal" href="../../reference/generated/order/pams.MARKET_ORDER.html#pams.MARKET_ORDER" title="pams.MARKET_ORDER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MARKET_ORDER</span></code></a> must not have one
+(<code class="docutils literal notranslate"><span class="pre">price=None</span></code>). <code class="docutils literal notranslate"><span class="pre">volume</span></code> must be positive.</p></li>
+<li><p>Round limit prices to the tick size with <code class="docutils literal notranslate"><span class="pre">convert_to_tick_level</span></code> and <code class="docutils literal notranslate"><span class="pre">convert_to_price</span></code>. Otherwise the
+market rounds them for you (buy orders down, sell orders up) with a warning.</p></li>
+<li><p>Without <code class="docutils literal notranslate"><span class="pre">ttl</span></code>, an order stays in the order book until it is executed or canceled. With <code class="docutils literal notranslate"><span class="pre">ttl=n</span></code>, it is
+removed once more than <code class="docutils literal notranslate"><span class="pre">n</span></code> steps have passed since it was placed.</p></li>
+<li><p>To cancel an order, return <code class="docutils literal notranslate"><span class="pre">Cancel(order=...)</span></code> with the <a class="reference internal" href="../../reference/generated/order/pams.Order.html#pams.Order" title="pams.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">Order</span></code></a> you submitted earlier.
+The market reduces <code class="docutils literal notranslate"><span class="pre">order.volume</span></code> as the order is executed, so an order without <code class="docutils literal notranslate"><span class="pre">ttl</span></code> is still in the
+order book while its <code class="docutils literal notranslate"><span class="pre">volume</span></code> is positive. An order removed because of its <code class="docutils literal notranslate"><span class="pre">ttl</span></code> keeps its <code class="docutils literal notranslate"><span class="pre">volume</span></code>.
+Canceling an order that is not in the order book any more is not an error.</p></li>
+<li><p>Create a new <a class="reference internal" href="../../reference/generated/order/pams.Order.html#pams.Order" title="pams.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">Order</span></code></a> for every order: submitting the same object again raises
+<code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">the</span> <span class="pre">order</span> <span class="pre">is</span> <span class="pre">already</span> <span class="pre">submitted</span></code>.</p></li>
+<li><p>The orders of one agent are processed in the order of the list, so the cancel above is processed before the
+new order.</p></li>
+<li><p>The market does not check cash or shares: an agent can buy without cash and sell shares it does not have.
+Add such checks to <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> if your model needs them.</p></li>
+</ul>
+</section>
+<section id="following-the-results">
+<h2>Following the results<a class="headerlink" href="#following-the-results" title="Link to this heading">¶</a></h2>
+<p>The callbacks tell the agent what happened to its orders:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">submitted_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">OrderLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Count the orders that a market has accepted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log (OrderLog): the accepted order.</span>
+
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">n_submitted</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">executed_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Record an execution of one of the agent's orders.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log (ExecutionLog): the execution.</span>
+
+<span class="sd">    """</span>
+    <span class="n">volume</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">volume</span> <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">buy_agent_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_id</span> <span class="k">else</span> <span class="o">-</span><span class="n">log</span><span class="o">.</span><span class="n">volume</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">trades</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">log</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">price</span><span class="p">,</span> <span class="n">volume</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">canceled_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">CancelLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Count the cancel orders that a market has accepted.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        log (CancelLog): the canceled order.</span>
+
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">n_canceled</span> <span class="o">+=</span> <span class="mi">1</span>
+
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">executed_order</span></code> is called for both the buyer and the seller of an execution, after their cash and shares are
+updated. There is no callback for an order that expires because of its <code class="docutils literal notranslate"><span class="pre">ttl</span></code>.</p>
+</section>
+<section id="changing-an-existing-agent">
+<h2>Changing an existing agent<a class="headerlink" href="#changing-an-existing-agent" title="Link to this heading">¶</a></h2>
+<p>To change a built-in agent, inherit from it and override only what differs.
+<a class="reference internal" href="../../reference/generated/agents/pams.agents.FCNAgent.html#pams.agents.FCNAgent" title="pams.agents.FCNAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FCNAgent</span></code></a> combines a fundamental, a chart and a noise term. Its chart term follows the past
+trend when <code class="docutils literal notranslate"><span class="pre">is_chart_following</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, which is the default. <code class="docutils literal notranslate"><span class="pre">ContrarianFCNAgent</span></code> reverses it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ContrarianFCNAgent</span><span class="p">(</span><span class="n">FCNAgent</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""FCN agent whose chart term is reversed: it expects past trends to revert."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">accessible_markets_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Set up the FCN agent, then reverse its chart term.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Dict[str, Any]): the agent's block of the config.</span>
+<span class="sd">            accessible_markets_ids (List[int]): IDs of the markets the agent can trade.</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
+
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span> <span class="n">accessible_markets_ids</span><span class="o">=</span><span class="n">accessible_markets_ids</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_chart_following</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+</pre></div>
+</div>
+</section>
+<section id="using-the-agents">
+<h2>Using the agents<a class="headerlink" href="#using-the-agents" title="Link to this heading">¶</a></h2>
+<p>The configuration adds a group of each new agent to the one of <a class="reference internal" href="first_simulation.html"><span class="doc">Running a simulation</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CONFIG</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"simulation"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"markets"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Market"</span><span class="p">],</span>
+        <span class="s2">"agents"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"FCNAgents"</span><span class="p">,</span> <span class="s2">"ContrarianAgents"</span><span class="p">,</span> <span class="s2">"MovingAverageAgents"</span><span class="p">],</span>
+        <span class="s2">"sessions"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">"sessionName"</span><span class="p">:</span> <span class="s2">"warmup"</span><span class="p">,</span>
+                <span class="s2">"iterationSteps"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s2">"withOrderPlacement"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"withOrderExecution"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">"withPrint"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">"sessionName"</span><span class="p">:</span> <span class="s2">"main"</span><span class="p">,</span>
+                <span class="s2">"iterationSteps"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                <span class="s2">"withOrderPlacement"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"withOrderExecution"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">"withPrint"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s2">"Market"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"class"</span><span class="p">:</span> <span class="s2">"Market"</span><span class="p">,</span> <span class="s2">"tickSize"</span><span class="p">:</span> <span class="mf">0.00001</span><span class="p">,</span> <span class="s2">"marketPrice"</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">},</span>
+    <span class="s2">"FCNAgents"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"FCNAgent"</span><span class="p">,</span>
+        <span class="s2">"numAgents"</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="s2">"markets"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Market"</span><span class="p">],</span>
+        <span class="s2">"assetVolume"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="s2">"cashAmount"</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="s2">"fundamentalWeight"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"expon"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]},</span>
+        <span class="s2">"chartWeight"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"expon"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]},</span>
+        <span class="s2">"noiseWeight"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"expon"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]},</span>
+        <span class="s2">"noiseScale"</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="s2">"timeWindowSize"</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+        <span class="s2">"orderMargin"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s2">"ContrarianAgents"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"extends"</span><span class="p">:</span> <span class="s2">"FCNAgents"</span><span class="p">,</span>
+        <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"ContrarianFCNAgent"</span><span class="p">,</span>
+        <span class="s2">"numAgents"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s2">"chartWeight"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"expon"</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]},</span>
+    <span class="p">},</span>
+    <span class="s2">"MovingAverageAgents"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"class"</span><span class="p">:</span> <span class="s2">"MovingAverageAgent"</span><span class="p">,</span>
+        <span class="s2">"numAgents"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s2">"markets"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Market"</span><span class="p">],</span>
+        <span class="s2">"assetVolume"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="s2">"cashAmount"</span><span class="p">:</span> <span class="mi">10000</span><span class="p">,</span>
+        <span class="s2">"windowSize"</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+        <span class="s2">"orderVolume"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ContrarianAgents</span></code> copies the block of <code class="docutils literal notranslate"><span class="pre">FCNAgents</span></code> with <code class="docutils literal notranslate"><span class="pre">extends</span></code>, then changes its class, its number of
+agents and its <code class="docutils literal notranslate"><span class="pre">chartWeight</span></code> (the chart term does nothing when its weight is 0).
+<code class="docutils literal notranslate"><span class="pre">MovingAverageAgents</span></code> gives the keys that <code class="docutils literal notranslate"><span class="pre">Agent.setup</span></code> requires, and the keys that <code class="docutils literal notranslate"><span class="pre">MovingAverageAgent</span></code>
+reads.</p>
+<p>Register the new classes with the runner before calling <code class="docutils literal notranslate"><span class="pre">main()</span></code>. The <code class="docutils literal notranslate"><span class="pre">class</span></code> of a block is the name of the
+registered class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_simulation</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SequentialRunner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Register the user-defined agents and run the simulation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        seed (int): seed of the random number generator.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SequentialRunner: the runner after the run.</span>
+
+<span class="sd">    """</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">SequentialRunner</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">CONFIG</span><span class="p">,</span> <span class="n">prng</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">))</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">class_register</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">MovingAverageAgent</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">class_register</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">ContrarianFCNAgent</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">runner</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="n">runner</span><span class="p">:</span> <span class="n">SequentialRunner</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Print what each moving average agent did.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        runner (SequentialRunner): the runner after the run.</span>
+
+<span class="sd">    """</span>
+    <span class="n">market</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">name2market</span><span class="p">[</span><span class="s2">"Market"</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">runner</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">agents_group_name2agent</span><span class="p">[</span><span class="s2">"MovingAverageAgents"</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="n">MovingAverageAgent</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: window </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">window_size</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"orders </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">n_submitted</span><span class="si">}</span><span class="s2">, cancels </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">n_canceled</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"trades </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">trades</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"shares </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">get_asset_volume</span><span class="p">(</span><span class="n">market_id</span><span class="o">=</span><span class="n">market</span><span class="o">.</span><span class="n">market_id</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"cash </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">get_cash_amount</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">report(run_simulation(seed=42))</span></code> prints the two time lines of <code class="docutils literal notranslate"><span class="pre">main()</span></code>, then:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MovingAverageAgents-0: window 12, orders 2, cancels 0, trades 2, shares 50, cash 9989.21
+MovingAverageAgents-1: window 27, orders 1, cancels 0, trades 1, shares 51, cash 9697.14
+MovingAverageAgents-2: window 14, orders 4, cancels 0, trades 4, shares 52, cash 9394.82
+MovingAverageAgents-3: window 13, orders 1, cancels 0, trades 1, shares 49, cash 10295.09
+MovingAverageAgents-4: window 11, orders 4, cancels 0, trades 4, shares 48, cash 10588.81
+MovingAverageAgents-5: window 12, orders 4, cancels 1, trades 3, shares 51, cash 9685.83
+MovingAverageAgents-6: window 12, orders 2, cancels 0, trades 2, shares 50, cash 9994.57
+MovingAverageAgents-7: window 10, orders 6, cancels 0, trades 6, shares 46, cash 11195.17
+MovingAverageAgents-8: window 22, orders 5, cancels 2, trades 3, shares 49, cash 10293.29
+MovingAverageAgents-9: window 12, orders 5, cancels 0, trades 5, shares 51, cash 9684.50
+</pre></div>
+</div>
+<p>The moving average agents place no order in <code class="docutils literal notranslate"><span class="pre">warmup</span></code>: the market price does not move while orders are not
+executed, so it equals its average. In <code class="docutils literal notranslate"><span class="pre">main</span></code>, only one agent places orders in each step, as explained above,
+and the agents share these steps with the 120 FCN agents. To make them trade more, raise <code class="docutils literal notranslate"><span class="pre">maxNormalOrders</span></code> in
+the sessions, or add more of them.</p>
+<p>Class names must be unique: do not name your class like a built-in class, such as <code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>.
+<a class="reference internal" href="../config.html#config-user-classes"><span class="std std-ref">User-defined classes</span></a> gives more details.</p>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>An agent that inherits from <a class="reference internal" href="../../reference/generated/agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HighFrequencyAgent</span></code></a> is a high-frequency agent. The runner asks
+high-frequency agents after the orders of each normal agent, as set by <code class="docutils literal notranslate"><span class="pre">maxHighFrequencyOrders</span></code> and
+<code class="docutils literal notranslate"><span class="pre">highFrequencySubmitRate</span></code> (see <a class="reference internal" href="../config.html#config-sessions"><span class="std std-ref">Sessions</span></a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MovingAverageAgent</span></code> keeps its last orders in an attribute set in <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code>. This works with
+<a class="reference internal" href="../../reference/generated/runner/pams.runners.SequentialRunner.html#pams.runners.SequentialRunner" title="pams.runners.SequentialRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialRunner</span></code></a> and the thread runner, but not with the process runner, which loses
+such changes (see <a class="reference internal" href="../config.html#config-parallel"><span class="std std-ref">Parallel runners</span></a>).</p></li>
+</ul>
+<p>Next, <a class="reference internal" href="custom_event.html"><span class="doc">Writing an event or a market</span></a> changes the market during the simulation, and <a class="reference internal" href="custom_logger.html"><span class="doc">Writing a logger</span></a> records the trades.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="custom_event.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Writing an event or a market</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="first_simulation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Running a simulation</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Masanori HIRANO
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Writing an agent</a><ul>
+<li><a class="reference internal" href="#how-the-runner-uses-an-agent">How the runner uses an agent</a></li>
+<li><a class="reference internal" href="#reading-the-parameters">Reading the parameters</a></li>
+<li><a class="reference internal" href="#placing-orders">Placing orders</a></li>
+<li><a class="reference internal" href="#following-the-results">Following the results</a></li>
+<li><a class="reference internal" href="#changing-an-existing-agent">Changing an existing agent</a></li>
+<li><a class="reference internal" href="#using-the-agents">Using the agents</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>
