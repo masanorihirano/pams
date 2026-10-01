@@ -565,6 +565,9 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Update agents for execution (usually, this is called from runner).</span>
 
+<span class="sd">        Besides the executed value, the transaction fees recorded in the execution logs are subtracted</span>
+<span class="sd">        from the cash of the buyer and the seller.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            execution_logs (List["ExecutionLog"]): execution logs.</span>
 
@@ -580,6 +583,8 @@
             <span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">market_id</span>
             <span class="n">buy_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">-=</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
             <span class="n">sell_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">+=</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+            <span class="n">buy_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">-=</span> <span class="n">log</span><span class="o">.</span><span class="n">buy_transaction_fee</span>
+            <span class="n">sell_agent</span><span class="o">.</span><span class="n">cash_amount</span> <span class="o">-=</span> <span class="n">log</span><span class="o">.</span><span class="n">sell_transaction_fee</span>
             <span class="n">buy_agent</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">+=</span> <span class="n">volume</span>
             <span class="n">sell_agent</span><span class="o">.</span><span class="n">asset_volumes</span><span class="p">[</span><span class="n">market_id</span><span class="p">]</span> <span class="o">-=</span> <span class="n">volume</span>
 

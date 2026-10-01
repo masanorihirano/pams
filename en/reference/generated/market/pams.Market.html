@@ -328,6 +328,22 @@
 <dt class="sig sig-object py" id="pams.Market">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">Market</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market" title="Link to this definition">¶</a></dt>
 <dd><p>Market class.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">transaction_fee</span></code> is set (see <a class="reference internal" href="../transaction_fees/pams.TransactionFee.html#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.TransactionFee</span></code></a>), the market charges transaction fees to the
+buyer and the seller of each execution and records the net transaction fees that it collects in each time
+step, which <a class="reference internal" href="#pams.Market.get_transaction_fee_revenues" title="pams.Market.get_transaction_fee_revenues"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transaction_fee_revenues()</span></code></a> and <a class="reference internal" href="#pams.Market.get_transaction_fee_revenue" title="pams.Market.get_transaction_fee_revenue"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transaction_fee_revenue()</span></code></a> return, and
+<a class="reference internal" href="#pams.Market.get_cumulative_transaction_fee_revenue" title="pams.Market.get_cumulative_transaction_fee_revenue"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_cumulative_transaction_fee_revenue()</span></code></a> returns their sum up to a time step. A logger can read them
+through <code class="docutils literal notranslate"><span class="pre">log.market</span></code> in <a class="reference internal" href="../loggers/pams.logs.Logger.html#pams.logs.Logger.process_market_step_end_log" title="pams.logs.Logger.process_market_step_end_log"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.logs.Logger.process_market_step_end_log()</span></code></a>, and an event can read them
+through <code class="docutils literal notranslate"><span class="pre">market</span></code> in <a class="reference internal" href="../events/pams.events.EventABC.html#pams.events.EventABC.hooked_after_step_for_market" title="pams.events.EventABC.hooked_after_step_for_market"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.events.EventABC.hooked_after_step_for_market()</span></code></a>, e.g.,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TransactionFeeRevenueLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">market</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">get_transaction_fee_revenue</span><span class="p">(),</span>  <span class="c1"># in this time step</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">get_cumulative_transaction_fee_revenue</span><span class="p">(),</span>  <span class="c1"># up to this time step</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
@@ -461,6 +477,26 @@
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Dict[Optional[float], int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_cumulative_transaction_fee_revenue">
+<span class="sig-name descname"><span class="pre">get_cumulative_transaction_fee_revenue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_cumulative_transaction_fee_revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_cumulative_transaction_fee_revenue" title="Link to this definition">¶</a></dt>
+<dd><p>Get the transaction fees collected by this market from time step 0 to a time step.</p>
+<p>This is the balance of the transaction fees of this market up to the time step, i.e., the sum of the
+transaction fee revenues (see <a class="reference internal" href="#pams.Market.get_transaction_fee_revenues" title="pams.Market.get_transaction_fee_revenues"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transaction_fee_revenues()</span></code></a>) from time step 0 to <code class="docutils literal notranslate"><span class="pre">time</span></code>.
+Negative fees (rebates) reduce it, so it can be negative. It is 0.0 if the market has no transaction fee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>cumulative transaction fee revenue.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -763,6 +799,46 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_transaction_fee_revenue">
+<span class="sig-name descname"><span class="pre">get_transaction_fee_revenue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_transaction_fee_revenue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_transaction_fee_revenue" title="Link to this definition">¶</a></dt>
+<dd><p>Get the transaction fees collected by this market in a time step.</p>
+<p>The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and
+the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be
+negative. It is 0.0 if the market has no transaction fee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – time step.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>transaction fee revenue.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.Market.get_transaction_fee_revenues">
+<span class="sig-name descname"><span class="pre">get_transaction_fee_revenues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_transaction_fee_revenues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_transaction_fee_revenues" title="Link to this definition">¶</a></dt>
+<dd><p>Get the transaction fees collected by this market in each time step.</p>
+<p>The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and
+the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be
+negative. It is 0.0 if the market has no transaction fee.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>times</strong> (<em>Union</em><em>[</em><em>Iterable</em><em>[</em><em>int</em><em>]</em><em>, </em><em>None</em><em>]</em>) – time steps.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>transaction fee revenues.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pams.Market.get_vwap">
 <span class="sig-name descname"><span class="pre">get_vwap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/market.html#Market.get_vwap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pams.Market.get_vwap" title="Link to this definition">¶</a></dt>
 <dd><p>Get VWAP.</p>
@@ -904,6 +980,7 @@ This can include the parameter “outstandingShares” and “tradeVolume”.</p
 <li><a class="reference internal" href="#pams.Market.get_best_buy_price"><code class="docutils literal notranslate"><span class="pre">Market.get_best_buy_price()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_best_sell_price"><code class="docutils literal notranslate"><span class="pre">Market.get_best_sell_price()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_buy_order_book"><code class="docutils literal notranslate"><span class="pre">Market.get_buy_order_book()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_cumulative_transaction_fee_revenue"><code class="docutils literal notranslate"><span class="pre">Market.get_cumulative_transaction_fee_revenue()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_executed_total_price"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_total_price()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_executed_total_prices"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_total_prices()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_executed_volume"><code class="docutils literal notranslate"><span class="pre">Market.get_executed_volume()</span></code></a></li>
@@ -922,6 +999,8 @@ This can include the parameter “outstandingShares” and “tradeVolume”.</p
 <li><a class="reference internal" href="#pams.Market.get_n_sell_orders"><code class="docutils literal notranslate"><span class="pre">Market.get_n_sell_orders()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_sell_order_book"><code class="docutils literal notranslate"><span class="pre">Market.get_sell_order_book()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_time"><code class="docutils literal notranslate"><span class="pre">Market.get_time()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_transaction_fee_revenue"><code class="docutils literal notranslate"><span class="pre">Market.get_transaction_fee_revenue()</span></code></a></li>
+<li><a class="reference internal" href="#pams.Market.get_transaction_fee_revenues"><code class="docutils literal notranslate"><span class="pre">Market.get_transaction_fee_revenues()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.get_vwap"><code class="docutils literal notranslate"><span class="pre">Market.get_vwap()</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.is_running"><code class="docutils literal notranslate"><span class="pre">Market.is_running</span></code></a></li>
 <li><a class="reference internal" href="#pams.Market.remain_executable_orders"><code class="docutils literal notranslate"><span class="pre">Market.remain_executable_orders()</span></code></a></li>

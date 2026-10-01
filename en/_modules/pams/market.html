@@ -338,6 +338,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cancel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.order_book</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderBook</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.transaction_fees</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionFee</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
 
@@ -346,6 +347,24 @@
 <a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Market</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Market class.</span>
+
+<span class="sd">    If ``transaction_fee`` is set (see :class:`pams.TransactionFee`), the market charges transaction fees to the</span>
+<span class="sd">    buyer and the seller of each execution and records the net transaction fees that it collects in each time</span>
+<span class="sd">    step, which :func:`get_transaction_fee_revenues` and :func:`get_transaction_fee_revenue` return, and</span>
+<span class="sd">    :func:`get_cumulative_transaction_fee_revenue` returns their sum up to a time step. A logger can read them</span>
+<span class="sd">    through ``log.market`` in :func:`pams.logs.Logger.process_market_step_end_log`, and an event can read them</span>
+<span class="sd">    through ``market`` in :func:`pams.events.EventABC.hooked_after_step_for_market`, e.g.,</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class TransactionFeeRevenueLogger(Logger):</span>
+<span class="sd">            def process_market_step_end_log(self, log: MarketStepEndLog) -&gt; None:</span>
+<span class="sd">                market = log.market</span>
+<span class="sd">                print(</span>
+<span class="sd">                    market.name,</span>
+<span class="sd">                    market.get_transaction_fee_revenue(),  # in this time step</span>
+<span class="sd">                    market.get_cumulative_transaction_fee_revenue(),  # up to this time step</span>
+<span class="sd">                )</span>
 
 <span class="sd">    .. seealso::</span>
 <span class="sd">        - :class:`pams.index_market.IndexMarket`: IndexMarket</span>
@@ -387,12 +406,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_fundamental_prices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executed_volumes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executed_total_prices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_buy_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_sell_orders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_next_order_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">simulator</span><span class="p">:</span> <span class="s2">"Simulator"</span> <span class="o">=</span> <span class="n">simulator</span>  <span class="c1"># type: ignore  # NOQA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outstanding_shares</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transaction_fee</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TransactionFee</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the string representation of the market."""</span>
@@ -722,6 +743,81 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Market.get_transaction_fee_revenues">
+<a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_transaction_fee_revenues">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_transaction_fee_revenues</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Get the transaction fees collected by this market in each time step.</span>
+
+<span class="sd">        The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and</span>
+<span class="sd">        the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be</span>
+<span class="sd">        negative. It is 0.0 if the market has no transaction fee.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            times (Union[Iterable[int], None]): time steps.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[float]: transaction fee revenues.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extract_sequential_data_by_time</span><span class="p">(</span>
+                <span class="n">times</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Market.get_transaction_fee_revenue">
+<a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_transaction_fee_revenue">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_transaction_fee_revenue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the transaction fees collected by this market in a time step.</span>
+
+<span class="sd">        The transaction fee revenue of a time step is the sum of the transaction fees charged to the buyers and</span>
+<span class="sd">        the sellers of the executions in that time step. Negative fees (rebates) reduce it, so it can be</span>
+<span class="sd">        negative. It is 0.0 if the market has no transaction fee.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (Union[int, None]): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: transaction fee revenue.</span>
+
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extract_data_by_time</span><span class="p">(</span>
+                <span class="n">time</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">)</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Market.get_cumulative_transaction_fee_revenue">
+<a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_cumulative_transaction_fee_revenue">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_cumulative_transaction_fee_revenue</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Get the transaction fees collected by this market from time step 0 to a time step.</span>
+
+<span class="sd">        This is the balance of the transaction fees of this market up to the time step, i.e., the sum of the</span>
+<span class="sd">        transaction fee revenues (see :func:`get_transaction_fee_revenues`) from time step 0 to ``time``.</span>
+<span class="sd">        Negative fees (rebates) reduce it, so it can be negative. It is 0.0 if the market has no transaction fee.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time (Union[int, None]): time step.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: cumulative transaction fee revenue.</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">"Cannot refer the future parameters"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">[:</span> <span class="nb">max</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="mf">0.0</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Market.get_n_buy_orders">
 <a class="viewcode-back" href="../../reference/generated/market/pams.Market.html#pams.Market.get_n_buy_orders">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_n_buy_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -823,6 +919,9 @@
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executed_total_prices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executed_total_prices</span> <span class="o">+</span> <span class="p">[</span>
             <span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_executed_total_prices</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="mf">0.0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">))</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_buy_orders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_buy_orders</span> <span class="o">+</span> <span class="p">[</span>
             <span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_buy_orders</span><span class="p">))</span>
@@ -1165,6 +1264,10 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExecutionLog</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Execute orders (internal method).</span>
 
+<span class="sd">        If ``transaction_fee`` is set, its ``compute_fees`` is called before the volume is subtracted from the</span>
+<span class="sd">        orders, the fees are recorded in the execution log, and their sum is added to the transaction fee revenue</span>
+<span class="sd">        of the current time step. Otherwise, the fees are 0.0.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            price (float): price.</span>
 <span class="sd">            volume (int): volume.</span>
@@ -1190,6 +1293,12 @@
         <span class="k">if</span> <span class="n">volume</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">AssertionError</span>
 
+        <span class="n">transaction_fees</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transaction_fee</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">transaction_fees</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transaction_fee</span><span class="o">.</span><span class="n">compute_fees</span><span class="p">(</span>
+                <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="o">=</span><span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">=</span><span class="n">sell_order</span>
+            <span class="p">)</span>
+        <span class="n">buy_transaction_fee</span><span class="p">,</span> <span class="n">sell_transaction_fee</span> <span class="o">=</span> <span class="n">transaction_fees</span>
         <span class="n">log</span><span class="p">:</span> <span class="n">ExecutionLog</span> <span class="o">=</span> <span class="n">ExecutionLog</span><span class="p">(</span>
             <span class="n">market_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="p">,</span>
             <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
@@ -1199,6 +1308,8 @@
             <span class="n">sell_order_id</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">),</span>
             <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
             <span class="n">volume</span><span class="o">=</span><span class="n">volume</span><span class="p">,</span>
+            <span class="n">buy_transaction_fee</span><span class="o">=</span><span class="n">buy_transaction_fee</span><span class="p">,</span>
+            <span class="n">sell_transaction_fee</span><span class="o">=</span><span class="n">sell_transaction_fee</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_book</span><span class="o">.</span><span class="n">change_order_volume</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">buy_order</span><span class="p">,</span> <span class="n">delta</span><span class="o">=-</span><span class="n">volume</span><span class="p">)</span>
@@ -1207,6 +1318,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_executed_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">price</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executed_volumes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">+=</span> <span class="n">volume</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executed_total_prices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">+=</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">price</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transaction_fee_revenues</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">buy_transaction_fee</span> <span class="o">+</span> <span class="n">sell_transaction_fee</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_market_price</span><span class="p">()</span>
 
         <span class="c1"># ToDo: Agent modification will be handled in simulator</span>

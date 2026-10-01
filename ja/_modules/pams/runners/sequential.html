@@ -348,6 +348,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">..order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..session</span><span class="w"> </span><span class="kn">import</span> <span class="n">Session</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..transaction_fees</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionFee</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.class_finder</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils.json_extends</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_extends</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Runner</span>
@@ -461,8 +462,51 @@
             <span class="n">group_class</span><span class="p">,</span>
         <span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_transaction_fee</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">market_settings</span><span class="p">:</span> <span class="n">Dict</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">TransactionFee</span><span class="p">]],</span> <span class="n">Dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Parse the transaction fee setting of a market group (internal method).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the market group in the config.</span>
+<span class="sd">            market_settings (Dict): the extended settings of the market group.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[Optional[Type[TransactionFee]], Dict]: the transaction fee class, or None if</span>
+<span class="sd">            "transactionFee" is absent or null, and its settings without "class".</span>
+
+<span class="sd">        """</span>
+        <span class="n">fee_settings</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">market_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"transactionFee"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fee_settings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fee_settings</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.transactionFee must be an object or null, but </span><span class="si">{</span><span class="n">fee_settings</span><span class="si">!r}</span><span class="s2"> is given"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"class"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fee_settings</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"class is not defined for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.transactionFee"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fee_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.transactionFee must be a class name (str) or a class, "</span>
+                <span class="sa">f</span><span class="s2">"but </span><span class="si">{</span><span class="n">fee_settings</span><span class="p">[</span><span class="s1">'class'</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is given"</span>
+            <span class="p">)</span>
+        <span class="n">fee_class</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">find_class</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">fee_settings</span><span class="p">[</span><span class="s2">"class"</span><span class="p">],</span> <span class="n">optional_class_list</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">registered_classes</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fee_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">fee_class</span><span class="p">,</span> <span class="n">TransactionFee</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"transaction fee class for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not inherit TransactionFee class"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">fee_class</span><span class="p">,</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">fee_settings</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">"class"</span>
+        <span class="p">}</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_markets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate markets (internal method).</span>
+
+<span class="sd">        If a market group has "transactionFee", an instance of its class is created for each market</span>
+<span class="sd">        of the group and set to ``market.transaction_fee``. Its setup is called right after the setup</span>
+<span class="sd">        of the market.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            market_type_names (List[str]): name list of market type.</span>
@@ -496,6 +540,9 @@
             <span class="n">fundamental_volatility</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">if</span> <span class="s2">"fundamentalVolatility"</span> <span class="ow">in</span> <span class="n">market_settings</span><span class="p">:</span>
                 <span class="n">fundamental_volatility</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">market_settings</span><span class="p">[</span><span class="s2">"fundamentalVolatility"</span><span class="p">])</span>
+            <span class="n">fee_class</span><span class="p">,</span> <span class="n">fee_settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_transaction_fee</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">market_settings</span><span class="o">=</span><span class="n">market_settings</span>
+            <span class="p">)</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
                 <span class="n">market</span> <span class="o">=</span> <span class="n">market_class</span><span class="p">(</span>
@@ -517,6 +564,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"settings"</span><span class="p">:</span> <span class="n">market_settings</span><span class="p">})</span>
                 <span class="p">)</span>
+                <span class="k">if</span> <span class="n">fee_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">transaction_fee</span> <span class="o">=</span> <span class="n">fee_class</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
+                    <span class="n">market</span><span class="o">.</span><span class="n">transaction_fee</span> <span class="o">=</span> <span class="n">transaction_fee</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_pending_setups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">transaction_fee</span><span class="o">.</span><span class="n">setup</span><span class="p">,</span> <span class="p">{</span><span class="s2">"settings"</span><span class="p">:</span> <span class="n">fee_settings</span><span class="p">})</span>
+                    <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_agents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent_type_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate agents (internal method).</span>

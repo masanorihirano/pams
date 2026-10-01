@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../../../genindex.html"><link rel="search" title="検索" href="../../../search.html"><link rel="next" title="SimulationBeginLog" href="pams.logs.SimulationBeginLog.html"><link rel="prev" title="CancelLog" href="pams.logs.CancelLog.html">
+<link rel="index" title="索引" href="../../../genindex.html"><link rel="search" title="検索" href="../../../search.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>ExecutionLog - pams ドキュメント</title>
+        <title>TransactionFee - pams ドキュメント</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -206,7 +206,7 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">APIリファレンス</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../runners.html">ランナー</a><input aria-label="Toggle navigation of ランナー" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.Runner.html">Runner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
@@ -251,17 +251,17 @@
 <li class="toctree-l2"><a class="reference internal" href="../events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="../../logs.html">ログ</a><input aria-label="Toggle navigation of ログ" checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.Log.html">Log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.OrderLog.html">OrderLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.CancelLog.html">CancelLog</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">ExecutionLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.SessionEndLog.html">SessionEndLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../logs.html">ログ</a><input aria-label="Toggle navigation of ログ" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../loggers.html">ロガー</a><input aria-label="Toggle navigation of ロガー" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -304,7 +304,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/reference/generated/logs/pams.logs.ExecutionLog.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/reference/generated/transaction_fees/pams.TransactionFee.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -322,14 +322,74 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="executionlog">
-<h1>ExecutionLog<a class="headerlink" href="#executionlog" title="Link to this heading">¶</a></h1>
+          <section id="transactionfee">
+<h1>TransactionFee<a class="headerlink" href="#transactionfee" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pams.logs.ExecutionLog">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.logs.</span></span><span class="sig-name descname"><span class="pre">ExecutionLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_order_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_order_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_transaction_fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_transaction_fee</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/logs/base.html#ExecutionLog"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.logs.ExecutionLog" title="Link to this definition">¶</a></dt>
-<dd><p>約定タイプのログクラス。</p>
-<p>このログは通常、市場で注文が約定したときに生成されます。</p>
-<p><code class="docutils literal notranslate"><span class="pre">buy_transaction_fee</span></code> と <code class="docutils literal notranslate"><span class="pre">sell_transaction_fee</span></code> は、買い手と売り手に課される取引手数料です（市場に取引手数料がない場合は 0.0）。市場は両方を、そのステップで徴収する取引手数料に加算します（<a class="reference internal" href="../market/pams.Market.html#pams.Market.get_transaction_fee_revenues" title="pams.Market.get_transaction_fee_revenues"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.Market.get_transaction_fee_revenues()</span></code></a> を参照）。</p>
+<dt class="sig sig-object py" id="pams.TransactionFee">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pams.</span></span><span class="sig-name descname"><span class="pre">TransactionFee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">market</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/transaction_fees.html#TransactionFee"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.TransactionFee" title="Link to this definition">¶</a></dt>
+<dd><p>取引手数料の基底クラス（ABCクラス）。</p>
+<p>市場の各約定において買い手と売り手が支払う取引手数料を定義します。すべての取引手数料はこのクラスを継承し、<a class="reference internal" href="#pams.TransactionFee.compute_fees" title="pams.TransactionFee.compute_fees"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_fees()</span></code></a> を実装する必要があります。</p>
+<p>取引手数料は、設定ファイルの市場グループの &quot;transactionFee&quot; 設定で指定します（例：<code class="docutils literal notranslate"><span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;ProportionalTransactionFee&quot;,</span> <span class="pre">&quot;rate&quot;:</span> <span class="pre">0.001}</span></code>）。ランナーはグループの市場ごとにインスタンスを1つ作成し、<code class="docutils literal notranslate"><span class="pre">market.transaction_fee</span></code> に設定します。そして市場のセットアップの直後に、&quot;class&quot; を除いた設定を渡して <a class="reference internal" href="#pams.TransactionFee.setup" title="pams.TransactionFee.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a> を呼び出します。この設定がない場合、<code class="docutils literal notranslate"><span class="pre">market.transaction_fee</span></code> は None で、手数料はかかりません。</p>
+<p>インスタンスは市場に結び付いているため、<a class="reference internal" href="#pams.TransactionFee.compute_fees" title="pams.TransactionFee.compute_fees"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_fees()</span></code></a> が受け取るのは約定の情報、つまり価格、数量、2つの注文だけです。それ以外の情報はすべて <code class="docutils literal notranslate"><span class="pre">self.market</span></code> から参照できます。例えば、板（<code class="docutils literal notranslate"><span class="pre">self.market.buy_order_book</span></code> と <code class="docutils literal notranslate"><span class="pre">self.market.sell_order_book</span></code>）、価格、時刻（<code class="docutils literal notranslate"><span class="pre">self.market.get_time()</span></code>）、シミュレーター（<code class="docutils literal notranslate"><span class="pre">self.market.simulator</span></code>）、エージェント（<code class="docutils literal notranslate"><span class="pre">self.market.simulator.id2agent</span></code>）、他の市場（<code class="docutils literal notranslate"><span class="pre">self.market.simulator.markets</span></code>）です。インスタンスは独自の状態を持つこともできます（例：段階的な手数料のための、各エージェントの累積取引数量）。</p>
+<p>市場は約定ごとに <a class="reference internal" href="#pams.TransactionFee.compute_fees" title="pams.TransactionFee.compute_fees"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_fees()</span></code></a> を1回呼び出し、手数料を <a class="reference internal" href="../logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog" title="pams.logs.ExecutionLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.logs.ExecutionLog</span></code></a> に <code class="docutils literal notranslate"><span class="pre">buy_transaction_fee</span></code> と <code class="docutils literal notranslate"><span class="pre">sell_transaction_fee</span></code> として記録します。シミュレーターはそれらを買い手と売り手の現金から差し引きます。手数料を受け取るエージェントはいません。代わりに、市場は両方の手数料を、そのステップで徴収する取引手数料に加算します。ステップごとの値は <a class="reference internal" href="../market/pams.Market.html#pams.Market.get_transaction_fee_revenues" title="pams.Market.get_transaction_fee_revenues"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.Market.get_transaction_fee_revenues()</span></code></a> が、あるステップまでの収支は <a class="reference internal" href="../market/pams.Market.html#pams.Market.get_cumulative_transaction_fee_revenue" title="pams.Market.get_cumulative_transaction_fee_revenue"><code class="xref py py-func docutils literal notranslate"><span class="pre">pams.Market.get_cumulative_transaction_fee_revenue()</span></code></a> が返します。負の手数料（リベート）はこれらを減らします。</p>
+<p>市場が注文を約定させるとき（ランナーは、市場が稼働している間、注文や取消のたびに市場に約定を行わせます）、市場はまず、価格が交差している限り最良の買い注文と売り注文をマッチングし、マッチングしたすべての組に1つの約定価格を決めます。次に、マッチングした順に組を1つずつ約定させ、各組について、その数量が注文から差し引かれる前に <a class="reference internal" href="#pams.TransactionFee.compute_fees" title="pams.TransactionFee.compute_fees"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_fees()</span></code></a> が呼び出されます。その時点では：</p>
+<ul class="simple">
+<li><p>その組の2つの注文と、後の組の注文はまだ板に残っており、その数量にはこの組と後の組の分がまだ含まれています（差し引かれているのは前の組の分だけです）。そのため、板はまだ交差していることがあります。</p></li>
+<li><p>同じマッチングの前の組はすでに約定しています。その数量は注文から差し引かれ、全量約定した注文は板から取り除かれ、市場の約定価格と約定数量、取引手数料収入にもそれらが含まれています。</p></li>
+<li><p>エージェントの現金と保有株式数には、まだこのマッチングのどの組も反映されていません。シミュレーターはすべての組が約定した後にそれらを更新するためです。</p></li>
+</ul>
+<p>取引手数料の作成とセットアップでは、ランナーや市場の疑似乱数生成器から乱数を引きません。組み込みの取引手数料も乱数を引きません。そのため、エージェントが自身の現金を参照しない限り（組み込みのエージェントは参照しません）、同じシードであれば、価格と約定は取引手数料の有無にかかわらず完全に同じになります。取引手数料で乱数が必要な場合は、<a class="reference internal" href="#pams.TransactionFee.setup" title="pams.TransactionFee.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a> で独自の <code class="docutils literal notranslate"><span class="pre">random.Random</span></code> を作成してください。</p>
+<div class="admonition seealso">
+<p class="admonition-title">参考</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pams.ProportionalTransactionFee.html#pams.ProportionalTransactionFee" title="pams.transaction_fees.ProportionalTransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.transaction_fees.ProportionalTransactionFee</span></code></a></p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.TransactionFee.compute_fees">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_fees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">price</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_order</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_order</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/transaction_fees.html#TransactionFee.compute_fees"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.TransactionFee.compute_fees" title="Link to this definition">¶</a></dt>
+<dd><p>約定の取引手数料を計算します。</p>
+<p>市場は約定ごとに、約定数量が注文から差し引かれる前にこのメソッドを呼び出します（その時点の市場の状態については <a class="reference internal" href="#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionFee</span></code></a> を参照）。このメソッドは必ず実装する必要があります。</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>price</strong> (<em>float</em>) -- 約定価格。</p></li>
+<li><p><strong>volume</strong> (<em>int</em>) -- 約定数量。</p></li>
+<li><p><strong>buy_order</strong> (<a class="reference internal" href="../order/pams.Order.html#pams.Order" title="pams.order.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.order.Order</span></code></a>) -- 買い注文。その数量にはまだ約定数量が含まれています。</p></li>
+<li><p><strong>sell_order</strong> (<a class="reference internal" href="../order/pams.Order.html#pams.Order" title="pams.order.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">pams.order.Order</span></code></a>) -- 売り注文。その数量にはまだ約定数量が含まれています。</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値<span class="colon">:</span></dt>
+<dd class="field-even"><p>買い手と売り手の取引手数料。いずれも有限の数値でなければなりません。負の手数料はリベートであり、現金に加算されます。</p>
+</dd>
+<dt class="field-odd">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[float, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pams.TransactionFee.setup">
+<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pams/transaction_fees.html#TransactionFee.setup"><span class="viewcode-link"><span class="pre">[ソース]</span></span></a><a class="headerlink" href="#pams.TransactionFee.setup" title="Link to this definition">¶</a></dt>
+<dd><p>取引手数料のセットアップ。通常はランナーから自動的に呼び出されます。</p>
+<p>市場のセットアップの直後に呼び出されます。デフォルトでは何もしません。</p>
+<dl class="field-list simple">
+<dt class="field-odd">パラメータ<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>settings</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) -- 取引手数料の設定、つまり市場の &quot;transactionFee&quot; 設定から &quot;class&quot; を除いたもの。通常はシミュレーターのJSON設定ファイルから自動的に設定されます。</p></li>
+<li><p><strong>*args</strong> -- 未使用。</p></li>
+<li><p><strong>**kwargs</strong> -- 未使用。</p></li>
+</ul>
+</dd>
+<dt class="field-even">戻り値の型<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-odd">戻り値<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -339,26 +399,8 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="pams.logs.SimulationBeginLog.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">SimulationBeginLog</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="pams.logs.CancelLog.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">CancelLog</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -389,8 +431,12 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">ExecutionLog</a><ul>
-<li><a class="reference internal" href="#pams.logs.ExecutionLog"><code class="docutils literal notranslate"><span class="pre">ExecutionLog</span></code></a></li>
+<li><a class="reference internal" href="#">TransactionFee</a><ul>
+<li><a class="reference internal" href="#pams.TransactionFee"><code class="docutils literal notranslate"><span class="pre">TransactionFee</span></code></a><ul>
+<li><a class="reference internal" href="#pams.TransactionFee.compute_fees"><code class="docutils literal notranslate"><span class="pre">TransactionFee.compute_fees()</span></code></a></li>
+<li><a class="reference internal" href="#pams.TransactionFee.setup"><code class="docutils literal notranslate"><span class="pre">TransactionFee.setup()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

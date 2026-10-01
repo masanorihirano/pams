@@ -1234,6 +1234,12 @@ only follows the drift.</p></td>
 <td><p>Number of shares. Required for markets that are part of an <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code>, where it is the weight of
 the market in the index. Must be a JSON integer. Not set by default.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">transactionFee</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>object or null</p></td>
+<td><p>Transaction fees charged to the buyer and the seller of each execution, e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;class&quot;:</span> <span class="pre">&quot;ProportionalTransactionFee&quot;,</span> <span class="pre">&quot;rate&quot;:</span> <span class="pre">0.001}</span></code> for 0.1% of the executed value (see
+<a class="reference internal" href="#config-transaction-fees"><span class="std std-ref">Transaction fees</span></a>). Default: no fees.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1305,7 +1311,11 @@ of the index is always computed from the components.</p></td>
 <td><p>int</p></td>
 <td><p>Only needed when this index is itself a component of another index.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">requires</span></code> <span class="sd-sphinx-override sd-badge sd-bg-dark sd-bg-text-dark">deprecated</span></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">transactionFee</span></code> <span class="sd-sphinx-override sd-badge sd-bg-secondary sd-bg-text-secondary">optional</span></p></td>
+<td><p>object or null</p></td>
+<td><p>As for <code class="docutils literal notranslate"><span class="pre">Market</span></code>. Applies to executions in the index’s own order book.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">requires</span></code> <span class="sd-sphinx-override sd-badge sd-bg-dark sd-bg-text-dark">deprecated</span></p></td>
 <td><p>any</p></td>
 <td><p>Ignored with a warning.</p></td>
 </tr>
@@ -1321,6 +1331,167 @@ of the index is always computed from the components.</p></td>
 <code class="docutils literal notranslate"><span class="pre">fundamentalVolatility</span></code> of an <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> are ignored. To avoid an artificial gap at the start, set its
 <code class="docutils literal notranslate"><span class="pre">marketPrice</span></code> to the weighted average of the component prices.</p>
 </section>
+<section id="transaction-fees">
+<span id="config-transaction-fees"></span><h3>Transaction fees<a class="headerlink" href="#transaction-fees" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">transactionFee</span></code> key of a market block (<code class="docutils literal notranslate"><span class="pre">Market</span></code>, <code class="docutils literal notranslate"><span class="pre">IndexMarket</span></code> or your own market class) sets the
+transaction fees of its markets. Its value is <code class="docutils literal notranslate"><span class="pre">null</span></code> or an object whose <code class="docutils literal notranslate"><span class="pre">class</span></code> is a
+<a class="reference internal" href="../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionFee</span></code></a> class; the other keys of the object are the settings of that class. Without the
+key, or with <code class="docutils literal notranslate"><span class="pre">null</span></code>, no fees are charged.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"Market"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Market"</span><span class="p">,</span><span class="w"> </span><span class="nt">"tickSize"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00001</span><span class="p">,</span><span class="w"> </span><span class="nt">"marketPrice"</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"transactionFee"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ProportionalTransactionFee"</span><span class="p">,</span><span class="w"> </span><span class="nt">"rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.001</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The runner creates one instance of the class for each market of the block and sets it to
+<code class="docutils literal notranslate"><span class="pre">market.transaction_fee</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> without fees). Right after the setup of the market, it calls <code class="docutils literal notranslate"><span class="pre">setup</span></code> of
+the instance with the object without <code class="docutils literal notranslate"><span class="pre">class</span></code>. Like any object value, the object is inherited through
+<code class="docutils literal notranslate"><span class="pre">extends</span></code> as a whole.</p>
+<p>The built-in <a class="reference internal" href="../reference/generated/transaction_fees/pams.ProportionalTransactionFee.html#pams.ProportionalTransactionFee" title="pams.ProportionalTransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProportionalTransactionFee</span></code></a> has one key:</p>
+<div class="table-wrapper colwidths-given docutils container">
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 27.0%" />
+<col style="width: 13.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate</span></code> <span class="sd-sphinx-override sd-badge sd-bg-danger sd-bg-text-danger">required</span></p></td>
+<td><p>number in [0, 1)</p></td>
+<td><p>Fee paid by both the buyer and the seller, as a fraction of the executed value (price × volume), e.g.
+<code class="docutils literal notranslate"><span class="pre">0.001</span></code> for 0.1%.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>When volume <span class="math notranslate nohighlight">\(V\)</span> is executed at price <span class="math notranslate nohighlight">\(P\)</span>, the buyer pays <span class="math notranslate nohighlight">\((1 + c) P V\)</span> and the seller
+receives <span class="math notranslate nohighlight">\((1 - c) P V\)</span>, where <span class="math notranslate nohighlight">\(c\)</span> is <code class="docutils literal notranslate"><span class="pre">rate</span></code>. No agent receives the fees: they are subtracted
+from the agents’ cash, and the market records them as its revenue (see below). Each
+<a class="reference internal" href="../reference/generated/logs/pams.logs.ExecutionLog.html#pams.logs.ExecutionLog" title="pams.logs.ExecutionLog"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecutionLog</span></code></a> records them as <code class="docutils literal notranslate"><span class="pre">buy_transaction_fee</span></code> and <code class="docutils literal notranslate"><span class="pre">sell_transaction_fee</span></code>
+(<code class="docutils literal notranslate"><span class="pre">0.0</span></code> without fees).</p>
+<p>Transaction fees draw no random numbers, and the built-in agents do not look at their cash (see
+<a class="reference internal" href="#config-agents"><span class="std std-ref">Agents</span></a>), so for the same seed the prices and executions are the same with and without fees.
+Only the agents’ cash, the fees in the execution logs and the revenues of the markets differ.</p>
+<p>Each market records the transaction fees that it collects in each step: the sum of <code class="docutils literal notranslate"><span class="pre">buy_transaction_fee</span></code>
+and <code class="docutils literal notranslate"><span class="pre">sell_transaction_fee</span></code> of its executions in the step. Negative fees (rebates) reduce it, so it can be
+negative, and it is <code class="docutils literal notranslate"><span class="pre">0.0</span></code> without fees. Three methods of <a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">Market</span></code></a> read it:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market.get_transaction_fee_revenues" title="pams.Market.get_transaction_fee_revenues"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_transaction_fee_revenues()</span></code></a> returns the revenue of each step in <code class="docutils literal notranslate"><span class="pre">times</span></code> (by default,
+every step from 0 to the current step);</p></li>
+<li><p><a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market.get_transaction_fee_revenue" title="pams.Market.get_transaction_fee_revenue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_transaction_fee_revenue()</span></code></a> returns the revenue of the step <code class="docutils literal notranslate"><span class="pre">time</span></code> (by default, the
+current step);</p></li>
+<li><p><a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market.get_cumulative_transaction_fee_revenue" title="pams.Market.get_cumulative_transaction_fee_revenue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_cumulative_transaction_fee_revenue()</span></code></a> returns the balance of the market, i.e. the sum
+of the revenues from step 0 to the step <code class="docutils literal notranslate"><span class="pre">time</span></code> (by default, the current step).</p></li>
+</ul>
+<p>The revenues of all the markets add up to the cash that the agents lose to the fees. After a run, the time of
+the markets is one step past the last step, and the revenue of that step is <code class="docutils literal notranslate"><span class="pre">0.0</span></code>. The built-in loggers do not
+output the revenues, but a logger can read them through <code class="docutils literal notranslate"><span class="pre">log.market</span></code> in <code class="docutils literal notranslate"><span class="pre">process_market_step_end_log</span></code>, and
+an event through <code class="docutils literal notranslate"><span class="pre">market</span></code> in <code class="docutils literal notranslate"><span class="pre">hooked_after_step_for_market</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pams.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.logs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarketStepEndLog</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">SequentialRunner</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TransactionFeeRevenueLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_market_step_end_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">MarketStepEndLog</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">market</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">market</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">get_time</span><span class="p">(),</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">get_transaction_fee_revenue</span><span class="p">(),</span>  <span class="c1"># in this step</span>
+            <span class="n">market</span><span class="o">.</span><span class="n">get_cumulative_transaction_fee_revenue</span><span class="p">(),</span>  <span class="c1"># up to this step</span>
+        <span class="p">)</span>
+
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">SequentialRunner</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="s2">"config.json"</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">TransactionFeeRevenueLogger</span><span class="p">())</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">market</span> <span class="ow">in</span> <span class="n">runner</span><span class="o">.</span><span class="n">simulator</span><span class="o">.</span><span class="n">markets</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">market</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">market</span><span class="o">.</span><span class="n">get_cumulative_transaction_fee_revenue</span><span class="p">())</span>  <span class="c1"># balance of the whole run</span>
+</pre></div>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-code" viewBox="0 0 16 16" aria-hidden="true"><path d="m11.28 3.22 4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734L13.94 8l-3.72-3.72a.749.749 0 0 1 .326-1.275.749.749 0 0 1 .734.215Zm-6.56 0a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L2.06 8l3.72 3.72a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L.47 8.53a.75.75 0 0 1 0-1.06Z"></path></svg></span><span class="sd-summary-text">Writing your own transaction fee</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">For other fee schedules, e.g. different rates for makers and takers, fixed fees or tiered fees, subclass
+<a class="reference internal" href="../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionFee</span></code></a> and implement <code class="docutils literal notranslate"><span class="pre">compute_fees</span></code>. It returns the fees of the buyer and the
+seller of one execution; negative fees are rebates, which are added to the cash. Read your keys in
+<code class="docutils literal notranslate"><span class="pre">setup</span></code>, which does nothing by default. This example charges <code class="docutils literal notranslate"><span class="pre">makerRate</span></code> to the order placed first (the
+maker) and <code class="docutils literal notranslate"><span class="pre">takerRate</span></code> to the other order (the taker):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pams</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransactionFee</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pams.runners</span><span class="w"> </span><span class="kn">import</span> <span class="n">SequentialRunner</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MakerTakerTransactionFee</span><span class="p">(</span><span class="n">TransactionFee</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maker_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"makerRate"</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">taker_rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"takerRate"</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_fees</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">):</span>
+        <span class="n">maker_fee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maker_rate</span> <span class="o">*</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+        <span class="n">taker_fee</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">taker_rate</span> <span class="o">*</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+        <span class="n">buy_arrival</span> <span class="o">=</span> <span class="p">(</span><span class="n">buy_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">,</span> <span class="n">buy_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span>
+        <span class="n">sell_arrival</span> <span class="o">=</span> <span class="p">(</span><span class="n">sell_order</span><span class="o">.</span><span class="n">placed_at</span><span class="p">,</span> <span class="n">sell_order</span><span class="o">.</span><span class="n">order_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">buy_arrival</span> <span class="o">&lt;</span> <span class="n">sell_arrival</span><span class="p">:</span>  <span class="c1"># the buy order is the maker</span>
+            <span class="k">return</span> <span class="n">maker_fee</span><span class="p">,</span> <span class="n">taker_fee</span>
+        <span class="k">return</span> <span class="n">taker_fee</span><span class="p">,</span> <span class="n">maker_fee</span>
+
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">SequentialRunner</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="s2">"config.json"</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">class_register</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">MakerTakerTransactionFee</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"transactionFee"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"class"</span><span class="p">:</span><span class="w"> </span><span class="s2">"MakerTakerTransactionFee"</span><span class="p">,</span><span class="w"> </span><span class="nt">"makerRate"</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.0001</span><span class="p">,</span><span class="w"> </span><span class="nt">"takerRate"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0003</span><span class="p">}</span>
+</pre></div>
+</div>
+<p class="sd-card-text">As for the other <a class="reference internal" href="#config-user-classes"><span class="std std-ref">user-defined classes</span></a>, register the class and give its name as
+<code class="docutils literal notranslate"><span class="pre">class</span></code>, or, in a Python dict config, give the class itself. With the process runner, define it in a <code class="docutils literal notranslate"><span class="pre">.py</span></code>
+file and keep its instances picklable (see <a class="reference internal" href="#config-parallel"><span class="std std-ref">Parallel runners</span></a>).</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">placed_at</span></code> is the time at which an order was added to the order book, and order IDs increase in the order
+in which the orders arrive at each market. Orders placed in the same step have the same <code class="docutils literal notranslate"><span class="pre">placed_at</span></code>, so the
+order ID tells which came first. Usually the maker is the order that was waiting in the order book and the
+taker is the incoming order. After a session without order execution or a trading halt, however, both orders
+may have been waiting in the book, and both may be market orders; the example then treats the order placed
+first as the maker.</p>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">compute_fees</span></code> receives only the execution: the executed <code class="docutils literal notranslate"><span class="pre">price</span></code> and <code class="docutils literal notranslate"><span class="pre">volume</span></code>, and the buy and sell
+<a class="reference internal" href="../reference/generated/order/pams.Order.html#pams.Order" title="pams.Order"><code class="xref py py-class docutils literal notranslate"><span class="pre">Order</span></code></a>, whose <code class="docutils literal notranslate"><span class="pre">volume</span></code> still includes the executed volume. The orders are passed because
+they carry what the execution log lacks, such as <code class="docutils literal notranslate"><span class="pre">placed_at</span></code> and <code class="docutils literal notranslate"><span class="pre">kind</span></code>. As each instance belongs to one
+market, everything else can be read through <code class="docutils literal notranslate"><span class="pre">self.market</span></code>: the order books (<code class="docutils literal notranslate"><span class="pre">self.market.buy_order_book</span></code>
+and <code class="docutils literal notranslate"><span class="pre">self.market.sell_order_book</span></code>), the prices, the time (<code class="docutils literal notranslate"><span class="pre">self.market.get_time()</span></code>), and through
+<code class="docutils literal notranslate"><span class="pre">self.market.simulator</span></code> the agents (<code class="docutils literal notranslate"><span class="pre">self.market.simulator.id2agent</span></code>) and the other markets
+(<code class="docutils literal notranslate"><span class="pre">self.market.simulator.markets</span></code>). An instance can also keep its own state, e.g. the volume that each agent
+has traded for tiered fees.</p>
+<p class="sd-card-text">When <code class="docutils literal notranslate"><span class="pre">setup</span></code> runs, its market is set up, but the markets created after it, the agents, the sessions and the
+events are not yet. If the class needs random numbers, create its own <code class="docutils literal notranslate"><span class="pre">random.Random</span></code> in <code class="docutils literal notranslate"><span class="pre">setup</span></code>: drawing
+from the generators of the runner or of the markets would change the simulation.</p>
+</div>
+</details><details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg></span><span class="sd-summary-text">When <code class="docutils literal notranslate"><span class="pre">compute_fees</span></code> is called</span><span class="sd-summary-state-marker sd-summary-chevron-right"><svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-right" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.72 18.78a.75.75 0 0 1 0-1.06L14.44 12 8.72 6.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0Z"></path></svg></span></summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">While a session executes orders and the market is not halted, the market executes orders after each order or
+cancel. It first matches the best buy and sell orders, pair by pair, as long as their prices cross, and all
+the matched pairs get one execution price (see “How the market price is determined” above). Then it executes
+the pairs one by one in the order in which they were matched, and calls <code class="docutils literal notranslate"><span class="pre">compute_fees</span></code> once for each pair,
+before the executed volume is subtracted from the orders. At that moment:</p>
+<ul class="simple">
+<li><p class="sd-card-text">the two orders of the pair and the orders of the later pairs are still in the order books, and their volumes
+still include this pair and the later pairs (only the earlier pairs are subtracted), so the order books can
+still be crossed;</p></li>
+<li><p class="sd-card-text">the earlier pairs are already executed: their volumes are subtracted from their orders, the fully executed
+orders are removed from the order books, and the executed prices and volumes and the transaction fee
+revenue of the market include them;</p></li>
+<li><p class="sd-card-text">the agents’ cash and asset volumes include none of the pairs yet. The simulator updates them after all the
+pairs are executed. Only then are <code class="docutils literal notranslate"><span class="pre">executed_order</span></code> of the agents and the events hooked after executions
+called for each execution.</p></li>
+</ul>
+</div>
+</details></section>
 <section id="correlated-fundamental-prices">
 <span id="config-correlations"></span><h3>Correlated fundamental prices<a class="headerlink" href="#correlated-fundamental-prices" title="Link to this heading">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">simulation.fundamentalCorrelations</span></code> correlates the random shocks of the fundamental prices of pairs of
@@ -1962,8 +2133,9 @@ through <code class="docutils literal notranslate"><span class="pre">extends</sp
 parameters.</p></li>
 <li><p>Class names given as strings must be unique: a class with the same name as a built-in class (e.g. your own
 <code class="docutils literal notranslate"><span class="pre">FCNAgent</span></code>) is ambiguous and fails. Register each class only once.</p></li>
-<li><p>Agent classes must inherit from <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a>, market classes from <a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">Market</span></code></a> and
-event classes from <a class="reference internal" href="../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC" title="pams.events.EventABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventABC</span></code></a>. An agent that inherits from
+<li><p>Agent classes must inherit from <a class="reference internal" href="../reference/generated/agents/pams.agents.Agent.html#pams.agents.Agent" title="pams.agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">Agent</span></code></a>, market classes from <a class="reference internal" href="../reference/generated/market/pams.Market.html#pams.Market" title="pams.Market"><code class="xref py py-class docutils literal notranslate"><span class="pre">Market</span></code></a>,
+event classes from <a class="reference internal" href="../reference/generated/events/pams.events.EventABC.html#pams.events.EventABC" title="pams.events.EventABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventABC</span></code></a> and transaction fee classes from
+<a class="reference internal" href="../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionFee</span></code></a> (see <a class="reference internal" href="#config-transaction-fees"><span class="std std-ref">Transaction fees</span></a>). An agent that inherits from
 <a class="reference internal" href="../reference/generated/agents/pams.agents.HighFrequencyAgent.html#pams.agents.HighFrequencyAgent" title="pams.agents.HighFrequencyAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HighFrequencyAgent</span></code></a> is scheduled as a high-frequency agent.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">samples/user_class</span></code> and <code class="docutils literal notranslate"><span class="pre">samples/market_share</span></code> show complete examples.</p></li>
 </ul>
@@ -1999,9 +2171,10 @@ accepted; any other value is an error. Without the key, the platform’s default
 runner sets another default. Use <code class="docutils literal notranslate"><span class="pre">&quot;spawn&quot;</span></code> when agents use a library that does not work in a forked process,
 such as PyTorch with CUDA, TensorFlow or JAX. The start method does not change the simulation results.</p>
 <p>The process runner pickles the agents and the markets for each task, together with everything they refer to (the
-simulator, the other agents, the events and the logger). User-defined agents, markets, events and loggers must
-therefore be picklable: for example, a logger that keeps an open file fails with
-<code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code>. Keep such data in memory and write the file after the run.</p>
+simulator, the other agents, the events, the transaction fees and the logger). User-defined agents, markets,
+events, transaction fees and loggers must therefore be picklable: for example, a logger that keeps an open file
+fails with <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">cannot</span> <span class="pre">pickle</span> <span class="pre">'_io.TextIOWrapper'</span> <span class="pre">object</span></code>. Keep such data in memory and write the file
+after the run.</p>
 <p>Because of these references, each task copies the whole simulation. The copy is about 4 KB per agent, mostly the
 state of each agent’s random number generator (about 4 MB for 1000 agents), and it takes tens of milliseconds,
 much longer than <code class="docutils literal notranslate"><span class="pre">submit_orders</span></code> of the built-in agents. To limit this cost, the agents asked at the same time
@@ -2145,8 +2318,10 @@ the same seed. To switch an event off for a comparison run, keep it listed with 
 <td><p>Two classes have the same name (e.g. your own class named like a built-in one), or the same class was
 registered twice. Rename the class or register it once.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">market</span> <span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">inherit</span> <span class="pre">Market</span> <span class="pre">class</span></code> (the same for agent and event classes)</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">class</span></code> of block <code class="docutils literal notranslate"><span class="pre">X</span></code> is of the wrong kind, e.g. an agent class in a market block.</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">market</span> <span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">inherit</span> <span class="pre">Market</span> <span class="pre">class</span></code> (the same for agent, event and transaction fee
+classes)</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">class</span></code> of block <code class="docutils literal notranslate"><span class="pre">X</span></code> is of the wrong kind, e.g. an agent class in a market block, or a class that
+does not inherit <a class="reference internal" href="../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee" title="pams.TransactionFee"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransactionFee</span></code></a> in <code class="docutils literal notranslate"><span class="pre">X.transactionFee</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">for</span> <span class="pre">X</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">a</span> <span class="pre">class</span> <span class="pre">name</span> <span class="pre">(str)</span> <span class="pre">or</span> <span class="pre">a</span> <span class="pre">class,</span> <span class="pre">but</span> <span class="pre">Y</span> <span class="pre">is</span> <span class="pre">given</span></code></p></td>
 <td><p>The value <code class="docutils literal notranslate"><span class="pre">Y</span></code> of <code class="docutils literal notranslate"><span class="pre">class</span></code> in block <code class="docutils literal notranslate"><span class="pre">X</span></code> of a Python dict config is neither a string nor a class,
@@ -2360,6 +2535,7 @@ A <code class="docutils literal notranslate"><span class="pre">FundamentalPriceS
 <li><a class="reference internal" href="#markets">Markets</a><ul>
 <li><a class="reference internal" href="#market">Market</a></li>
 <li><a class="reference internal" href="#indexmarket">IndexMarket</a></li>
+<li><a class="reference internal" href="#transaction-fees">Transaction fees</a></li>
 <li><a class="reference internal" href="#correlated-fundamental-prices">Correlated fundamental prices</a></li>
 </ul>
 </li>

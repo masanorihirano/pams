@@ -1,0 +1,562 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>pams.transaction_fees - pams documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">pams  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">pams  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../user_guide/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/preface.html">Preface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/about.html">About this project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/install.html">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/platform.html">Platform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../user_guide/config.html">JSON configuration</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../user_guide/tutorials/index.html">Tutorials</a><input aria-label="Toggle navigation of Tutorials" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../user_guide/tutorials/outline.html">Outline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/runners.html">Runner</a><input aria-label="Toggle navigation of Runner" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.Runner.html">Runner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.SequentialRunner.html">SequentialRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.MultiThreadAgentParallelRunner.html">MultiThreadAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.MultiProcessAgentParallelRunner.html">MultiProcessAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.JaxAgentParallelRunner.html">JaxAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.TensorFlowAgentParallelRunner.html">TensorFlowAgentParallelRunner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/runner/pams.runners.TorchAgentParallelRunner.html">TorchAgentParallelRunner</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/simulators.html">Simulator</a><input aria-label="Toggle navigation of Simulator" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/simulator/pams.Simulator.html">Simulator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/sessions.html">Session</a><input aria-label="Toggle navigation of Session" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/session/pams.Session.html">Session</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/markets.html">Market</a><input aria-label="Toggle navigation of Market" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/market/pams.Market.html">Market</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/market/pams.IndexMarket.html">IndexMarket</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/fundamentals.html">Fundamentals</a><input aria-label="Toggle navigation of Fundamentals" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/fundamentals/pams.Fundamentals.html">Fundamentals</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/orders.html">Order</a><input aria-label="Toggle navigation of Order" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.Order.html">Order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.Cancel.html">Cancel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.OrderKind.html">OrderKind</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.MARKET_ORDER.html">MARKET_ORDER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/order/pams.LIMIT_ORDER.html">LIMIT_ORDER</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/events.html">Events</a><input aria-label="Toggle navigation of Events" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.EventABC.html">EventABC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.EventHook.html">EventHook</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.FundamentalPriceShock.html">FundamentalPriceShock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.PriceLimitRule.html">PriceLimitRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.TradingHaltRule.html">TradingHaltRule</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/events/pams.events.OrderMistakeShock.html">OrderMistakeShock</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/logs.html">Logs</a><input aria-label="Toggle navigation of Logs" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.Log.html">Log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.OrderLog.html">OrderLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.CancelLog.html">CancelLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.ExecutionLog.html">ExecutionLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SimulationBeginLog.html">SimulationBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SimulationEndLog.html">SimulationEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SessionBeginLog.html">SessionBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.SessionEndLog.html">SessionEndLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.MarketStepBeginLog.html">MarketStepBeginLog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/logs/pams.logs.MarketStepEndLog.html">MarketStepEndLog</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/loggers.html">Logger</a><input aria-label="Toggle navigation of Logger" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.Logger.html">Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepPrintLogger.html">MarketStepPrintLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/loggers/pams.logs.MarketStepSaver.html">MarketStepSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/agents.html">Agents</a><input aria-label="Toggle navigation of Agents" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.Agent.html">Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.HighFrequencyAgent.html">HighFrequencyAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.FCNAgent.html">FCNAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.ArbitrageAgent.html">ArbitrageAgent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/agents/pams.agents.MarketShareFCNAgent.html">MarketShareFCNAgent</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/utils.html">Utils</a><input aria-label="Toggle navigation of Utils" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.class_finder.html">class_finder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.json_extends.html">json_extends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/generated/utils/pams.utils.JsonRandom.html">JsonRandom</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for pams.transaction_fees</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Transaction fees charged by markets at each execution."""</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.order</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.market</span><span class="w"> </span><span class="kn">import</span> <span class="n">Market</span>
+
+
+<div class="viewcode-block" id="TransactionFee">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransactionFee</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Transaction fee base class (ABC class).</span>
+
+<span class="sd">    It defines the transaction fees that the buyer and the seller pay at each execution in a market.</span>
+<span class="sd">    All transaction fees should inherit this class and implement :func:`compute_fees`.</span>
+
+<span class="sd">    A transaction fee is set by the "transactionFee" setting of a market group in the config, e.g.,</span>
+<span class="sd">    ``{"class": "ProportionalTransactionFee", "rate": 0.001}``. The runner creates one instance for each</span>
+<span class="sd">    market of the group and sets it to ``market.transaction_fee``. Then, it calls :func:`setup` with the</span>
+<span class="sd">    setting without "class", right after the setup of the market. Without the setting,</span>
+<span class="sd">    ``market.transaction_fee`` is None and no fees are charged.</span>
+
+<span class="sd">    Because an instance is bound to its market, :func:`compute_fees` only receives the execution: the price,</span>
+<span class="sd">    the volume and the two orders. Everything else can be read through ``self.market``, e.g., the order books</span>
+<span class="sd">    (``self.market.buy_order_book`` and ``self.market.sell_order_book``), the prices, the time</span>
+<span class="sd">    (``self.market.get_time()``), the simulator (``self.market.simulator``), the agents</span>
+<span class="sd">    (``self.market.simulator.id2agent``) and the other markets (``self.market.simulator.markets``).</span>
+<span class="sd">    An instance can also keep its own state, e.g., the cumulative volume of each agent for tiered fees.</span>
+
+<span class="sd">    The market calls :func:`compute_fees` once for each execution and records the fees in</span>
+<span class="sd">    :class:`pams.logs.ExecutionLog` as ``buy_transaction_fee`` and ``sell_transaction_fee``. The simulator</span>
+<span class="sd">    subtracts them from the cash of the buyer and the seller. No agent receives them. Instead, the market adds both</span>
+<span class="sd">    fees to the transaction fees that it collects in the time step, which</span>
+<span class="sd">    :func:`pams.Market.get_transaction_fee_revenues` returns for each time step and</span>
+<span class="sd">    :func:`pams.Market.get_cumulative_transaction_fee_revenue` returns as the balance up to a time step. Negative</span>
+<span class="sd">    fees (rebates) reduce them.</span>
+
+<span class="sd">    When the market executes orders, which the runner asks it to do after each order or cancel while the market</span>
+<span class="sd">    is running, it first matches the best buy and sell orders as long as their prices cross and determines one</span>
+<span class="sd">    execution price for all the matched pairs. Then, it executes the pairs one by one in the order in which they</span>
+<span class="sd">    were matched, and :func:`compute_fees` is called for each pair before the volume of the pair is subtracted</span>
+<span class="sd">    from its orders. At that moment:</span>
+
+<span class="sd">    - the two orders of the pair and the orders of the later pairs are still in the order books, and their</span>
+<span class="sd">      volumes still include this pair and the later pairs (only the earlier pairs are subtracted), so the order</span>
+<span class="sd">      books can still be crossed;</span>
+<span class="sd">    - the earlier pairs of the same matching are already executed: their volumes are subtracted from their</span>
+<span class="sd">      orders, the fully executed orders are removed from the order books, and the executed prices and volumes</span>
+<span class="sd">      and the transaction fee revenue of the market include them;</span>
+<span class="sd">    - the cash and the asset volumes of the agents do not include any pair of the matching yet, because the</span>
+<span class="sd">      simulator updates them after all the pairs are executed.</span>
+
+<span class="sd">    Creating and setting up transaction fees does not draw random numbers from the pseudo random number</span>
+<span class="sd">    generators of the runner or of the markets, and the built-in transaction fees draw none. Therefore, for the</span>
+<span class="sd">    same seed, the prices and the executions are exactly the same with and without transaction fees, as long as</span>
+<span class="sd">    the agents do not look at their cash (the built-in agents do not). If a transaction fee needs random</span>
+<span class="sd">    numbers, create its own ``random.Random`` in :func:`setup`.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        - :class:`pams.transaction_fees.ProportionalTransactionFee`</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">"Market"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Transaction fee initialization. Usually be called from runner automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (:class:`pams.Market`): market that charges this transaction fee.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">market</span><span class="p">:</span> <span class="s2">"Market"</span> <span class="o">=</span> <span class="n">market</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return the string representation of the transaction fee."""</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> | market=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">market</span><span class="si">}</span><span class="s2">&gt;"</span>
+
+<div class="viewcode-block" id="TransactionFee.setup">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span>  <span class="c1"># type: ignore  # noqa: B027</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Transaction fee setup. Usually be called from runner automatically.</span>
+
+<span class="sd">        It is called right after the setup of the market. By default, it does nothing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Dict[str, Any]): transaction fee configuration, i.e., the "transactionFee" setting of the</span>
+<span class="sd">                                       market without "class". Usually, automatically set from json config of</span>
+<span class="sd">                                       simulator.</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span></div>
+
+
+<div class="viewcode-block" id="TransactionFee.compute_fees">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.TransactionFee.html#pams.TransactionFee.compute_fees">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_fees</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">:</span> <span class="n">Order</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Compute the transaction fees of an execution.</span>
+
+<span class="sd">        This is called by the market for each execution, before the executed volume is subtracted from the</span>
+<span class="sd">        orders (see :class:`TransactionFee` for the state of the market at that moment). You must implement this.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            price (float): executed price.</span>
+<span class="sd">            volume (int): executed volume.</span>
+<span class="sd">            buy_order (:class:`pams.order.Order`): buy order. Its volume still includes the executed volume.</span>
+<span class="sd">            sell_order (:class:`pams.order.Order`): sell order. Its volume still includes the executed volume.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float, float]: transaction fees of the buyer and of the seller, which must be finite numbers.</span>
+<span class="sd">            Negative fees are rebates, which are added to the cash.</span>
+
+<span class="sd">        """</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ProportionalTransactionFee">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.ProportionalTransactionFee.html#pams.ProportionalTransactionFee">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProportionalTransactionFee</span><span class="p">(</span><span class="n">TransactionFee</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Proportional transaction fee class.</span>
+
+<span class="sd">    Both the buyer and the seller of each execution pay ``rate`` times the executed value (``price * volume``).</span>
+<span class="sd">    The rate is set by "rate" in the settings, e.g., ``{"class": "ProportionalTransactionFee", "rate": 0.001}``</span>
+<span class="sd">    for 0.1%.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        - :class:`pams.transaction_fees.TransactionFee`</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">market</span><span class="p">:</span> <span class="s2">"Market"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Transaction fee initialization. Usually be called from runner automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            market (:class:`pams.Market`): market that charges this transaction fee.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<div class="viewcode-block" id="ProportionalTransactionFee.setup">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.ProportionalTransactionFee.html#pams.ProportionalTransactionFee.setup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+<span class="w">        </span><span class="sd">"""Transaction fee setup. Usually be called from runner automatically.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (Dict[str, Any]): transaction fee configuration. Usually, automatically set from json config</span>
+<span class="sd">                                       of simulator. This must include the parameter "rate", a number in</span>
+<span class="sd">                                       [0.0, 1.0).</span>
+<span class="sd">            *args: not used.</span>
+<span class="sd">            **kwargs: not used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"rate"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"rate is required for ProportionalTransactionFee"</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s2">"rate"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rate</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"rate must be int or float"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">rate</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"rate must be in [0.0, 1.0)"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProportionalTransactionFee.compute_fees">
+<a class="viewcode-back" href="../../reference/generated/transaction_fees/pams.ProportionalTransactionFee.html#pams.ProportionalTransactionFee.compute_fees">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_fees</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">buy_order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">sell_order</span><span class="p">:</span> <span class="n">Order</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Compute the transaction fees of an execution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            price (float): executed price.</span>
+<span class="sd">            volume (int): executed volume.</span>
+<span class="sd">            buy_order (:class:`pams.order.Order`): buy order (not used).</span>
+<span class="sd">            sell_order (:class:`pams.order.Order`): sell order (not used).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float, float]: transaction fees of the buyer and of the seller, both ``rate * price * volume``.</span>
+
+<span class="sd">        """</span>
+        <span class="n">fee</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">*</span> <span class="n">price</span> <span class="o">*</span> <span class="n">volume</span>
+        <span class="k">return</span> <span class="n">fee</span><span class="p">,</span> <span class="n">fee</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2022, Masanori HIRANO
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>

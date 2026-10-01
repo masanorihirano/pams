@@ -509,6 +509,10 @@
 <span class="w">    </span><span class="sd">"""Execution type log class.</span>
 
 <span class="sd">    This log is usually generated when an order is executed on markets.</span>
+
+<span class="sd">    ``buy_transaction_fee`` and ``sell_transaction_fee`` are the transaction fees charged to the buyer and the</span>
+<span class="sd">    seller (0.0 if the market has no transaction fee). The market adds both to the transaction fees that it</span>
+<span class="sd">    collects in the time step (see :func:`pams.Market.get_transaction_fee_revenues`).</span>
 <span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -521,6 +525,8 @@
         <span class="n">sell_order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">volume</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">buy_transaction_fee</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">sell_transaction_fee</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initialize.</span>
 
@@ -533,6 +539,8 @@
 <span class="sd">            sell_order_id (int): sell order ID.</span>
 <span class="sd">            price (float): executed price.</span>
 <span class="sd">            volume (int): executed volume.</span>
+<span class="sd">            buy_transaction_fee (float): transaction fee charged to the buyer (default 0.0).</span>
+<span class="sd">            sell_transaction_fee (float): transaction fee charged to the seller (default 0.0).</span>
 
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">market_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">market_id</span>
@@ -542,7 +550,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">buy_order_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">buy_order_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sell_order_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">sell_order_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">price</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">volume</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buy_transaction_fee</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">buy_transaction_fee</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sell_transaction_fee</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">sell_transaction_fee</span></div>
 
         <span class="c1"># TODO: Type validation</span>
 
